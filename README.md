@@ -7,6 +7,7 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 ## Apps
 | App | What | Folder |
 |---|---|---|
+| Homework Reader | Photo of handwritten homework → exact transcription, mistakes and corrections via the Claude API (own API key) | [homework-reader/](homework-reader/README.md) |
 | Maths Arcade | Maths mini games (times tables, add/subtract to 100, fractions); first game: Catapult | [maths-arcade/](maths-arcade/README.md) |
 | Piano Jump | Platform game played on a real piano over MIDI/Bluetooth | [piano-jump/](piano-jump/README.md) |
 

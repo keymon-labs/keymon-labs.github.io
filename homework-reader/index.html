@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Homework Reader</title>
+<meta name="description" content="Photograph handwritten homework; Claude transcribes it exactly as written and lists the mistakes.">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Homework <span>Reader</span></h1>
+    <button id="settings-btn" class="ghost" aria-expanded="false" aria-controls="settings">Settings</button>
+    <button id="install" class="ghost" hidden>Install</button>
+  </header>
+
+  <section id="settings" class="panel" hidden>
+    <h2>Connect to Claude</h2>
+    <p class="muted">Paste an API key from the <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Claude Console</a>. A Claude.ai chat subscription can't be used by other apps, so this needs an API key with credit; each page costs a few pence.</p>
+    <label>API key
+      <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
+    </label>
+    <label>Model
+      <select id="model"></select>
+    </label>
+    <label class="row"><input id="remember" type="checkbox" checked> Remember the key on this device</label>
+    <div class="row gap">
+      <button id="save" class="primary">Save</button>
+      <button id="forget" class="ghost">Forget key</button>
+    </div>
+    <p class="muted small">The key stays in this browser and is sent only to Anthropic. Photos go to Anthropic for reading and aren't stored here.</p>
+  </section>
+
+  <section class="panel capture">
+    <label class="primary big" for="camera">📷 Take a photo</label>
+    <input id="camera" type="file" accept="image/*" capture="environment" hidden>
+    <label class="ghost" for="gallery">Choose from gallery</label>
+    <input id="gallery" type="file" accept="image/*" hidden>
+    <p class="muted small">Flat page, good light, whole page in frame.</p>
+  </section>
+
+  <img id="preview" alt="Photo of the homework page" hidden>
+  <p id="status" role="status" aria-live="polite"></p>
+
+  <section id="results" hidden>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="written" aria-selected="true">As written</button>
+      <button role="tab" data-tab="errors" aria-selected="false">Mistakes <span id="error-count"></span></button>
+      <button role="tab" data-tab="corrected" aria-selected="false">Corrected</button>
+    </div>
+    <div class="panel" data-pane="written"><ol id="written" class="lines"></ol><button class="ghost copy" data-copy="written">Copy</button></div>
+    <div class="panel" data-pane="errors" hidden><ul id="errors" class="errors"></ul></div>
+    <div class="panel" data-pane="corrected" hidden><ol id="corrected" class="lines"></ol><button class="ghost copy" data-copy="corrected">Copy</button></div>
+    <div id="unclear-box" class="panel note" hidden><h3>Hard to read</h3><ul id="unclear"></ul></div>
+  </section>
+</main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
