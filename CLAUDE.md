@@ -7,37 +7,72 @@ Every file, commit message and line of git history is readable by anyone, and hi
 **Never commit personal data:** real names of family members or children, ages, schools, photos/voice of people, addresses, locations, contact details, financial/health/employer information, API keys, tokens, passwords, private URLs, or anything taken from personal chats, memory or connected apps (email, drive, calendar, bank tools).
 Use invented, generic content. If a change would need personal data, stop and ask. If personal data is committed by mistake, flag it at once: it needs a history rewrite, not a follow-up commit.
 
+## Start of every task
+1. `git pull` (other chats push here too).
+2. Read the indexes, not the whole tree: [README.md](README.md) (apps + libraries), [shared/README.md](shared/README.md) (reusable modules), and the target app's `README.md`.
+3. Then open only the files the change touches.
+
+## Reuse before you write
+Take the first option that works:
+1. **Already in this repo?** A module in `shared/` or a pattern in another app. Use it as-is or extend it (keep existing callers working).
+2. **A platform feature?** (Web Audio, Canvas, Web MIDI, CSS…) Use it directly.
+3. **An npm library already listed in README.md?** Use it.
+4. **A well-known open-source library** for something non-trivial (music notation, audio synthesis, physics, charts, maps…)? Add it with `npm install`; Vite bundles it, so no CDN links. Prefer MIT/BSD/Apache, maintained, small. Record it in the README "Libraries in use" table. Never add a dependency for a few lines of code.
+5. **Otherwise**, write the minimum code.
+
+## Structure: modular, not fragmented
+```
+README.md                 index: apps + libraries in use
+shared/README.md          index: reusable modules (exports, used by)
+shared/<capability>.js    one module per capability (midi, music, audio, pwa…)
+<app>/README.md           what it is, files, data format, shared modules used
+<app>/index.html          markup only
+<app>/style.css           styles
+<app>/<app>.js|game.js    app logic (ES module)
+<app>/*.json              data (songs, levels, word lists): editable without touching code
+<app>/sw.js, manifest.webmanifest, icon-192.png, icon-512.png
+<app>/vN/                 frozen past versions: self-contained, never edited
+index.html                landing page: one <li class="card"> per app
+```
+- Default app shape is the four files above (html, css, js, json). Split the JS further only when a file passes ~500 lines **and** there is a clear seam (e.g. rendering vs rules). No folders of tiny one-function files.
+- Move code to `shared/` when a **second** app needs it, or when it is clearly generic device/platform glue (input devices, PWA). Update `shared/README.md` in the same commit.
+- Changing a shared export: grep every caller (`grep -rn "shared/<module>" --include=*.js .`) and fix them all in the same commit.
+- Keep READMEs current: they are how the next session finds things. A new app adds a row to the root README and a card to `index.html`.
+- One-line header comment at the top of each JS module: what it is and where its data/styles live.
+
+## How to write code (ponytail)
+Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
+- The smallest change that fully solves the task. Finish every part the task needs: callers, data, READMEs, landing card.
+- Before editing, list every place the change must reach. For a bug fix, grep callers and fix the root cause once, in the shared code.
+- No abstractions, options, config, wrappers or "for later" code nobody asked for. Deletion beats addition. Keep the existing structure and conventions.
+- Prefer the shortest **readable** diff; a clever one-liner that needs decoding is not short.
+- Comments only for the *why* the code can't show, one line. Known limits are marked `// shortcut: <limit>, <when to upgrade>`.
+- New non-trivial logic (a parser, a scoring rule, a whole new app) gets one small check: a headless play-through or an assert-based self-test.
+- Never cut: input validation, error handling that prevents data loss, security, accessibility, anything the user asked for.
+- End the reply with one or two lines on what was skipped or not checked, and any risk.
+
 ## How it deploys
 - Push to `main` → GitHub Actions (`.github/workflows/deploy.yml`) runs `npm ci && npm run build` → `dist/` is deployed to Pages.
-- Never commit `dist/` or `node_modules/`.
-- The repo is the source of truth: always commit and push before ending a session. Chat workspaces are temporary.
+- Every `index.html` is a page automatically; new apps and versions need no config.
+- Vite content-hashes JS/CSS/JSON/images reached from HTML into `/assets/` (immutable, so no stale caches).
+- Anything Vite doesn't bundle (`sw.js`, manifests, manifest icons, runtime-fetched files) is copied to `dist/` at the same path by the `copy-unbundled` plugin in `vite.config.js`. Manifests stay un-hashed on purpose.
+- Never commit `dist/` or `node_modules/`. Always commit and push before ending a session: chat workspaces are temporary.
 
-## Layout
-```
-index.html              landing page: one <li class="card"> per app
-<app>/index.html        latest version of the app
-<app>/v1/, v2/ ...      frozen past versions (copies), linked from the landing card
-<app>/manifest.webmanifest, sw.js, icon-*.png   PWA files, per app/version
-shared/                 (create when needed) ES modules reused across apps
-```
-- Every `index.html` anywhere is built automatically as a page; no config change needed for new apps or versions.
-- Vite hashes JS/CSS/images referenced from HTML (`/assets/name-<hash>.ext`), so stale caches are not an issue for those.
-- Files Vite doesn't reference (`sw.js`, `manifest.webmanifest`, manifest icons, data fetched at runtime) are copied as-is by `scripts/copy-static.mjs`. Manifests are deliberately kept un-hashed (see `vite.config.js`).
-
-## Conventions
-- Plain HTML + ES modules, no framework unless an app clearly needs one.
-- Small apps can be a single `index.html`. Split into modules once a file passes ~400–500 lines: `app.js`, `style.css`, data in `*.json`.
-- Shared code: `import { … } from '../shared/x.js'` (Vite resolves and hashes it).
-- Keep data (songs, levels, word lists) separate from logic.
-- Service workers: network-first for navigations/HTML, cache-first for other same-scope files. Bump the cache name when the worker changes.
-- Mobile-first, works in Chrome on Android; light/dark aware. Note on the landing card if an app needs Chrome (e.g. Web MIDI is unavailable in Safari/iOS).
+## App conventions
+- Plain HTML + ES modules; a framework only if an app clearly needs one.
+- Mobile-first, Chrome on Android; landscape-friendly for games; light/dark aware unless the app has its own look.
+- Installable: manifest with `id`, `start_url`, `scope` = the app folder; 192 and 512 PNG icons; `registerServiceWorker()` from `shared/pwa.js`.
+- Service worker: network-first for navigations, cache-first for same-scope files **and `/assets/`** (hashed). Bump the cache name when `sw.js` changes.
+- Web MIDI / Web Bluetooth don't exist on iOS Safari: say "Chrome" on the landing card.
+- Apps for kids: forgiving, no ads, no tracking, no analytics, no sign-in.
+- Expose a small test hook (`window.__<app>`) when the app is a game or has state worth driving headlessly.
 
 ## Releasing a new version of an app
-1. Copy the current `<app>/index.html` (+ its manifest/sw/icons) to `<app>/vN/` and update its manifest `id`/`start_url` scope to that folder.
-2. Edit `<app>/index.html` as the new latest.
-3. Add the version pill to the app's card in the root `index.html`.
+1. Snapshot the current version into `<app>/vN/` as a **self-contained** page: inline its CSS/JS/data, or copy the files with imports rewritten so it doesn't depend on `shared/` (shared code may change later). Copy its manifest/sw/icons and set the manifest `id`, `start_url`, `scope` to `vN/`.
+2. Make the changes in `<app>/` as the new latest.
+3. Add the `vN` pill to the app's card in `index.html` and note it in the app README.
 
 ## Check before pushing
-- `npm run build` must pass.
-- Serve `dist/` (`npx vite preview` or `python3 -m http.server -d dist`) and load each changed page in headless Chromium; check for page errors.
-- Commit messages: short imperative summary.
+- `npm run build` passes.
+- Serve `dist/` (`python3 -m http.server -d dist 8765`) and load each changed page in headless Chromium (Playwright is available); no page errors; for games, drive a few inputs through the test hook.
+- Re-check the public-data rule. Commit message: short imperative summary.

@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
-import { globSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { globSync, cpSync, mkdirSync, existsSync } from 'node:fs';
+import { resolve, dirname, join, relative } from 'node:path';
+
+const root = import.meta.dirname;
+const IGNORE = /^(node_modules|dist|scripts|\.git|\.github|\.claude)(\/|$)|^[^/]+\.(json|js|md)$|(^|\/)README\.md$|\.html$|(^|\/)\./;
 
 // Every index.html in the repo is a page: the landing page, each app,
 // and each frozen version (app/v1/, app/v2/...). No manual registration.
@@ -11,8 +14,7 @@ const pages = Object.fromEntries(
 
 // Web manifests must keep a stable, un-hashed URL next to their page:
 // their start_url, scope and icons are relative to the manifest itself,
-// and the install identity depends on it. Mark them for Vite to leave alone;
-// copy-static.mjs then ships them as-is.
+// and the install identity depends on it.
 const keepManifests = {
   name: 'keep-manifests',
   transformIndexHtml: {
@@ -22,12 +24,28 @@ const keepManifests = {
   },
 };
 
+// Copy everything Vite didn't bundle (sw.js, manifests, manifest icons,
+// runtime-fetched data) to dist/ at the same path. Bundled modules are skipped.
+const copyUnbundled = () => {
+  let bundled = new Set();
+  return {
+    name: 'copy-unbundled',
+    apply: 'build',
+    generateBundle() { bundled = new Set([...this.getModuleIds()].map((id) => relative(root, id))); },
+    closeBundle() {
+      let n = 0;
+      for (const f of globSync('**/*', { cwd: root })) {
+        const src = join(root, f), out = join(root, 'dist', f);
+        if (IGNORE.test(f) || bundled.has(f) || existsSync(out)) continue;
+        try { mkdirSync(dirname(out), { recursive: true }); cpSync(src, out); n++; } catch {} // directories throw; skip
+      }
+      console.log(`copy-unbundled: ${n} file(s)`);
+    },
+  };
+};
+
 export default defineConfig({
   base: '/',
-  plugins: [keepManifests],
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-    rollupOptions: { input: pages },
-  },
+  plugins: [keepManifests, copyUnbundled()],
+  build: { outDir: 'dist', emptyOutDir: true, rollupOptions: { input: pages } },
 });
