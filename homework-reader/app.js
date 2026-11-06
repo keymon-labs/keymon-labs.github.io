@@ -1,6 +1,5 @@
-// Homework Reader UI: settings, photo capture/resize, results. API logic in reader.js, styles in style.css.
-import { MODELS, readHomework } from "./reader.js";
-import { registerServiceWorker, setupInstallButton } from "../shared/pwa.js";
+// Homework Reader UI shared by both entries (web.js: API key, claude.js: inside Claude). API logic in reader.js, styles in style.css.
+import { MODELS } from "./reader.js";
 
 const $ = (id) => document.getElementById(id);
 const KEY = "homework-reader.apiKey", MODEL = "homework-reader.model";
@@ -16,33 +15,73 @@ const store = {
 
 let lastResult = null;
 
-// ---------- settings ----------
-for (const m of MODELS) $("model").append(new Option(m.label, m.id));
-$("model").value = store.get(MODEL) || MODELS[0].id;
-$("key").value = store.get(KEY);
+/**
+ * Wire up the page markup (index.html <main>, already in the document).
+ * read({ base64, blob, apiKey, model }) → { result, raw }, throws Error with a user-facing message.
+ * apiKey: true shows the key/model settings (web); false hides them (inside Claude, the viewer's account is used).
+ */
+export function start({ read, apiKey }) {
+  if (apiKey) setupSettings();
+  else { $("settings-btn").remove(); $("settings").remove(); }
 
+  for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) run(f); };
+
+  async function run(file) {
+    const key = apiKey ? store.get(KEY) : "";
+    if (apiKey && !key) { showSettings(true); return status("Add your API key first.", "error"); }
+    $("results").hidden = true;
+    let img;
+    try { img = await toJpeg(file); } catch { return status("Couldn't open that image. Try another photo.", "error"); }
+    $("preview").src = img.url; $("preview").hidden = false;
+    const model = apiKey ? $("model").value : "";
+    status(apiKey ? `Reading with ${MODELS.find((m) => m.id === model)?.label.split(":")[0] || model}…` : "Reading… (Claude may ask you to allow it first)", "busy");
+    try {
+      const { result, raw } = await read({ base64: img.base64, blob: img.blob, apiKey: key, model });
+      render(result || { lines: raw.split("\n").filter(Boolean).map((t) => ({ written: t, corrected: t })), errors: [], unclear: ["Claude didn't return the usual format; showing its raw reply."] });
+      status("");
+    } catch (e) {
+      status(e.message, "error");
+    }
+  }
+
+  for (const b of document.querySelectorAll("[role=tab]")) b.onclick = () => selectTab(b.dataset.tab);
+  for (const b of document.querySelectorAll("[data-copy]")) b.onclick = async () => {
+    const field = b.dataset.copy;
+    const text = lastResult.lines.map((l) => l[field] ?? l.written).join("\n");
+    try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1500); } catch {}
+  };
+
+  // Test hook: drive rendering headlessly without calling Claude.
+  window.__homeworkReader = { render };
+}
+
+// ---------- settings (web only) ----------
 function showSettings(open) {
   $("settings").hidden = !open;
   $("settings-btn").setAttribute("aria-expanded", String(open));
   if (open) $("key").focus();
 }
-$("settings-btn").onclick = () => showSettings($("settings").hidden);
-$("save").onclick = () => {
-  const key = $("key").value.trim();
-  if (!key) return status("Paste an API key first.", "error");
-  store.set(KEY, key, $("remember").checked);
-  store.set(MODEL, $("model").value);
-  showSettings(false);
-  status("Saved. Take a photo to start.");
-};
-$("forget").onclick = () => { store.del(KEY); $("key").value = ""; status("Key removed from this device."); };
-$("model").onchange = () => store.set(MODEL, $("model").value);
-if (!store.get(KEY)) showSettings(true);
+
+function setupSettings() {
+  for (const m of MODELS) $("model").append(new Option(m.label, m.id));
+  $("model").value = store.get(MODEL) || MODELS[0].id;
+  $("key").value = store.get(KEY);
+  $("settings-btn").onclick = () => showSettings($("settings").hidden);
+  $("save").onclick = () => {
+    const key = $("key").value.trim();
+    if (!key) return status("Paste an API key first.", "error");
+    store.set(KEY, key, $("remember").checked);
+    store.set(MODEL, $("model").value);
+    showSettings(false);
+    status("Saved. Take a photo to start.");
+  };
+  $("forget").onclick = () => { store.del(KEY); $("key").value = ""; status("Key removed from this device."); };
+  $("model").onchange = () => store.set(MODEL, $("model").value);
+  if (!store.get(KEY)) showSettings(true);
+}
 
 // ---------- photo ----------
-for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) run(f); };
-
-async function toJpegBase64(file) {
+async function toJpeg(file) {
   const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
   const scale = Math.min(1, MAX_SIDE / Math.max(bmp.width, bmp.height));
   const c = document.createElement("canvas");
@@ -50,26 +89,8 @@ async function toJpegBase64(file) {
   c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
   bmp.close?.();
   const url = c.toDataURL("image/jpeg", 0.88);
-  return { url, base64: url.slice(url.indexOf(",") + 1) };
-}
-
-async function run(file) {
-  const apiKey = store.get(KEY);
-  if (!apiKey) { showSettings(true); return status("Add your API key first.", "error"); }
-  $("results").hidden = true;
-  let img;
-  try { img = await toJpegBase64(file); } catch { return status("Couldn't open that image. Try another photo.", "error"); }
-  $("preview").src = img.url; $("preview").hidden = false;
-  const model = $("model").value;
-  status(`Reading with ${MODELS.find((m) => m.id === model)?.label.split(":")[0] || model}…`, "busy");
-  try {
-    const { result, raw } = await readHomework({ apiKey, model, imageBase64: img.base64, mediaType: "image/jpeg" });
-    if (!result) { render({ lines: raw.split("\n").filter(Boolean).map((t) => ({ written: t, corrected: t })), errors: [], unclear: ["Claude didn't return the usual format; showing its raw reply."] }); }
-    else render(result);
-    status("");
-  } catch (e) {
-    status(e.message, "error");
-  }
+  const blob = await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.88));
+  return { url, blob, base64: url.slice(url.indexOf(",") + 1) };
 }
 
 // ---------- results ----------
@@ -111,16 +132,3 @@ function selectTab(name) {
   for (const b of document.querySelectorAll("[role=tab]")) b.setAttribute("aria-selected", String(b.dataset.tab === name));
   for (const p of document.querySelectorAll("[data-pane]")) p.hidden = p.dataset.pane !== name;
 }
-for (const b of document.querySelectorAll("[role=tab]")) b.onclick = () => selectTab(b.dataset.tab);
-
-for (const b of document.querySelectorAll("[data-copy]")) b.onclick = async () => {
-  const field = b.dataset.copy;
-  const text = lastResult.lines.map((l) => l[field] ?? l.written).join("\n");
-  try { await navigator.clipboard.writeText(text); b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy"), 1500); } catch {}
-};
-
-// Test hook: drive rendering headlessly without calling the API.
-window.__homeworkReader = { render };
-
-registerServiceWorker();
-setupInstallButton($("install"));

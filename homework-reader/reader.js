@@ -60,6 +60,27 @@ export function errorMessage(status, body) {
   return body?.error?.message || `Request failed (${status}).`;
 }
 
+const SAMPLE_ERRORS = {
+  not_granted: "Claude wasn't allowed for this app. Allow it in the artifact's permissions to try again.",
+  sampling_disabled: "Claude isn't available for this account.",
+  images_unavailable: "Sending photos to Claude isn't available here.",
+  rate_limited: "Too many requests or usage limit reached. Try again later.",
+  session_expired: "Your Claude session expired. Sign in again.",
+  image_rejected: "Claude couldn't use that photo. Try another one.",
+  refused: "Claude declined to read this photo.",
+};
+
+/** Inside Claude (artifact `sample` capability): runs on the viewer's own Claude account. Same return/throw contract as readHomework. */
+export async function readWithClaude(sample, imageBlob) {
+  let text;
+  try {
+    ({ text } = await sample(PROMPT, { images: imageBlob, modelTier: "complex" }));
+  } catch (e) {
+    throw new Error(SAMPLE_ERRORS[e?.code] || e?.message || "Claude couldn't read it. Try again.");
+  }
+  return { result: parseResult(text), raw: text };
+}
+
 /** Send the photo to Claude. Returns { result, raw } or throws Error with a user-facing message. */
 export async function readHomework({ apiKey, model, imageBase64, mediaType, fetchImpl = fetch }) {
   let res;

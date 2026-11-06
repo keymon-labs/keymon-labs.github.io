@@ -7,6 +7,18 @@ Every file, commit message and line of git history is readable by anyone, and hi
 **Never commit personal data:** real names of family members or children, ages, schools, photos/voice of people, addresses, locations, contact details, financial/health/employer information, API keys, tokens, passwords, private URLs, or anything taken from personal chats, memory or connected apps (email, drive, calendar, bank tools).
 Use invented, generic content. If a change would need personal data, stop and ask. If personal data is committed by mistake, flag it at once: it needs a history rewrite, not a follow-up commit.
 
+## Third-party content and copyright
+The site is public and redistributes whatever is committed. Licence terms for this repo are being decided; until then follow these rules.
+- **Don't ship recognisable copyrighted or trademarked material** unless the user explicitly says it's fine: characters (Mickey Mouse, Pokémon, Mario…), logos and brands, film/TV/game art, commercial fonts, photos from the web, recorded music, song lyrics or melodies written after 1929.
+- **Ideas, mechanics and genres are fine** (a platformer, a times-table quiz, a Tetris-like). Copy the idea, not the art, names or level designs.
+- **Prefer** assets you generate (canvas/SVG/PIL, Web Audio synthesis), public-domain works (folk songs, pre-1929 music, classic texts) and openly licensed assets (CC0, CC BY, MIT, OFL fonts).
+- **Copied code or assets**: keep their licence header; note source + licence in the app README ("Credits" section) and add npm packages to the "Libraries in use" table. CC BY, MIT, BSD and Apache need attribution; avoid GPL/AGPL code and "NC"/"ND"-licensed assets unless the user agrees.
+- **Small snippets** (docs examples, Stack Overflow answers) are fine; add a one-line `// from <url>` comment where the licence asks for attribution.
+- When unsure, flag it to the user in one line rather than silently including or dropping it.
+
+## Skills (how-tos for this repo)
+`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: npm bundle + loader artifact release). Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
+
 ## Start of every task
 1. `git pull` (other chats push here too).
 2. Read the indexes, not the whole tree: [README.md](README.md) (apps + libraries), [shared/README.md](shared/README.md) (reusable modules), and the target app's `README.md`.
@@ -71,6 +83,12 @@ Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
 1. Snapshot the current version into `<app>/vN/` as a **self-contained** page: inline its CSS/JS/data, or copy the files with imports rewritten so it doesn't depend on `shared/` (shared code may change later). Copy its manifest/sw/icons and set the manifest `id`, `start_url`, `scope` to `vN/`.
 2. Make the changes in `<app>/` as the new latest.
 3. Add the `vN` pill to the app's card in `index.html` and note it in the app README.
+
+## Apps inside Claude (claude/)
+- Apps listed in `claude/apps.json` also run inside the "keymon-labs for Claude" loader artifact, on the viewer's Claude account. Details: `labs-claude-loader` skill.
+- **After a push that changes `claude/` or a listed app, republish the loader**: wait for the npm publish Action, `npm run build:loader -- --version <new>`, compare the build id with the artifact's `keymon-labs-build` meta, republish if different. The build id is `<npm version> <git commit>`.
+- The loader declares only `{sample: {images: true}}`. Never add a capability without the user asking, and update `claude/DISCLAIMER.md` and the trust screen in `claude/loader.html` in the same change.
+- Never commit the artifact URL until the user has shared it publicly.
 
 ## Check before pushing
 - `npm test` passes (`node --test` runs every `**/*.test.js`; pure logic only, not UI). CI runs it before the build.

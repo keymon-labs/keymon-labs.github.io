@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build your own labs site</title>
+<meta name="description" content="Step-by-step: publish your own small web apps for free with GitHub Pages and Claude. No coding needed.">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--text:#1c1b19;--muted:#6b675f;--line:#e4e0d6;--accent:#c4562b;--code:#efebe2}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1f1e1c;--text:#ecebe6;--muted:#9a968c;--line:#2e2c29;--accent:#e07a50;--code:#2a2926}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(24px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+main{max-width:680px;margin:0 auto;display:grid;gap:20px}
+a{color:var(--accent)}
+h1{font-size:28px;margin:8px 0 0;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:19px;margin:0 0 6px;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted)}
+.back{font-size:14px;color:var(--muted)}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:12px}
+ol.steps>li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;gap:6px}
+ol.steps>li>h2::before{content:counter(s) ". ";color:var(--accent)}
+ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.ref{font-size:14px;color:var(--muted)}
+code{font:14px ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+.prompt{background:var(--code);border-radius:10px;padding:12px 14px;font-size:15px;white-space:pre-wrap;margin:0}
+button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:6px 12px;cursor:pointer;justify-self:start}
+.box{border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+footer{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../">← keymon-labs</a>
+<header>
+  <h1>Build your own labs site</h1>
+  <p class="lead">Publish small web apps for free by chatting with Claude. No coding needed. Setup takes about 30 minutes on a computer; after that you can work from your phone.</p>
+</header>
+
+<section class="box">
+  <h2>You need</h2>
+  <ul>
+    <li>A paid Claude plan (Pro or Max) for Claude Code in the cloud.</li>
+    <li>A free GitHub account. GitHub stores your code and hosts the site.</li>
+  </ul>
+</section>
+
+<ol class="steps">
+  <li>
+    <h2>Create a GitHub account</h2>
+    <p>Sign up at <a href="https://github.com/signup">github.com/signup</a>. Turn on two-factor authentication.</p>
+  </li>
+  <li>
+    <h2>Create an organization (optional)</h2>
+    <p>Keeps the site separate from your personal account. Go to <a href="https://github.com/organizations/plan">github.com/organizations/plan</a> and pick <b>Free</b>. Its name becomes your address: <code>NAME.github.io</code>. Skip this to use your username instead.</p>
+  </li>
+  <li>
+    <h2>Create the site repository</h2>
+    <p>At <a href="https://github.com/new">github.com/new</a>: owner = your organization (or you), name exactly <code>NAME.github.io</code>, <b>Public</b>, tick <b>Add a README file</b>.</p>
+    <p class="ref">Ref: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site">Creating a GitHub Pages site</a></p>
+  </li>
+  <li>
+    <h2>Turn on GitHub Pages</h2>
+    <p>In the repository: <b>Settings → Pages → Build and deployment → Source: GitHub Actions</b>.</p>
+    <p class="ref">Ref: <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source</a></p>
+  </li>
+  <li>
+    <h2>Connect Claude to GitHub</h2>
+    <p>Open <a href="https://claude.ai/code">claude.ai/code</a>, sign in, choose <b>Sign in with GitHub</b> and approve. Then <a href="https://github.com/apps/claude/installations/new">install the Claude GitHub App</a> on your organization and give it access to the site repository.</p>
+    <p class="ref">Ref: <a href="https://code.claude.com/docs/en/web-quickstart">Get started with Claude Code in the cloud</a></p>
+  </li>
+  <li>
+    <h2>Ask Claude to set up the site</h2>
+    <p>At claude.ai/code, pick your repository, paste this and send:</p>
+    <pre class="prompt" id="starter">Set up this repository as a GitHub Pages site for small web apps, copying the setup of github.com/keymon-labs/keymon-labs.github.io (CLAUDE.md, vite.config.js, package.json, .github/workflows/deploy.yml, the landing page and .claude/skills), with my site name instead of keymon-labs and no apps yet. The repo is public: never commit personal data, API keys or copyrighted material. Run the tests and the build, then merge to main.</pre>
+    <button type="button" id="copy">Copy prompt</button>
+    <p>Claude works on a branch. When it's done, open the pull request it made and press <b>Merge</b> on GitHub, or ask Claude to merge it.</p>
+  </li>
+  <li>
+    <h2>Check it's live</h2>
+    <p>On GitHub, the <b>Actions</b> tab should show a green run. Then open <code>https://NAME.github.io</code>. The first deploy can take a couple of minutes.</p>
+  </li>
+  <li>
+    <h2>Make your first app</h2>
+    <p>Start a new session on the repository and describe what you want, for example:</p>
+    <ul>
+      <li>“Add a times-tables quiz for a 7-year-old, big buttons, works on a phone.”</li>
+      <li>“Add a packing-list app that remembers my lists on this device.”</li>
+    </ul>
+    <p>Merge, wait for the green run, and it appears at <code>NAME.github.io/APP/</code>. From your phone, use the <b>Code</b> tab in the Claude app.</p>
+  </li>
+  <li>
+    <h2>Keep it safe</h2>
+    <ul>
+      <li>Everything in a public repository is visible forever: no names of children, photos, addresses or passwords.</li>
+      <li>Never paste API keys or tokens into the code.</li>
+      <li>Don't use copyrighted characters, logos or music. Ideas are fine; their art isn't.</li>
+      <li>Add a licence so people know what they may do with your work (<a href="https://choosealicense.com/">choosealicense.com</a>).</li>
+    </ul>
+  </li>
+</ol>
+
+<section class="box">
+  <h2>Optional: run apps inside Claude</h2>
+  <p>Apps that use AI can run inside Claude on each visitor's own Claude account, with no API keys. It needs a free npm account and a few more steps. Ask Claude to follow the <code>labs-claude-loader</code> skill, and read the <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/claude/DISCLAIMER.md">security notes</a> first.</p>
+</section>
+
+<section class="box">
+  <h2>If something goes wrong</h2>
+  <ul>
+    <li><b>Site shows 404</b>: the repository name isn't exactly <code>NAME.github.io</code>, or Pages source isn't “GitHub Actions”.</li>
+    <li><b>Red run in Actions</b>: open it, copy the error, paste it to Claude and ask it to fix it.</li>
+    <li><b>Claude can't see the repository</b>: install the Claude GitHub App on the organization and include the repository.</li>
+    <li><b>Old version still showing</b>: reload the page twice; installed apps update on the next open.</li>
+  </ul>
+</section>
+
+<footer>Part of <a href="../">keymon-labs</a>. Source on <a href="https://github.com/keymon-labs/keymon-labs.github.io">GitHub</a>.</footer>
+</main>
+<script>
+document.getElementById("copy").onclick = async (e) => {
+  const text = document.getElementById("starter").textContent;
+  try { await navigator.clipboard.writeText(text); e.target.textContent = "Copied"; }
+  catch { getSelection().selectAllChildren(document.getElementById("starter")); e.target.textContent = "Selected: copy it"; }
+};
+</script>
+</body>
+</html>

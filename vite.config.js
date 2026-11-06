@@ -3,7 +3,7 @@ import { globSync, cpSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
 
 const root = import.meta.dirname;
-const IGNORE = /^(node_modules|dist|scripts|\.git|\.github|\.claude)(\/|$)|^[^/]+\.(json|js|md)$|(^|\/)README\.md$|(^|\/)test\/|\.html$|(^|\/)\./;
+const IGNORE = /^(node_modules|dist|scripts|claude|\.git|\.github|\.claude)(\/|$)|^[^/]+\.(json|js|md)$|(^|\/)README\.md$|(^|\/)test\/|(^|\/)claude\.js$|\.html$|(^|\/)\./;
 
 // Every index.html in the repo is a page: the landing page, each app,
 // and each frozen version (app/v1/, app/v2/...). No manual registration.

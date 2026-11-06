@@ -1,7 +1,7 @@
 // Pure-logic tests for Homework Reader. Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildRequest, parseResult, errorMessage, readHomework } from '../reader.js';
+import { buildRequest, parseResult, errorMessage, readHomework, readWithClaude } from '../reader.js';
 
 test('request carries the image then the prompt', () => {
   const r = buildRequest('claude-opus-5-5', 'AAAA', 'image/jpeg');
@@ -44,4 +44,18 @@ test('readHomework sends the browser-access header and returns parsed result', a
 test('readHomework surfaces API errors as messages', async () => {
   const fetchImpl = async () => ({ ok: false, status: 401, json: async () => ({}) });
   await assert.rejects(readHomework({ apiKey: 'bad', model: 'm', imageBase64: 'x', fetchImpl }), /key was rejected/);
+});
+
+test('readWithClaude passes the photo as an image and parses the answer', async () => {
+  let opts;
+  const sample = async (input, o) => { opts = o; return { text: '{"lines":[{"written":"b","corrected":"B."}]}' }; };
+  const blob = new Blob(['x'], { type: 'image/jpeg' });
+  const { result } = await readWithClaude(sample, blob);
+  assert.equal(opts.images, blob);
+  assert.equal(result.lines[0].written, 'b');
+});
+
+test('readWithClaude maps sample error codes to messages', async () => {
+  const sample = async () => { throw { code: 'not_granted', message: 'x' }; };
+  await assert.rejects(readWithClaude(sample, null), /wasn't allowed/);
 });

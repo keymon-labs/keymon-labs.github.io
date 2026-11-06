@@ -1,0 +1,13 @@
+[
+  {
+    "id": "homework-reader",
+    "name": "Homework Reader",
+    "description": "Photograph handwritten homework. Claude writes it out exactly as written, then lists the mistakes and a corrected version.",
+    "entry": "homework-reader/claude.js",
+    "source": "homework-reader/",
+    "uses": [
+      "Sends the photos you choose to Claude, on your Claude account (uses your plan's usage).",
+      "Shows Claude's transcription and corrections on this page. Nothing is saved."
+    ]
+  }
+]
