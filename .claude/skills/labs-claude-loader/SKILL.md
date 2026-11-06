@@ -34,7 +34,7 @@ python3 -m http.server -d claude/out 8766
 Wrap `claude/out/loader.html` in a doctype/head/body skeleton (save it inside `claude/out/`), open it in Playwright with an init script that stubs `window.claude = { use: async n => n === "sample" ? fakeSample : null }`, and check: trust screen, run, app works, a tampered file (route `apps/<id>.js` to different content) shows "didn't match the fingerprint".
 
 ## Release (every push that changes claude/, shared/ or a listed app)
-1. Commit and push first: `build-loader` refuses uncommitted changes, so every build id is a real commit.
+1. Commit and push first: `build-loader` refuses uncommitted changes, so every build id is a real commit. The artifact doesn't depend on the Pages deploy: publish right after the push, then check the deploy run afterwards (`gh run list -L 1`), never sleep-wait for it first.
 2. `npm run build:claude && npm run build:loader`. Build id = short git commit.
 3. Find the artifact: Artifact `action: "list"`, title **keymon-labs for Claude**. Read it; compare its `<meta name="keymon-labs-build">` with the new build id. Same → nothing to do.
 4. Publish `claude/out/loader.html` with `files` mapping every `apps/<id>.js` → `claude/out/apps/<id>.js`:
