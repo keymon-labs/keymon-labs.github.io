@@ -1,47 +1,30 @@
-// Fills loader.html with the app catalog pinned to one npm version + SRI hashes → claude/out/loader.html (publish it as the artifact).
-// Usage:  node claude/build-loader.js --version 0.1.7          hashes the files actually on npm (release)
-//         node claude/build-loader.js --local http://host/dir/  hashes claude/dist (local testing only)
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync } from "node:fs";
+// Fills loader.html with the app catalog (SRI hashes of claude/dist/*.js) → claude/out/: loader.html + apps/<id>.js,
+// published together as one multi-file artifact. Run `npm run build:claude` first. No npm/CDN: the code ships inside the artifact.
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, rmSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
 
-const PKG = "@keymon-labs/claude-apps";
 const here = (f) => new URL(f, import.meta.url);
-const arg = (name) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : null; };
-const version = arg("--version"), local = arg("--local");
-if (!version === !local) { console.error("Pass exactly one of --version <npm version> or --local <base url>"); process.exit(1); }
+const git = (...a) => execFileSync("git", a, { encoding: "utf8" }).trim();
+const commit = git("rev-parse", "--short=7", "HEAD");
+// A build from uncommitted code couldn't be traced back to its source.
+const dirty = git("status", "--porcelain", "--", "claude", "shared", ...JSON.parse(readFileSync(here("apps.json"))).map((a) => a.source));
+if (dirty && !process.argv.includes("--allow-dirty")) { console.error(`Uncommitted changes; commit first (or --allow-dirty for local tests):\n${dirty}`); process.exit(1); }
 
-let dir, base, commit;
-if (version) {
-  // Hash what jsDelivr will serve, not a local rebuild: the bytes must match exactly.
-  const tmp = mkdtempSync(join(tmpdir(), "claude-apps-"));
-  const tgz = execFileSync("npm", ["pack", `${PKG}@${version}`, "--pack-destination", tmp, "--silent"], { encoding: "utf8" }).trim().split("\n").pop();
-  execFileSync("tar", ["-xzf", join(tmp, tgz), "-C", tmp]);
-  dir = join(tmp, "package", "dist");
-  base = `https://cdn.jsdelivr.net/npm/${PKG}@${version}/dist/`;
-  commit = JSON.parse(execFileSync("npm", ["view", `${PKG}@${version}`, "gitHead", "--json"], { encoding: "utf8" }) || "null");
-} else {
-  dir = here("dist").pathname;
-  base = local.endsWith("/") ? local : local + "/";
-}
-commit ||= execFileSync("git", ["rev-parse", "--short", "HEAD"], { encoding: "utf8" }).trim();
-commit = commit.slice(0, 7);
-
-const apps = JSON.parse(readFileSync(here("apps.json"))).map(({ entry, ...app }) => ({
-  ...app,
-  src: base + app.id + ".js",
-  integrity: "sha384-" + createHash("sha384").update(readFileSync(join(dir, app.id + ".js"))).digest("base64"),
-}));
-const build = { package: PKG, version: version || "local", commit };
+rmSync(here("out"), { recursive: true, force: true });
+mkdirSync(here("out/apps"), { recursive: true });
+const apps = JSON.parse(readFileSync(here("apps.json"))).map(({ entry, ...app }) => {
+  const file = here(`dist/${app.id}.js`);
+  copyFileSync(file, here(`out/apps/${app.id}.js`));
+  return { ...app, src: `apps/${app.id}.js`, integrity: "sha384-" + createHash("sha384").update(readFileSync(file)).digest("base64") };
+});
+const build = { commit: dirty ? `${commit}-dirty` : commit };
 
 // </script> inside the embedded JSON would end the script tag early.
 const json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 const html = readFileSync(here("loader.html"), "utf8")
   .replace("__CATALOG__", json(apps))
   .replace("__BUILD__", json(build))
-  .replaceAll("__BUILD_ID__", `${build.version} ${commit}`);
-mkdirSync(here("out"), { recursive: true });
+  .replaceAll("__BUILD_ID__", build.commit);
 writeFileSync(here("out/loader.html"), html);
-console.log(`claude/out/loader.html: ${apps.length} app(s), build ${build.version} ${commit}`);
+console.log(`claude/out/: loader.html + ${apps.length} app file(s), build ${build.commit}`);

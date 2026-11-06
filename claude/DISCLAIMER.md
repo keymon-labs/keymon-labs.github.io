@@ -6,14 +6,15 @@ Read this before running a keymon-labs app inside Claude. Short version: it's a 
 
 keymon-labs is a personal hobby: small apps made quickly, mostly by asking Claude to write them. Nobody is paid, nothing is sold, and no one reviews the code the way a company would. We publish it because it might be useful or inspiring to someone.
 
-We can't promise the code is correct or safe, and we can't guarantee our accounts (GitHub, npm) will never be compromised. So the decision to run it has to be yours, made with the facts below. If a security problem ever happens, we'll fix it when we can, but we take no responsibility for it.
+We can't promise the code is correct or safe, and we can't guarantee our GitHub or Claude accounts will never be compromised. So the decision to run it has to be yours, made with the facts below. If a security problem ever happens, we'll fix it when we can, but we take no responsibility for it.
 
 ## How it works
 
 1. **The loader** is a Claude artifact (a web page hosted by claude.ai). It lists the apps and asks before running each one.
-2. **Each app** is one JavaScript file published to npm as `@keymon-labs/claude-apps` and served by jsDelivr, a public code CDN. The code comes from this repository.
-3. **Pinned and fingerprinted.** The loader names the exact package version and a SHA-384 fingerprint ([Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)) for every app. Your browser refuses to run a file that doesn't match. A changed npm package or a compromised CDN can't swap the code; only a new loader version can, and its new fingerprint makes it ask you again.
-4. **Your Claude account does the work.** Apps ask Claude through the artifact's `sample` capability, which runs on *your* Claude account and plan.
+2. **The app code ships inside the artifact.** Each app is one JavaScript file, built from this repository and published together with the loader. Nothing is downloaded from npm or any other code host.
+3. **Fingerprinted.** The loader holds a SHA-384 fingerprint ([Subresource Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)) for every app. Your browser refuses to run a file that doesn't match. A new version of an app has a new fingerprint, so the loader asks you again.
+4. **Traceable.** Every loader build names the git commit it was built from (shown on the trust screen and at the bottom of the page).
+5. **Your Claude account does the work.** Apps ask Claude through the artifact's `sample` capability, which runs on *your* Claude account and plan.
 
 ## What Claude's artifact sandbox allows
 
@@ -32,7 +33,7 @@ A Claude artifact can only use the capabilities it declares when published. The 
 - Read your Claude chats, memory, projects, other artifacts or files.
 - Use your connected apps (Gmail, Drive, Calendar…). The loader doesn't declare that capability.
 - See your Claude login, cookies or tokens. The artifact runs on its own isolated web address.
-- Send data to its own servers. Claude blocks the page's network access, except loading scripts from a few public CDNs (cdnjs, jsDelivr's npm path, unpkg and similar).
+- Send data to its own servers. Claude blocks the page's network access (it can only load scripts from a short list of public code CDNs, which the loader doesn't use).
 
 **Things to know:**
 - Requests to Claude made by an app are made by **your account**. If a compromised app sent abusive requests, they would count against your account and could be attributed to it.
@@ -42,10 +43,10 @@ A Claude artifact can only use the capabilities it declares when published. The 
 ## What we do to reduce risk
 
 - Each app gets only the capabilities it needs; the loader declares `sample` only.
-- Exact versions and SRI fingerprints are baked into the loader at publish time.
-- A new fingerprint asks you again, with links to the exact source and file.
-- npm releases are published from GitHub Actions with [trusted publishing](https://docs.npmjs.com/trusted-publishers), which attaches provenance linking each version to the commit it was built from.
-- All source is public in this repository.
+- App code ships inside the artifact; there is no outside package or CDN to compromise.
+- SRI fingerprints are baked into the loader at publish time.
+- A new fingerprint asks you again, with links to the exact source commit and file.
+- Builds are only made from committed code, and all source is public in this repository.
 
 None of this makes the apps safe. It makes the risks smaller and visible.
 
@@ -58,11 +59,12 @@ This notice doesn't limit any rights you have that can't be excluded by law.
 ## Prefer not to trust us? Alternatives
 
 - **Read the code.** The trust screen links to the exact source commit and the exact file that will run.
-- **Check the fingerprint yourself.** It should match the one shown on the trust screen (hover it for the full value):
+- **Rebuild and compare the fingerprint.** Build the same commit yourself; the hash should match the one on the trust screen (hover it for the full value):
   ```sh
-  curl -s https://cdn.jsdelivr.net/npm/@keymon-labs/claude-apps@VERSION/dist/APP.js | openssl dgst -sha384 -binary | openssl base64 -A
+  git clone https://github.com/keymon-labs/keymon-labs.github.io && cd keymon-labs.github.io
+  git checkout COMMIT && npm ci && npm run build:claude
+  openssl dgst -sha384 -binary claude/dist/APP.js | openssl base64 -A
   ```
-- **Check provenance.** The npm page for each version shows which GitHub commit and workflow built it.
 - **Make your own copy.** Clone the repository, review it, and ask Claude to publish the loader (or a single app) as your own artifact. Then only code you've read runs.
 - **Use the web version** at keymon-labs.github.io with your own Anthropic API key, outside Claude.
 - **Don't use it.** That's fine too.

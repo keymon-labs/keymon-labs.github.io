@@ -16,7 +16,7 @@ The public, non-engineer version of this is `guide/index.html` (published at /gu
 | Deploy | `.github/workflows/deploy.yml`: push to `main` → `npm ci && npm test && npm run build` → `dist/` to Pages | Repo Settings → Pages → Source = **GitHub Actions** |
 | Claude access | Claude GitHub App installed on the org; sessions from claude.ai/code or the Claude app (Code tab) | github.com/apps/claude |
 | Conventions | `CLAUDE.md` (rules), `README.md` + `shared/README.md` (indexes), `.claude/skills/` (how-tos) | |
-| npm (optional) | `@keymon-labs` scope for apps that run inside Claude | see `labs-claude-loader` skill |
+| Apps inside Claude (optional) | Loader artifact built from `claude/` | see `labs-claude-loader` skill |
 
 ## Recreate from scratch (or for another person)
 1. GitHub account → create an org (free): https://github.com/organizations/plan. The org name becomes the site address `<org>.github.io`.

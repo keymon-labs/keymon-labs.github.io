@@ -17,7 +17,7 @@ The site is public and redistributes whatever is committed. Licence terms for th
 - When unsure, flag it to the user in one line rather than silently including or dropping it.
 
 ## Skills (how-tos for this repo)
-`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: npm bundle + loader artifact release). Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
+`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release). Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
 
 ## Start of every task
 1. `git pull` (other chats push here too).
@@ -86,7 +86,7 @@ Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
 
 ## Apps inside Claude (claude/)
 - Apps listed in `claude/apps.json` also run inside the "keymon-labs for Claude" loader artifact, on the viewer's Claude account. Details: `labs-claude-loader` skill.
-- **After a push that changes `claude/` or a listed app, republish the loader**: wait for the npm publish Action, `npm run build:loader -- --version <new>`, compare the build id with the artifact's `keymon-labs-build` meta, republish if different. The build id is `<npm version> <git commit>`.
+- **After a push that changes `claude/`, `shared/` or a listed app, republish the loader**: `npm run build:claude && npm run build:loader`, compare the build id (git commit) with the artifact's `keymon-labs-build` meta, republish if different. App code ships inside the artifact; nothing goes to npm or a CDN.
 - The loader declares only `{sample: {images: true}}`. Never add a capability without the user asking, and update `claude/DISCLAIMER.md` and the trust screen in `claude/loader.html` in the same change.
 - Never commit the artifact URL until the user has shared it publicly.
 

@@ -59,8 +59,8 @@ footer { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; g
 <script type="application/json" id="catalog">__CATALOG__</script>
 <script type="application/json" id="build">__BUILD__</script>
 <script>
-// keymon-labs loader. Every app is pinned to one npm file + SRI hash baked in at publish time (claude/build-loader.js);
-// a new hash asks the viewer again. Apps get `sample` only: this artifact declares nothing else.
+// keymon-labs loader. App files ship inside this artifact; each is pinned by an SRI hash baked in at publish time
+// (claude/build-loader.js). A new hash asks the viewer again. Apps get `sample` only: this artifact declares nothing else.
 const APPS = JSON.parse(document.getElementById("catalog").textContent);
 const BUILD = JSON.parse(document.getElementById("build").textContent);
 const REPO = "https://github.com/keymon-labs/keymon-labs.github.io";
@@ -104,9 +104,9 @@ function check(app) {
   const backBtn = Object.assign(el("button", { class: "ghost", type: "button" }, "Back"), { onclick: () => { history.replaceState(null, "", " "); home(); } });
   $("check").replaceChildren(
     el("h2", {}, `Run ${app.name}?`),
-    el("p", {}, "This version hasn't run on this device before. Its code is downloaded from npm and runs inside this page."),
+    el("p", {}, "This version hasn't run on this device before. Its code is part of this artifact and runs inside this page."),
     el("dl", {},
-      el("dt", {}, "Version"), el("dd", {}, `${BUILD.package}@${BUILD.version}`),
+      el("dt", {}, "Build"), el("dd", {}, `git commit ${BUILD.commit}`),
       el("dt", {}, "Fingerprint"), el("dd", {}, el("code", { title: app.integrity }, fingerprint)),
       el("dt", {}, "Source"), el("dd", {}, link(`${REPO}/tree/${BUILD.commit}/${app.source}`, `${app.source} at ${BUILD.commit}`)),
       el("dt", {}, "File"), el("dd", {}, link(app.src, "the exact file that will run"))),
@@ -115,14 +115,14 @@ function check(app) {
       "Can ask Claude on your account. Claude asks you to allow it first, and it counts towards your usage limits.",
       "Can see what you give it (photos, text) and show anything on this page.",
       "Can't read your chats, memory, other artifacts, connected apps, files or Claude login.",
-      "Can't send your data to its own servers: Claude blocks this page's network access, apart from loading code from a few public code libraries (CDNs).",
+      "Can't send your data to its own servers: Claude blocks this page's network access.",
     ])),
     el("section", { class: "notice" }, el("h3", {}, "No warranty"),
       el("p", {}, "A free hobby project, written with AI help and not professionally audited. It's provided as is and you use it at your own risk; keymon-labs accepts no responsibility for any loss, cost or problem it causes. ",
         link(`${REPO}/blob/main/claude/DISCLAIMER.md`, "Full security notes and disclaimer"), ".")),
     el("section", {}, el("h3", {}, "Prefer not to trust this?"), list([
       ["Read the ", link(`${REPO}/tree/${BUILD.commit}/${app.source}`, "source"), " or check the fingerprint yourself (steps in the disclaimer)."],
-      "Publish your own copy from the source as your own artifact.",
+      "Build and publish your own copy from the source as your own artifact.",
       ["Use the ", link(`https://keymon-labs.github.io/${app.id}/`, "web version"), " with your own API key, or don't run it."],
     ])),
     el("div", { class: "actions" }, runBtn, backBtn),

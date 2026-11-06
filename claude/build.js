@@ -1,4 +1,4 @@
-// Builds each app's Claude entry (listed in apps.json) into one self-contained ES module: claude/dist/<id>.js, published to npm.
+// Builds each app's Claude entry (listed in apps.json) into one self-contained ES module: claude/dist/<id>.js, shipped inside the loader artifact.
 import { build } from "vite";
 import { readFileSync } from "node:fs";
 
