@@ -23,6 +23,11 @@ a.app:active{transform:scale(.99)}
 .app p{margin:0;color:var(--muted);font-size:15px}
 .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-top:8px}
 .empty{color:var(--muted);border:1px dashed var(--line);border-radius:14px;padding:16px 18px}
+.versions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 18px 14px;font-size:13px;color:var(--muted)}
+.versions a{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.versions a.latest{border-color:var(--accent);color:var(--accent)}
+li.card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+li.card a.app{border:0;background:none}
 footer{margin-top:40px;color:var(--muted);font-size:14px}
 footer a{color:inherit}
 </style>
@@ -35,7 +40,14 @@ footer a{color:inherit}
 <!-- Add one <li> per app:
 <li><a class="app" href="./app-name/"><h2>App name</h2><p>One-line description.</p><span class="tag">Chrome · mobile</span></a></li>
 -->
-<li class="empty">First app coming soon.</li>
+<li class="card" id="piano-jump">
+  <a class="app" href="./piano-jump/"><h2>Piano Jump</h2><p>A platform game played on a real piano over Bluetooth or USB MIDI. Play the right note to jump across the staff.</p><span class="tag">Chrome · Android · desktop</span></a>
+  <div class="versions">Versions:
+    <a class="latest" href="./piano-jump/">Latest</a>
+    <a href="./piano-jump/v2/" title="Real staff, hand and finger guide, auto-retry, installable app">v2</a>
+    <a href="./piano-jump/v1/" title="First playable version">v1</a>
+  </div>
+</li>
 </ul>
 <footer>Source on <a href="https://github.com/keymon-labs/keymon-labs.github.io">GitHub</a>.</footer>
 </main>
