@@ -69,6 +69,9 @@ This notice doesn't limit any rights you have that can't be excluded by law.
 - **Use the web version** at keymon-labs.github.io with your own Anthropic API key, outside Claude.
 - **Don't use it.** That's fine too.
 
+## Licence
+The loader and apps are © keymon-labs under CC BY-NC-SA 4.0, with extra permission for internal use by any organisation, with credit: see [NOTICE.md](../NOTICE.md). Third-party material keeps its own licence: [CREDITS.md](../CREDITS.md). The licence's own disclaimer of warranties and limitation of liability (section 5) applies in addition to this page.
+
 ## Copies and forks
 This repository may be forked and the loader republished by others, under other addresses and possibly with changes. This page describes the original at https://github.com/keymon-labs/keymon-labs.github.io. We aren't responsible for other copies: check the trust screen's source links point to a repository you trust.
 
