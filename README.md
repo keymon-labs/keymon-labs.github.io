@@ -28,6 +28,9 @@ Open-source npm packages bundled by Vite. Add a row when you add one.
 |---|---|---|---|
 | (none yet) | | | |
 
+## To do
+[TODO.md](TODO.md)
+
 ## Develop
 - `npm install`, then `npm run dev` (local server) or `npm run build` (output in `dist/`)
 - Every push to `main` deploys via GitHub Actions.
