@@ -1,6 +1,6 @@
 // Offline support: pages network-first (so updates show up), other files cache-first.
 // /assets/ holds Vite's content-hashed bundles: immutable, so cache-first is always safe.
-const CACHE = "piano-jump-v3";
+const CACHE = "piano-jump-v4";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -16,7 +16,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   const sameScope = url.origin === location.origin &&
-    (url.pathname.startsWith(new URL("./", location).pathname) || url.pathname.startsWith("/assets/"));
+    (url.pathname.startsWith(new URL("./", location).pathname) || url.pathname.startsWith(new URL("../assets/", location).pathname));
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).then(res => put(req, res)).catch(() => caches.match(req).then(h => h || caches.match("./index.html"))));
     return;

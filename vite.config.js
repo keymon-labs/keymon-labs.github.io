@@ -45,7 +45,8 @@ const copyUnbundled = () => {
 };
 
 export default defineConfig({
-  base: '/',
+  // '/' for <owner>.github.io; '/<repo>/' when served as a project site (forks). Set by the deploy workflow.
+  base: (process.env.BASE_PATH || '').replace(/\/?$/, '/'),
   plugins: [keepManifests, copyUnbundled()],
   build: { outDir: 'dist', emptyOutDir: true, rollupOptions: { input: pages } },
 });

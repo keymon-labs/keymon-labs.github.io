@@ -1,7 +1,9 @@
 // Offline support. Pages network-first (updates show up), everything else
 // cache-first. Vite's /assets/ files are content-hashed, so caching them
 // forever is safe even though they sit outside this folder.
-const CACHE = 'homework-reader-v1';
+// Vite's hashed bundles sit next to the app folders: /assets/ or /<repo>/assets/ on a fork.
+const ASSETS = new URL('../assets/', location).pathname;
+const CACHE = 'homework-reader-v2';
 const SHELL = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -25,6 +27,6 @@ self.addEventListener('fetch', (e) => {
     return;
   }
   const scope = new URL('./', location).pathname;
-  if (!url.pathname.startsWith(scope) && !url.pathname.startsWith('/assets/')) return;
+  if (!url.pathname.startsWith(scope) && !url.pathname.startsWith(ASSETS)) return;
   e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => (res.ok ? put(req, res) : res))));
 });

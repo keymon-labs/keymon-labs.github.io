@@ -69,6 +69,9 @@ This notice doesn't limit any rights you have that can't be excluded by law.
 - **Use the web version** at keymon-labs.github.io with your own Anthropic API key, outside Claude.
 - **Don't use it.** That's fine too.
 
+## Copies and forks
+This repository may be forked and the loader republished by others, under other addresses and possibly with changes. This page describes the original at https://github.com/keymon-labs/keymon-labs.github.io. We aren't responsible for other copies: check the trust screen's source links point to a repository you trust.
+
 ## Reporting a problem
 
 Open an issue at https://github.com/keymon-labs/keymon-labs.github.io/issues. For a security problem, say so in the title and don't include exploit details or personal data.

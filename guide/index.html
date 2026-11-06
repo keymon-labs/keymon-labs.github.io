@@ -40,9 +40,19 @@ footer{color:var(--muted);font-size:14px}
 </header>
 
 <section class="box">
+  <h2>Let the AI do the work</h2>
+  <p>Hand as much of this as possible to an AI coding agent. We use and recommend Claude; any agent that can push code to GitHub should work. For the steps it can't do itself (creating accounts, clicking settings), ask it: <i>“Tell me exactly what to click, one step at a time.”</i> If something fails, paste the error to it.</p>
+</section>
+
+<section class="box">
+  <h2>Shortcut: fork this site</h2>
+  <p>Fork <a href="https://github.com/keymon-labs/keymon-labs.github.io">keymon-labs.github.io</a>, then follow steps 4, 5 and 7 below. Your copy works at <code>YOU.github.io/REPO/</code>, or at <code>YOU.github.io</code> if you rename the repository to that. Keep the credit and the licence (non-commercial, share alike: see NOTICE.md), and ask your agent to replace our apps with yours.</p>
+</section>
+
+<section class="box">
   <h2>You need</h2>
   <ul>
-    <li>A paid Claude plan (Pro or Max) for Claude Code in the cloud.</li>
+    <li>An AI coding agent that can push to GitHub. Recommended: Claude Code in the cloud (Pro or Max plan).</li>
     <li>A free GitHub account. GitHub stores your code and hosts the site.</li>
   </ul>
 </section>
@@ -76,6 +86,7 @@ footer{color:var(--muted);font-size:14px}
     <p>At claude.ai/code, pick your repository, paste this and send:</p>
     <pre class="prompt" id="starter">Set up this repository as a GitHub Pages site for small web apps, copying the setup of github.com/keymon-labs/keymon-labs.github.io (CLAUDE.md, vite.config.js, package.json, .github/workflows/deploy.yml, the landing page and .claude/skills), with my site name instead of keymon-labs and no apps yet. The repo is public: never commit personal data, API keys or copyrighted material. Run the tests and the build, then merge to main.</pre>
     <button type="button" id="copy">Copy prompt</button>
+    <p>Using another agent? Paste the same prompt.</p>
     <p>Claude works on a branch. When it's done, open the pull request it made and press <b>Merge</b> on GitHub, or ask Claude to merge it.</p>
   </li>
   <li>

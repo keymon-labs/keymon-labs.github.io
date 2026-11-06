@@ -19,12 +19,19 @@ const apps = JSON.parse(readFileSync(here("apps.json"))).map(({ entry, ...app })
   return { ...app, src: `apps/${app.id}.js`, integrity: "sha384-" + createHash("sha384").update(readFileSync(file)).digest("base64") };
 });
 const build = { commit: dirty ? `${commit}-dirty` : commit };
+// Links point at whichever GitHub repo this is built from, so a fork's loader links to the fork.
+const [, owner, repo] = git("remote", "get-url", "origin").match(/github\.com[:/]([^/]+)\/(.+?)(?:\.git)?$/) || [];
+if (!owner) { console.error("origin isn't a GitHub repo"); process.exit(1); }
+const REPO = `https://github.com/${owner}/${repo}`;
+const SITE = repo.toLowerCase() === `${owner.toLowerCase()}.github.io` ? `https://${repo.toLowerCase()}/` : `https://${owner.toLowerCase()}.github.io/${repo}/`;
 
 // </script> inside the embedded JSON would end the script tag early.
 const json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 const html = readFileSync(here("loader.html"), "utf8")
   .replace("__CATALOG__", json(apps))
   .replace("__BUILD__", json(build))
-  .replaceAll("__BUILD_ID__", build.commit);
+  .replaceAll("__BUILD_ID__", build.commit)
+  .replaceAll("__REPO__", REPO)
+  .replaceAll("__SITE__", SITE);
 writeFileSync(here("out/loader.html"), html);
 console.log(`claude/out/: loader.html + ${apps.length} app file(s), build ${build.commit}`);

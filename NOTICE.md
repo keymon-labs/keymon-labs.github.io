@@ -18,6 +18,9 @@ For anything else (selling it, hosting it as a paid service, putting it in a com
 ## How it's made
 A non-commercial hobby project. Most of it is written with AI (Claude), from ideas collected from many places. We claim no special merit; we ask for credit only so the licence terms travel with the work.
 
+## Copies and forks
+This work may be copied or forked, so it can appear under other names and addresses. The original is https://github.com/keymon-labs/keymon-labs.github.io and https://keymon-labs.github.io. Links in copies may still point here. We aren't responsible for copies, forks or changes made by others; anyone who changes and republishes it is responsible for their version.
+
 ## Third-party material
 Third-party code, fonts, music and other material keep their own licences, listed in [CREDITS.md](CREDITS.md). Our licence doesn't apply to them.
 

@@ -51,9 +51,9 @@ footer { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; g
   <p id="status" role="status" aria-live="polite"></p>
   <footer>
     <span>Build <code>__BUILD_ID__</code></span>
-    <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/claude/DISCLAIMER.md" target="_blank" rel="noopener">Security and disclaimer</a>
-    <a href="https://github.com/keymon-labs/keymon-labs.github.io" target="_blank" rel="noopener">Source</a>
-    <span>© 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></span>
+    <a href="__REPO__/blob/main/claude/DISCLAIMER.md" target="_blank" rel="noopener">Security and disclaimer</a>
+    <a href="__REPO__" target="_blank" rel="noopener">Source</a>
+    <span>© 2026 keymon-labs · <a href="__REPO__/blob/main/NOTICE.md" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></span>
   </footer>
 </div>
 
@@ -64,7 +64,7 @@ footer { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; g
 // (claude/build-loader.js). A new hash asks the viewer again. Apps get `sample` only: this artifact declares nothing else.
 const APPS = JSON.parse(document.getElementById("catalog").textContent);
 const BUILD = JSON.parse(document.getElementById("build").textContent);
-const REPO = "https://github.com/keymon-labs/keymon-labs.github.io";
+const REPO = "__REPO__", SITE = "__SITE__";
 const TRUST_KEY = "keymon-labs.trusted";
 const $ = (id) => document.getElementById(id);
 
@@ -124,7 +124,7 @@ function check(app) {
     el("section", {}, el("h3", {}, "Prefer not to trust this?"), list([
       ["Read the ", link(`${REPO}/tree/${BUILD.commit}/${app.source}`, "source"), " or check the fingerprint yourself (steps in the disclaimer)."],
       "Build and publish your own copy from the source as your own artifact.",
-      ["Use the ", link(`https://keymon-labs.github.io/${app.id}/`, "web version"), " with your own API key, or don't run it."],
+      ["Use the ", link(`${SITE}${app.id}/`, "web version"), " with your own API key, or don't run it."],
     ])),
     el("div", { class: "actions" }, runBtn, backBtn),
     el("p", { class: "small muted" }, "If the code changes, its fingerprint changes and you'll be asked again."));
