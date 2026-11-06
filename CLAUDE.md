@@ -7,13 +7,16 @@ Every file, commit message and line of git history is readable by anyone, and hi
 **Never commit personal data:** real names of family members or children, ages, schools, photos/voice of people, addresses, locations, contact details, financial/health/employer information, API keys, tokens, passwords, private URLs, or anything taken from personal chats, memory or connected apps (email, drive, calendar, bank tools).
 Use invented, generic content. If a change would need personal data, stop and ask. If personal data is committed by mistake, flag it at once: it needs a history rewrite, not a follow-up commit.
 
-## Third-party content and copyright
-The site is public and redistributes whatever is committed. Licence terms for this repo are being decided; until then follow these rules.
-- **Don't ship recognisable copyrighted or trademarked material** unless the user explicitly says it's fine: characters (Mickey Mouse, Pokémon, Mario…), logos and brands, film/TV/game art, commercial fonts, photos from the web, recorded music, song lyrics or melodies written after 1929.
+## Licence, third-party content and copyright
+Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission ([NOTICE.md](NOTICE.md)). Third-party material keeps its own licence and **must be listed in [CREDITS.md](CREDITS.md)**.
+- **Respect the licence of everything we distribute.** Before adding third-party code, assets, fonts, sounds, music or data, find its licence. Add a CREDITS.md row (what, used in, source link, licence, required copyright/attribution text) in the same commit. Keep licence headers and LICENSE files of copied code; vendored folders keep their own LICENSE.
+- **Compatible with sharing under our terms**: public domain, CC0, MIT, BSD, Apache-2.0, ISC, OFL (fonts), CC BY, CC BY-SA. **Ask first** for GPL/LGPL/AGPL, CC BY-NC/ND, "free for personal use", or anything with no stated licence (no licence = all rights reserved).
+- npm packages bundled into pages count as distributed: add them to CREDITS.md and the README "Libraries in use" table. Dev-only tools don't need a row.
+- **Don't ship recognisable copyrighted or trademarked material** unless the user explicitly says it's fine: characters (Mickey Mouse, Pokémon, Mario…), logos and brands, film/TV/game art, commercial fonts, photos from the web, recorded music, song lyrics or melodies still in copyright.
 - **Ideas, mechanics and genres are fine** (a platformer, a times-table quiz, a Tetris-like). Copy the idea, not the art, names or level designs.
-- **Prefer** assets you generate (canvas/SVG/PIL, Web Audio synthesis), public-domain works (folk songs, pre-1929 music, classic texts) and openly licensed assets (CC0, CC BY, MIT, OFL fonts).
-- **Copied code or assets**: keep their licence header; note source + licence in the app README ("Credits" section) and add npm packages to the "Libraries in use" table. CC BY, MIT, BSD and Apache need attribution; avoid GPL/AGPL code and "NC"/"ND"-licensed assets unless the user agrees.
-- **Small snippets** (docs examples, Stack Overflow answers) are fine; add a one-line `// from <url>` comment where the licence asks for attribution.
+- **Prefer** assets you generate (canvas/SVG/PIL, Web Audio synthesis) and public-domain works (traditional songs, pre-1929 music, classic texts); note public-domain material in CREDITS.md too.
+- **Small snippets** (docs examples, Stack Overflow answers) are fine; add a one-line `// from <url> (<licence>)` comment, and a CREDITS.md row if the licence asks for attribution (Stack Overflow: CC BY-SA).
+- Every app shows a licence line: `© <year> keymon-labs · CC BY-NC-SA 4.0` linking to NOTICE.md (menu or footer). Frozen `vN/` folders are covered by the repo licence; don't edit them.
 - When unsure, flag it to the user in one line rather than silently including or dropping it.
 
 ## Skills (how-tos for this repo)

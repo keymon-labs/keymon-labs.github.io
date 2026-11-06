@@ -17,9 +17,10 @@ Rules live in `CLAUDE.md` (public-data rule, ponytail, structure, copyright). Th
    - `sw.js`: copy `maths-arcade/sw.js`, rename the cache prefix to `<app>`
    - `README.md`: what it is, files table, data format, shared modules used, versions
    - `test/*.test.js` for pure logic (parsers, scoring, rules)
-3. Register: one `<li class="card" id="<app>">` in the root `index.html` (with a "Versions:" row holding the Latest pill), one row in the root `README.md` Apps table, and add `<app>` to "Used by" for every shared module it imports.
-4. Kids' apps: no ads, tracking, analytics or sign-in. Say "Chrome" on the card if it needs Web MIDI/Bluetooth.
-5. To make it also run inside Claude, see the `labs-claude-loader` skill.
+3. Licence: add the `© <year> keymon-labs · CC BY-NC-SA 4.0` line (linking to NOTICE.md) to the app's menu or footer, and a CREDITS.md row for any third-party code, font, sound, music or data.
+4. Register: one `<li class="card" id="<app>">` in the root `index.html` (with a "Versions:" row holding the Latest pill), one row in the root `README.md` Apps table, and add `<app>` to "Used by" for every shared module it imports.
+5. Kids' apps: no ads, tracking, analytics or sign-in. Say "Chrome" on the card if it needs Web MIDI/Bluetooth.
+6. To make it also run inside Claude, see the `labs-claude-loader` skill.
 
 ## New version of an existing app
 Do this when a change alters gameplay or the UI a user has learned. Bug fixes go straight into latest without a snapshot.
@@ -32,6 +33,6 @@ Do this when a change alters gameplay or the UI a user has learned. Bug fixes go
 ## Ship
 1. `npm test` and `npm run build` pass.
 2. `python3 -m http.server -d dist 8765`, load each changed page in headless Chromium (Playwright): no page errors; drive the test hook (`window.__<app>`) for games; one mobile-size screenshot.
-3. Re-check: no personal data, no keys, no copyrighted assets.
+3. Re-check: no personal data, no keys, no copyrighted assets; CREDITS.md covers all third-party material.
 4. Commit (short imperative message) and push to `main`. The Pages deploy runs automatically; check the Actions run is green.
 5. If the app is in `claude/apps.json`, follow the release steps in `labs-claude-loader`.

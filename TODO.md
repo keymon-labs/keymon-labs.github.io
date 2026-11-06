@@ -8,4 +8,4 @@ Today a release is: push → `npm run build:claude && npm run build:loader` → 
 - [ ] Only publish when an app in `claude/apps.json` (or `shared/`) actually changed, so viewers aren't re-prompted for nothing (already true per app via fingerprints; check the build id too).
 
 ## Licence
-- [ ] Choose a licence, add `LICENSE` + `NOTICE.md` (third-party material, takedown, no liability), and a licence line on each app's footer and README.
+- [x] CC BY-NC-SA 4.0 + internal-use permission: `LICENSE`, `NOTICE.md`, `CREDITS.md`, footer lines.

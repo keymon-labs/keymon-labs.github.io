@@ -28,6 +28,9 @@ Open-source npm packages bundled by Vite. Add a row when you add one.
 |---|---|---|---|
 | (none yet) | | | |
 
+## Licence
+© 2026 keymon-labs. [CC BY-NC-SA 4.0](LICENSE) plus permission for internal use by any organisation, with credit: see [NOTICE.md](NOTICE.md). Third-party material keeps its own licence: [CREDITS.md](CREDITS.md).
+
 ## To do
 [TODO.md](TODO.md)
 
