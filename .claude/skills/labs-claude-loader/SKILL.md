@@ -23,8 +23,9 @@ Capabilities: the loader artifact declares **only** `{ sample: { images: true } 
 ## Make an app loader-ready
 1. Split UI from the "ask Claude" step: the UI exports `start({ read, ... })`; the web entry passes an API-key reader, `claude.js` passes one built on `sample` (see `homework-reader/` for the pattern).
 2. Add `<app>/claude.js` (inline CSS with `?inline`, markup with `index.html?raw`, then `globalThis.keymonLabs.ready(...)`).
-3. Add the app to `claude/apps.json` with an honest `uses` list (what it sends to Claude, what it stores).
-4. Test locally (next section).
+3. Add the app to `claude/apps.json` with an honest `uses` list (what it sends to Claude, what it stores). Only apps that actually call Claude belong there; the rest stay on the website.
+4. On its landing card, tag it `Needs Claude: …` and add the "Open in Claude" button (`data-open-in-claude="<id>"`).
+5. Test locally (next section).
 
 ## Test locally
 ```sh

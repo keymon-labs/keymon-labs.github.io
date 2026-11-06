@@ -92,7 +92,7 @@ Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
 3. Add the `vN` pill to the app's card in `index.html` and note it in the app README.
 
 ## Apps inside Claude (claude/)
-- Apps listed in `claude/apps.json` also run inside the "keymon-labs for Claude" loader artifact, on the viewer's Claude account. Details: `labs-claude-loader` skill.
+- Only apps that call Claude go in `claude/apps.json`; their landing card says "Needs Claude". They also run inside the "keymon-labs for Claude" loader artifact, on the viewer's Claude account. Details: `labs-claude-loader` skill.
 - **After a push that changes `claude/`, `shared/` or a listed app, republish the loader**: `npm run build:claude && npm run build:loader`, compare the build id (git commit) with the artifact's `keymon-labs-build` meta, republish if different. App code ships inside the artifact; nothing goes to npm or a CDN.
 - The loader declares only `{sample: {images: true}}`. Never add a capability without the user asking, and update `claude/DISCLAIMER.md` and the trust screen in `claude/loader.html` in the same change.
 - The loader is shared by link. Its URL lives only in `shared/claude-link.js`, base64-encoded so crawlers and code search don't index it: never write it in plain text anywhere (docs, HTML, commits). A different artifact's URL is committed only after the user has shared it and agreed.
