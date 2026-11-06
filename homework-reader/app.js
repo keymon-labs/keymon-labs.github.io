@@ -25,6 +25,8 @@ export function start({ read, apiKey }) {
   else { $("settings-btn").remove(); $("settings").remove(); }
 
   for (const id of ["camera", "gallery"]) $(id).onchange = (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) run(f); };
+  // Fallback where file pickers are blocked: paste a copied photo.
+  document.addEventListener("paste", (e) => { const f = [...(e.clipboardData?.files || [])].find((x) => x.type.startsWith("image/")); if (f) run(f); });
 
   async function run(file) {
     const key = apiKey ? store.get(KEY) : "";
