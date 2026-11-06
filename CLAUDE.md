@@ -20,7 +20,7 @@ Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission (
 - **Ideas, mechanics and genres are fine** (a platformer, a times-table quiz, a Tetris-like). Copy the idea, not the art, names or level designs.
 - **Prefer** assets you generate (canvas/SVG/PIL, Web Audio synthesis) and public-domain works (traditional songs, pre-1929 music, classic texts); note public-domain material in CREDITS.md too.
 - **Small snippets** (docs examples, Stack Overflow answers) are fine; add a one-line `// from <url> (<licence>)` comment, and a CREDITS.md row if the licence asks for attribution (Stack Overflow: CC BY-SA).
-- Every app shows a licence line: `© <year> keymon-labs · CC BY-NC-SA 4.0` linking to NOTICE.md (menu or footer). Frozen `vN/` folders are covered by the repo licence; don't edit them.
+- Every app and page shows a footer line: `<App> v<N> · build __BUILD__ · © <year> keymon-labs · CC BY-NC-SA 4.0` linking to NOTICE.md (menu or footer). `__BUILD__` is stamped at build (`build-id.js`). Frozen `vN/` folders are covered by the repo licence; don't edit them.
 - When unsure, flag it to the user in one line rather than silently including or dropping it.
 
 ## Skills (how-tos for this repo)

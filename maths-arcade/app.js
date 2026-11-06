@@ -42,7 +42,7 @@ function renderHome() {
           </a></li>`).join('')}
         <li class="card soon">More games coming soon</li>
       </ul>
-      <p class="muted" style="font-size:13px;margin-top:20px">© 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></p>
+      <p class="muted" style="font-size:13px;margin-top:20px">Maths Arcade v1 · build ${__BUILD__} · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></p>
     </main>`;
 }
 

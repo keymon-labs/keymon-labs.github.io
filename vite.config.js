@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { globSync, cpSync, mkdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
+import { BUILD } from './build-id.js';
 
 const root = import.meta.dirname;
 const IGNORE = /^(node_modules|dist|scripts|claude|\.git|\.github|\.claude)(\/|$)|^[^/]+\.(json|js|md)$|(^|\/)README\.md$|(^|\/)test\/|(^|\/)claude\.js$|\.html$|(^|\/)\./;
@@ -44,9 +45,13 @@ const copyUnbundled = () => {
   };
 };
 
+// __BUILD__ in HTML text and JS code becomes the build stamp (frozen vN/ pages don't use it).
+const stampBuild = { name: 'stamp-build', transformIndexHtml: (html) => html.replaceAll('__BUILD__', BUILD) };
+
 export default defineConfig({
+  define: { __BUILD__: JSON.stringify(BUILD) },
   // '/' for <owner>.github.io; '/<repo>/' when served as a project site (forks). Set by the deploy workflow.
   base: (process.env.BASE_PATH || '').replace(/\/?$/, '/'),
-  plugins: [keepManifests, copyUnbundled()],
+  plugins: [keepManifests, stampBuild, copyUnbundled()],
   build: { outDir: 'dist', emptyOutDir: true, rollupOptions: { input: pages } },
 });

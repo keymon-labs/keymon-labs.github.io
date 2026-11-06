@@ -9,7 +9,9 @@ globalThis.keymonLabs.ready((root, { sample }) => {
   style.textContent = css;
   root.append(style);
   // Reuse the web page's markup so both versions stay identical.
-  root.insertAdjacentHTML("beforeend", page.slice(page.indexOf("<main>"), page.indexOf("</main>") + 7));
+  root.insertAdjacentHTML("beforeend", page.slice(page.indexOf("<main>"), page.indexOf("</main>") + 7)
+    // No build stamp in the bundle: it would change the app's fingerprint on every commit and re-ask viewers. The loader footer shows its build.
+    .replace("build __BUILD__ · ", ""));
   root.querySelector("#install").remove();
   // The Claude mobile app shows artifacts in a built-in web view that doesn't open file pickers (works in real browsers).
   // shortcut: user-agent sniffing (Android "; wv)", iOS without "Safari"); replace if the app ever supports pickers.

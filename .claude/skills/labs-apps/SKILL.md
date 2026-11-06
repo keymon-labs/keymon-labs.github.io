@@ -17,7 +17,7 @@ Rules live in `CLAUDE.md` (public-data rule, ponytail, structure, copyright). Th
    - `sw.js`: copy `maths-arcade/sw.js`, rename the cache prefix to `<app>`
    - `README.md`: what it is, files table, data format, shared modules used, versions
    - `test/*.test.js` for pure logic (parsers, scoring, rules)
-3. Licence: add the `© <year> keymon-labs · CC BY-NC-SA 4.0` line (linking to NOTICE.md) to the app's menu or footer, and a CREDITS.md row for any third-party code, font, sound, music or data.
+3. Footer: `<App> v<N> · build __BUILD__ · © <year> keymon-labs · CC BY-NC-SA 4.0` (licence linking to NOTICE.md) in the app's menu or footer. `__BUILD__` becomes `<commit> · <UTC time>` at build (HTML text and JS code); `vN` is the app version, bumped when a version is frozen. Add a CREDITS.md row for any third-party code, font, sound, music or data.
 4. Register: one `<li class="card" id="<app>">` in the root `index.html` (with a "Versions:" row holding the Latest pill), one row in the root `README.md` Apps table, and add `<app>` to "Used by" for every shared module it imports.
 5. Kids' apps: no ads, tracking, analytics or sign-in. Say "Chrome" on the card if it needs Web MIDI/Bluetooth.
 6. To make it also run inside Claude, see the `labs-claude-loader` skill.

@@ -31,6 +31,7 @@ const html = readFileSync(here("loader.html"), "utf8")
   .replace("__CATALOG__", json(apps))
   .replace("__BUILD__", json(build))
   .replaceAll("__BUILD_ID__", build.commit)
+  .replaceAll("__BUILD_TIME__", new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC")
   .replaceAll("__REPO__", REPO)
   .replaceAll("__SITE__", SITE);
 writeFileSync(here("out/loader.html"), html);
