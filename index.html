@@ -25,6 +25,7 @@ a.app:active{transform:scale(.99)}
 .empty{color:var(--muted);border:1px dashed var(--line);border-radius:14px;padding:16px 18px}
 .versions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 18px 14px;font-size:13px;color:var(--muted)}
 .versions a{color:var(--text);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.versions button.claude{font:inherit;cursor:pointer;background:none;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:2px 10px}
 .versions a.latest{border-color:var(--accent);color:var(--accent)}
 li.card{background:var(--card);border:1px solid var(--line);border-radius:14px}
 li.card a.app{border:0;background:none}
@@ -44,6 +45,7 @@ footer a{color:inherit}
   <a class="app" href="./homework-reader/"><h2>Homework Reader</h2><p>Photograph handwritten homework. Claude writes it out exactly as written, then lists the mistakes and a corrected version. Needs your own Anthropic API key.</p><span class="tag">Phone · camera · installable</span></a>
   <div class="versions">Versions:
     <a class="latest" href="./homework-reader/">Latest</a>
+    <button type="button" class="claude" data-open-in-claude="homework-reader" title="Runs on your own Claude account, no API key. Best in a browser.">Open in Claude</button>
   </div>
 </li>
 <li class="card" id="maths-arcade">
@@ -63,5 +65,6 @@ footer a{color:inherit}
 </ul>
 <footer><a href="./guide/">Build your own site like this</a> · Source on <a href="https://github.com/keymon-labs/keymon-labs.github.io">GitHub</a>.<br>© 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0, internal use allowed</a> · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/CREDITS.md">Credits</a></footer>
 </main>
+<script type="module">import { wireOpenInClaude } from "./shared/claude-link.js"; wireOpenInClaude();</script>
 </body>
 </html>

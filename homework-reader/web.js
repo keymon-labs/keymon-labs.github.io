@@ -2,7 +2,9 @@
 import { start } from "./app.js";
 import { readHomework } from "./reader.js";
 import { registerServiceWorker, setupInstallButton } from "../shared/pwa.js";
+import { wireOpenInClaude } from "../shared/claude-link.js";
 
 start({ apiKey: true, read: ({ base64, apiKey, model }) => readHomework({ apiKey, model, imageBase64: base64, mediaType: "image/jpeg" }) });
+wireOpenInClaude();
 registerServiceWorker();
 setupInstallButton(document.getElementById("install"));

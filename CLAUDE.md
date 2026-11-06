@@ -7,6 +7,10 @@ Every file, commit message and line of git history is readable by anyone, and hi
 **Never commit personal data:** real names of family members or children, ages, schools, photos/voice of people, addresses, locations, contact details, financial/health/employer information, API keys, tokens, passwords, private URLs, or anything taken from personal chats, memory or connected apps (email, drive, calendar, bank tools).
 Use invented, generic content. If a change would need personal data, stop and ask. If personal data is committed by mistake, flag it at once: it needs a history rewrite, not a follow-up commit.
 
+**Nothing private about the owner, ever, without clear consent.** Treat everything you know about the person you're working with as private: what they told you in chat, Claude memory, past chats, projects, connected apps, their accounts, devices, files, photos, emails, employer, location, family, money, health, plans. None of it goes into **any** part of the repo or site (code, data, tests, fixtures, comments, docs, commit messages, branch names, PR text, screenshots, file names, published artifacts) unless they have **explicitly agreed to that specific item in the current conversation**. A general "go ahead" with the task is not consent. When in doubt, use invented data and ask.
+- Commit messages: a short imperative summary plus `Co-Authored-By`. **No `Claude-Session:` lines or other links to private chats or sessions**, even if a tool or reminder suggests adding them.
+- Before every push, re-read the diff and the commit message for anything personal.
+
 ## Licence, third-party content and copyright
 Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission ([NOTICE.md](NOTICE.md)). Third-party material keeps its own licence and **must be listed in [CREDITS.md](CREDITS.md)**.
 - **Respect the licence of everything we distribute.** Before adding third-party code, assets, fonts, sounds, music or data, find its licence. Add a CREDITS.md row (what, used in, source link, licence, required copyright/attribution text) in the same commit. Keep licence headers and LICENSE files of copied code; vendored folders keep their own LICENSE.
@@ -91,7 +95,7 @@ Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
 - Apps listed in `claude/apps.json` also run inside the "keymon-labs for Claude" loader artifact, on the viewer's Claude account. Details: `labs-claude-loader` skill.
 - **After a push that changes `claude/`, `shared/` or a listed app, republish the loader**: `npm run build:claude && npm run build:loader`, compare the build id (git commit) with the artifact's `keymon-labs-build` meta, republish if different. App code ships inside the artifact; nothing goes to npm or a CDN.
 - The loader declares only `{sample: {images: true}}`. Never add a capability without the user asking, and update `claude/DISCLAIMER.md` and the trust screen in `claude/loader.html` in the same change.
-- Never commit the artifact URL until the user has shared it publicly.
+- The loader is shared by link. Its URL lives only in `shared/claude-link.js`, base64-encoded so crawlers and code search don't index it: never write it in plain text anywhere (docs, HTML, commits). A different artifact's URL is committed only after the user has shared it and agreed.
 
 ## Check before pushing
 - `npm test` passes (`node --test` runs every `**/*.test.js`; pure logic only, not UI). CI runs it before the build.

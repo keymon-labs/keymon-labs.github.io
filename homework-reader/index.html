@@ -22,7 +22,11 @@
 
   <section id="settings" class="panel" hidden>
     <h2>Connect to Claude</h2>
-    <p class="muted">Paste an API key from the <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Claude Console</a>. A Claude.ai chat subscription can't be used by other apps, so this needs an API key with credit; each page costs a few pence.</p>
+    <div class="claude-option">
+      <p><strong>Have a Claude account?</strong> Run Homework Reader inside Claude on your own plan, no API key needed. Use a browser: photo picking doesn't work in the Claude mobile app.</p>
+      <button type="button" class="primary" data-open-in-claude="homework-reader">Open in Claude</button>
+    </div>
+    <p class="muted">Or paste an API key from the <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Claude Console</a> to use it here. Each page costs a few pence of API credit.</p>
     <label>API key
       <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
     </label>

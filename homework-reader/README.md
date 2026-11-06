@@ -9,7 +9,7 @@ Take a photo of handwritten homework; Claude transcribes it **exactly as written
 - Photos are resized to 2000px on the long edge, JPEG, sent once, not stored.
 
 ## Inside Claude
-Also runs in the keymon-labs loader artifact on the viewer's own Claude account (no key). There the settings panel is removed and `modelTier: "complex"` is used; Claude downsizes photos to about 1.2 MP. The Claude mobile app's built-in viewer doesn't open file pickers, so `claude.js` shows a notice there (user-agent check) pointing to claude.ai in a browser or pasting.
+Also runs in the keymon-labs loader artifact on the viewer's own Claude account (no key). There the settings panel is removed and `modelTier: "complex"` is used; Claude downsizes photos to about 1.2 MP. The web page links to it with "Open in Claude" (`shared/claude-link.js`). The Claude mobile app's built-in viewer doesn't open file pickers, so `claude.js` shows a notice there (user-agent check) pointing to claude.ai in a browser or pasting.
 
 ## Files
 | File | What |
