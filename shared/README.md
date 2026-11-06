@@ -12,7 +12,7 @@ import { connectMidi } from "../shared/midi.js";
 | [`midi.js`](midi.js) | Note input from a real instrument: Web MIDI (USB/OS-paired), Bluetooth LE MIDI, computer keys as fallback. Note-on only. Chrome/Edge only. | `connectMidi(onNote, onStatus)`, `connectBluetoothMidi(onNote, onStatus)`, `keyboardNotes(onNote)` | piano-jump |
 | [`music.js`](music.js) | Note names, note-string ↔ MIDI number, staff position. MIDI 60 = middle C. | `NOTE_NAMES`, `SOLFEGE`, `toMidi("C4")`, `stepOf(midi)`, `isSharp(midi)`, `noteName(midi, "letters"\|"solfege")` | piano-jump |
 | [`audio.js`](audio.js) | Simple synthesized sound effects (Web Audio oscillator with envelope). | `unlockAudio()`, `tone(freq, dur, type, gain, delay, slideTo)` | piano-jump |
-| [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump |
+| [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump, maths-arcade |
 
 ## Callback contracts
 - `onNote(midi)`: a MIDI note number on note-on.

@@ -73,6 +73,7 @@ Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
 3. Add the `vN` pill to the app's card in `index.html` and note it in the app README.
 
 ## Check before pushing
+- `npm test` passes (`node --test` runs every `**/*.test.js`; pure logic only, not UI). CI runs it before the build.
 - `npm run build` passes.
 - Serve `dist/` (`python3 -m http.server -d dist 8765`) and load each changed page in headless Chromium (Playwright is available); no page errors; for games, drive a few inputs through the test hook.
 - Re-check the public-data rule. Commit message: short imperative summary.

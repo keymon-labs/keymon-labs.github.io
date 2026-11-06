@@ -1,0 +1,17 @@
+[
+  {"id": "t-2-5-10", "title": "2s, 5s and 10s", "icon": "✖️", "kind": "power", "rounds": 5, "skill": {"tables": [2, 5, 10], "maxFactor": 10}},
+  {"id": "t-3-4", "title": "3s and 4s", "icon": "✖️", "kind": "power", "rounds": 5, "skill": {"tables": [3, 4], "maxFactor": 10}},
+  {"id": "p-2-5-10", "title": "Missing pulls: 2, 5, 10", "icon": "❓", "kind": "pulls", "rounds": 5, "skill": {"tables": [2, 5, 10], "minFactor": 2, "maxFactor": 10}},
+  {"id": "t-6-7-8", "title": "6s, 7s and 8s", "icon": "✖️", "kind": "power", "rounds": 6, "skill": {"tables": [6, 7, 8], "maxFactor": 12}},
+  {"id": "t-9-11-12", "title": "9s, 11s and 12s", "icon": "✖️", "kind": "power", "rounds": 6, "skill": {"tables": [9, 11, 12], "maxFactor": 12}},
+  {"id": "p-3-4-6", "title": "Missing pulls: 3, 4, 6", "icon": "❓", "kind": "pulls", "rounds": 6, "skill": {"tables": [3, 4, 6], "minFactor": 2, "maxFactor": 12}},
+  {"id": "p-7-8-9", "title": "Missing pulls: 7, 8, 9", "icon": "❓", "kind": "pulls", "rounds": 6, "skill": {"tables": [7, 8, 9], "minFactor": 2, "maxFactor": 12}},
+  {"id": "t-all", "title": "All the tables", "icon": "✖️", "kind": "power", "rounds": 8, "skill": {"tables": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "minFactor": 2, "maxFactor": 12}},
+  {"id": "d-50", "title": "How far? Up to 50", "icon": "↔️", "kind": "distance", "rounds": 5, "skill": {"max": 50, "minB": 3, "minGap": 5}},
+  {"id": "d-100", "title": "How far? Up to 100", "icon": "↔️", "kind": "distance", "rounds": 6, "skill": {"max": 100, "minB": 10, "minGap": 8}},
+  {"id": "w-50", "title": "Wind! Up to 50", "icon": "💨", "kind": "wind", "rounds": 5, "skill": {"max": 50, "minA": 15, "minB": 2, "maxB": 12}},
+  {"id": "w-100", "title": "Wind! Up to 100", "icon": "💨", "kind": "wind", "rounds": 6, "skill": {"max": 100, "minA": 30, "minB": 5, "maxB": 25}},
+  {"id": "f-half-quarter", "title": "Halves and quarters", "icon": "🧱", "kind": "tower", "rounds": 5, "skill": {"denominators": [2, 4], "minWhole": 4, "maxWhole": 16}},
+  {"id": "f-thirds-fifths", "title": "Thirds and fifths", "icon": "🧱", "kind": "tower", "rounds": 5, "skill": {"denominators": [3, 5], "minWhole": 6, "maxWhole": 20}},
+  {"id": "f-mixed", "title": "Mixed fractions", "icon": "🧱", "kind": "tower", "rounds": 6, "skill": {"denominators": [2, 3, 4, 5, 6, 10], "minWhole": 6, "maxWhole": 20}}
+]
