@@ -2,6 +2,11 @@
 
 Small web apps published at https://keymon-labs.github.io. Mostly built with Claude, often from the Claude mobile app.
 
+## ⚠️ This repo and site are PUBLIC
+Every file, commit message and line of git history is readable by anyone, and history is effectively permanent.
+**Never commit personal data:** real names of family members or children, ages, schools, photos/voice of people, addresses, locations, contact details, financial/health/employer information, API keys, tokens, passwords, private URLs, or anything taken from personal chats, memory or connected apps (email, drive, calendar, bank tools).
+Use invented, generic content. If a change would need personal data, stop and ask. If personal data is committed by mistake, flag it at once: it needs a history rewrite, not a follow-up commit.
+
 ## How it deploys
 - Push to `main` → GitHub Actions (`.github/workflows/deploy.yml`) runs `npm ci && npm run build` → `dist/` is deployed to Pages.
 - Never commit `dist/` or `node_modules/`.
