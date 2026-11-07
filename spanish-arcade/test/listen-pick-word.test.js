@@ -2,11 +2,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRng } from '../../shared/rng.js';
-import { resolveParams } from '../core/generate.js';
+import { resolveParams, makeExercise } from '../core/generate.js';
 import { checkParams } from '../core/schema.js';
 import arch from '../archetypes/listen-pick-word/index.js';
 import { sound } from '../archetypes/listen-pick-word/logic.js';
-import { word } from './helpers.js';
+import { word, loadRealContent } from './helpers.js';
 
 const pool = [
   word('gato', { emoji: '🐱' }), word('pato', { emoji: '🦆' }), word('gata', { emoji: '🐈' }),
@@ -141,4 +141,52 @@ test('module metadata: listening skill, pictures, valid params', () => {
   assert.equal(arch.pictures, true);
   assert.equal(arch.paramsSchema.replay.default, true);
   for (const difficulty of [1, 2, 3]) assert.deepEqual(checkParams(arch.paramsSchema, resolveParams(arch, { difficulty, params: { from: { n: 2 } } })), []);
+});
+
+// distractorFrom: distractors come from a second selector pool (makeExercise passes it as ctx.pools).
+const nums = ['uno', 'dos', 'tres', 'cuatro', 'cinco'].map((id, i) => word(id, { emoji: `${i}️⃣`, tags: ['numbers'], pos: 'adj' }));
+const mixed = [...nums, pool[0], pool[1], pool[3], pool[6], pool[7], pool[8]];
+const dfContent = (distractorFrom, options = 3) => ({
+  words: mixed, unitById: { u1: { id: 'u1', order: 1 } }, archetypeById: { 'listen-pick-word': arch },
+  unit: { id: 'u1', exercises: [{ id: 'x-listen', archetype: 'listen-pick-word', difficulty: 1,
+    params: { from: { tag: 'numbers', n: 3 }, options, ...(distractorFrom && { distractorFrom }) } }] },
+});
+const roundsFor = (c, seed) => makeExercise(c, c.unit, 0, createRng(seed)).rounds;
+
+test('distractorFrom: every option over 200 seeds comes from that pool', () => {
+  const c = dfContent({ tag: 'numbers', n: 1 }, 4);
+  for (let seed = 1; seed <= 200; seed++) for (const r of roundsFor(c, seed)) {
+    assert.equal(r.options.length, 4);
+    for (const o of r.options) assert.ok(nums.some((n) => n.id === o.id), `${o.id} is not a number`);
+  }
+});
+
+test('without distractorFrom, distractors still come from the full pool', () => {
+  const seen = new Set();
+  for (let seed = 1; seed <= 200; seed++) for (const r of roundsFor(dfContent(null, 4), seed)) for (const o of r.options) seen.add(o.id);
+  assert.ok([...seen].some((id) => !nums.some((n) => n.id === id)));
+  const p = resolveParams(arch, { difficulty: 1, params: { options: 4 } });
+  const ctx = { targets: nums.slice(0, 3), pool: mixed };
+  assert.deepEqual(arch.make(p, ctx, createRng(3)), arch.make(p, { ...ctx, pools: {} }, createRng(3)));
+});
+
+test('distractorFrom: a pool too small for `options` falls back to the full pool', () => {
+  const c = dfContent({ tag: 'numbers', ids: ['uno', 'dos'], n: 1 }, 4);
+  for (let seed = 1; seed <= 50; seed++) for (const r of roundsFor(c, seed)) assert.equal(r.options.length, 4);
+});
+
+test('distractorFrom: schema takes a selector and rejects a missing n', () => {
+  assert.deepEqual(checkParams(arch.paramsSchema, resolveParams(arch, { difficulty: 1, params: { from: { n: 2 }, distractorFrom: { tag: 'numbers', n: 1 } } })), []);
+  assert.ok(checkParams(arch.paramsSchema, { from: { n: 2 }, distractorFrom: { tag: 'numbers' } }).length > 0);
+});
+
+test('real unit a1-u1-s1 numbers-listen: every option is a number over 200 seeds', async () => {
+  const content = await loadRealContent();
+  const unit = content.unitById['a1-u1-s1'];
+  const i = unit.exercises.findIndex((e) => e.id === 'numbers-listen');
+  for (let seed = 1; seed <= 200; seed++) {
+    const { rounds } = makeExercise(content, unit, i, createRng(seed));
+    assert.ok(rounds.length > 0);
+    for (const r of rounds) for (const o of r.options) assert.ok(content.words.find((w) => w.id === o.id).tags.includes('numbers'), o.id);
+  }
 });

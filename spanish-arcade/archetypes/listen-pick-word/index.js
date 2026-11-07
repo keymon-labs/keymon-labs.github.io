@@ -15,6 +15,7 @@ export default {
   pictures: true,
   paramsSchema: {
     from: { type: 'selector' },
+    distractorFrom: { type: 'selector', optional: true },
     options: { type: 'int', min: 2, max: 6, default: 3 },
     answerAs: { type: 'enum', values: ['word', 'picture'], default: 'word' },
     replay: { type: 'bool', default: true },

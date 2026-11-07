@@ -7,7 +7,7 @@
   "pass": { "minCorrect": 4 },
   "exercises": [
     { "id": "numbers-listen", "archetype": "listen-pick-word", "difficulty": 1,
-      "params": { "from": { "tag": "numbers", "n": 4 }, "options": 3, "answerAs": "picture", "similar": true },
+      "params": { "from": { "tag": "numbers", "n": 4 }, "distractorFrom": { "tag": "numbers", "n": 1 }, "options": 3, "answerAs": "picture", "similar": true },
       "prompt": { "es": "Escucha y toca el número.", "en": "Listen and tap the number." } },
     { "id": "intruder-school", "archetype": "odd-one-out", "difficulty": 1,
       "params": { "size": 4, "groups": [

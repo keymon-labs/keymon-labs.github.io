@@ -6,15 +6,21 @@ export const sound = (s) => s.toLowerCase().replace(/ñ/g, '1').replace(/ch/g, '
   .replace(/h/g, '').replace(/v/g, 'b').replace(/ll/g, 'y').replace(/z|c(?=[ei])/g, 's').replace(/qu/g, 'k').replace(/c(?=[aou])/g, 'k');
 
 // Targets need an emoji so a round can always fall back to a picture prompt when the device has no Spanish voice.
-export function make(params, { targets, pool }, rng) {
+export function make(params, { targets, pool, pools }, rng) {
   const rounds = targets.filter((w) => w.emoji).map((w) => {
     const picture = params.answerAs === 'picture';
-    const emojis = new Set([w.emoji]);
     // The answer's emoji can show as the prompt (no voice), so no mode offers a word sharing it; picture mode also needs unique options.
     // shortcut: pictureOk records emojis as it accepts them (distractors() calls it once per candidate); pure form needs a rewrite of distractors().
-    const pictureOk = (o) => o.emoji !== w.emoji && (!picture || (o.emoji && !emojis.has(o.emoji) && emojis.add(o.emoji)));
-    const filter = (o) => sound(o.es) !== sound(w.es) && pictureOk(o);
-    const options = shuffle([w, ...distractors(w, pool, params.options - 1, rng, { similar: params.similar, filter })], rng)
+    const pick = (from) => {
+      const emojis = new Set([w.emoji]);
+      const pictureOk = (o) => o.emoji !== w.emoji && (!picture || (o.emoji && !emojis.has(o.emoji) && emojis.add(o.emoji)));
+      const filter = (o) => sound(o.es) !== sound(w.es) && pictureOk(o);
+      return distractors(w, from, params.options - 1, rng, { similar: params.similar, filter });
+    };
+    // distractorFrom pool first; the full pool only if it cannot fill the options.
+    let others = pools?.distractorFrom ? pick(pools.distractorFrom) : null;
+    if (!others || others.length < params.options - 1) others = pick(pool);
+    const options = shuffle([w, ...others], rng)
       .map((o) => ({ id: o.id, es: o.es, emoji: o.emoji ?? '' }));
     return { answerAs: picture ? 'picture' : 'word', prompt: { es: w.es, en: w.en }, emoji: w.emoji, options, answer: w.id, replay: params.replay, wordIds: [w.id] };
   });
