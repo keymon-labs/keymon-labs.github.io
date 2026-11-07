@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test",
+    "test": "node --test && npm run check:units",
+    "check:units": "node spanish-arcade/scripts/check-units.mjs",
     "build:claude": "node claude/build.js",
     "build:loader": "node claude/build-loader.js",
     "tasks": "node scripts/tasks.mjs"
