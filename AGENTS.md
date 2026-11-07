@@ -5,7 +5,19 @@ Read after [CLAUDE.md](CLAUDE.md); CLAUDE.md wins on any conflict, and both win 
 ## Your role: coordinator
 The session the owner talks to (often from a phone) is the **coordinator**. It works out what is wanted, routes it to the right skill, keeps its own context small, hands heavy or parallel work to subagents on the right model, reviews what comes back, merges, pushes and reports.
 - Do small things yourself (a one-file fix, a doc edit, a status change). Spawn a subagent only when it buys something: parallel work, a cheaper or stronger model for that piece, or keeping a big read or diff out of your context.
-- **Always pass `model` explicitly** when spawning (`fable`, `opus`, `sonnet`, `haiku`). An omitted model inherits yours, usually the most expensive.
+- **Always pass `model` explicitly** when spawning (`fable`, `opus`, `sonnet`, `haiku`). An omitted model inherits yours.
+
+## Team shape
+| Seat | Model | Does |
+|---|---|---|
+| Coordinator | **Sonnet** (the chat the owner opens) | routes, writes briefs, dispatches, merges, runs checks, pushes, reports. Doesn't do design or deep review itself |
+| Advisor | **Opus**, on demand | a side seat for judgement: contracts and architecture questions, a ruling the coordinator isn't sure of, a plan or approach before dispatching it, a task stuck after 2 fix rounds. Spawned once per session when first needed and then reused (`SendMessage`), so it keeps its context. Reads files, never edits; answers with a recommendation, why, and what it costs if wrong. The owner can also say "ask the advisor" |
+| Designer / planner | **Opus** | brainstorming designs, `writing-plans` for multi-step code tasks, task 000 plan reviews, `design` tasks |
+| Reviewer | **Opus** | the task review of every code change and the final whole-change review. Scoped re-review of a small fix: Sonnet |
+| Implementer | **Sonnet** default, **Haiku** for mundane work | Sonnet for anything needing judgement or several files; Haiku for drafting data/content, transcribing code a plan spells out, one-file mechanical fixes (always reviewed) |
+| Fable | only when the owner asks or the advisor recommends it | the hardest calls |
+
+A task's `model:` is its implementer tier (an Opus task is built by an Opus subagent). The seats above apply around it.
 - Subagents never push, never spawn their own subagents, never edit task statuses or the board. Only the coordinator pushes.
 - At most 3 workers at once unless the owner asks for more.
 
@@ -38,14 +50,14 @@ The session the owner talks to (often from a phone) is the **coordinator**. It w
 ## Coordinator run over a board
 1. `git pull`, `npm run tasks`. Take the first ready batch (or what the owner named), at most 3 tasks. Skip `design` tasks (they need the owner iterating in their own chat) and say so.
 2. Claim them in one commit (`status: in-progress`, `claimed: <today>`, board regenerated) and push. A rejected push means someone else moved: pull and re-plan.
-3. For each task, `BASE=$(git rev-parse HEAD)`, then spawn the implementer: `model` = the task's tier, `isolation: "worktree"` when more than one runs, in the background. Use the implementer brief below. A multi-step code task with no `plan:` gets one first: write it yourself with `writing-plans` (Opus tier tasks) or have the implementer write it as step 1.
-4. When a worker reports DONE: write its diff to a file (`git diff $BASE <branch> > .superpowers/runs/NNN.diff`) and spawn a reviewer with the reviewer brief. Reviewer model: Sonnet by default, Opus for contracts or Opus-rated tasks, never below the implementer's tier.
-5. Findings (Critical/Important, or spec ❌): send them back to the same worker (`SendMessage`), then re-review only the fix. After 3 rounds, re-run the task one tier up; after that, record a `Ruling:` and park it or set `blocked`.
+3. For each task, `BASE=$(git rev-parse HEAD)`, then spawn the implementer: `model` = the task's tier, `isolation: "worktree"` when more than one runs, in the background. Use the implementer brief below. A multi-step code task with no `plan:` gets one first: spawn an Opus planner with `writing-plans` first (save to `<area>/docs/plans/`), or, for a small Sonnet task, have the implementer write it as step 1.
+4. When a worker reports DONE: write its diff to a file (`git diff $BASE <branch> > .superpowers/runs/NNN.diff`) and spawn a reviewer with the reviewer brief. Reviewer model: Opus.
+5. Findings (Critical/Important, or spec ❌): send them back to the same worker (`SendMessage`), then re-review only the fix (Sonnet). After 2 rounds, ask the advisor; after 3, re-run the task one tier up; after that, record a `Ruling:` and park it or set `blocked`.
 6. Clean review: merge the branch into `main`, `npm test`, `npm run build`, headless check of changed pages (CLAUDE.md). Set `status: done` for `code`, `review` for `content`, append rulings to the task's `Notes`, `npm run tasks`, commit, push, confirm the Actions run. Then the next batch.
-7. After 3 or more merged code tasks, one whole-change review on Opus (Fable for a large or risky run) against the board's PLAN.md.
+7. After 3 or more merged code tasks, one whole-change review on Opus against the board's PLAN.md.
 8. Reply: one line per task (done / review / blocked), the rulings list verbatim, what is waiting on the owner, what is ready next.
 
-Content tasks: Haiku drafts, a Sonnet reviewer checks correctness, originality (nothing copied from books or the web) and kid-safety, the task ends in `review` for the owner.
+Content tasks: Haiku drafts, a Sonnet reviewer (Opus if it is subtle, e.g. language correctness) checks correctness, originality (nothing copied from books or the web) and kid-safety, the task ends in `review` for the owner.
 
 ## Briefs
 Hand over files and paths, never the conversation. Each brief is one task; no history of earlier tasks.

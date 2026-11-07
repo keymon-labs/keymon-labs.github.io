@@ -51,7 +51,7 @@ plan: spanish-arcade/docs/plans/006-listen-pick-word.md   # optional superpowers
 
 ## Writing tasks
 - **Contracts first.** Put shared schemas, interfaces and folder layout in `docs/PLAN.md`. Parallel work is only safe when tasks meet at written contracts. A task that must change a contract edits PLAN.md in the same commit and says so in the commit message.
-- **Gate task 000**: an Opus (or Fable) review of PLAN.md and every task before anything is built. Cheapest place to fix mistakes.
+- **Gate task 000**: an Opus review of PLAN.md and every task before anything is built. Cheapest place to fix mistakes.
 - **Right size**: one chat, one reviewable diff, one independently testable deliverable. Fold setup and docs into the task that needs them; split only where a reviewer could reject one half and accept the other.
 - **Self-contained prompt**: a worker sees only its task file, CLAUDE.md, AGENTS.md and the docs it names. Give exact file paths, names and values; never "see the chat".
 - **Disjoint `touches`**: the fixed part of each pattern (before `*`) is what tooling compares. Tasks whose paths overlap are never run at the same time.
@@ -61,8 +61,8 @@ plan: spanish-arcade/docs/plans/006-listen-pick-word.md   # optional superpowers
 | Tier | Use for |
 |---|---|
 | Fable | the hardest calls only: architecture with many unknowns, a final review of a large run, a bug two Opus attempts couldn't find |
-| Opus | contracts, plan review, design, coordinating, reviewing risky diffs |
-| Sonnet | default implementer and reviewer; prose specs; multi-file work |
+| Opus | contracts, plan review, design, code review, advisor |
+| Sonnet | coordinator; default implementer; prose specs; multi-file work |
 | Haiku | drafting data/content, transcribing complete code from a plan, one-file mechanical fixes; always reviewed by Sonnet or above |
 
 Cheap models take more turns on multi-step work and can cost more overall; Sonnet is the floor for anything that needs judgement.
