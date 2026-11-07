@@ -5,6 +5,7 @@ import { createRng } from '../../shared/rng.js';
 import { resolveParams } from '../core/generate.js';
 import { checkParams } from '../core/schema.js';
 import arch from '../archetypes/fill-gap-choice/index.js';
+import { speakerShown } from '../archetypes/fill-gap-choice/logic.js';
 import { word } from './helpers.js';
 
 const nouns = [
@@ -151,13 +152,6 @@ test('hint: level 1 never reveals and marks the gap; remove only with 4 options 
   assert.deepEqual(arch.hint(three, 2), { level: 2, answer: three.answer });
 });
 
-test('speaker text before the answer never contains it; full does', () => {
-  const [r] = run({ items });
-  assert.ok(!r.heard.includes('tengo'));
-  assert.ok(r.heard.includes('hueco'));
-  assert.equal(r.full, 'Yo tengo una caja');
-});
-
 test('feeling focus only uses adjectives', () => {
   const noun = word('alegria', { tags: ['feelings'], emoji: '🎉' });
   assert.deepEqual(run({ from: { n: 1 }, focus: 'feeling' }, [noun]), []);
@@ -176,4 +170,19 @@ test('defaults follow difficulty and the skill is grammar', () => {
   assert.equal(arch.skill, 'grammar');
   assert.equal(resolveParams(arch, { difficulty: 1 }).options, 2);
   assert.equal(resolveParams(arch, { difficulty: 3 }).options, 4);
+});
+
+test('the speaker reads the complete sentence, answer included', () => {
+  for (const r of run({ items })) {
+    assert.equal(r.heard, r.full);
+    assert.ok(r.full.includes(r.answer));
+    assert.doesNotMatch(r.heard, /hueco/);
+  }
+});
+
+test('the speaker is shown only for difficulty 1 and when a voice exists', () => {
+  assert.equal(speakerShown(true, 1), true);
+  assert.equal(speakerShown(true, 2), false);
+  assert.equal(speakerShown(true, 3), false);
+  assert.equal(speakerShown(false, 1), false);
 });

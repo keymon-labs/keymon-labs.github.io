@@ -4,7 +4,7 @@ A sentence with one gap and 2-4 options. The child taps a word (or drags it into
 
 | param | type | default | meaning |
 |---|---|---|---|
-| `items` | list of `{ text, options, answer, en? }` | none | authored sentences; `text` has exactly one `___` |
+| `items` | list of `{ text, options, answer, en? }` (`en` is metadata, never shown) | none | authored sentences; `text` has exactly one `___` |
 | `n` | int ≥ 1 | all | take this many of the `items` (random, seeded) |
 | `from` | selector | none | words to generate items from (needs `focus`) |
 | `focus` | `article` \| `feeling` | `article` | what `from` generates (below) |
@@ -24,7 +24,7 @@ Use `items`, `from`, or both (authored rounds come first).
 
 ## Hints and speaker
 Level 1 outlines the gap (dotted outline, not only colour); with 4 options it also disables one wrong option other than the last tapped. A wrong tapped option is disabled (✖, strikethrough) only while more than 2 options are enabled, so with 2 options a miss leaves both enabled and at least 2 choices always remain. Level 2 marks the answer with 👉 and a double outline (the status line says so) and the child taps it. After a miss focus moves to the first enabled option. Feedback has ✔ / ✖ in an `aria-live` line, which adds the completed sentence on a correct answer. Options are at least 48px; dragging is optional, tapping always works.
-The 🔊 button reads the sentence with the word "hueco" in the gap until the child answers correctly, then the completed sentence (also read automatically).
+The 🔊 button reads the **whole sentence, answer included** (`round.heard` is the complete sentence); the visible gap stays a blank line and only its screen-reader label says "hueco". Because that gives the answer away, the button is **hidden from `difficulty >= 2`** (`speakerShown` in `logic.js`, `ctx.difficulty`) and when there is no Spanish voice. The completed sentence is still read aloud after a correct answer.
 
 ## Unit example
 Three authored sentences (our own words) and one generated exercise:

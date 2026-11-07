@@ -23,7 +23,7 @@ test('empty storage gives a default store', () => {
   const st = createStore(deps());
   assert.deepEqual(st.data.profiles, []);
   assert.equal(st.data.schema, 1);
-  assert.equal(st.data.settings.lang, 'en');
+  assert.equal(st.data.settings.lang, 'es');
 });
 
 test('profiles: uuid ids, max 4, round-trip through storage', () => {
@@ -116,7 +116,7 @@ test('saveInProgress and unlocking', () => {
 
 test('settings update and persist', () => {
   const d = deps();
-  createStore(d).setSettings({ lang: 'es' });
-  assert.equal(createStore({ ...d }).data.settings.lang, 'es');
+  createStore(d).setSettings({ textSize: 1.25 });
+  assert.equal(createStore({ ...d }).data.settings.textSize, 1.25);
   assert.equal(createStore({ ...d }).data.settings.sound, true);
 });

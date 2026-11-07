@@ -1,5 +1,5 @@
 // fill-gap-choice archetype: pick (tap or drag) the word that fills the gap. Rules in logic.js, params in README.md.
-import { make, judge, hint, FOCUSES } from './logic.js';
+import { make, judge, hint, speakerShown, FOCUSES } from './logic.js';
 import { injectStyles, el, tapOrDrag } from '../../ui/tiles.js';
 
 const CSS = `
@@ -11,7 +11,6 @@ const CSS = `
 .fg-gap.land{animation:fg-land .45s ease-out}
 @keyframes fg-land{from{transform:translateY(60px) scale(.6);opacity:.2}to{transform:none;opacity:1}}
 .fg-pic{font-size:3rem;text-align:center;margin:4px 0}
-.fg-gloss{text-align:center;margin:0;opacity:.8}
 .fg-opt.wrong{text-decoration:line-through}
 .fg-opt.reveal{outline:4px double currentColor}
 `;
@@ -45,27 +44,25 @@ export default {
       s.textContent = CSS;
       document.head.append(s);
     }
-    const es = ctx.lang === 'es';
     let busy = false;
     let done = false;
 
     const root = el('div', 'fg-root');
     const gap = el('span', 'fg-gap');
-    const gapName = el('span', 'fg-sr', es ? 'hueco' : 'gap');
+    const gapName = el('span', 'fg-sr', 'hueco');
     gap.append(gapName);
     const sentence = el('p', 'fg-sentence');
     sentence.append(round.parts[0], gap, round.parts[1]);
     const say = el('button', 'sp-key', '🔊');
     say.type = 'button';
-    say.setAttribute('aria-label', es ? 'Escuchar la frase' : 'Hear the sentence');
-    say.hidden = !ctx.canSpeak;
-    say.addEventListener('click', () => ctx.say(done ? round.full : round.heard)); // never the answer before it is picked
+    say.setAttribute('aria-label', 'Escuchar la frase');
+    say.hidden = !speakerShown(ctx.canSpeak, ctx.difficulty); // it reads the answer too, so not from difficulty 2
+    say.addEventListener('click', () => ctx.say(round.heard));
     const row = el('div', 'sp-row');
     const status = el('p');
     status.setAttribute('aria-live', 'polite');
     const head = [];
     if (round.emoji) head.push(el('p', 'fg-pic', round.emoji));
-    if (round.gloss) head.push(el('p', 'fg-gloss', round.gloss));
 
     const buttons = new Map();
     for (const o of round.options) {
@@ -83,7 +80,7 @@ export default {
       busy = true;
       const r = await ctx.submit(o);
       busy = false;
-      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}${r.correct ? ` ${round.full}` : ''}`;
+      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback.es}${r.correct ? ` ${round.full}` : ''}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       if (r.correct) {
         done = true;
@@ -109,7 +106,7 @@ export default {
         a.classList.add('reveal');
         a.textContent = `👉 ${h.answer}`;
         gap.classList.add('hinted');
-        status.textContent += es ? ' La respuesta correcta está marcada con 👉.' : ' The right answer is marked with 👉.';
+        status.textContent += ' La respuesta correcta está marcada con 👉.';
       }
       enabled()[0]?.focus();
     }

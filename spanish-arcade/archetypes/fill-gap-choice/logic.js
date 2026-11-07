@@ -4,6 +4,8 @@ import { key, sameWord } from '../../core/spelling.js';
 
 export const FOCUSES = ['article', 'feeling'];
 export const GAP = '___';
+/** The speaker gives the answer away, so only the easiest exercises (difficulty 1) offer it. */
+export const speakerShown = (canSpeak, difficulty) => canSpeak && (difficulty ?? 1) < 2;
 const GROUPS = [['el', 'la'], ['los', 'las']];
 const FRAMES = {
   article: ['Mira ___ #.', '¿Ves ___ #?', 'Dibujo ___ #.'],
@@ -12,8 +14,9 @@ const FRAMES = {
 
 const roundOf = (text, options, answer, extra, rng) => {
   const [before, after] = text.split(GAP);
-  // `heard` is what the speaker says before the answer (never the answer itself); `full` only after a correct pick
-  return { parts: [before, after], heard: `${before} hueco ${after}`, full: `${before}${answer}${after}`, options: shuffle(options, rng), answer, ...extra };
+  // the speaker reads the whole sentence, answer included (so it is hidden from difficulty 2, see speakerShown)
+  const full = `${before}${answer}${after}`;
+  return { parts: [before, after], heard: full, full, options: shuffle(options, rng), answer, ...extra };
 };
 
 /** Checks an authored item and returns { text, options, answer }; throws "items[i]: ..." so check:units shows it. */
