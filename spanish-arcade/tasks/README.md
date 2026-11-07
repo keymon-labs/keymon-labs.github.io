@@ -22,14 +22,14 @@ Board (source of truth is each file's front matter):
 | 004 | [Profiles, home screen, help overlay](004-profiles-home-help.md) | Sonnet | 001b, 002 | todo |
 | 005 | [Progress report and badge cards](005-report-badges.md) | Sonnet | 002, 004 | todo |
 | 006 | [Archetype listen-pick-word](006-archetype-listen-pick-word.md) | Sonnet | 001 | done |
-| 007 | [Archetype read-answer](007-archetype-read-answer.md) | Sonnet | 001 | todo |
-| 008 | [Archetype fill-gap-choice](008-archetype-fill-gap-choice.md) | Sonnet | 001 | todo |
-| 009 | [Archetypes spell-tiles and spell-fill-letters](009-archetypes-spelling.md) | Sonnet | 001 | in-progress |
+| 007 | [Archetype read-answer](007-archetype-read-answer.md) | Sonnet | 001 | done |
+| 008 | [Archetype fill-gap-choice](008-archetype-fill-gap-choice.md) | Sonnet | 001 | in-progress |
+| 009 | [Archetypes spell-tiles and spell-fill-letters](009-archetypes-spelling.md) | Sonnet | 001 | done |
 | 010 | [Archetypes odd-one-out, match-pairs, order-words, word-search](010-archetypes-puzzles.md) | Sonnet | 001 | in-progress |
 | 011 | [Units a1-u1-s1 and a1-u1-s3 plus vocabulary](011-units-u1-s1-s3.md) | Sonnet | 001, 006, 007, 008, 009, 010, 014, 015 | todo |
 | 012 | [Jokes, mascot lines and animations pack](012-fun-pack.md) | Haiku | 001, 002 | todo |
 | 013 | [Ship: landing card, PWA, credits, README, release](013-ship.md) | Sonnet | 001, 001b, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 014 | todo |
-| 014 | [Authoring guide and unit validator](014-authoring-validator.md) | Sonnet | 001 | in-progress |
+| 014 | [Authoring guide and unit validator](014-authoring-validator.md) | Sonnet | 001 | done |
 | 015 | [Book extraction (private kit to public-safe digest)](015-book-extraction.md) | Sonnet | 000 | review |
 <!-- board:end -->
 

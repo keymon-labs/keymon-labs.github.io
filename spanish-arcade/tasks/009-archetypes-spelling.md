@@ -3,7 +3,7 @@ id: "009"
 title: Archetypes spell-tiles and spell-fill-letters
 model: Sonnet 5.5
 why_model: Spelling is the core skill; needs careful handling of Spanish characters.
-status: in-progress
+status: done
 claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/archetypes/spell-tiles/**, archetypes/spell-fill-letters/**, ui/tiles.js, test/spell.test.js]
@@ -16,3 +16,8 @@ touches: [spanish-arcade/archetypes/spell-tiles/**, archetypes/spell-fill-letter
 
 ## Notes
 Declare `accents` in the archetype's `paramsSchema`.
+
+Ruling: `core/spelling.js` (`key`, `sameWord`) added outside `touches`, shared by both archetypes and reused by 008 — cost if wrong: move the file.
+Ruling: hint level 1 is only a nudge (never reveals letters); strict accents when the focus is accent or ü — cost if wrong: a param.
+Ruling: words an archetype cannot use (spaces, no emoji) are dropped silently and documented; the validator's rounds check catches units that lose too many — cost if wrong: none.
+Reviewed by Opus, then three scoped Sonnet re-reviews: clean. Drag was only checked with emulated pointer events; keyboard and touch paths were run in headless Chromium.
