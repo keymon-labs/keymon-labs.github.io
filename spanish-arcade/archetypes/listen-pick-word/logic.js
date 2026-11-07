@@ -1,17 +1,21 @@
 // listen-pick-word rules: hear a word, pick the word or picture. Pure, no DOM.
 import { distractors, shuffle } from '../../core/generate.js';
 
+/** Spoken form of a Spanish word, so look-alike spellings that sound the same (hola/ola) are never offered together. */
+export const sound = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/h/g, '').replace(/v/g, 'b')
+  .replace(/ll/g, 'y').replace(/z|c(?=[ei])/g, 's').replace(/qu/g, 'k').replace(/c(?=[aou])/g, 'k');
+
+// Targets need an emoji so a round can always fall back to a picture prompt when the device has no Spanish voice.
 export function make(params, { targets, pool }, rng) {
-  const rounds = targets.map((w) => {
-    // A picture option must identify one word: no distractor shares the answer's emoji or another option's.
-    const seen = new Set([w.emoji]);
-    const usable = pool.filter((o) => o.id === w.id || (!w.emoji ? true : o.emoji && !seen.has(o.emoji) && seen.add(o.emoji)));
-    const options = shuffle([w, ...distractors(w, usable, params.options - 1, rng, { similar: params.similar })], rng)
+  const rounds = targets.filter((w) => w.emoji).map((w) => {
+    const picture = params.answerAs === 'picture';
+    const emojis = new Set([w.emoji]);
+    // Picture options must be told apart by picture: only then do distractors need a unique emoji.
+    const pictureOk = (o) => !picture || (o.emoji && !emojis.has(o.emoji) && emojis.add(o.emoji));
+    const filter = (o) => sound(o.es) !== sound(w.es) && pictureOk(o);
+    const options = shuffle([w, ...distractors(w, pool, params.options - 1, rng, { similar: params.similar, filter })], rng)
       .map((o) => ({ id: o.id, es: o.es, emoji: o.emoji ?? '' }));
-    return {
-      answerAs: params.answerAs === 'picture' && w.emoji ? 'picture' : 'word',
-      prompt: { es: w.es, en: w.en }, emoji: w.emoji ?? '', options, answer: w.id, replay: params.replay, wordIds: [w.id],
-    };
+    return { answerAs: picture ? 'picture' : 'word', prompt: { es: w.es, en: w.en }, emoji: w.emoji, options, answer: w.id, replay: params.replay, wordIds: [w.id] };
   });
   return { rounds };
 }

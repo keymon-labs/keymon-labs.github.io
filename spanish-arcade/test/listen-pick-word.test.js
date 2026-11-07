@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRng } from '../../shared/rng.js';
 import { resolveParams } from '../core/generate.js';
+import { checkParams } from '../core/schema.js';
 import arch from '../archetypes/listen-pick-word/index.js';
 import { word } from './helpers.js';
 
@@ -19,16 +20,16 @@ test('same seed gives the same rounds; one round per target', () => {
   assert.equal(run({}).length, 4);
 });
 
-test('distractors never equal the answer, by id, spelling or picture', () => {
+test('distractors never equal the answer by id or spelling (and by picture in picture mode)', () => {
   for (let seed = 1; seed <= 30; seed++) {
     for (const ex of [{}, { params: { answerAs: 'picture', options: 6 } }, { difficulty: 3 }]) {
       for (const r of run(ex, seed)) {
         const a = r.options.find((o) => o.id === r.answer);
         assert.ok(a);
         const others = r.options.filter((o) => o !== a);
-        assert.ok(others.every((o) => o.id !== a.id && o.es !== a.es && o.emoji !== a.emoji));
+        assert.ok(others.every((o) => o.id !== a.id && o.es !== a.es));
         assert.equal(new Set(r.options.map((o) => o.es)).size, r.options.length);
-        assert.equal(new Set(r.options.map((o) => o.emoji)).size, r.options.length);
+        if (r.answerAs === 'picture') assert.equal(new Set(r.options.map((o) => o.emoji)).size, r.options.length);
       }
     }
   }
@@ -41,10 +42,37 @@ test('options count follows params; wordIds and answerAs are set', () => {
   assert.deepEqual(r.wordIds, [r.answer]);
 });
 
-test('picture mode falls back to word when the target has no emoji', () => {
+test('targets without an emoji get no round (every round can fall back to a picture prompt)', () => {
   const bare = word('ola', { emoji: undefined });
-  const [r] = run({ params: { answerAs: 'picture' } }, 1, [bare]);
-  assert.equal(r.answerAs, 'word');
+  assert.deepEqual(run({ params: { answerAs: 'picture' } }, 1, [bare]), []);
+  assert.equal(run({}, 1, [bare, pool[0]]).length, 1);
+});
+
+test('word mode keeps `options` options even with emoji-less or duplicate-emoji distractors', () => {
+  const small = [pool[0], word('correr', { pos: 'verb', emoji: undefined }), word('saltar', { pos: 'verb', emoji: undefined }),
+    word('a', { emoji: '🐶' }), word('b', { emoji: '🐶' })];
+  for (let seed = 1; seed <= 20; seed++) {
+    const [r] = arch.make(resolveParams(arch, { difficulty: 1, params: { options: 5 } }), { targets: [pool[0]], pool: small }, createRng(seed)).rounds;
+    assert.equal(r.options.length, 5);
+  }
+});
+
+test('a pool too small for `options` returns what exists', () => {
+  const tiny = [pool[0], pool[1]];
+  const { rounds } = arch.make(resolveParams(arch, { difficulty: 1, params: { options: 6 } }), { targets: [pool[0]], pool: tiny }, createRng(1));
+  assert.equal(rounds[0].options.length, 2);
+});
+
+const sound = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/h/g, '').replace(/v/g, 'b')
+  .replace(/ll/g, 'y').replace(/z|c(?=[ei])/g, 's').replace(/qu/g, 'k').replace(/c(?=[aou])/g, 'k');
+
+test('difficulty 3 never offers a homophone of the answer', () => {
+  const ph = [word('hola', { emoji: '👋' }), word('ola', { emoji: '🌊' }), word('vaca', { emoji: '🐄' }), word('baca', { emoji: '🧳' }),
+    word('casa', { emoji: '🏠' }), word('kasa', { emoji: '🏡' }), word('cera', { emoji: '🕯️' }), word('sera', { emoji: '🌱' }), word('pan', { emoji: '🍞' })];
+  for (let seed = 1; seed <= 40; seed++) for (const t of ph) {
+    const { rounds } = arch.make(resolveParams(arch, { difficulty: 3, params: { options: 4 } }), { targets: [t], pool: ph }, createRng(seed));
+    for (const o of rounds[0].options) if (o.id !== t.id) assert.notEqual(sound(o.es), sound(t.es));
+  }
 });
 
 test('difficulty raises similarity: hard distractors are closer in spelling than easy ones', () => {
@@ -85,5 +113,5 @@ test('module metadata: listening skill, pictures, valid params', () => {
   assert.equal(arch.id, 'listen-pick-word');
   assert.equal(arch.skill, 'listening');
   assert.equal(arch.pictures, true);
-  assert.equal(arch.paramsSchema.replay.default, true);
+  for (const difficulty of [1, 2, 3]) assert.deepEqual(checkParams(arch.paramsSchema, resolveParams(arch, { difficulty, params: { from: { n: 2 } } })), []);
 });

@@ -53,13 +53,13 @@ export default {
       const listen = control(ctx.lang === 'es' ? 'Escuchar' : 'Listen', '🔊', () => play(0.9, listen));
       bar.append(listen);
       if (round.replay !== false) bar.append(control(ctx.lang === 'es' ? 'Más despacio' : 'Slower', '🐢', () => play(0.5)));
-      ctx.say(round.prompt.es); // works if the child already tapped; otherwise they press the speaker
+      play(0.9, listen); // works if the child already tapped; otherwise they press the speaker
     } else {
       const notice = document.createElement('p');
       notice.textContent = NOTICE[ctx.lang] ?? NOTICE.en;
       const pic = document.createElement('p');
       pic.style.fontSize = '4rem';
-      pic.textContent = round.emoji || round.prompt.en; // shortcut: a word with no emoji falls back to its English gloss
+      pic.textContent = round.emoji;
       bar.append(notice, pic);
     }
 
