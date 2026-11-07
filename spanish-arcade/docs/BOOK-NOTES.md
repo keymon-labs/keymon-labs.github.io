@@ -37,6 +37,15 @@ Culture: traditional Spanish playground games.
 | S7 | I feel super | emotions (alegría, asco, enfado, tristeza, miedo, sorpresa), body parts | describing a character: *Es… Tiene… Está…*; body-part labels; recap of s/x |
 Culture: a famous Spanish painter.
 
+## Unit 1 detail (digest)
+Per-session notes in our own words: [book/u1.md](book/u1.md). What the table above leaves out:
+- **S1** has no comic: a word list, a short meeting chat, a greeting song, then games (odd one out, colour-by-number, classmate survey, whisper chain). About ten family words, about five pets, colours and numbers 0-10.
+- **S3** is the unit's comic: a name-day surprise, shopping for a present, a party. Story hooks: days and dates, bags/caps/books, colours, feelings. Alphabet letter names (with ñ) and capitals on names are taught here too.
+- **S5** is a short first-person text about a big family and a pet, not a comic. The book has no spelling item in this session; the flags (culture) page sits here, not in S7.
+- **S7** is built on passport-style pages (personal data, languages, professions), a picture riddle, family bingo and a "what is happening" picture. Accents on question words appear.
+- **Recap** page: five self-check boxes (articles, ¿ ¡, colours, ñ, family and numbers) and one coded line.
+- **Speaking, free writing and drawing** appear in every session. Most have no archetype yet: see the new ideas (`type-the-answer`, `say-it`, `tap-in-text`, `form-card`, `survey-tally`, `whisper-chain`, `free-list`) in [ARCHETYPES.md](ARCHETYPES.md).
+
 ## Kinds of exercise seen in the book → archetype ideas
 Odd one out · listen and mark true/false · listen and match to pictures · listen and complete · read and answer a/b/c · read and mark V/F · match with arrows · classify into el/la or un/una · complete tables (verbs, articles) · fill missing letters (ñ, r/rr, s/x, vowels) · unscramble letters · put words in order to make a sentence · put syllables in order · separate a run-on sentence · add ¿? or ¡! · read a clock and write the time · place objects by position words · find verbs in a letter snake or word search · coded word (number→letter) · crossword · bingo · memory game · who-is-who (yes/no questions) · veo-veo. Ideas list with status: [ARCHETYPES.md](ARCHETYPES.md). Unit list: [UNITS.md](UNITS.md).
 

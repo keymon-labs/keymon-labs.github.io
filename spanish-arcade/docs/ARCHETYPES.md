@@ -29,6 +29,13 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `veo-veo` | "Veo, veo… empieza por la letra…" guess the object | letters, vocab | `scene`, `from` | harder scenes | idea |
 | `colour-by-code` | Colour regions by a colour-name code | colours, reading | `scene`, `legend` | more colours | idea |
 | `bingo` | Pick N words, mark them as they are called | listening, vocab | `from`, `n` | bigger card | idea |
+| `type-the-answer` | Picture or audio prompt, typed answer; accepts a list of correct forms (accents optional) | spelling, recall, free writing | `items[]` (prompt, `accept[]`), `hint` | accents required; no hint; longer answers | idea |
+| `say-it` | Read a line aloud, then self-rate (speech recognition only as optional extra) | speaking, intonation | `lines[]`, `model` (audio) | longer lines; no model audio | idea |
+| `tap-in-text` | Tap every word of one category in a short text (family words, verbs) | reading, word classes | `text`, `category`, `targets[]` | more targets; mixed categories | idea |
+| `form-card` | Fill labelled fields (passport, ID card) from an invented profile | personal-data vocab | `fields[]`, `profile` | more fields; free typing | idea |
+| `survey-tally` | Fixed question frame; ask the characters, tally answers in a table | question forms | `questions[]`, `characters[]` | more questions | idea |
+| `whisper-chain` | Hear a whispered phrase, repeat it to pass it on | listening memory | `phrases[]`, `chain` | longer phrases | idea |
+| `free-list` | Learner builds their own word list on a topic; saved for review | vocab recall | `topic`, `min` | timed; fewer hints | idea |
 
 **First batch**: listen-and-pick, read-and-answer, complete-the-sentence with options, spelling, puzzles. Tasks 006–010.
 
