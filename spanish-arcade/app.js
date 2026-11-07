@@ -7,6 +7,7 @@ import { createUnitSession } from './core/session.js';
 import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed } from './core/progress.js';
 import { createSpeech } from './ui/speech.js';
 import { renderSettings } from './ui/settings.js';
+import { createTapCounter } from './ui/tapcount.js';
 import { registerServiceWorker } from '../shared/pwa.js';
 
 const root = document.getElementById('app');
@@ -66,7 +67,25 @@ function h(tag, attrs = {}, ...kids) {
 const link = (href, text, cls = 'btn') => h('a', { href, class: cls }, text);
 const stars = (n) => h('span', { class: 'stars', role: 'img', 'aria-label': `${n} de 3 estrellas` }, '★'.repeat(n), h('span', {}, '☆'.repeat(3 - n)));
 
+// Hidden test mode: 10 quick taps on the footer text toggle settings.debug (the footer keeps its normal semantics).
+const tapFooter = createTapCounter();
+const debugLive = h('div', { id: 'debug-live', role: 'status', style: 'position:absolute;left:-9999px' });
+document.body.append(debugLive);
+function setDebug(on) {
+  store.setSettings({ debug: on });
+  if (!current) route(); // home, profile and unit intro: redraw so the link appears or goes
+  debugLive.textContent = on ? 'Modo de pruebas activado' : 'Modo de pruebas desactivado';
+}
+const debugTools = () => (store.data.settings.debug
+  ? h('p', { class: 'muted' }, link('./lab/', 'Laboratorio'), ' ', h('button', { type: 'button', id: 'debug-off', onclick: () => setDebug(false) }, 'Salir del modo de pruebas'))
+  : null);
+
 function footer() {
+  const f = footerText();
+  f.onclick = (e) => { if (!e.target.closest('a') && tapFooter()) setDebug(!store.data.settings.debug); };
+  return f;
+}
+function footerText() {
   return h('footer', {}, `Arcade de español v1 · versión ${__BUILD__} · © 2026 keymon-labs · `,
     h('a', { href: 'https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md' }, 'CC BY-NC-SA 4.0'));
 }
@@ -113,7 +132,7 @@ function renderHome() {
     };
     main.append(form);
   }
-  main.append(link('#/settings', 'Ajustes'));
+  main.append(link('#/settings', 'Ajustes'), debugTools());
 }
 
 /** "3 de 6 ejercicios · seguir" / "6 de 6 ejercicios · mejor: 4 sin ayuda" / "sin empezar" */
@@ -133,7 +152,7 @@ function renderProfile(profile) {
     return h('li', { class: open ? '' : 'locked' }, open ? link(`#/unit/${u.id}`, u.title.es, 'btn unit') : h('span', {}, `🔒 ${u.title.es}`), ' ', stars(up.stars),
       open ? h('div', { class: 'muted unit-status' }, statusLine(up)) : null);
   })));
-  main.append(link('#/', 'Volver'), link('#/settings', 'Ajustes'));
+  main.append(link('#/', 'Volver'), link('#/settings', 'Ajustes'), debugTools());
 }
 
 function renderIntro(profile, unit) {

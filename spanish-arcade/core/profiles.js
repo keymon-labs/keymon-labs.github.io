@@ -3,7 +3,7 @@ import { validateStore, MAX_PROFILES } from './schema.js';
 
 export const STORE_KEY = 'spanish-arcade:v1';
 export { MAX_PROFILES };
-const DEFAULT_SETTINGS = { lang: 'es', sound: true, textSize: 1, lastBackupAt: null };
+const DEFAULT_SETTINGS = { lang: 'es', sound: true, textSize: 1, lastBackupAt: null, debug: false };
 
 const empty = () => ({ schema: 1, profiles: [], settings: { ...DEFAULT_SETTINGS } });
 
@@ -21,6 +21,7 @@ export function createStore({ storage, clock = () => new Date(), uuid = () => cr
       const errs = validateStore(parsed);
       if (errs.length) throw new Error(errs.join('; '));
       data = { ...parsed, settings: { ...DEFAULT_SETTINGS, ...parsed.settings } };
+      data.settings.debug = data.settings.debug === true; // hidden test mode: anything else is off
     } catch (e) {
       loadError = e.message;
       storage.setItem(`${STORE_KEY}:corrupt`, raw);
