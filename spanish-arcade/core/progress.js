@@ -3,10 +3,28 @@ import { seedFor } from './generate.js';
 
 export const HISTORY_MAX = 200;
 
+/** Stats of one finished exercise plus flags: ok = finished without a reveal, bestOk = ever ok, at = when. Never loses bestOk. */
+const exerciseEntry = (prev, stats, at) => {
+  const ok = stats.reveals === 0;
+  return { ...stats, done: true, ok, bestOk: Boolean(prev?.bestOk) || ok, at };
+};
+
+/** A unit entry that exists as soon as one exercise is done (stars 0 = attempted, not finished). */
+const unitEntry = (old, unit) => old ?? { rev: unit.rev, stars: 0, bestCorrect: 0, attempts: 0, completedAt: null, exercises: {} };
+
+/** Store one exercise as soon as it ends (session result.exerciseDone = { id, stats }), so leaving the unit loses nothing. */
+export function recordExercise(profile, unit, done, at) {
+  const old = unitEntry(profile.units[unit.id], unit);
+  return { ...profile, units: { ...profile.units, [unit.id]: { ...old, lastAt: at,
+    exercises: { ...old.exercises, [done.id]: exerciseEntry(old.exercises[done.id], done.stats, at) } } } };
+}
+
 /** Store a finished unit (result from session.result()); at = ISO time from the injected clock. */
 export function recordUnit(profile, unit, result, at) {
   if (!result.finished) return profile;
   const old = profile.units[unit.id];
+  const exercises = { ...old?.exercises };
+  for (const [id, st] of Object.entries(result.exercises)) if (st.total > 0) exercises[id] = exerciseEntry(exercises[id], st, at);
   const words = { ...profile.words };
   for (const [id, w] of Object.entries(result.words)) {
     const prev = words[id] ?? { seen: 0, wrong: 0 };
@@ -21,7 +39,9 @@ export function recordUnit(profile, unit, result, at) {
       bestCorrect: Math.max(old?.bestCorrect ?? 0, result.correct),
       attempts: (old?.attempts ?? 0) + 1,
       completedAt: old?.completedAt ?? at,
-      exercises: { ...old?.exercises, ...result.exercises }, // latest attempt per exercise
+      lastAt: at,
+      last: { stars: result.stars, correct: result.correct, at }, // latest attempt, for "antes" on the result screen
+      exercises, // latest attempt per exercise (+ bestOk)
     } },
     words,
     history: [...profile.history, { unitId: unit.id, at, correct: result.correct, stars: result.stars }].slice(-HISTORY_MAX),
@@ -56,3 +76,23 @@ export function isUnlocked(profile, units, unitId) {
 
 /** Seed for the next attempt: hash(profileId, unitId, attempt), so each replay differs but is reproducible. */
 export const attemptSeed = (profile, unitId) => seedFor(profile.id, unitId, profile.units?.[unitId]?.attempts ?? 0);
+
+/**
+ * What to show the child about a unit (map, intro): stars, "n of m", which exercises are done, the last and best result.
+ * An unfinished attempt (inProgress) wins over older data: its finished exercises are the ones before exerciseIndex.
+ */
+export function unitProgress(profile, unit) {
+  const u = profile.units?.[unit.id];
+  const ip = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev ? profile.inProgress : null;
+  const attempts = u?.attempts ?? 0;
+  const rows = unit.exercises.map((e, i) => {
+    const st = (ip ? ip.results?.[e.id] : u?.exercises?.[e.id]) ?? null;
+    const done = ip ? i < ip.exerciseIndex : attempts > 0 || Boolean(u?.exercises?.[e.id]?.done);
+    return { id: e.id, done, ok: done && st ? st.reveals === 0 : null, bestOk: Boolean(u?.exercises?.[e.id]?.bestOk) };
+  });
+  return {
+    stars: u?.stars ?? 0, attempts, bestCorrect: u?.bestCorrect ?? 0, total: rows.length, rows,
+    doneCount: rows.filter((r) => r.done).length, resumable: Boolean(ip), started: rows.some((r) => r.done) || Boolean(ip),
+    last: u?.last ?? (attempts > 0 ? { stars: u.stars, correct: u.bestCorrect } : null),
+  };
+}

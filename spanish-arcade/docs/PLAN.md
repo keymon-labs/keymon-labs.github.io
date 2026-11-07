@@ -124,6 +124,7 @@ export default {
     "badges": [ { "unitId": "a1-u1-s1", "earnedAt": "…" } ] } ],
   "settings": { "lang": "en", "sound": true, "textSize": 1, "lastBackupAt": null } }
 ```
+- Units appear in `units` as soon as one exercise ends: `stars: 0, attempts: 0` = attempted, not finished. Each exercise entry adds `done`, `ok` (finished without a reveal), `bestOk` (ever), `at`, and `skipped` (rounds given up with "Saltar", counted like reveals). A finished unit adds `last: { stars, correct, at }` (latest attempt, for "antes") and `lastAt`; `stars` and `bestCorrect` are best-ever and never decrease.
 - Max 4 profiles; profile ids are `crypto.randomUUID()` (never `p-1`, so merging devices can't fuse two children).
 - `words` feeds a later "tricky words" review unit and the report; `history` keeps the last 200 entries; `inProgress` = the session snapshot `{unitId, rev, seed, exerciseIndex, roundIndex, misses, results, words}` (results/words = stats so far, so resumed stars stay honest); a different `rev` drops it.
 - Per-exercise stats keep the **latest** attempt; `words.seen` counts rounds answered, `words.wrong` counts rounds with at least one miss.

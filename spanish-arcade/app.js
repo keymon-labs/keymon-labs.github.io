@@ -4,7 +4,7 @@
 import { loadContent } from './core/content.js';
 import { createStore } from './core/profiles.js';
 import { createUnitSession } from './core/session.js';
-import { recordUnit, applyRev, saveInProgress, isUnlocked, attemptSeed } from './core/progress.js';
+import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed } from './core/progress.js';
 import { createSpeech } from './ui/speech.js';
 import { renderSettings } from './ui/settings.js';
 import { registerServiceWorker } from '../shared/pwa.js';
@@ -12,6 +12,7 @@ import { registerServiceWorker } from '../shared/pwa.js';
 const root = document.getElementById('app');
 const speech = createSpeech();
 const NEXT_DELAY = 700;
+const SKIP_DELAY = 2000; // long enough to read the answer after "Saltar"
 
 // Local-only error ring buffer (last 20). Nothing is sent anywhere.
 const errors = [];
@@ -115,21 +116,38 @@ function renderHome() {
   main.append(link('#/settings', 'Ajustes'));
 }
 
+/** "3 de 6 ejercicios · seguir" / "6 de 6 ejercicios · mejor: 4 sin ayuda" / "sin empezar" */
+function statusLine(up) {
+  if (!up.started && !up.attempts) return 'Sin empezar';
+  const bits = [`${up.doneCount} de ${up.total} ejercicios`];
+  if (up.resumable) bits.push('para seguir');
+  if (up.attempts) bits.push(`mejor: ${up.bestCorrect} de ${up.total} sin ayuda`, `intentos: ${up.attempts}`);
+  return bits.join(' · ');
+}
+
 function renderProfile(profile) {
   const main = screen(`¡Hola, ${profile.firstName}!`);
   main.append(h('ul', { class: 'list' }, content.units.map((u) => {
     const open = isUnlocked(profile, content.units, u.id);
-    const st = profile.units[u.id]?.stars ?? 0;
-    const resumable = profile.inProgress?.unitId === u.id;
-    return h('li', { class: open ? '' : 'locked' }, open ? link(`#/unit/${u.id}`, u.title.es, 'btn unit') : h('span', {}, `🔒 ${u.title.es}`), ' ', stars(st), resumable ? h('span', { class: 'muted' }, ' (seguir)') : null);
+    const up = unitProgress(profile, u);
+    return h('li', { class: open ? '' : 'locked' }, open ? link(`#/unit/${u.id}`, u.title.es, 'btn unit') : h('span', {}, `🔒 ${u.title.es}`), ' ', stars(up.stars),
+      open ? h('div', { class: 'muted unit-status' }, statusLine(up)) : null);
   })));
   main.append(link('#/', 'Volver'), link('#/settings', 'Ajustes'));
 }
 
 function renderIntro(profile, unit) {
   const resumable = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev;
+  const up = unitProgress(profile, unit);
   const main = screen(unit.title.es, h('p', { id: 'unit-intro' }, unit.intro.es));
-  const start = link(`#/unit/${unit.id}/play`, resumable ? 'Seguir' : 'Empezar');
+  main.append(h('p', { id: 'unit-status' }, stars(up.stars), ' ', statusLine(up)),
+    up.last && up.attempts ? h('p', { class: 'muted', id: 'unit-last' }, `Último intento: ${'★'.repeat(up.last.stars)}${'☆'.repeat(3 - up.last.stars)} · Mejor: ${'★'.repeat(up.stars)}${'☆'.repeat(3 - up.stars)}`) : null,
+    h('ol', { id: 'exercise-list', class: 'list' }, unit.exercises.map((e, i) => {
+      const r = up.rows[i];
+      const mark = !r.done ? '○ pendiente' : r.ok ? '✔ sin ayuda' : '● con ayuda';
+      return h('li', { class: r.done ? '' : 'muted' }, `${content.archetypeById[e.archetype]?.title.es ?? e.id}: `, h('span', {}, mark), r.done && !r.ok && r.bestOk ? ' (antes, sin ayuda)' : null);
+    })));
+  const start = link(`#/unit/${unit.id}/play`, resumable ? 'Seguir' : up.attempts ? 'Jugar otra vez' : 'Empezar');
   start.id = 'start-unit';
   main.append(start, link(`#/profile/${profile.id}`, 'Volver'));
   speech.ready().then(() => {
@@ -157,6 +175,7 @@ function playUnit(profile, unit) {
   let busy = false; // true from a correct answer until the next round is shown: ignores double taps
   let lastResult = null;
   let result = null;
+  const before = unitProgress(profile, unit).last; // previous attempt, for "antes" on the result screen
   const self = { destroy() { clearTimeout(timer); mounted?.destroy(); } };
   current = self;
   window.__spanishArcade.session = session;
@@ -170,15 +189,37 @@ function playUnit(profile, unit) {
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
       if (busy) return { ...lastResult, ignored: true };
-      const r = session.submit(answer);
-      lastResult = r;
-      if (r.done) { // saved now, only the screen change is delayed
-        result = session.result();
-        store.update(profile.id, (p) => recordUnit(p, unit, result, store.now()));
-      } else store.update(profile.id, (p) => saveInProgress(p, session.snapshot()));
-      if (r.action === 'next') { busy = true; timer = setTimeout(r.done ? finish : show, NEXT_DELAY); }
-      return r;
+      return settle(session.submit(answer));
     },
+  };
+
+  // Save a judged round now (an ended exercise at once, the unit at its end); only the screen change is delayed.
+  function settle(r, delay = NEXT_DELAY) {
+    lastResult = r;
+    const at = store.now();
+    if (r.done) {
+      result = session.result();
+      store.update(profile.id, (p) => recordUnit(r.exerciseDone ? recordExercise(p, unit, r.exerciseDone, at) : p, unit, result, at));
+    } else store.update(profile.id, (p) => saveInProgress(r.exerciseDone ? recordExercise(p, unit, r.exerciseDone, at) : p, session.snapshot()));
+    if (r.action === 'next' || r.action === 'skip') { busy = true; skipBtn.disabled = true; timer = setTimeout(r.done ? finish : show, delay); }
+    return r;
+  }
+
+  /** The right answer as text, for the moment after "Saltar" (best effort across archetypes). */
+  function answerText(round, hint) {
+    const a = hint?.answer;
+    if (a == null) return '';
+    const o = Array.isArray(round.options) ? round.options.find((x) => String(x?.id) === String(a)) : null;
+    return String(o ? (o.es ?? o.text ?? o.label ?? '') : typeof a === 'string' ? a : '');
+  }
+
+  const skipBtn = h('button', { type: 'button', id: 'skip', 'aria-label': 'Saltar esta pregunta y ver la respuesta' }, 'Saltar');
+  skipBtn.onclick = () => {
+    if (busy || session.done) return;
+    const round = session.current.round;
+    const r = settle(session.skip(), SKIP_DELAY);
+    const text = answerText(round, r.hint);
+    live.replaceChildren(h('p', { id: 'skipped' }, text ? `Saltada. La respuesta era: ${text}` : 'Saltada.'));
   };
 
   function show() {
@@ -189,8 +230,10 @@ function playUnit(profile, unit) {
     stage.replaceChildren(
       h('p', { class: 'muted', id: 'progress' }, `Ejercicio ${cur.exerciseIndex + 1}/${unit.exercises.length} · ${cur.roundIndex + 1}/${cur.rounds}`),
       h('p', { id: 'exercise-prompt' }, cur.exercise.prompt?.es ?? ''),
-      host, link(`#/profile/${profile.id}`, 'Salir'));
+      host, skipBtn, link(`#/profile/${profile.id}`, 'Salir'));
     busy = false;
+    skipBtn.disabled = false;
+    live.replaceChildren();
     mounted = cur.archetype.mount(host, cur.round, ctx);
   }
 
@@ -198,7 +241,8 @@ function playUnit(profile, unit) {
     mounted?.destroy(); mounted = null;
     stage.replaceChildren(link(`#/profile/${profile.id}`, 'Volver al mapa'));
     live.replaceChildren(h('h2', {}, '¡Todo hecho!'), h('p', { id: 'result-stars' }, stars(result.stars)),
-      h('p', {}, `${result.correct} de ${unit.exercises.length} ejercicios sin ayuda.`));
+      h('p', {}, `${result.correct} de ${unit.exercises.length} ejercicios sin ayuda.`),
+      before ? h('p', { id: 'result-before' }, 'Antes: ', stars(before.stars), before.correct != null ? ` (${before.correct} de ${unit.exercises.length} sin ayuda)` : '') : null);
   }
 
   // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.

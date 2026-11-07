@@ -36,6 +36,18 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
   };
   load();
 
+  // After a finished round: next round, or next exercise (exerciseDone = its stats, to store at once), or the end.
+  function advance() {
+    s.misses = 0;
+    s.roundIndex++;
+    let exerciseDone;
+    if (s.roundIndex >= ex.rounds.length) {
+      exerciseDone = { id: ex.exercise.id, stats: structuredClone(s.results[ex.exercise.id]) };
+      s.exerciseIndex++; s.roundIndex = 0; load();
+    }
+    return { done: ex === null, ...(exerciseDone && { exerciseDone }) };
+  }
+
   const session = {
     get done() { return ex === null; },
     get current() {
@@ -64,10 +76,26 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
       r.total++;
       if (s.misses === 0) r.correct++;
       for (const id of round.wordIds || []) s.words[id] = { wrong: 0, ...s.words[id], seen: (s.words[id]?.seen ?? 0) + 1 };
-      s.misses = 0;
-      s.roundIndex++;
-      if (s.roundIndex >= ex.rounds.length) { s.exerciseIndex++; s.roundIndex = 0; load(); }
-      return { correct, feedback, action: 'next', done: ex === null };
+      return { correct, feedback, action: 'next', ...advance() };
+    },
+
+    /**
+     * Give up on this round: it counts like a reveal (no credit, never "without help"), is counted in stats.skipped
+     * (not as misses), shows the answer through hint(round, 2) and moves on. -> { correct:false, skipped:true, action:"skip", hint, done, exerciseDone? }
+     */
+    skip() {
+      if (!ex) throw new Error('unit already finished');
+      const round = ex.rounds[s.roundIndex];
+      const r = s.results[ex.exercise.id];
+      r.total++;
+      r.reveals++;
+      r.skipped = (r.skipped ?? 0) + 1;
+      for (const id of round.wordIds || []) {
+        const w = s.words[id] ?? { seen: 0, wrong: 0 };
+        s.words[id] = { ...w, wrong: w.wrong + (s.misses === 0 ? 1 : 0), seen: w.seen + 1 };
+      }
+      const hint = ex.archetype.hint(round, REVEAL_AFTER, null);
+      return { correct: false, skipped: true, feedback: { es: 'Saltada.', en: 'Skipped.' }, action: 'skip', hint, ...advance() };
     },
 
     /** Save as profile.inProgress (JSON-safe). */

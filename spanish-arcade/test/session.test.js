@@ -117,3 +117,66 @@ test('an exercise that makes 0 rounds is skipped with a warning; mount never see
     assert.equal(none.current, null);
   } finally { console.warn = warn; }
 });
+
+test('skip counts like a reveal: no credit, stats.skipped, not two misses, answer shown through hint level 2', () => {
+  const s = createUnitSession({ unit, content, seed: 3 });
+  const first = s.current.round;
+  const r = s.skip();
+  assert.equal(r.action, 'skip');
+  assert.equal(r.correct, false);
+  assert.equal(r.skipped, true);
+  assert.deepEqual(r.hint, { level: 2, answer: first.answer });
+  assert.equal(s.current.roundIndex, 1);
+  assert.equal(s.current.misses, 0);
+  const st = s.result().exercises[unit.exercises[0].id];
+  assert.deepEqual([st.skipped, st.reveals, st.hints, st.correct, st.total], [1, 1, 0, 0, 1]);
+  assert.equal(s.result().words[first.wordIds[0]].wrong, 1);
+  assert.equal(s.result().words[first.wordIds[0]].seen, 1);
+});
+
+test('a skipped round never counts as "without a reveal" and never gives 3 stars', () => {
+  const s = createUnitSession({ unit, content, seed: 4 });
+  s.skip();
+  while (!s.done) s.submit(s.current.round.answer);
+  const r = s.result();
+  assert.equal(r.finished, true);
+  assert.equal(r.correct, unit.exercises.length - 1); // the exercise with the skip does not count
+  assert.notEqual(r.stars, 3);
+});
+
+test('skip after a miss does not count the word wrong twice; the last round still finishes the unit', () => {
+  const s = createUnitSession({ unit, content, seed: 5 });
+  const { round } = s.current;
+  s.submit(wrong(round));
+  s.skip();
+  assert.equal(s.result().words[round.wordIds[0]].wrong, 1);
+  let last;
+  while (!s.done) {
+    const c = s.current;
+    last = c.exerciseIndex === unit.exercises.length - 1 && c.roundIndex === c.rounds - 1 ? s.skip() : s.submit(c.round.answer);
+  }
+  assert.equal(last.done, true);
+  assert.equal(s.result().finished, true);
+  assert.throws(() => s.skip(), /finished/);
+});
+
+test('submit and skip report exerciseDone when an exercise ends, with its stats', () => {
+  const s = createUnitSession({ unit, content, seed: 6 });
+  const seen = [];
+  while (!s.done) {
+    const c = s.current;
+    const r = c.roundIndex === c.rounds - 1 && c.exerciseIndex === 1 ? s.skip() : s.submit(c.round.answer);
+    if (r.exerciseDone) seen.push(r.exerciseDone);
+  }
+  assert.deepEqual(seen.map((d) => d.id), unit.exercises.map((e) => e.id));
+  assert.equal(seen[0].stats.reveals, 0);
+  assert.equal(seen[1].stats.skipped, 1);
+});
+
+test('a resumed snapshot keeps skips', () => {
+  const a = createUnitSession({ unit, content, seed: 7 });
+  a.skip();
+  const b = createUnitSession({ unit, content, seed: 7, resume: a.snapshot() });
+  assert.equal(b.current.roundIndex, 1);
+  assert.equal(b.result().exercises[unit.exercises[0].id].skipped, 1);
+});
