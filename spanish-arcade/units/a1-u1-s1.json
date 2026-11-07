@@ -3,11 +3,11 @@
   "bookRef": { "unit": 1, "session": 1 },
   "theme": "sunny",
   "intro": { "es": "¡Hola! ¿Cómo te llamas?", "en": "Hi! What is your name?" },
-  "badge": { "name": { "es": "Hola, amigo", "en": "Hello, friend" }, "icon": "👋" },
+  "badge": { "name": { "es": "¡Buen comienzo!", "en": "Good start" }, "icon": "👋" },
   "pass": { "minCorrect": 4 },
   "exercises": [
     { "id": "numbers-listen", "archetype": "listen-pick-word", "difficulty": 1,
-      "params": { "from": { "tag": "numbers", "n": 4 }, "options": 3, "answerAs": "picture" },
+      "params": { "from": { "tag": "numbers", "n": 4 }, "options": 3, "answerAs": "picture", "similar": true },
       "prompt": { "es": "Escucha y toca el número.", "en": "Listen and tap the number." } },
     { "id": "intruder-school", "archetype": "odd-one-out", "difficulty": 1,
       "params": { "size": 4, "groups": [
@@ -17,7 +17,7 @@
         { "words": ["rojo", "verde", "morado"], "odd": "hermana", "theme": "colores" } ] },
       "prompt": { "es": "¿Cuál sobra?", "en": "Which one does not belong?" } },
     { "id": "family-match", "archetype": "match-pairs", "difficulty": 1,
-      "params": { "from": { "tag": "family", "n": 9 }, "size": 3 },
+      "params": { "from": { "ids": ["madre", "padre", "hermano", "hermana", "abuelo", "abuela"], "n": 6 }, "size": 2 },
       "prompt": { "es": "Une cada palabra con su dibujo.", "en": "Join each word to its picture." } },
     { "id": "colours-spell", "archetype": "spell-tiles", "difficulty": 1,
       "params": { "from": { "tag": "colours", "n": 4 } },
@@ -27,14 +27,14 @@
         { "text": "Me ___ Lola.", "options": ["llamo", "llamas"], "answer": "llamo", "en": "My name is Lola." },
         { "text": "¡Hola! ___ llamo Nico.", "options": ["Me", "Te"], "answer": "Me", "en": "Hi! My name is Nico." },
         { "text": "¿Cómo te ___?", "options": ["llamas", "llamo", "llama"], "answer": "llamas", "en": "What is your name?" },
-        { "text": "Tengo ___ años.", "options": ["siete", "sí", "soy"], "answer": "siete", "en": "I am seven." } ] },
+        { "text": "Tengo siete ___.", "options": ["años", "año"], "answer": "años", "en": "I am seven." } ] },
       "prompt": { "es": "Completa la frase.", "en": "Fill the gap." } },
     { "id": "intro-read", "archetype": "read-answer", "difficulty": 2,
       "params": { "emoji": "👋", "kind": "tf",
-        "text": ["Hola. Me llamo Lola.", "Tengo siete años.", "Tengo una hermana. Se llama Nora.", "Mi color favorito es el azul."],
+        "text": ["Hola. Me llamo Lola.", "Tengo siete años.", "Tengo una hermana. Se llama Nora."],
         "questions": [
           { "q": "Lola tiene siete años.", "ok": true, "evidence": 1 },
-          { "q": "Lola tiene un hermano.", "ok": false, "evidence": 2 },
-          { "q": "El color favorito de Lola es el verde.", "ok": false, "evidence": 3 } ] },
+          { "q": "Lola tiene dos hermanas.", "ok": false, "evidence": 2 },
+          { "q": "La hermana de Lola se llama Nora.", "ok": true, "evidence": 2 } ] },
       "prompt": { "es": "Lee. ¿Verdadero o falso?", "en": "Read. True or false?" } }
   ] }
