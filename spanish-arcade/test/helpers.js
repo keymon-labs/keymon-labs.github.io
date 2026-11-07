@@ -7,12 +7,12 @@ const app = join(import.meta.dirname, '..');
 const json = (dir) => Object.fromEntries(readdirSync(join(app, dir)).filter((f) => f.endsWith('.json'))
   .map((f) => [`../${dir}/${f}`, JSON.parse(readFileSync(join(app, dir, f), 'utf8'))]));
 
-export async function loadRealContent() {
+export async function loadRealContent(opts) {
   const archetypes = {};
   for (const d of readdirSync(join(app, 'archetypes'), { withFileTypes: true })) {
     if (d.isDirectory()) archetypes[`../archetypes/${d.name}/index.js`] = (await import(`../archetypes/${d.name}/index.js`)).default;
   }
-  return buildContent({ archetypes, units: json('units'), vocab: json('data/vocab') });
+  return buildContent({ archetypes, units: json('units'), vocab: json('data/vocab') }, opts);
 }
 
 // Invented words for tests (no real content).
