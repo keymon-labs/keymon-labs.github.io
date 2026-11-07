@@ -34,7 +34,7 @@ Board (source of truth is each file's front matter):
 | 016 | [MVP hardening (whole-change review fixes)](016-mvp-hardening.md) | Sonnet | 001b, 006, 007, 008, 009, 010, 014 | done |
 | 017 | [listen-pick-word distractorFrom param](017-listen-distractor-from.md) | Sonnet | 006, 011 | done |
 | 018 | [UI fully in Spanish, answer in the spoken gap](018-ui-spanish-only.md) | Sonnet | 001b, 016 | in-progress |
-| 019 | [Harder content for native speakers (a1-u1-s1)](019-harder-unit.md) | Sonnet | 011, 017 | in-progress |
+| 019 | [Harder content for native speakers (a1-u1-s1)](019-harder-unit.md) | Sonnet | 011, 017 | review |
 <!-- board:end -->
 
 Parallelism: 002 can run beside 001. After 001: 001b, 006–010 and 014 are independent; 003 needs 001b. Archetype tasks (006–010) may be restyled once 002's tokens exist. 011 needs the archetypes it uses (it may start with the ones that exist and leave others for a follow-up). Later units (u1-s5 onwards) become new Haiku/Sonnet data tasks cloned from 011.
