@@ -25,7 +25,7 @@ Board (source of truth is each file's front matter):
 | 007 | [Archetype read-answer](007-archetype-read-answer.md) | Sonnet | 001 | done |
 | 008 | [Archetype fill-gap-choice](008-archetype-fill-gap-choice.md) | Sonnet | 001 | in-progress |
 | 009 | [Archetypes spell-tiles and spell-fill-letters](009-archetypes-spelling.md) | Sonnet | 001 | done |
-| 010 | [Archetypes odd-one-out, match-pairs, order-words, word-search](010-archetypes-puzzles.md) | Sonnet | 001 | in-progress |
+| 010 | [Archetypes odd-one-out, match-pairs, order-words, word-search](010-archetypes-puzzles.md) | Sonnet | 001 | done |
 | 011 | [Units a1-u1-s1 and a1-u1-s3 plus vocabulary](011-units-u1-s1-s3.md) | Sonnet | 001, 006, 007, 008, 009, 010, 014, 015 | todo |
 | 012 | [Jokes, mascot lines and animations pack](012-fun-pack.md) | Haiku | 001, 002 | todo |
 | 013 | [Ship: landing card, PWA, credits, README, release](013-ship.md) | Sonnet | 001, 001b, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 014 | todo |

@@ -22,7 +22,7 @@ One file per unit, named like the unit (`a1-u9-s1.json`).
 ## 2. Add a unit: `units/<unitId>.json`
 Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises (dev units are exempt from the mix rules, not from this count).
 
-**Archetypes that exist now**: `listen-pick-word` (listening), `spell-tiles` and `spell-fill-letters` (spelling), `read-answer` (reading) and `placeholder` (a simple tap-the-word game, skill puzzle). Coming: `fill-gap-choice` (008), `odd-one-out` and `match-pairs` (010). Use only archetypes that exist in `archetypes/`; the `params` come from that archetype's README. Until the spelling games land, a new unit cannot satisfy the mix rule below; the checker will say so, and that is expected.
+**Archetypes that exist now**: `listen-pick-word` (listening), `spell-tiles` and `spell-fill-letters` (spelling), `read-answer` (reading) and `placeholder` (a simple tap-the-word game, skill puzzle). `odd-one-out` (puzzle) and `match-pairs` (puzzle). Coming: `fill-gap-choice` (008); `order-words` and `word-search` are later. Use only archetypes that exist in `archetypes/`; the `params` come from that archetype's README. Until the spelling games land, a new unit cannot satisfy the mix rule below; the checker will say so, and that is expected.
 
 Copy this and change it (add three more animal words so `n: 4` can be met; it is cut to four exercises, so it needs `"dev": true` to be checked; a real unit has 5 or 6, including a spelling one):
 ```json

@@ -36,3 +36,5 @@ Authored board (one round, 2 to 6 pairs):
   "params": { "pairs": [ { "a": "¿Cómo te llamas?", "b": "Me llamo Pipo" }, { "a": "¿Qué tal?", "b": "Muy bien" } ] },
   "prompt": { "es": "Une cada pregunta con su respuesta.", "en": "Join each question to its answer." } }
 ```
+
+Words an article-noun board has to drop (a board without two different articles) are not reported by `check:units`; add a few nouns of each article if a unit loses rounds.

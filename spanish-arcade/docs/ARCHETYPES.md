@@ -9,10 +9,10 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `fill-gap-choice` | Sentence with a gap; pick the word that fits | grammar, vocab | `items[]` or `from`, `options`, `focus` (article, verb form, preposition) | more options; closer distractors | task-008 |
 | `spell-tiles` | Picture/audio prompt; drag letter tiles to build the word | spelling | `from`, `extraLetters`, `hintLetters` | extra decoy letters; no hint | done |
 | `spell-fill-letters` | Word with missing letters (ñ, r/rr, s/x, accents, h) | spelling rules | `from`/`items`, `focus` | more gaps; two-way choice → free typing | done |
-| `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | task-010 |
-| `match-pairs` | Join word ↔ picture/emoji, article ↔ noun, question ↔ answer | vocab, grammar | `pairs[]` or `from`, `mode` | more pairs; text-only | task-010 |
-| `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | task-010 |
-| `word-search` | Find the words in a grid | spelling, vocab | `from`, `size`, `directions` | bigger grid, diagonals | task-010 |
+| `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | done |
+| `match-pairs` | Join word ↔ picture/emoji, article ↔ noun, question ↔ answer | vocab, grammar | `pairs[]` or `from`, `mode` | more pairs; text-only | done |
+| `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | idea |
+| `word-search` | Find the words in a grid | spelling, vocab | `from`, `size`, `directions` | bigger grid, diagonals | idea |
 | `sort-into-bins` | Drag words into el/la, un/una, singular/plural, masculine/feminine | grammar | `bins[]`, `from` | more bins; irregulars | idea |
 | `true-false-listen` | Listen to a sentence; true or false against a picture | listening | `scene`, `statements[]` | longer statements | idea |
 | `clock-reader` | Read a clock and choose/type the Spanish time | numbers, time | `times[]`, `style` (en punto / y media / y cuarto / menos cuarto) | more time forms | idea |
