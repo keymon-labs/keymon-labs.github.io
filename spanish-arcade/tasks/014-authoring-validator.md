@@ -3,7 +3,7 @@ id: "014"
 title: Authoring guide and unit validator
 model: Sonnet 5.5
 why_model: Tooling and docs on top of the core validators; unblocks safe data tasks for cheaper models.
-status: in-progress
+status: done
 claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/docs/AUTHORING.md, scripts/check-units.mjs (or spanish-arcade/scripts/), package.json (script only), test/units.test.js]
@@ -17,3 +17,8 @@ Write `docs/AUTHORING.md` (how to add a word, a unit and an exercise; stable exe
 
 ## Notes
 Keep the script small; reuse `core/schema.js` rather than duplicating rules.
+
+Ruling: the mix-rule exemption keys on `"dev": true`, not on an id suffix — cost if wrong: none.
+Ruling: each exercise is generated once with a sample seed and fewer than min(3, n) rounds is an error naming the likely cause (words skipped for no emoji, spaces or no matching focus) — archetypes skip words silently, so this is where authors find out — cost if wrong: a false error on a very short exercise.
+Ruling: picture archetypes reject a selector that can reach words without an emoji, so authors get an error instead of short rounds — cost if wrong: a stricter selector than needed.
+Reviewed by Opus, then a scoped Sonnet re-review: clean. Small extra: `core/content.js` exposes `unitByFile` (one line, outside `touches`). Known limits: PLAN 4.3 still says the pool "demands emoji on nouns" (core) while the checker covers the other words; a new unit can only pass the mix rule once a spelling archetype is merged (task 009).

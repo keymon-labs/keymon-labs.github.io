@@ -3,7 +3,8 @@ id: "007"
 title: Archetype read-answer
 model: Sonnet 5.5
 why_model: Standard comprehension UI; content rules matter more than code.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/archetypes/read-answer/**, test/read-answer.test.js]
 ---

@@ -20,11 +20,11 @@ One file per unit, named like the unit (`a1-u9-s1.json`).
 - `tags` are topics (`animals`, `family`, `colours`...). `spell` lists tricky spellings: `ñ rr r x s h accent qu gu ü ¿¡`.
 
 ## 2. Add a unit: `units/<unitId>.json`
-Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises.
+Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises (dev units are exempt from the mix rules, not from this count).
 
 **Archetypes that exist now**: `listen-pick-word` (listening) and `placeholder` (a simple tap-the-word game, skill puzzle). Coming: `spell-tiles` and `spell-fill-letters` (task 009, spelling), `fill-gap-choice` (008), `odd-one-out` and `match-pairs` (010), `read-answer` (007). Use only archetypes that exist in `archetypes/`; the `params` come from that archetype's README. Until the spelling games land, a new unit cannot satisfy the mix rule below; the checker will say so, and that is expected.
 
-Copy this and change it (it is cut to four exercises; a real unit has 5 or 6, including a spelling one):
+Copy this and change it (add three more animal words so `n: 4` can be met; it is cut to four exercises, so it needs `"dev": true` to be checked; a real unit has 5 or 6, including a spelling one):
 ```json
 { "schema": 1, "id": "a1-u9-s1", "rev": 1, "order": 9,
   "title": { "es": "Los animales", "en": "Animals" },
