@@ -5,6 +5,7 @@ Hear a Spanish word (speech synthesis via `ui/speech.js`), tap the matching word
 | param | type | default | meaning |
 |---|---|---|---|
 | `from` | selector | required | words to practise (`n` rounds) |
+| `distractorFrom` | selector, optional | all taught words | pool the wrong options come from (the target is removed). `n` is required by the selector shape but unused; give `1`. Falls back to all taught words only if this pool cannot fill `options` |
 | `options` | int 2-6 | difficulty + 2 (max 6) | choices per round |
 | `answerAs` | `word` \| `picture` | `word` | what the child taps; `picture` shows emoji options and unique emoji per option |
 | `replay` | bool | `true` | `false`: one listen only, no slow button |
