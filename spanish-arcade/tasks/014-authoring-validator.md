@@ -3,7 +3,8 @@ id: "014"
 title: Authoring guide and unit validator
 model: Sonnet 5.5
 why_model: Tooling and docs on top of the core validators; unblocks safe data tasks for cheaper models.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/docs/AUTHORING.md, scripts/check-units.mjs (or spanish-arcade/scripts/), package.json (script only), test/units.test.js]
 ---
