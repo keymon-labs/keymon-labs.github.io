@@ -2,7 +2,7 @@
 
 A library is one JSON file with a list of songs. Load it from the menu: **Song library → paste the text (or choose a file) → Load library**. Songs are kept on that device only; **Remove library** deletes them. A library can be plain or password-protected.
 
-Only put in songs you wrote or that are in the public domain (traditional tunes, old classical pieces). Don't copy melodies or words from a book or recording. Encrypting a file does not change that; a protected file in a public place is still shared.
+Which songs you add is up to you; a library stays on the device that loads it.
 
 ## Plain format
 ```json
@@ -38,7 +38,6 @@ Format: {"songs":[{"id","title","info","bpm","bar","notes"}]}
   beats must be one of 0.5, 1, 1.5, 2, 3, 4. lyric is a short syllable ("" if none). finger (1-5) is optional; leave it out unless the default is wrong.
 - Beginner level: right hand C4-G4 only, or left hand C3-G3 only, steps and small skips, 8-16 bars at most.
 - Beats in each bar must add up to "bar". The last note should be the home note.
-- Only use public-domain tunes or write an original melody. Do not reproduce songs from books or recordings.
 Songs I want: <list them here>
 ```
 Check the result by loading it in the app; errors name the song and note.
