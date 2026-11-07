@@ -1,0 +1,9 @@
+{ "schema": 1, "words": [
+  { "id": "gato", "es": "gato", "en": "cat", "emoji": "🐱", "tags": ["animals"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "gata", "pl": "gatos" }, "unit": "a1-u0-demo" },
+  { "id": "perro", "es": "perro", "en": "dog", "emoji": "🐶", "tags": ["animals"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "perra", "pl": "perros" }, "spell": ["rr"], "unit": "a1-u0-demo" },
+  { "id": "pez", "es": "pez", "en": "fish", "emoji": "🐟", "tags": ["animals"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "peces" }, "unit": "a1-u0-demo" },
+  { "id": "sol", "es": "sol", "en": "sun", "emoji": "☀️", "tags": ["nature"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u0-demo" },
+  { "id": "luna", "es": "luna", "en": "moon", "emoji": "🌙", "tags": ["nature"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u0-demo" },
+  { "id": "arbol", "es": "árbol", "en": "tree", "emoji": "🌳", "tags": ["nature"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "árboles" }, "spell": ["accent"], "unit": "a1-u0-demo" },
+  { "id": "casa", "es": "casa", "en": "house", "emoji": "🏠", "tags": ["home"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u0-demo" }
+]}
