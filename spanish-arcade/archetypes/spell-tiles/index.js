@@ -88,7 +88,8 @@ export default {
     check.addEventListener('click', submit);
 
     const onKey = (e) => {
-      if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input,textarea,button')) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input,textarea')) return;
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.closest?.('button')) return; // the button handles its own press
       if (e.key === 'Enter') return submit();
       if (e.key === 'Backspace') { if (placed.length > locked) { placed.pop(); render(); } return; }
       const c = e.key.length === 1 ? e.key.toLowerCase() : '';

@@ -63,11 +63,12 @@ export default {
       return round.cells.map((c) => (c.gap ? (typing ? inputs[g++].value : values[g++] ?? '') : c.ch)).join('');
     };
     const maxLen = (i) => Math.max(...gapCells[i].options.map((o) => o.length));
+    const idx = (inp) => inputs.indexOf(inp);
     function insert(ch) { // adds to the gap that last had focus; a full gap starts again, so o + ó never gives oó
       const i = lastInput ?? inputs[active];
       if (!i) return;
       const v = i.value + ch;
-      i.value = v.length > i.maxLength ? ch : v;
+      i.value = v.length > maxLen(idx(i)) ? ch : v;
       i.focus();
     }
     function backspace() {
@@ -112,10 +113,13 @@ export default {
         inp.autocomplete = 'off';
         inp.autocapitalize = 'off';
         inp.spellcheck = false;
-        inp.maxLength = maxLen(i);
         inp.setAttribute('aria-label', es ? `Letras que faltan ${i + 1}` : `Missing letters ${i + 1}`);
         inp.addEventListener('focus', () => { lastInput = inp; active = i; });
-        inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+        inp.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') return submit();
+          // a full gap restarts on the next letter, so o then ó works with a physical keyboard too
+          if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && inp.value.length >= maxLen(i)) inp.value = '';
+        });
         inputs.push(inp);
       });
     }

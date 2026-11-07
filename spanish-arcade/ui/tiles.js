@@ -12,8 +12,8 @@ const CSS = `
 .sp-check{touch-action:manipulation;font-size:1.1rem}
 .sp-key{touch-action:manipulation;font-size:1.1rem}
 .sp-gap{min-width:48px;min-height:48px;font:inherit;font-size:1.6rem;text-align:center;border:0;border-bottom:3px dashed currentColor;background:transparent;color:inherit;width:3ch}
-.sp-gap.hinted{background:rgba(255,200,0,.35)}
 .sp-gap.active{border-bottom-style:solid;outline:2px solid currentColor}
+.sp-gap.hinted{background:rgba(255,200,0,.35);outline:3px dotted currentColor}
 .sp-word{font-size:1.8rem;letter-spacing:.05em;margin:10px 0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px}
 .sp-reveal{font-size:1.6rem;font-weight:bold;text-align:center;margin:6px 0}
 .sp-prompt{font-size:2.4rem;text-align:center;margin:6px 0}
