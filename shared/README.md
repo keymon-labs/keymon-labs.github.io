@@ -11,9 +11,9 @@ import { connectMidi } from "../shared/midi.js";
 |---|---|---|---|
 | [`midi.js`](midi.js) | Note input from a real instrument: Web MIDI (USB/OS-paired), Bluetooth LE MIDI, computer keys as fallback. Note-on only. Chrome/Edge only. | `connectMidi(onNote, onStatus)`, `connectBluetoothMidi(onNote, onStatus)`, `keyboardNotes(onNote)` | piano-jump |
 | [`music.js`](music.js) | Note names, note-string ↔ MIDI number, staff position. MIDI 60 = middle C. | `NOTE_NAMES`, `SOLFEGE`, `toMidi("C4")`, `stepOf(midi)`, `isSharp(midi)`, `noteName(midi, "letters"\|"solfege")` | piano-jump |
-| [`audio.js`](audio.js) | Simple synthesized sound effects (Web Audio oscillator with envelope). | `unlockAudio()`, `tone(freq, dur, type, gain, delay, slideTo)` | piano-jump |
-| [`claude-link.js`](claude-link.js) | "Open in Claude" buttons that open the keymon-labs loader artifact; link kept out of plain text for crawlers. | `wireOpenInClaude(root?)` for `[data-open-in-claude="<app id>"]` | landing page, homework-reader |
-| [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump, maths-arcade, homework-reader |
+| [`audio.js`](audio.js) | Simple synthesized sound effects (Web Audio oscillator with envelope). | `unlockAudio()`, `tone(freq, dur, type, gain, delay, slideTo)` | piano-jump, word-quest |
+| [`claude-link.js`](claude-link.js) | "Open in Claude" buttons that open the keymon-labs loader artifact; link kept out of plain text for crawlers. | `wireOpenInClaude(root?)` for `[data-open-in-claude="<app id>"]` | landing page, homework-reader, word-quest |
+| [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump, maths-arcade, homework-reader, word-quest |
 
 ## Callback contracts
 - `onNote(midi)`: a MIDI note number on note-on.

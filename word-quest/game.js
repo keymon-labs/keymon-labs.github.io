@@ -1,0 +1,72 @@
+// Word Quest rules: normalise sentences, match planned outcomes, scene state, stars. Pure logic, no DOM; tested in test/game.test.js.
+
+export const POSES = ["idle", "dance", "cheer", "shrug", "wave", "sing", "hop"];
+
+/** Lowercase, drop accents and punctuation (¡ ¿ . , ! ?), collapse spaces. Accents are never required. */
+export function normalize(s) {
+  return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+}
+
+const has = (tokens, words = []) => words.some((w) => tokens.includes(w));
+
+export function initialState() {
+  return { ballHeld: false, ballAt: "idle", ballGone: false, frog: "alive", kid: "idle" };
+}
+
+/** Before each new sentence: the frog hops back, a eaten ball is replaced by a new one. */
+export function refresh(state) {
+  const s = { ...state, frog: state.frog === "away" ? "alive" : state.frog };
+  if (s.ballGone) Object.assign(s, { ballGone: false, ballAt: "idle", ballHeld: false });
+  return s;
+}
+
+/** Apply an outcome's effects (only known keys), returning a new state. */
+export function applyEffects(state, effects = {}) {
+  const keys = ["ballHeld", "ballAt", "ballGone", "frog", "kid"];
+  const next = { ...state };
+  for (const k of keys) if (k in effects) next[k] = effects[k];
+  return next;
+}
+
+/**
+ * Match a corrected sentence against the story's rules, in order. First rule that fits wins.
+ * Returns { id, outcome } or null when nothing is planned (then Claude improvises).
+ */
+export function evaluate(sentence, state, story, lang) {
+  const tokens = normalize(sentence).split(" ").filter(Boolean);
+  const groups = story.groups[lang];
+  const pickInSentence = has(tokens, groups.pick);
+  const held = state.ballHeld || pickInSentence;
+  for (const rule of story.rules) {
+    if (!(rule.if || []).every((g) => has(tokens, groups[g]))) continue;
+    if (rule.not && rule.not.some((g) => has(tokens, groups[g]))) continue;
+    if (rule.held !== undefined && rule.held !== held) continue;
+    return { id: rule.outcome, outcome: story.outcomes[rule.outcome] };
+  }
+  return null;
+}
+
+/** Does the sentence use one of the story's word groups (e.g. "through")? */
+export function usesWord(sentence, story, lang, group) {
+  return has(normalize(sentence).split(" "), story.groups[lang][group]);
+}
+
+/** Stars: 3 for a win on the first photo, 2 on the second, 1 after that. Using "through" is needed for 3. */
+export function starsFor(photos, usedThrough) {
+  let stars = photos <= 1 ? 3 : photos === 2 ? 2 : 1;
+  if (!usedThrough) stars = Math.min(stars, 2);
+  return stars;
+}
+
+export function outcomeText(outcome, lang) {
+  return outcome.text[lang] || outcome.text.en;
+}
+
+/** Check Claude's improvised answer. Anything unexpected becomes a safe "can't do that". */
+export function validImprov(json, fallbackText) {
+  const pose = POSES.includes(json?.pose) ? json.pose : "idle";
+  const text = typeof json?.text === "string" && json.text.trim() ? json.text.trim().slice(0, 240) : null;
+  if (json?.ok === true && text) return { ok: true, pose, text };
+  return { ok: false, pose: "shrug", text: fallbackText };
+}

@@ -1,0 +1,81 @@
+/* Word Quest: tokens on :root, light and dark. Scene is emoji on a CSS stage. */
+:root { --bg:#f6f4ef; --card:#fff; --text:#1c1b19; --muted:#6b675f; --line:#e4e0d6; --accent:#c4562b; --accent-ink:#fff; --good:#2e7d4f; --bad:#b3261e; --sky:#dff0f7; --grass:#c9e7b5; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#141413; --card:#1f1e1c; --text:#ecebe6; --muted:#9a968c; --line:#2e2c29; --accent:#e07a50; --accent-ink:#141413; --good:#7fd19b; --bad:#ff8a80; --sky:#1d2a31; --grass:#23341f; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:max(16px,env(safe-area-inset-top)) 16px 40px; }
+main { max-width:640px; margin:0 auto; }
+h1 { font-size:26px; margin:4px 0; letter-spacing:-.02em; }
+h1 span { color:var(--accent); }
+h2 { font-size:19px; margin:18px 0 8px; }
+h3 { font-size:16px; margin:0 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+header { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+button { font:inherit; cursor:pointer; }
+button.primary, label.primary { display:inline-block; background:var(--accent); color:var(--accent-ink); border:0; border-radius:12px; padding:10px 16px; font-weight:600; text-align:center; }
+button.ghost, label.ghost { background:none; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:8px 14px; }
+button.big, label.big { display:block; width:100%; padding:16px; font-size:18px; }
+button:disabled { opacity:.5; cursor:default; }
+button:focus-visible, input:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+.lang button { background:none; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:4px 12px; }
+.lang button[aria-pressed="true"] { color:var(--accent-ink); background:var(--accent); border-color:var(--accent); }
+.panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin:12px 0; }
+.row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.between { justify-content:space-between; }
+.gap { gap:10px; }
+.muted { color:var(--muted); margin:6px 0; }
+.small { font-size:14px; }
+.notice { background:#fdf1e7; color:#5b3a1e; border-radius:10px; padding:8px 10px; font-size:14px; }
+@media (prefers-color-scheme: dark) { .notice { background:#2a1f18; color:#f0d8c4; } }
+input[type=number], input[type=password] { font:inherit; padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--text); width:90px; }
+input[type=password] { width:100%; }
+label { display:block; margin:8px 0; }
+label.row { margin:0; justify-content:space-between; }
+.file-input { display:none; }
+.stories { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+.stories button { width:100%; text-align:left; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+.stories small { display:block; color:var(--muted); }
+.mission { font-size:20px; font-weight:700; color:var(--accent); margin:0 0 8px; }
+.words { font-weight:600; margin:4px 0 10px; }
+.stars { font-size:24px; letter-spacing:4px; margin:8px 0; }
+.stars-small { color:var(--accent); letter-spacing:2px; }
+.written { font-size:20px; background:var(--bg); border-radius:10px; padding:10px 12px; margin:0 0 8px; }
+.errors { margin:0 0 8px; padding-left:18px; }
+.errors li { margin:4px 0; }
+.hint { background:#eaf5ee; color:#1f4d31; border-radius:10px; padding:8px 10px; }
+@media (prefers-color-scheme: dark) { .hint { background:#18291e; color:#bfe3cb; } }
+.outcome { font-size:17px; font-weight:600; margin:8px 0; }
+.outcome.bad { color:var(--bad); }
+.outcome.good { color:var(--good); }
+.log { list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+.log li { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:15px; }
+.log small { color:var(--muted); display:block; }
+
+/* Scene: CSS stage with emoji. data-* attributes come from the game state. */
+.stage { position:relative; height:230px; border-radius:16px; overflow:hidden; background:linear-gradient(var(--sky) 0 62%, var(--grass) 62%); margin-top:8px; }
+.stage > div { position:absolute; line-height:1; transition:left .6s ease, bottom .6s ease, top .6s ease, transform .4s ease, opacity .4s ease; }
+.kid { left:6%; bottom:6px; font-size:64px; }
+.ball { left:22%; bottom:60px; font-size:40px; }
+.basket { left:70%; top:8px; font-size:58px; }
+.frog { left:72%; bottom:4px; font-size:52px; }
+.notes { left:18%; top:20px; font-size:26px; opacity:0; color:var(--accent); }
+.bubble { left:50%; top:4px; transform:translateX(-50%); background:var(--card); border:2px solid var(--line); border-radius:12px; padding:4px 10px; font-size:14px; max-width:90%; text-align:center; z-index:2; }
+.stage[data-ball="held"] .ball { left:14%; bottom:118px; font-size:34px; }
+.stage[data-ball="basket"] .ball { left:72%; top:44px; font-size:34px; }
+.stage[data-ball="far"] .ball { left:88%; bottom:150px; font-size:34px; }
+.stage[data-ball="frog"] .ball { left:73%; bottom:70px; font-size:34px; }
+.stage[data-ball="gone"] .ball { opacity:0; }
+.stage[data-frog="away"] .frog { left:100%; opacity:0; }
+.stage[data-frog="squashed"] .frog { transform:scaleY(.35) scaleX(1.3); bottom:0; }
+.stage[data-kid="dance"] .kid { animation:bob .5s ease-in-out 3; }
+.stage[data-kid="cheer"] .kid { animation:jump .6s ease-out 2; }
+.stage[data-kid="hop"] .kid { animation:jump .4s ease-out 3; }
+.stage[data-kid="shrug"] .kid { animation:wobble .8s ease-in-out 2; }
+.stage[data-kid="wave"] .kid { animation:wobble .4s ease-in-out 4; transform-origin:bottom right; }
+.stage[data-kid="sing"] .kid { animation:wobble .6s ease-in-out 3; }
+.stage[data-kid="sing"] .notes { opacity:1; animation:float 2s ease-out infinite; }
+@keyframes bob { 50% { transform:translateY(-10px); } }
+@keyframes jump { 0% { transform:translateY(0); } 40% { transform:translateY(-28px); } 100% { transform:translateY(0); } }
+@keyframes wobble { 25% { transform:rotate(-8deg); } 75% { transform:rotate(8deg); } }
+@keyframes float { from { transform:translateY(10px); opacity:1; } to { transform:translateY(-40px); opacity:0; } }
+@media (prefers-reduced-motion: reduce) { .stage * { animation:none !important; transition:none !important; } }
+footer { margin-top:32px; text-align:center; }
+.claude-option { margin-bottom:10px; }

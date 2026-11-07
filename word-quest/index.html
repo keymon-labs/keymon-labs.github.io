@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Word Quest</title>
+<meta name="description" content="Write a sentence on paper, take a photo, fix the mistakes, and watch the story happen.">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Word <span>Quest</span></h1>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en">English</button>
+      <button type="button" data-lang="es">Español</button>
+    </div>
+  </header>
+
+  <section id="home">
+    <div class="panel">
+      <label class="row">
+        <span data-t="age">Age</span>
+        <input id="age" type="number" min="4" max="12" inputmode="numeric">
+      </label>
+      <p id="tier" class="muted small"></p>
+    </div>
+    <h2 data-t="stories">Stories</h2>
+    <ul id="stories" class="stories"></ul>
+    <button id="show-log" class="ghost" type="button" data-t="log">Log</button>
+    <p id="home-status" class="muted small" role="status"></p>
+  </section>
+
+  <section id="play" hidden>
+    <div class="row between">
+      <button id="back" class="ghost" type="button" data-t="back">Back</button>
+      <span id="story-stars" class="stars-small"></span>
+    </div>
+    <h2 id="title"></h2>
+    <p id="mission" class="mission"></p>
+
+    <div id="stage" class="stage" data-ball="idle" data-frog="alive" data-kid="idle">
+      <div class="basket" aria-hidden="true">🧺</div>
+      <div class="frog" aria-hidden="true">🐸</div>
+      <div class="kid" aria-hidden="true">🧒</div>
+      <div class="ball" aria-hidden="true">🏀</div>
+      <div id="notes" class="notes" aria-hidden="true">♪ ♫ ♪</div>
+      <div id="bubble" class="bubble" hidden></div>
+    </div>
+
+    <div class="panel">
+      <p id="intro"></p>
+      <p id="use-words" class="words"></p>
+      <label class="primary big" for="photo" data-t="takePhoto">📷 Take a photo of your sentence</label>
+      <input id="photo" class="file-input" type="file" accept="image/*">
+      <p class="muted small" data-t="cameraNote">Good light, flat paper, the whole sentence in the frame.</p>
+      <p id="notice" class="notice" hidden></p>
+    </div>
+
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <section id="review" class="panel" hidden>
+      <h3 data-t="asWritten">What I read</h3>
+      <p id="written" class="written"></p>
+      <div id="fix-block" hidden>
+        <p class="muted" data-t="fixList">To fix:</p>
+        <ul id="errors" class="errors"></ul>
+      </div>
+      <p id="hint" class="hint" hidden></p>
+      <p id="outcome" class="outcome" hidden></p>
+      <p id="stars" class="stars" hidden></p>
+      <button id="next" class="primary" type="button" hidden></button>
+    </section>
+  </section>
+
+  <section id="log-view" hidden>
+    <div class="row between">
+      <button id="log-back" class="ghost" type="button" data-t="logBack">Back</button>
+      <button id="log-clear" class="ghost" type="button" data-t="clearLog">Clear log</button>
+    </div>
+    <h2 data-t="log">Log</h2>
+    <ul id="log-list" class="log"></ul>
+  </section>
+
+  <section id="settings" class="panel" hidden>
+    <h2 data-t="settings">Settings</h2>
+    <div class="claude-option">
+      <p class="muted small" data-t="keyHelp">Only for the web version. Inside Claude, no key is needed.</p>
+      <button type="button" class="primary" data-open-in-claude="word-quest" data-t="openInClaude">Open in Claude</button>
+    </div>
+    <label><span data-t="keyLabel">API key (web only)</span>
+      <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
+    </label>
+    <div class="row gap">
+      <button id="key-save" class="primary" type="button" data-t="keySave">Save</button>
+      <button id="key-forget" class="ghost" type="button" data-t="keyForget">Forget key</button>
+    </div>
+    <p id="key-status" class="muted small" role="status"></p>
+  </section>
+
+  <footer class="muted small">
+    <button id="settings-btn" class="ghost" type="button" data-t="settings">Settings</button>
+    Word Quest v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>
+  </footer>
+</main>
+<script type="module" src="./web.js"></script>
+</body>
+</html>
