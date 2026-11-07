@@ -37,6 +37,7 @@ An array inside the list runs its items in parallel.
 - Pick up the ball before throwing it; eating it is allowed but the frog stays.
 - Win: throw, basket, bounce and frog in the same sentence (with the ball in hand).
 - Stars: 3 on the first photo, 2 on the second, 1 after that; max 2 stars without the word "through".
+- Coins (header pill, and a change line under the paper): +1 for each word written right, −1 for each mistake, never below 0. Scored on every photo, so re-photographing a clean sentence earns again.
 - After two photos with mistakes, a hint shows a correct version of the sentence.
 - Age sets the level: 4–5 basic, 6–8 standard, 9–12 advanced. Set it in Help. Photos are blocked until the age is set.
 - Unplanned sentences go to Claude, which can pick a kid pose and say one friendly line. It cannot move the ball or the frog, and it cannot win.
@@ -46,7 +47,7 @@ An array inside the list runs its items in parallel.
 - Debug: tap the top-left corner of the story screen 10 times within 4 seconds. A dialog lets you type the sentence (skips the photo and Claude's correction).
 
 ## Data kept on the device
-Browser storage only (`word-quest:v1`): language, age, tutorial done, stars per story, and a log of the last 200 sentences with their outcomes. The web version's API key is kept separately (`word-quest:apikey`) and is sent only to Anthropic.
+Browser storage only (`word-quest:v1`): language, age, tutorial done, coins, stars per story, and a log of the last 200 sentences with their outcomes. The web version's API key is kept separately (`word-quest:apikey`) and is sent only to Anthropic.
 
 ## Shared modules used
 - `shared/audio.js`: sound effects
