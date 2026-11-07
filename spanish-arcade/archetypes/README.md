@@ -71,3 +71,5 @@ const { rounds } = mine.make(params, { targets: words.slice(0, 2), pool: words }
 // same seed -> same rounds; judge(round, round.answer).correct === true; distractors never equal the answer
 ```
 To drive a whole unit through the engine, see `test/session.test.js` (`createUnitSession`, `loadRealContent()` from `test/helpers.js`). Add a demo exercise to a unit only in a content task.
+
+Units with `"dev": true` (e.g. `a1-u0-demo`) are loaded by tests and `vite dev` but not listed in production builds, so a demo exercise for your archetype can live in a dev unit without locking real units.

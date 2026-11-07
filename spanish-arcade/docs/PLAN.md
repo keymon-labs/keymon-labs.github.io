@@ -32,6 +32,7 @@ spanish-arcade/
     migrate.js, transfer.js           migrations; export/import envelope
     i18n.js                           shell UI strings only (en/es); archetypes carry their own strings
   ui/                                 mascot, help overlay, tiles, speech.js, result card, settings.js (slots), report, badge card
+  ui/settings-slots/<name>.js         fills a Settings slot: `export default { slot: 'transfer' | 'reports', render(host, ctx) }`; ctx = { store, content, diagnostic, gate }; found by import.meta.glob, so no edit to settings.js
   archetypes/<id>/index.js, logic.js, README.md   one folder each; found by import.meta.glob('./*/index.js')
   data/vocab/<unitId>.json            words first taught in that unit; merged at load, ids unique across files
   data/jokes.json, mascot-lines.json  our own
@@ -76,6 +77,7 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
   ] }
 ```
 - Badge id is derived: `badge-<unitId>`.
+- Optional `"dev": true` marks a demo/test unit: validated and loaded in tests and `vite dev`, left out of production builds (`loadContent({ includeDev: import.meta.env.DEV })`).
 - `exercises`: 5–6 items. **Exercise ids are stable, meaningful and never reused** (progress is stored by id). Bump `rev` when exercises change meaningfully.
 - An exercise yields several **rounds** (`from.n` or `items.length`, default 4–6 questions). Unit time cap: about 8 minutes.
 - `params` are validated against the archetype's `paramsSchema`; `difficulty` (1–3) is applied via the archetype's `defaults(difficulty)` and any explicit `params` override it. Difficulty is non-decreasing within a unit; units 1–4 use 1–2, later units may use 3.

@@ -109,6 +109,7 @@ export function validateUnit(u, archetypes) {
   if (typeof u?.id !== 'string' || !ID.test(u.id)) err('id', 'lowercase letters, numbers and dashes');
   if (!Number.isInteger(u?.rev) || u.rev < 1) err('rev', 'must be a whole number from 1');
   if (typeof u?.order !== 'number') err('order', 'must be a number');
+  if (u?.dev !== undefined && typeof u.dev !== 'boolean') err('dev', 'must be true or false');
   text('title', u?.title);
   text('intro', u?.intro);
   if (!isObj(u?.badge) || !isText(u.badge.icon)) err('badge.icon', 'must be text (an emoji)');
