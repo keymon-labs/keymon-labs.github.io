@@ -1,0 +1,35 @@
+# Archetype ideas
+
+Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) and combined across units with rising difficulty. Status: `idea` → `task-NNN` (assigned) → `done`. When you build one, write its params table in `archetypes/<id>/README.md` and tick it here.
+
+| id | Idea | Skill | Key params | Difficulty levers | Status |
+|---|---|---|---|---|---|
+| `listen-pick-word` | Hear a word (speech synthesis); tap the right word or picture | listening, vocab | `from`, `options`, `answerAs` (word/picture) | more options; similar-looking distractors; no replay | task-006 |
+| `read-answer` | Short text, then pick the answer (a/b/c or true/false), optionally with a picture | reading comprehension | `text`, `questions[]`, `kind` (choice/tf) | longer text, inference questions | task-007 |
+| `fill-gap-choice` | Sentence with a gap; pick the word that fits | grammar, vocab | `items[]` or `from`, `options`, `focus` (article, verb form, preposition) | more options; closer distractors | task-008 |
+| `spell-tiles` | Picture/audio prompt; drag letter tiles to build the word | spelling | `from`, `extraLetters`, `hintLetters` | extra decoy letters; no hint | task-009 |
+| `spell-fill-letters` | Word with missing letters (ñ, r/rr, s/x, accents, h) | spelling rules | `from`/`items`, `focus` | more gaps; two-way choice → free typing | task-009 |
+| `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | task-010 |
+| `match-pairs` | Join word ↔ picture/emoji, article ↔ noun, question ↔ answer | vocab, grammar | `pairs[]` or `from`, `mode` | more pairs; text-only | task-010 |
+| `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | task-010 |
+| `word-search` | Find the words in a grid | spelling, vocab | `from`, `size`, `directions` | bigger grid, diagonals | task-010 |
+| `sort-into-bins` | Drag words into el/la, un/una, singular/plural, masculine/feminine | grammar | `bins[]`, `from` | more bins; irregulars | idea |
+| `true-false-listen` | Listen to a sentence; true or false against a picture | listening | `scene`, `statements[]` | longer statements | idea |
+| `clock-reader` | Read a clock and choose/type the Spanish time | numbers, time | `times[]`, `style` (en punto / y media / y cuarto / menos cuarto) | more time forms | idea |
+| `punctuation-pick` | Add ¿ ¡ at the start and end of sentences | punctuation | `items[]` | tell question from exclamation | idea |
+| `verb-conjugator` | Pick/type the right present form (ser/estar/tener, -ar/-er/-ir, reflexives) | grammar | `verbs[]`, `persons[]` | irregulars; reflexive pronoun | idea |
+| `memory-flip` | Flip cards to match word ↔ picture or word ↔ word | vocab | `from`, `pairs` | more pairs; hide pictures | idea |
+| `spot-the-words` | Tap where to split a run-on string into words | word boundaries | `sentences[]` | longer string | idea |
+| `place-the-object` | Drag objects to *encima / debajo / delante / detrás* in a scene | prepositions | `scene`, `instructions[]` | two objects; del/de la | idea |
+| `code-breaker` | Number→letter code reveals a word | alphabet | `words[]` | shuffled code; longer word | idea |
+| `dialogue-complete` | Chat bubbles; choose the missing reply | functional language | `dialogues[]` | more turns | idea |
+| `crossword-lite` | Small crossword from vocab with picture clues | spelling | `from`, `size` | larger grid | idea |
+| `who-is-who` | Ask yes/no questions to find the character (vs the computer) | questions, description | `cast[]`, `traits` | more traits | idea |
+| `syllable-order` | Put syllables in order, speaking each | syllables, spelling | `from` | more syllables | idea |
+| `veo-veo` | "Veo, veo… empieza por la letra…" guess the object | letters, vocab | `scene`, `from` | harder scenes | idea |
+| `colour-by-code` | Colour regions by a colour-name code | colours, reading | `scene`, `legend` | more colours | idea |
+| `bingo` | Pick N words, mark them as they are called | listening, vocab | `from`, `n` | bigger card | idea |
+
+**First batch**: listen-and-pick, read-and-answer, complete-the-sentence with options, spelling, puzzles. Tasks 006–010.
+
+Mix rule for units: 5–6 exercises, at least 3 different archetypes, one spelling exercise, one listening exercise, and difficulty non-decreasing.
