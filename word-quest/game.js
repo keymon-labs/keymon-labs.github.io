@@ -75,3 +75,20 @@ export function validImprov(json, fallbackText, poses = ["idle"]) {
   if (json?.ok === true && text) return { ok: true, pose, text };
   return { ok: false, pose: "shrug", text: fallbackText };
 }
+
+/**
+ * Coins for one photo: +1 per word written right, −1 per mistake. Words inside a mistake don't count as right.
+ * Returns { right, mistakes, delta }.
+ */
+export function scoreWriting(ocr) {
+  const words = normalize(ocr.lines.map((l) => l.written).join(" ")).split(" ").filter(Boolean);
+  const wrong = ocr.errors.reduce((n, e) => n + normalize(e.written || "").split(" ").filter(Boolean).length, 0);
+  const right = Math.max(0, words.length - wrong);
+  const mistakes = ocr.errors.length;
+  return { right, mistakes, delta: right - mistakes };
+}
+
+/** Add coins, never below zero. */
+export function addCoins(total, delta) {
+  return Math.max(0, (total || 0) + delta);
+}

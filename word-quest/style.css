@@ -63,3 +63,5 @@ input[type=password], textarea { width:100%; }
 footer { margin-top:24px; text-align:center; }
 footer a { color:inherit; }
 @media (prefers-reduced-motion: reduce) { .camera:active { transform:none; } }
+.coins { font-weight:800; background:var(--card); border-radius:999px; padding:6px 10px; box-shadow:var(--shadow); white-space:nowrap; }
+.coin-change { font-weight:700; color:var(--muted); margin:0 0 4px; }

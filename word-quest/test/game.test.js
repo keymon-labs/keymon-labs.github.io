@@ -81,3 +81,19 @@ test("validImprov keeps only known poses and sensible text", () => {
   assert.equal(validImprov({ ok: false, text: "no" }, "can't", poses).text, "can't");
   assert.equal(validImprov({ ok: true, text: "   " }, "can't", poses).ok, false);
 });
+
+import { scoreWriting, addCoins } from "../game.js";
+
+test("coins: +1 per word written right, −1 per mistake", () => {
+  const clean = { lines: [{ written: "Throw the ball.", corrected: "Throw the ball." }], errors: [] };
+  assert.deepEqual(scoreWriting(clean), { right: 3, mistakes: 0, delta: 3 });
+  const oneWrong = { lines: [{ written: "Throw the bal.", corrected: "Throw the ball." }], errors: [{ written: "bal", correct: "ball", kind: "spelling" }] };
+  assert.deepEqual(scoreWriting(oneWrong), { right: 2, mistakes: 1, delta: 1 });
+  const two = { lines: [{ written: "throw it throug", corrected: "Throw it through." }], errors: [{ written: "throw", correct: "Throw", kind: "capitals" }, { written: "throug", correct: "through", kind: "spelling" }] };
+  assert.deepEqual(scoreWriting(two), { right: 1, mistakes: 2, delta: -1 });
+});
+
+test("coins never go below zero", () => {
+  assert.equal(addCoins(1, -5), 0);
+  assert.equal(addCoins(undefined, 3), 3);
+});

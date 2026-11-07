@@ -2,7 +2,7 @@
 // Rules in game.js, scene in stage.js, stories in stories/.
 import { stories } from "./stories/index.js";
 import strings from "./strings.json";
-import { evaluate, refresh, applyEffects, initialState, starsFor, usesWord, outcomeText, validImprov } from "./game.js";
+import { evaluate, refresh, applyEffects, initialState, starsFor, usesWord, outcomeText, validImprov, scoreWriting, addCoins } from "./game.js";
 import { buildOcrPrompt, buildImprovPrompt, parseOcr, parseJson } from "./ai.js";
 import { unlockAudio, tone } from "../shared/audio.js";
 import { Stage } from "./stage.js";
@@ -15,7 +15,7 @@ export function start({ ask, root = document, notice = null }) {
   const $ = (id) => root.querySelector("#" + id);
   const $$ = (sel) => [...root.querySelectorAll(sel)];
 
-  let store = { lang: (navigator.language || "en").startsWith("es") ? "es" : "en", age: null, progress: {}, log: [], tutorialDone: false };
+  let store = { lang: (navigator.language || "en").startsWith("es") ? "es" : "en", age: null, progress: {}, log: [], tutorialDone: false, coins: 0 };
   try { store = { ...store, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch {}
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch {} };
   const lang = () => store.lang;
@@ -39,6 +39,8 @@ export function start({ ask, root = document, notice = null }) {
     $("tier").textContent = store.age == null ? t("ageMissing") : t("tier" + tier()[0].toUpperCase() + tier().slice(1));
     $("age").value = store.age ?? "";
     $("camera").setAttribute("aria-label", t("takePhoto"));
+    $("coins").textContent = `🪙 ${store.coins}`;
+    $("coins").hidden = store.coins == null;
     renderStories();
     if (!$("home").hidden) $("title").textContent = t("title");
     if (run) $("title").textContent = run.story.title[lang()];
@@ -82,6 +84,7 @@ export function start({ ask, root = document, notice = null }) {
 
   function resetPanel() {
     $("paper").hidden = true;
+    $("coin-change").hidden = true;
     $("errors").innerHTML = "";
     $("hint").hidden = true;
     $("stars").hidden = true;
@@ -167,6 +170,10 @@ export function start({ ask, root = document, notice = null }) {
       if (!ocr) { setStatus(t("unreadable"), true); return; }
       run.photos++;
       showWriting(ocr);
+      const score = scoreWriting(ocr);
+      store.coins = addCoins(store.coins, score.delta);
+      save();
+      showCoins(score);
       if (ocr.errors.length) {
         showFixes(ocr);
         setStatus(t("fixIt"));
@@ -180,6 +187,13 @@ export function start({ ask, root = document, notice = null }) {
       busy = false;
       $("photo").value = "";
     }
+  }
+
+  function showCoins(score) {
+    $("coins").textContent = `🪙 ${store.coins}`;
+    $("coins").hidden = false;
+    $("coin-change").textContent = `${score.delta >= 0 ? "+" : "−"}${Math.abs(score.delta)} 🪙 (${score.right} ✓ · ${score.mistakes} ✗)`;
+    $("coin-change").hidden = false;
   }
 
   function showWriting(ocr) {
