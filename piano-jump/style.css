@@ -43,6 +43,7 @@ button:active{transform:translateY(2px);box-shadow:none}
 .lib{border:2px solid #dbe5f3;border-radius:14px;padding:8px 12px}
 .lib summary{cursor:pointer;font:700 17px var(--display)}
 .lib[open]{display:grid;gap:10px}
+.lib textarea{width:100%;font:500 13px ui-monospace,monospace;padding:7px 8px;border-radius:10px;border:2px solid #dbe5f3;resize:vertical;-webkit-user-select:text;user-select:text}
 .lib input[type=password],.lib input[type=file]{font:600 14px system-ui,sans-serif;max-width:100%;-webkit-user-select:text;user-select:text}
 .lib input[type=password]{padding:7px 8px;border-radius:10px;border:2px solid #dbe5f3;flex:1;min-width:150px}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}

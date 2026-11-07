@@ -1,6 +1,6 @@
 # Piano Jump song libraries
 
-A library is one JSON file with a list of songs. Load it from the menu: **Song library → choose file → Load library**. Songs are kept on that device only; **Remove library** deletes them. A library can be plain or password-protected.
+A library is one JSON file with a list of songs. Load it from the menu: **Song library → paste the text (or choose a file) → Load library**. Songs are kept on that device only; **Remove library** deletes them. A library can be plain or password-protected.
 
 Only put in songs you wrote or that are in the public domain (traditional tunes, old classical pieces). Don't copy melodies or words from a book or recording. Encrypting a file does not change that; a protected file in a public place is still shared.
 

@@ -33,7 +33,8 @@
       <div class="songs" id="songList"></div>
       <details class="lib">
         <summary>Song library</summary>
-        <p>Add songs from a library file (plain or password-protected). They stay on this device.</p>
+        <p>Add songs by pasting library text or choosing a library file (plain or password-protected). They stay on this device.</p>
+        <textarea id="libText" rows="3" placeholder="Paste library text here…" aria-label="Library text" spellcheck="false" autocomplete="off"></textarea>
         <div class="row">
           <input type="file" id="libFile" accept=".json,.pjlib,application/json" aria-label="Library file">
           <input type="password" id="libPass" placeholder="Password, if protected" autocomplete="off" aria-label="Library password">

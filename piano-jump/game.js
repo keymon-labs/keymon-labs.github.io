@@ -351,11 +351,12 @@ keyboardNotes(n=>{audio();onNote(n);});
 // ================= Song library (import a file; encrypted ones need the password) =================
 const libMsg=(t,bad)=>{$("libMsg").textContent=t;$("libMsg").style.color=bad?"var(--bad)":"var(--muted)";};
 $("btnLibLoad").onclick=async()=>{
-  const f=$("libFile").files[0];if(!f)return libMsg("Choose a library file first.",true);
+  const f=$("libFile").files[0],pasted=$("libText").value.trim();   // pasted text wins over a chosen file
+  if(!f&&!pasted)return libMsg("Paste the library text or choose a file first.",true);
   try{
-    if(f.size>2e6)throw new Error("File too big (max 2 MB)");
-    const songs=await parseLibraryText(await f.text(),$("libPass").value);
-    saveStored(songs);ALL=[...SONGS,...loadStored()];$("libPass").value="";renderSongs();
+    if(!pasted&&f.size>2e6)throw new Error("File too big (max 2 MB)");
+    const songs=await parseLibraryText(pasted||await f.text(),$("libPass").value);
+    saveStored(songs);ALL=[...SONGS,...loadStored()];$("libPass").value="";$("libText").value="";renderSongs();
     libMsg(`Loaded ${songs.length} song${songs.length>1?"s":""}.`);
   }catch(e){libMsg(e.message,true);}
 };
