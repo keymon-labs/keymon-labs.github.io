@@ -47,7 +47,7 @@ const diagnostic = () => JSON.stringify({ app: 'spanish-arcade', build: __BUILD_
 function applySettings() {
   const { lang, textSize } = store.data.settings;
   document.documentElement.lang = lang;
-  document.documentElement.style.setProperty('--text-scale', String(textSize || 1));
+  document.documentElement.style.fontSize = `${(textSize || 1) * 100}%`; // archetypes size in rem, so scale the root
 }
 applySettings();
 
@@ -167,7 +167,8 @@ function playUnit(profile, unit) {
   const ctx = {
     lang, t: (k) => k,
     say: ctx0.say,
-    canSpeak: false, sfx: () => {}, mascot: () => {},
+    canSpeak: false, // speech.available && settings.sound, set once the voices are known
+    sfx: () => {}, mascot: () => {},
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
       if (busy) return { ...lastResult, ignored: true };
@@ -202,8 +203,14 @@ function playUnit(profile, unit) {
       h('p', { class: 'muted' }, 'Joke of the day: (placeholder)'));
   }
 
+  // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.
+  function start() {
+    if (!session.done) return show();
+    stage.replaceChildren(h('p', {}, 'Nothing to play in this unit yet.'), link(`#/profile/${profile.id}`, 'Back to the map'));
+  }
+
   // Archetypes read ctx.canSpeak at mount, so wait for the voice list first.
-  speech.ready().then(() => { if (current !== self) return; ctx.canSpeak = speech.available; show(); });
+  speech.ready().then(() => { if (current !== self) return; ctx.canSpeak = speech.available && store.data.settings.sound; start(); });
 }
 
 window.__spanishArcade = { store, content, speech, errors, go: (hash) => { location.hash = hash; }, session: null };
