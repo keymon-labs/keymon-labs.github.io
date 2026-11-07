@@ -81,8 +81,8 @@ test('an exercise that makes too few rounds is an error', () => {
   assert.deepEqual(check(unit(), vocab).errors, []); // control: enough rounds
 });
 
-test('demo units skip the mix rules', () => {
-  const u = unit({ id: 'u1-demo', exercises: goodExercises().map((e) => ({ ...e, archetype: 'placeholder' })) });
+test('dev units skip the mix rules', () => {
+  const u = unit({ dev: true, exercises: goodExercises().map((e) => ({ ...e, archetype: 'placeholder' })) });
   assert.deepEqual(check(u).errors.filter((e) => /different archetypes|listening|spelling/.test(e)), []);
 });
 

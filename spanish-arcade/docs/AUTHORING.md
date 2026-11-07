@@ -58,7 +58,7 @@ Copy this and change it (it is cut to four exercises; a real unit has 5 or 6, in
 - **Params** are checked against the archetype (unknown or wrong params are errors); every `ids` word must exist; the selector must match at least `n` words.
 - **Pictures**: if the archetype shows pictures (`pictures: true`, e.g. listen-pick-word), the `from` selector must only reach words that have an `emoji`. Narrow it with `tag`, `ids` or `pos: "noun"`.
 - All learner text is `{ "es": ..., "en": ... }`.
-- Units with an id ending `-demo` are test fixtures and skip the mix rules.
+- Units with `"dev": true` are placeholders and skip the mix rules.
 
 ## 4. Content rules
 - Write **our own** sentences, words and examples. **No text from the book or any other source**, and no copied pictures.

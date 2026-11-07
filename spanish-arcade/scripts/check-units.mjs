@@ -47,7 +47,7 @@ export function checkContent(content) {
       if (rounds >= 0 && rounds < want) extra('', `makes ${rounds} round(s), needs at least ${want}; words skipped: no emoji / spaces / no matching focus. Widen the selector or add words`);
     });
 
-    if (u?.id?.endsWith('-demo') || known.length !== exercises.length) continue; // demo units are test fixtures
+    if (u?.dev === true || known.length !== exercises.length) continue; // dev units are placeholders
     const archetypes = [...new Set(known.map((e) => e.archetype))];
     const unitError = (msg) => errors.push(`${file} exercises: ${msg}`);
     if (archetypes.length < 3) unitError(`needs at least 3 different archetypes (has ${archetypes.length}: ${archetypes.join(', ')})`);
