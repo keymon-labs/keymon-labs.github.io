@@ -1,0 +1,15 @@
+/* Lab page styles; colours and tap size come from ../style.css tokens. */
+.badge { display: inline-block; border: 2px dashed var(--accent); border-radius: 8px; padding: 2px 8px; font-size: .85rem; }
+.lab-form select, .lab-form textarea, .lab-form input[type=number] { width: 100%; }
+.lab-form textarea { min-height: 9rem; font: .8rem/1.3 ui-monospace, monospace; color: inherit; background: transparent; border: 2px solid var(--muted); border-radius: 8px; padding: 8px; }
+.lab-form input[type=checkbox] { width: 24px; height: 24px; min-height: 0; margin-right: 8px; vertical-align: middle; }
+.lab-form label.check { display: flex; align-items: center; min-height: var(--tap); }
+.row { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.row > label { flex: 1 1 8rem; }
+.errors { color: #c0392b; border: 2px solid currentColor; border-radius: 8px; padding: 4px 8px 4px 28px; }
+@media (prefers-color-scheme: dark) { .errors { color: #ff8a7a; } }
+.panel { border: 1px solid var(--muted); border-radius: 8px; padding: 8px; margin: 12px 0; }
+.panel pre { max-height: 14rem; overflow: auto; margin: 4px 0; }
+.log { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.log th, .log td { text-align: left; padding: 2px 6px; border-bottom: 1px solid var(--muted); }
+body.reduced *, body.reduced *::before, body.reduced *::after { animation: none !important; transition: none !important; }

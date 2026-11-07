@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const app = join(import.meta.dirname, '..');
-const files = ['app.js', 'index.html', ...readdirSync(join(app, 'ui')).filter((f) => f.endsWith('.js')).map((f) => `ui/${f}`)];
+const files = ['app.js', 'index.html', 'lab/index.html', ...readdirSync(join(app, 'lab')).filter((f) => f.endsWith('.js')).map((f) => `lab/${f}`), ...readdirSync(join(app, 'ui')).filter((f) => f.endsWith('.js')).map((f) => `ui/${f}`)];
 for (const d of readdirSync(join(app, 'archetypes'), { withFileTypes: true })) if (d.isDirectory()) files.push(`archetypes/${d.name}/index.js`);
 
 const BANNED = ['Back to', 'Listen', 'Well done', 'Try again', 'Settings', 'Start', 'Profile', 'Check', 'Joke', 'Name', 'Sound', 'Text size',
