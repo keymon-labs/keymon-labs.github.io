@@ -48,7 +48,10 @@ export function makeExercise(content, unit, index, rng) {
   const sel = key && params[key]; // unset optional selector (exercise uses items): targets = []
   const targets = sel ? shuffle(select(sel, content, unit.id), rng).slice(0, sel.n) : [];
   const pool = sel && sel.upToUnit === false ? content.words : allowedWords(content, unit.id);
-  const { rounds } = archetype.make(params, { targets, pool }, rng);
+  // pools: every other selector param resolved to its words (e.g. distractorFrom), by param name
+  const pools = Object.fromEntries(Object.entries(archetype.paramsSchema || {})
+    .filter(([k, s]) => s.type === 'selector' && k !== key && params[k]).map(([k]) => [k, select(params[k], content, unit.id)]));
+  const { rounds } = archetype.make(params, { targets, pool, pools }, rng);
   return { exercise, archetype, params, rounds };
 }
 

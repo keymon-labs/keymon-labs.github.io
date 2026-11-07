@@ -26,7 +26,7 @@ export default {
 };
 ```
 - **Params** = schema defaults, then `defaults(difficulty)`, then the exercise's own `params` (later wins). The validator checks the merged params against `paramsSchema`; unknown params are errors.
-- **`make`**: `targets` = the `from.n` words drawn from the selector (already shuffled); `pool` = every word taught up to this unit, for distractors. Use only `rng` (from `shared/rng.js`: `next()`, `int(min, max)`, `pick(list)`) for randomness, never `Math.random`, so a seed always gives the same rounds. Helpers in `core/generate.js`: `shuffle(list, rng)`, `distractors(answer, pool, k, rng, { similar, filter })` (never returns the answer or a word spelled the same).
+- **`make`**: `targets` = the `from.n` words drawn from the selector (already shuffled); `pool` = every word taught up to this unit, for distractors; `pools` = any other selector param resolved to its words, by param name (e.g. `pools.distractorFrom`). Use only `rng` (from `shared/rng.js`: `next()`, `int(min, max)`, `pick(list)`) for randomness, never `Math.random`, so a seed always gives the same rounds. Helpers in `core/generate.js`: `shuffle(list, rng)`, `distractors(answer, pool, k, rng, { similar, filter })` (never returns the answer or a word spelled the same).
 - **Unset selector**: if `from` is `optional: true` and the exercise gives `items` instead, `make` gets `targets: []` (the `pool` is still there for distractors).
 - **Round**: any JSON-safe object (it is saved for resume). Put the vocab ids practised in `round.wordIds` so the report's tricky-words stats work.
 - **`judge`** decides right or wrong only (accents strict/lenient come from your params). It does not count misses.
