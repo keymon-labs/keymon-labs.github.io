@@ -30,7 +30,7 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
     while (!ex && s.exerciseIndex < unit.exercises.length) {
       const made = makeExercise(content, unit, s.exerciseIndex, createRng(seedFor(s.seed, s.exerciseIndex)));
       if (made.rounds.length) ex = made;
-      else { console.warn(`unit ${unit.id}: exercise "${made.exercise.id}" makes 0 rounds, skipped`); s.exerciseIndex++; s.roundIndex = 0; }
+      else { console.warn(`unit ${unit.id}: exercise "${made.exercise.id}" makes 0 rounds, skipped`); s.exerciseIndex++; s.roundIndex = 0; s.misses = 0; }
     }
     if (ex) s.results[ex.exercise.id] ??= blank();
   };

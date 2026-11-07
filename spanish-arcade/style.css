@@ -7,6 +7,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: 1.125rem/1.4 sy
 #app { min-height: 100dvh; display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; padding: 0 16px; }
 main { flex: 1; padding: 16px 0; }
 h1 { font-size: 1.5rem; margin: 0 0 var(--gap); }
+[hidden] { display: none !important; }
 button, .btn { min-height: var(--tap); min-width: var(--tap); padding: 8px 16px; margin: 4px 4px 4px 0; font: inherit; color: inherit; background: transparent; border: 2px solid var(--accent); border-radius: 12px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
 button:disabled { opacity: .4; }
 button.reveal { background: var(--accent); }

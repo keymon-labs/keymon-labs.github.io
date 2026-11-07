@@ -15,7 +15,7 @@ Silently skipped: words without an emoji (`word-picture`), non-nouns or nouns wi
 
 Boards have 2 to 6 pairs: `size` is capped at 6, boards are dealt evenly (7 words with `size` 6 make 4 + 3, never 6 + 1), and authored `pairs` above 6 is an error. In `article-noun` a board needs at least 2 different articles (boards of only `el` nouns are skipped, the same article is spread over boards). Words that take `el` although feminine (`elException`, agua) pair with `el`.
 
-Hints: level 1 only says how many pairs were wrong; `mount` then unjoins the whole board (a nudge, nothing revealed). Level 2 keeps the right pairs and locks one correct pair (lock icon and solid border).
+Hints: level 1 only says how many pairs were wrong; `mount` then unjoins the whole board (a nudge, nothing revealed). Level 2 keeps the right pairs and locks one correct pair (lock icon and solid border). On every further retry another correct pair is locked.
 
 ## Unit example
 Rounds: `from` gives one board per `size` words, and the unit check wants at least 3 rounds, so use `n` >= 3 x `size`.
