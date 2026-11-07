@@ -10,7 +10,7 @@ Hear a Spanish word (speech synthesis via `ui/speech.js`), tap the matching word
 | `replay` | bool | `true` | `false`: one listen only, no slow button |
 | `similar` | bool | `false` (true at difficulty 3) | distractors closest in spelling, never a homophone of the answer (hola/ola) |
 
-Distractors never share the answer's id or spelling or sound. In picture mode they also have a unique emoji; in word mode emoji-less distractors are fine. A pool too small for `options` gives fewer options.
+Distractors never share the answer's id or spelling or sound. In picture mode they also have a unique emoji; in word mode emoji-less distractors are fine. The homophone rule is deliberately conservative: z/ce/ci count as s, so it also drops pairs that differ for es-ES speakers; it never offers a true homophone. Distractors never share the answer's emoji (it can be the no-voice prompt). A pool too small for `options` gives fewer options.
 
 **Targets without an emoji get no round** (the no-voice fallback needs a picture to show). Use nouns with emoji for listening exercises.
 

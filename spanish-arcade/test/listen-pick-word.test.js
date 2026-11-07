@@ -5,6 +5,7 @@ import { createRng } from '../../shared/rng.js';
 import { resolveParams } from '../core/generate.js';
 import { checkParams } from '../core/schema.js';
 import arch from '../archetypes/listen-pick-word/index.js';
+import { sound } from '../archetypes/listen-pick-word/logic.js';
 import { word } from './helpers.js';
 
 const pool = [
@@ -63,8 +64,18 @@ test('a pool too small for `options` returns what exists', () => {
   assert.equal(rounds[0].options.length, 2);
 });
 
-const sound = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/h/g, '').replace(/v/g, 'b')
-  .replace(/ll/g, 'y').replace(/z|c(?=[ei])/g, 's').replace(/qu/g, 'k').replace(/c(?=[aou])/g, 'k');
+test('sound: same-sounding spellings are equal, look-alikes are not', () => {
+  for (const [x, y] of [['hola', 'ola'], ['vaca', 'baca'], ['cena', 'zena'], ['pollo', 'poyo']]) assert.equal(sound(x), sound(y));
+  for (const [x, y] of [['año', 'ano'], ['ñu', 'nu'], ['chala', 'cala'], ['echo', 'eco'], ['hecho', 'eco'], ['mucho', 'muco'], ['pero', 'perro']]) assert.notEqual(sound(x), sound(y));
+});
+
+test('no distractor shares the answer\'s emoji in any mode (it can be the no-voice prompt)', () => {
+  const dup = [word('perro', { emoji: '🐶' }), word('can', { emoji: '🐶' }), word('gato', { emoji: '🐱' }), word('pez', { emoji: '🐟' })];
+  for (let seed = 1; seed <= 20; seed++) for (const answerAs of ['word', 'picture']) {
+    const [r] = arch.make(resolveParams(arch, { difficulty: 1, params: { options: 3, answerAs } }), { targets: [dup[0]], pool: dup }, createRng(seed)).rounds;
+    assert.ok(!r.options.some((o) => o.id === 'can'));
+  }
+});
 
 test('difficulty 3 never offers a homophone of the answer', () => {
   const ph = [word('hola', { emoji: '👋' }), word('ola', { emoji: '🌊' }), word('vaca', { emoji: '🐄' }), word('baca', { emoji: '🧳' }),
@@ -113,5 +124,6 @@ test('module metadata: listening skill, pictures, valid params', () => {
   assert.equal(arch.id, 'listen-pick-word');
   assert.equal(arch.skill, 'listening');
   assert.equal(arch.pictures, true);
+  assert.equal(arch.paramsSchema.replay.default, true);
   for (const difficulty of [1, 2, 3]) assert.deepEqual(checkParams(arch.paramsSchema, resolveParams(arch, { difficulty, params: { from: { n: 2 } } })), []);
 });
