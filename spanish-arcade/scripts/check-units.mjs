@@ -1,54 +1,64 @@
 // npm run check:units: loads every archetype, unit and vocab file and prints readable errors (file, path, exercise id).
-// Per-file and cross-file rules live in core/schema.js; this adds the authoring rules (unit mix, ids, difficulty, pictures).
+// Per-file and cross-file rules live in core/schema.js; this adds the authoring rules (unit mix, ids, difficulty, pictures, round counts).
 import { fileURLToPath } from 'node:url';
-import { select } from '../core/generate.js';
+import { select, makeExercise } from '../core/generate.js';
+import { createRng } from '../../shared/rng.js';
 import { loadRealContent } from '../test/helpers.js';
 
 const WEAK_ID = /^(e|ex|exercise|q|task)?-?\d+$/;
 
 /** content = buildContent() result. Returns { errors, warnings } (lists of readable strings). */
 export function checkContent(content) {
-  const unitExercise = new Map(); // "units/x.json exercises[i]" -> exercise id, to tag core errors
   const errors = [];
   const warnings = [];
   const warnedSkill = new Set();
-  const extra = (file, path, msg) => errors.push(`${file} ${path}: ${msg}`);
+  const exerciseId = new Map(); // "units/x.json exercises[i]" -> exercise id, to tag core errors
 
-  for (const u of content.units) {
-    const file = `units/${u.id}.json`;
-    const exercises = Array.isArray(u.exercises) ? u.exercises : [];
-    exercises.forEach((e, i) => unitExercise.set(`${file} exercises[${i}]`, e?.id));
+  for (const [key, u] of Object.entries(content.unitByFile)) {
+    const file = `units/${key}.json`;
+    const exercises = Array.isArray(u?.exercises) ? u.exercises : [];
+    const own = content.errors.some((m) => m.startsWith(`${file} `) && !m.includes('needs an emoji')); // core rejected the unit itself
     const known = exercises.filter((e) => content.archetypeById[e?.archetype]);
 
-    known.forEach((e) => {
-      const i = exercises.indexOf(e);
-      const a = content.archetypeById[e.archetype];
-      if (WEAK_ID.test(e.id)) extra(file, `exercises[${i}].id`, `"${e.id}" is not a meaningful id (ids are kept forever; use e.g. "animals-listen")`);
-      const book = u.bookRef?.unit;
-      if (book <= 4 && e.difficulty === 3) extra(file, `exercises[${i}].difficulty`, `unit ${book} may use difficulty 1 or 2 only`);
+    exercises.forEach((e, i) => {
+      const at = `exercises[${i}]`;
+      exerciseId.set(`${file} ${at}`, e?.id);
+      const a = content.archetypeById[e?.archetype];
+      if (!a) return;
+      const extra = (path, msg) => errors.push(`${file} ${at}${path}: ${msg} [exercise "${e.id}"]`);
+      if (WEAK_ID.test(e.id)) extra('.id', `"${e.id}" is not a meaningful id (ids are kept forever; use e.g. "animals-listen")`);
+      const book = u.bookRef?.unit ?? u.order; // shortcut: order stands in for the book unit when bookRef is missing
+      if (book >= 0 && book <= 4 && e.difficulty === 3) extra('.difficulty', `unit ${book} may use difficulty 1 or 2 only`);
       if (!a.skill && !warnedSkill.has(a.id)) { warnedSkill.add(a.id); warnings.push(`archetypes/${a.id}: no "skill" set, so it does not count for the unit mix`); }
-      if (!a.pictures) return;
-      // listen-pick-word and friends drop words without a picture; the core check only covers nouns, so cover the rest here
-      for (const [k, spec] of Object.entries(a.paramsSchema || {})) {
-        const sel = e.params?.[k];
-        if (spec.type !== 'selector' || !sel) continue;
-        for (const w of select(sel, content, u.id)) {
-          if (w.pos !== 'noun' && !w.emoji) errors.push(`${file} exercises[${i}].params.${k}: "${w.id}" needs an emoji (picture game) [exercise "${e.id}"]`);
+      if (a.pictures) {
+        // the core check only covers nouns; picture games drop any word without an emoji
+        for (const [k, spec] of Object.entries(a.paramsSchema || {})) {
+          const sel = e.params?.[k];
+          if (spec.type !== 'selector' || !sel) continue;
+          for (const w of select(sel, content, u.id)) if (w.pos !== 'noun' && !w.emoji) extra(`.params.${k}`, `"${w.id}" needs an emoji (picture game)`);
         }
       }
+      if (own) return;
+      // archetypes skip words silently (no emoji, spaces, no focus): generate once and count the rounds
+      let rounds = -1;
+      try { rounds = makeExercise(content, u, i, createRng(1)).rounds.length; } catch (err) { extra('', `could not generate rounds (${err.message})`); }
+      const sel = Object.values(e.params || {}).find((p) => p?.n);
+      const want = Math.min(3, sel?.n ?? e.params?.items?.length ?? 3);
+      if (rounds >= 0 && rounds < want) extra('', `makes ${rounds} round(s), needs at least ${want}; words skipped: no emoji / spaces / no matching focus. Widen the selector or add words`);
     });
 
-    if (u.id.endsWith('-demo') || known.length !== exercises.length) continue; // demo units are test fixtures
+    if (u?.id?.endsWith('-demo') || known.length !== exercises.length) continue; // demo units are test fixtures
     const archetypes = [...new Set(known.map((e) => e.archetype))];
-    if (archetypes.length < 3) extra(file, 'exercises', `needs at least 3 different archetypes (has ${archetypes.length}: ${archetypes.join(', ')})`);
+    const unitError = (msg) => errors.push(`${file} exercises: ${msg}`);
+    if (archetypes.length < 3) unitError(`needs at least 3 different archetypes (has ${archetypes.length}: ${archetypes.join(', ')})`);
     const skills = new Set(archetypes.map((id) => content.archetypeById[id].skill));
-    for (const s of ['listening', 'spelling']) if (!skills.has(s)) extra(file, 'exercises', `needs a ${s} exercise (an archetype with skill "${s}")`);
+    for (const s of ['listening', 'spelling']) if (!skills.has(s)) unitError(`needs a ${s} exercise (an archetype with skill "${s}")`);
   }
 
   // core errors: add the exercise id so authors can find the exercise
   const core = content.errors.map((msg) => {
     const m = /^(units\/\S+ exercises\[\d+\])/.exec(msg);
-    const id = m && unitExercise.get(m[1]);
+    const id = m && exerciseId.get(m[1]);
     return id ? `${msg} [exercise "${id}"]` : msg;
   });
   return { errors: [...core, ...errors], warnings };

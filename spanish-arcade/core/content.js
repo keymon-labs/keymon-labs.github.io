@@ -19,6 +19,7 @@ export function buildContent({ archetypes, units, vocab }) {
   return {
     archetypeById,
     units: unitList,
+    unitByFile: unitMap, // keyed by file name, for messages (a unit may lack an id)
     unitById: Object.fromEntries(unitList.map((u) => [u.id, u])),
     words: Object.values(vocabMap).flatMap((v) => v?.words || []),
     errors,

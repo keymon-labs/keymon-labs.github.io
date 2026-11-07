@@ -8,7 +8,7 @@ import { checkContent } from '../scripts/check-units.mjs';
 import { loadRealContent, word } from './helpers.js';
 
 const noop = () => {};
-const stub = (id, skill) => ({ id, skill, title: { es: id, en: id }, help: { es: id, en: id }, make: noop, judge: noop, hint: noop, mount: noop,
+const stub = (id, skill) => ({ id, skill, title: { es: id, en: id }, help: { es: id, en: id }, make: (p, { targets }) => ({ rounds: targets.map((w) => ({ wordIds: [w.id] })) }), judge: noop, hint: noop, mount: noop,
   paramsSchema: { from: { type: 'selector' } } });
 const archetypes = {
   '../archetypes/listen-pick-word/index.js': listen, '../archetypes/placeholder/index.js': placeholder,
@@ -45,12 +45,12 @@ test('exercise ids must look stable', () => {
   const u = unit(); u.exercises[0].id = 'e1'; u.exercises[1].id = '2';
   const { errors } = check(u);
   has(errors, /^units\/u1\.json exercises\[0\]\.id: "e1" is not a meaningful id/);
-  has(errors, /^units\/u1\.json exercises\[1\]\.id: "2" is not a meaningful id/);
+  has(errors, /^units\/u1\.json exercises\[1\]\.id: "2" is not a meaningful id.*\[exercise "2"\]$/);
 });
 
 test('units 1-4 may not use difficulty 3', () => {
   const u = unit({ bookRef: { unit: 2, session: 1 } }); u.exercises[4].difficulty = 3;
-  has(check(u).errors, /^units\/u1\.json exercises\[4\]\.difficulty: unit 2 may use difficulty 1 or 2 only/);
+  has(check(u).errors, /^units\/u1\.json exercises\[4\]\.difficulty: unit 2 may use difficulty 1 or 2 only \[exercise "animals-spell-2"\]$/);
   const late = unit({ bookRef: { unit: 5, session: 1 } }); late.exercises[4].difficulty = 3;
   assert.deepEqual(check(late).errors, []);
 });
@@ -65,6 +65,20 @@ test('picture archetype: selector must not reach words without an emoji, errors 
 test('core errors get the exercise id too', () => {
   const u = unit(); u.exercises[2].params = { from: { tag: 'animals', n: 2 }, bogus: 1 };
   has(check(u).errors, /exercises\[2\]\.params\.bogus: unknown param \[exercise "animals-tap"\]/);
+});
+
+test('a unit without an id does not crash the checker', () => {
+  const u = unit(); delete u.id;
+  const r = checkContent(buildContent({ archetypes, units: { '../units/broken.json': u }, vocab: { '../data/vocab/u1.json': vocab.u1 } }));
+  has(r.errors, /^units\/broken\.json id: /);
+});
+
+test('an exercise that makes too few rounds is an error', () => {
+  const u = unit(); u.exercises[0].params = { from: { tag: 'animals', n: 4 }, options: 3 };
+  const few = { u1: { schema: 1, words: vocab.u1.words.map((w) => (w.id === 'pez' || w.id === 'mono' ? { ...w, emoji: undefined } : w)) } };
+  const { errors } = check(u, few);
+  has(errors, /^units\/u1\.json exercises\[0\]: makes 2 round\(s\), needs at least 3; words skipped: no emoji.*\[exercise "animals-listen"\]$/);
+  assert.deepEqual(check(unit(), vocab).errors, []); // control: enough rounds
 });
 
 test('demo units skip the mix rules', () => {

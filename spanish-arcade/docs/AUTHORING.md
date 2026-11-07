@@ -9,7 +9,7 @@ One file per unit, named like the unit (`a1-u9-s1.json`).
 ```json
 { "schema": 1, "words": [
   { "id": "tortuga", "es": "tortuga", "en": "turtle", "emoji": "🐢", "tags": ["animals"], "pos": "noun",
-    "gender": "f", "number": "sg", "article": "la", "forms": { "m": "tortugo", "pl": "tortugas" }, "unit": "a1-u9-s1" },
+    "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "tortugas" }, "unit": "a1-u9-s1" },
   { "id": "agua", "es": "agua", "en": "water", "emoji": "💧", "tags": ["drinks"], "pos": "noun",
     "gender": "f", "number": "sg", "article": "el", "elException": true, "unit": "a1-u9-s1" }
 ] }
@@ -20,7 +20,11 @@ One file per unit, named like the unit (`a1-u9-s1.json`).
 - `tags` are topics (`animals`, `family`, `colours`...). `spell` lists tricky spellings: `ñ rr r x s h accent qu gu ü ¿¡`.
 
 ## 2. Add a unit: `units/<unitId>.json`
-Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises. Copy this and change it:
+Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises.
+
+**Archetypes that exist now**: `listen-pick-word` (listening) and `placeholder` (a simple tap-the-word game, skill puzzle). Coming: `spell-tiles` and `spell-fill-letters` (task 009, spelling), `fill-gap-choice` (008), `odd-one-out` and `match-pairs` (010), `read-answer` (007). Use only archetypes that exist in `archetypes/`; the `params` come from that archetype's README. Until the spelling games land, a new unit cannot satisfy the mix rule below; the checker will say so, and that is expected.
+
+Copy this and change it (it is cut to four exercises; a real unit has 5 or 6, including a spelling one):
 ```json
 { "schema": 1, "id": "a1-u9-s1", "rev": 1, "order": 9,
   "title": { "es": "Los animales", "en": "Animals" },
@@ -28,22 +32,29 @@ Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises. Copy this and change it
   "theme": "sunny",
   "intro": { "es": "¡Vamos a conocer a los animales!", "en": "Let's meet the animals!" },
   "badge": { "name": { "es": "Amigo de los animales", "en": "Animal friend" }, "icon": "🐢" },
-  "pass": { "minCorrect": 4 },
+  "pass": { "minCorrect": 3 },
   "exercises": [
     { "id": "animals-listen", "archetype": "listen-pick-word", "difficulty": 1,
       "params": { "from": { "tag": "animals", "n": 4 }, "options": 3, "answerAs": "picture" },
       "prompt": { "es": "Escucha y toca.", "en": "Listen and tap." } },
-    { "id": "animals-spell", "archetype": "spell-tiles", "difficulty": 1,
+    { "id": "animals-tap", "archetype": "placeholder", "difficulty": 1,
       "params": { "from": { "tag": "animals", "n": 3 } },
-      "prompt": { "es": "Forma la palabra.", "en": "Build the word." } }
+      "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } },
+    { "id": "animals-listen-2", "archetype": "listen-pick-word", "difficulty": 2,
+      "params": { "from": { "tag": "animals", "n": 4 }, "options": 4 },
+      "prompt": { "es": "Escucha y toca.", "en": "Listen and tap." } },
+    { "id": "animals-tap-2", "archetype": "placeholder", "difficulty": 2,
+      "params": { "from": { "tag": "animals", "n": 3 }, "options": 4 },
+      "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } }
   ] }
 ```
-(A real unit lists 5 or 6 exercises; the example is cut to two.) Use only archetypes that exist in `archetypes/`; the `params` come from that archetype's README. `from` picks words by `tag`, `ids`, `spell`, `pos`, `n` (how many rounds), and only words taught up to this unit.
+`from` picks words by `tag`, `ids`, `spell`, `pos`, `exclude` (ids to leave out), `n` (how many rounds) and `upToUnit` (default true: only words taught up to this unit; `false` allows later words).
 
 ## 3. Rules the checker enforces
 - **Mix**: 5-6 exercises, at least 3 different archetypes, at least one `listening` and one `spelling` exercise. An archetype's `skill` (`listening|spelling|reading|grammar|puzzle`) decides what counts; an archetype with no `skill` only gives a warning and counts for nothing.
-- **Difficulty** 1-3, never going down within a unit. Units 1-4 (`bookRef.unit`) use 1-2 only; later units may use 3.
+- **Difficulty** 1-3, never going down within a unit. Units 1-4 use 1-2 only; later units may use 3. The unit number comes from `bookRef.unit` (set it); without `bookRef` the unit's `order` is used.
 - **Exercise ids**: meaningful and stable, like `animals-listen`; never `e1` or `2`. Unique in the unit, never reused. Bump `rev` when exercises change meaningfully.
+- **Enough rounds**: each exercise is generated once with a sample seed. Fewer than min(3, `n`) rounds is an error: archetypes skip words silently (no emoji, spaces, no matching focus), so widen the selector or add words.
 - **Params** are checked against the archetype (unknown or wrong params are errors); every `ids` word must exist; the selector must match at least `n` words.
 - **Pictures**: if the archetype shows pictures (`pictures: true`, e.g. listen-pick-word), the `from` selector must only reach words that have an `emoji`. Narrow it with `tag`, `ids` or `pos: "noun"`.
 - All learner text is `{ "es": ..., "en": ... }`.
