@@ -9,7 +9,7 @@ const $ = (id) => document.getElementById(id);
 
 const ask = async ({ prompt, image }) => {
   const apiKey = localStorage.getItem(KEY);
-  if (!apiKey) throw new Error("Add your API key in Settings first. / Añade tu clave de API en Ajustes.");
+  if (!apiKey) throw new Error("Add your API key in Help first. / Añade tu clave de API en Ayuda.");
   return callApi({ apiKey, prompt, image });
 };
 

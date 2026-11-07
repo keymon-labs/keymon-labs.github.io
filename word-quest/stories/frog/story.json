@@ -1,0 +1,916 @@
+{
+  "id": "frog",
+  "tutorial": [
+    {
+      "say": {
+        "en": "Hi! Let's learn how to play. Write one sentence on paper, take a photo, and watch what happens.",
+        "es": "¡Hola! Vamos a aprender. Escribe una frase en papel, haz una foto y mira qué pasa."
+      }
+    },
+    {
+      "say": {
+        "en": "Your sentence must use the words throw and through. Our mission: smash the frog!",
+        "es": "Tu frase debe usar las palabras lanza y a través. ¡Misión: aplastar a la rana!"
+      }
+    },
+    {
+      "say": {
+        "en": "Example 1: 'throw the ball'. Nothing happens, because you must pick up the ball first.",
+        "es": "Ejemplo 1: 'lanza la pelota'. No pasa nada, porque primero hay que coger la pelota."
+      },
+      "demo": {
+        "sentence": {
+          "en": "throw the ball",
+          "es": "lanza la pelota"
+        },
+        "expect": "no_pick"
+      }
+    },
+    {
+      "say": {
+        "en": "Example 2: 'pick the ball and eat it'. It works, but the frog is still there.",
+        "es": "Ejemplo 2: 'coge la pelota y cómela'. Funciona, pero la rana sigue ahí."
+      },
+      "demo": {
+        "sentence": {
+          "en": "pick the ball and eat it",
+          "es": "coge la pelota y comela"
+        },
+        "expect": "ate_ball"
+      }
+    },
+    {
+      "say": {
+        "en": "Example 3: pick the ball, throw it through the basket, and it bounces into the frog. Smash!",
+        "es": "Ejemplo 3: coge la pelota, lánzala a través de la canasta, y rebota en la rana. ¡Zas!"
+      },
+      "demo": {
+        "sentence": {
+          "en": "pick the ball and throw it through the basket. It bounces into the frog.",
+          "es": "coge la pelota y lanzala a traves de la canasta. rebota en la rana."
+        },
+        "expect": "win"
+      }
+    },
+    {
+      "say": {
+        "en": "Now it's your turn! Take a photo of your sentence.",
+        "es": "¡Ahora te toca! Haz una foto de tu frase."
+      }
+    }
+  ],
+  "title": {
+    "en": "Smash the Frog",
+    "es": "Aplasta a la rana"
+  },
+  "mission": {
+    "en": "Smash the frog!",
+    "es": "¡Aplasta a la rana!"
+  },
+  "intro": {
+    "en": "The frog sits under the basket. Write one sentence on paper to smash it.",
+    "es": "La rana está debajo de la canasta. Escribe una frase en papel para aplastarla."
+  },
+  "target": {
+    "en": [
+      "throw",
+      "through"
+    ],
+    "es": [
+      "lanza",
+      "a través"
+    ]
+  },
+  "kidPoses": [
+    "idle",
+    "dance",
+    "cheer",
+    "shrug",
+    "wave",
+    "sing",
+    "hop",
+    "throw"
+  ],
+  "groups": {
+    "en": {
+      "pick": [
+        "pick",
+        "picks",
+        "picked",
+        "grab",
+        "take",
+        "get",
+        "lift",
+        "collect"
+      ],
+      "throw": [
+        "throw",
+        "throws",
+        "threw",
+        "toss",
+        "tosses",
+        "tossed"
+      ],
+      "basket": [
+        "basket",
+        "hoop",
+        "net"
+      ],
+      "through": [
+        "through"
+      ],
+      "frog": [
+        "frog",
+        "frogs"
+      ],
+      "eat": [
+        "eat",
+        "eats",
+        "ate",
+        "swallow",
+        "swallows"
+      ],
+      "catch": [
+        "catch",
+        "catches",
+        "chase",
+        "chases"
+      ],
+      "bounce": [
+        "bounce",
+        "bounces",
+        "bounced",
+        "hit",
+        "hits",
+        "smash",
+        "smashes",
+        "lands",
+        "land"
+      ]
+    },
+    "es": {
+      "pick": [
+        "coge",
+        "recoge",
+        "toma",
+        "agarra",
+        "levanta",
+        "coger",
+        "tomar",
+        "agarrar",
+        "levantar",
+        "recoger"
+      ],
+      "throw": [
+        "lanza",
+        "lanzala",
+        "lanzar",
+        "lanzas",
+        "tira",
+        "tirala",
+        "tirar",
+        "tiras"
+      ],
+      "basket": [
+        "canasta",
+        "canastas",
+        "cesta",
+        "aro"
+      ],
+      "through": [
+        "traves"
+      ],
+      "frog": [
+        "rana",
+        "ranas"
+      ],
+      "eat": [
+        "come",
+        "comela",
+        "comer",
+        "comes",
+        "traga",
+        "tragar",
+        "muerde",
+        "morder"
+      ],
+      "catch": [
+        "atrapa",
+        "atrapar",
+        "atrapas",
+        "persigue",
+        "perseguir",
+        "persigues"
+      ],
+      "bounce": [
+        "rebota",
+        "rebotar",
+        "rebotas",
+        "golpea",
+        "golpear",
+        "aplasta",
+        "aplastar",
+        "cae",
+        "caer"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "if": [
+        "throw"
+      ],
+      "held": false,
+      "outcome": "no_pick"
+    },
+    {
+      "if": [
+        "eat"
+      ],
+      "held": false,
+      "outcome": "no_pick"
+    },
+    {
+      "if": [
+        "catch",
+        "frog"
+      ],
+      "outcome": "frog_runs"
+    },
+    {
+      "if": [
+        "eat"
+      ],
+      "outcome": "ate_ball"
+    },
+    {
+      "if": [
+        "throw",
+        "basket",
+        "bounce",
+        "frog"
+      ],
+      "outcome": "win"
+    },
+    {
+      "if": [
+        "throw",
+        "basket"
+      ],
+      "outcome": "basket_only"
+    },
+    {
+      "if": [
+        "throw",
+        "frog"
+      ],
+      "outcome": "frog_runs"
+    },
+    {
+      "if": [
+        "throw"
+      ],
+      "outcome": "throw_miss"
+    },
+    {
+      "if": [
+        "pick"
+      ],
+      "outcome": "picked"
+    }
+  ],
+  "scene": {
+    "sky": [
+      "#9fe0ff",
+      "#e9fbff"
+    ],
+    "ground": "#7bcf5a",
+    "groundTop": 470,
+    "actors": {
+      "kid": {
+        "x": 110,
+        "y": 250,
+        "w": 150,
+        "h": 240,
+        "svg": "stickman"
+      },
+      "ball": {
+        "x": 250,
+        "y": 430,
+        "w": 80,
+        "h": 80,
+        "emoji": "🏀",
+        "size": 72
+      },
+      "basket": {
+        "x": 680,
+        "y": 60,
+        "w": 120,
+        "h": 120,
+        "emoji": "🧺",
+        "size": 100,
+        "static": true
+      },
+      "frog": {
+        "x": 700,
+        "y": 440,
+        "w": 120,
+        "h": 120,
+        "emoji": "🐸",
+        "size": 100
+      },
+      "sun": {
+        "x": 830,
+        "y": 10,
+        "w": 120,
+        "h": 120,
+        "emoji": "☀️",
+        "size": 100,
+        "static": true
+      },
+      "cloud": {
+        "x": 60,
+        "y": 30,
+        "w": 160,
+        "h": 110,
+        "emoji": "☁️",
+        "size": 100,
+        "static": true
+      }
+    },
+    "spots": {
+      "ball": {
+        "idle": {
+          "x": 250,
+          "y": 430
+        },
+        "hand": {
+          "x": 190,
+          "y": 339
+        },
+        "basket": {
+          "x": 700,
+          "y": 70
+        },
+        "frog": {
+          "x": 720,
+          "y": 370
+        },
+        "far": {
+          "x": 880,
+          "y": 420
+        },
+        "gone": {
+          "x": 250,
+          "y": 430,
+          "opacity": 0
+        }
+      },
+      "frog": {
+        "alive": {
+          "x": 700,
+          "y": 440
+        },
+        "away": {
+          "x": 1040,
+          "y": 440,
+          "opacity": 0
+        }
+      }
+    }
+  },
+  "poses": {
+    "throw": [
+      {
+        "target": "kid:armR",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-150deg)"
+          },
+          {
+            "transform": "rotate(30deg)"
+          }
+        ],
+        "dur": 420
+      }
+    ],
+    "hop": [
+      {
+        "target": "kid",
+        "keyframes": [
+          {
+            "transform": "translateY(0)"
+          },
+          {
+            "transform": "translateY(-45px)"
+          },
+          {
+            "transform": "translateY(0)"
+          }
+        ],
+        "dur": 500
+      }
+    ],
+    "dance": [
+      {
+        "target": "kid",
+        "keyframes": [
+          {
+            "transform": "rotate(-7deg)"
+          },
+          {
+            "transform": "rotate(7deg)"
+          },
+          {
+            "transform": "rotate(-7deg)"
+          }
+        ],
+        "dur": 700
+      },
+      {
+        "target": "kid:armL",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-60deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 350
+      },
+      {
+        "target": "kid:armR",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(60deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 350
+      }
+    ],
+    "cheer": [
+      {
+        "target": "kid:armL",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-165deg)"
+          },
+          {
+            "transform": "rotate(-165deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 1000
+      },
+      {
+        "target": "kid:armR",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(165deg)"
+          },
+          {
+            "transform": "rotate(165deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 1000
+      },
+      {
+        "target": "kid",
+        "keyframes": [
+          {
+            "transform": "translateY(0)"
+          },
+          {
+            "transform": "translateY(-30px)"
+          },
+          {
+            "transform": "translateY(0)"
+          }
+        ],
+        "dur": 500
+      }
+    ],
+    "shrug": [
+      {
+        "target": "kid:armL",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-35deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 500
+      },
+      {
+        "target": "kid:armR",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(35deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 500
+      },
+      {
+        "target": "kid",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-5deg)"
+          },
+          {
+            "transform": "rotate(5deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 500
+      }
+    ],
+    "wave": [
+      {
+        "target": "kid:armR",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-150deg)"
+          },
+          {
+            "transform": "rotate(-115deg)"
+          },
+          {
+            "transform": "rotate(-150deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 1000
+      }
+    ],
+    "sing": [
+      {
+        "target": "kid",
+        "keyframes": [
+          {
+            "transform": "rotate(0deg)"
+          },
+          {
+            "transform": "rotate(-4deg)"
+          },
+          {
+            "transform": "rotate(4deg)"
+          },
+          {
+            "transform": "rotate(0deg)"
+          }
+        ],
+        "dur": 800
+      }
+    ],
+    "idle": [],
+    "squash": [
+      {
+        "target": "frog",
+        "keyframes": [
+          {
+            "transform": "scale(1,1)"
+          },
+          {
+            "transform": "scale(1.4,0.3)"
+          }
+        ],
+        "dur": 250,
+        "hold": true
+      }
+    ]
+  },
+  "fx": {
+    "boom": {
+      "emoji": [
+        "💥",
+        "⭐",
+        "✨",
+        "🎉"
+      ],
+      "count": 12
+    },
+    "sparkle": {
+      "emoji": [
+        "✨",
+        "⭐"
+      ],
+      "count": 6
+    },
+    "music": {
+      "emoji": [
+        "♪",
+        "♫"
+      ],
+      "count": 5
+    }
+  },
+  "outcomes": {
+    "no_pick": {
+      "effects": {},
+      "text": {
+        "en": "You need to pick up the ball first. Write a sentence that picks it up, then throws it.",
+        "es": "Primero tienes que coger la pelota. Escribe una frase que la coja y después la lance."
+      },
+      "beats": [
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "shrug"
+            }
+          }
+        ],
+        {
+          "sound": "bad"
+        }
+      ]
+    },
+    "frog_runs": {
+      "effects": {
+        "frog": "away"
+      },
+      "text": {
+        "en": "The frog hops away! Frogs are fast. Try another plan.",
+        "es": "¡La rana salta y se va! Las ranas son rápidas. Prueba otro plan."
+      },
+      "beats": [
+        [
+          {
+            "move": {
+              "actor": "frog",
+              "to": "away",
+              "dur": 600,
+              "arc": 120
+            }
+          },
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "shrug"
+            }
+          }
+        ],
+        {
+          "sound": "bad"
+        }
+      ]
+    },
+    "ate_ball": {
+      "effects": {
+        "ballGone": true,
+        "ballHeld": false,
+        "ballAt": "gone"
+      },
+      "text": {
+        "en": "Yum! You ate the ball. The frog is still there. A new ball rolls in for your next try.",
+        "es": "¡Mmm! Te comiste la pelota. La rana sigue ahí. Una pelota nueva rueda para la siguiente vez."
+      },
+      "beats": [
+        [
+          {
+            "move": {
+              "actor": "ball",
+              "to": "hand",
+              "dur": 300
+            }
+          }
+        ],
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "dance"
+            }
+          },
+          {
+            "fx": "sparkle",
+            "at": "kid"
+          }
+        ],
+        {
+          "move": {
+            "actor": "ball",
+            "to": "gone",
+            "dur": 300
+          }
+        },
+        {
+          "sound": "pop"
+        }
+      ]
+    },
+    "picked": {
+      "effects": {
+        "ballHeld": true,
+        "ballAt": "hand"
+      },
+      "text": {
+        "en": "You picked up the ball. Now throw it!",
+        "es": "Cogiste la pelota. ¡Ahora lánzala!"
+      },
+      "beats": [
+        [
+          {
+            "move": {
+              "actor": "ball",
+              "to": "hand",
+              "dur": 500,
+              "arc": 90
+            }
+          },
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "hop"
+            }
+          }
+        ],
+        {
+          "sound": "pop"
+        }
+      ]
+    },
+    "basket_only": {
+      "effects": {
+        "ballHeld": false,
+        "ballAt": "basket"
+      },
+      "text": {
+        "en": "Swish! The ball went in the basket, but the frog is still there. Make it bounce onto the frog!",
+        "es": "¡Zas! La pelota entró en la canasta, pero la rana sigue ahí. ¡Haz que rebote sobre la rana!"
+      },
+      "beats": [
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "throw"
+            }
+          },
+          {
+            "move": {
+              "actor": "ball",
+              "to": "basket",
+              "dur": 800,
+              "arc": 260
+            }
+          }
+        ],
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "cheer"
+            }
+          }
+        ],
+        {
+          "sound": "good"
+        }
+      ]
+    },
+    "throw_miss": {
+      "effects": {
+        "ballHeld": false,
+        "ballAt": "far"
+      },
+      "text": {
+        "en": "Oops! The ball flew into the grass. Throw it through the basket!",
+        "es": "¡Uy! La pelota voló a la hierba. ¡Lánzala a través de la canasta!"
+      },
+      "beats": [
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "throw"
+            }
+          },
+          {
+            "move": {
+              "actor": "ball",
+              "to": "far",
+              "dur": 900,
+              "arc": 240
+            }
+          }
+        ],
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "shrug"
+            }
+          }
+        ],
+        {
+          "sound": "bad"
+        }
+      ]
+    },
+    "win": {
+      "effects": {
+        "ballHeld": false,
+        "ballAt": "frog",
+        "frog": "squashed"
+      },
+      "win": true,
+      "text": {
+        "en": "BOING! The ball bounced out of the basket and smashed the frog. Mission complete!",
+        "es": "¡BOING! La pelota rebotó desde la canasta y aplastó a la rana. ¡Misión cumplida!"
+      },
+      "beats": [
+        [
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "throw"
+            }
+          },
+          {
+            "move": {
+              "actor": "ball",
+              "to": "basket",
+              "dur": 700,
+              "arc": 260
+            }
+          }
+        ],
+        {
+          "move": {
+            "actor": "ball",
+            "to": "frog",
+            "dur": 450,
+            "arc": 0
+          }
+        },
+        [
+          {
+            "pose": {
+              "actor": "frog",
+              "name": "squash"
+            }
+          },
+          {
+            "fx": "boom",
+            "at": "frog"
+          },
+          {
+            "pose": {
+              "actor": "kid",
+              "name": "cheer"
+            }
+          }
+        ],
+        {
+          "sound": "win"
+        }
+      ]
+    }
+  }
+}

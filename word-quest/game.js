@@ -1,6 +1,4 @@
-// Word Quest rules: normalise sentences, match planned outcomes, scene state, stars. Pure logic, no DOM; tested in test/game.test.js.
-
-export const POSES = ["idle", "dance", "cheer", "shrug", "wave", "sing", "hop"];
+// Word Quest rules: normalise sentences, match planned outcomes, scene state, stars, improvised-reply check. Pure logic, no DOM; tested in test/.
 
 /** Lowercase, drop accents and punctuation (¡ ¿ . , ! ?), collapse spaces. Accents are never required. */
 export function normalize(s) {
@@ -11,19 +9,27 @@ export function normalize(s) {
 const has = (tokens, words = []) => words.some((w) => tokens.includes(w));
 
 export function initialState() {
-  return { ballHeld: false, ballAt: "idle", ballGone: false, frog: "alive", kid: "idle" };
+  return { ballHeld: false, ballAt: "idle", ballGone: false, frog: "alive" };
 }
 
-/** Before each new sentence: the frog hops back, a eaten ball is replaced by a new one. */
+/**
+ * Before each new sentence: a hopped frog returns and an eaten ball is replaced.
+ * Returns the new state and the beats that show it (see stage.js for beat shapes).
+ */
 export function refresh(state) {
-  const s = { ...state, frog: state.frog === "away" ? "alive" : state.frog };
-  if (s.ballGone) Object.assign(s, { ballGone: false, ballAt: "idle", ballHeld: false });
-  return s;
+  let s = { ...state };
+  const beats = [];
+  if (s.frog === "away") { s.frog = "alive"; beats.push({ move: { actor: "frog", to: "alive", dur: 500 } }); }
+  if (s.ballGone) {
+    s = { ...s, ballGone: false, ballAt: "idle", ballHeld: false };
+    beats.push({ move: { actor: "ball", to: "idle", dur: 400 } });
+  }
+  return { state: s, beats };
 }
 
-/** Apply an outcome's effects (only known keys), returning a new state. */
+/** Apply an outcome's effects (only state keys), returning a new state. */
 export function applyEffects(state, effects = {}) {
-  const keys = ["ballHeld", "ballAt", "ballGone", "frog", "kid"];
+  const keys = ["ballHeld", "ballAt", "ballGone", "frog"];
   const next = { ...state };
   for (const k of keys) if (k in effects) next[k] = effects[k];
   return next;
@@ -36,8 +42,7 @@ export function applyEffects(state, effects = {}) {
 export function evaluate(sentence, state, story, lang) {
   const tokens = normalize(sentence).split(" ").filter(Boolean);
   const groups = story.groups[lang];
-  const pickInSentence = has(tokens, groups.pick);
-  const held = state.ballHeld || pickInSentence;
+  const held = state.ballHeld || has(tokens, groups.pick);
   for (const rule of story.rules) {
     if (!(rule.if || []).every((g) => has(tokens, groups[g]))) continue;
     if (rule.not && rule.not.some((g) => has(tokens, groups[g]))) continue;
@@ -63,9 +68,9 @@ export function outcomeText(outcome, lang) {
   return outcome.text[lang] || outcome.text.en;
 }
 
-/** Check Claude's improvised answer. Anything unexpected becomes a safe "can't do that". */
-export function validImprov(json, fallbackText) {
-  const pose = POSES.includes(json?.pose) ? json.pose : "idle";
+/** Check Claude's improvised answer. Unknown poses become "idle"; anything unexpected becomes a safe "can't do that". */
+export function validImprov(json, fallbackText, poses = ["idle"]) {
+  const pose = poses.includes(json?.pose) ? json.pose : "idle";
   const text = typeof json?.text === "string" && json.text.trim() ? json.text.trim().slice(0, 240) : null;
   if (json?.ok === true && text) return { ok: true, pose, text };
   return { ok: false, pose: "shrug", text: fallbackText };

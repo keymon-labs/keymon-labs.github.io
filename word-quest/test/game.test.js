@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { normalize, initialState, refresh, applyEffects, evaluate, starsFor, usesWord, validImprov } from "../game.js";
 
-const story = JSON.parse(readFileSync(new URL("../stories.json", import.meta.url))).stories[0];
+const story = JSON.parse(readFileSync(new URL("../stories/frog/story.json", import.meta.url)));
 const play = (sentence, state = initialState(), lang = "en") => {
-  const r = evaluate(sentence, refresh(state), story, lang);
+  const r = evaluate(sentence, refresh(state).state, story, lang);
   return r && r.id;
 };
 
@@ -22,7 +22,7 @@ test("pick and eat: ball eaten, frog still there", () => {
   const r = evaluate("Pick the ball and eat it.", initialState(), story, "en");
   assert.equal(r.id, "ate_ball");
   assert.equal(r.outcome.effects.ballGone, true);
-  assert.notEqual(r.outcome.effects.frog, "squashed");
+  assert.equal(r.outcome.effects.frog, undefined);
 });
 
 test("pick, throw through the basket, bounce into the frog wins", () => {
@@ -40,20 +40,22 @@ test("throwing straight at the frog makes it run away", () => {
 });
 
 test("a held ball from an earlier sentence can be thrown", () => {
-  const held = applyEffects(initialState(), { ballHeld: true, ballAt: "held" });
+  const held = applyEffects(initialState(), { ballHeld: true, ballAt: "hand" });
   assert.equal(play("Throw it through the basket and bounce on the frog", held), "win");
 });
 
 test("Spanish rules work without accents", () => {
-  assert.equal(play("Recoge la pelota y lanza la a traves de la canasta, rebota en la rana.", initialState(), "es"), "win");
+  assert.equal(play("Coge la pelota y lanzala a traves de la canasta. Rebota en la rana.", initialState(), "es"), "win");
   assert.equal(play("Lanza la pelota.", initialState(), "es"), "no_pick");
+  assert.equal(play("Coge la pelota y comela.", initialState(), "es"), "ate_ball");
 });
 
-test("refresh brings a hopped frog back and replaces an eaten ball", () => {
-  const s = refresh(applyEffects(initialState(), { frog: "away", ballGone: true, ballAt: "gone" }));
-  assert.equal(s.frog, "alive");
-  assert.equal(s.ballGone, false);
-  assert.equal(s.ballAt, "idle");
+test("refresh brings a hopped frog back and replaces an eaten ball, with beats to show it", () => {
+  const r = refresh(applyEffects(initialState(), { frog: "away", ballGone: true, ballAt: "gone" }));
+  assert.equal(r.state.frog, "alive");
+  assert.equal(r.state.ballGone, false);
+  assert.equal(r.state.ballAt, "idle");
+  assert.equal(r.beats.length, 2);
 });
 
 test("unplanned sentence returns null (Claude improvises)", () => {
@@ -73,8 +75,9 @@ test("usesWord finds the target word", () => {
 });
 
 test("validImprov keeps only known poses and sensible text", () => {
-  assert.deepEqual(validImprov({ ok: true, pose: "sing", text: "La la la!" }, "x"), { ok: true, pose: "sing", text: "La la la!" });
-  assert.equal(validImprov({ ok: true, pose: "fly", text: "Wow" }, "x").pose, "idle");
-  assert.equal(validImprov({ ok: false, text: "no" }, "can't").text, "can't");
-  assert.equal(validImprov({ ok: true, text: "   " }, "can't").ok, false);
+  const poses = story.kidPoses;
+  assert.deepEqual(validImprov({ ok: true, pose: "sing", text: "La la la!" }, "x", poses), { ok: true, pose: "sing", text: "La la la!" });
+  assert.equal(validImprov({ ok: true, pose: "fly", text: "Wow" }, "x", poses).pose, "idle");
+  assert.equal(validImprov({ ok: false, text: "no" }, "can't", poses).text, "can't");
+  assert.equal(validImprov({ ok: true, text: "   " }, "can't", poses).ok, false);
 });

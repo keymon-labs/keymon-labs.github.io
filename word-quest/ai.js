@@ -1,5 +1,4 @@
 // Word Quest Claude calls: prompts, reply parsing, and the API call for the web version. No DOM; tested in test/ai.test.js.
-import { POSES } from "./game.js";
 
 export const API_URL = "https://api.anthropic.com/v1/messages";
 export const MODEL = "claude-sonnet-5-5";
@@ -36,7 +35,7 @@ Scene now: ball is ${state.ballHeld ? "held by the kid" : `at "${state.ballAt}"`
 The child wrote this sentence: "${sentence}"
 
 Decide what the kid character does on screen.
-- If the sentence is simple, safe and fun (sing, dance, wave, jump, say hello, clap), make it happen: "ok": true, a pose from [${POSES.join(", ")}], and a short friendly sentence in ${L} (max 15 words) saying what happens.
+- If the sentence is simple, safe and fun (sing, dance, wave, jump, say hello, clap), make it happen: "ok": true, a pose from [${story.kidPoses.join(", ")}], and a short friendly sentence in ${L} (max 15 words) saying what happens.
 - If it is too complex, impossible, rude or unsafe, "ok": false, pose "shrug", and a short friendly sentence in ${L} saying you can't do that, with an idea to try instead.
 - Never move the ball or the frog, and never finish the mission: only the planned actions smash the frog.
 
