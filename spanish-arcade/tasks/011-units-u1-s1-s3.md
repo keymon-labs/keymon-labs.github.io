@@ -4,7 +4,7 @@ title: Units a1-u1-s1 and a1-u1-s3 plus vocabulary
 model: Sonnet 5.5 (Haiku can draft the word lists and sentences)
 why_model: Data writing with metadata; needs a reviewer for Spanish correctness and for not copying the book.
 kind: content
-status: in-progress   # ends in `review`: only the owner sets `done` after a Spanish check
+status: review   # waiting on the owner: Spanish check
 claimed: 2026-11-07
 depends_on: ["001", "006", "007", "008", "009", "010", "014", "015"]
 touches: [spanish-arcade/units/**, data/vocab/<unitId>.json, test/units.test.js]
@@ -22,3 +22,6 @@ Write the first two units as data per `docs/PLAN.md` §4.2 and the sketches in `
 Use only archetypes that are done; list the ones skipped in `docs/UNITS.md`. Sentences and word lists are our own, not the book's.
 
 Ruling: MVP scope is `a1-u1-s1` only; `a1-u1-s3` stays for a later run — cost if wrong: one more content run.
+
+Ruling: MVP content is unit `a1-u1-s1` only (35 words, 6 exercises: numbers-listen, intruder-school, family-match, colours-spell, intro-gaps, intro-read; all names invented). `a1-u1-s3` is not written yet.
+Open for the owner: a Spanish speaker checks words, sentences and emoji. Drafted by Haiku, reviewed by Sonnet (Spanish correct, fixes applied). Known limit: numbers-listen distractors come from the whole taught pool, not only numbers (follow-up 017: a `distractorFrom` param).
