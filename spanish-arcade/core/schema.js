@@ -1,17 +1,16 @@
 // Tiny schema checker (archetype paramsSchema) and validators for units, vocab and the store (PLAN §4).
 // Every check returns a list of "path: message" strings; [] means valid.
-import { select } from './generate.js';
+import { select, resolveParams } from './generate.js';
 
 export const SPELL = ['ñ', 'rr', 'r', 'x', 's', 'h', 'accent', 'qu', 'gu', 'ü', '¿¡'];
 export const POS = ['noun', 'verb', 'adj', 'adv', 'phrase'];
+export const SKILLS = ['listening', 'spelling', 'reading', 'grammar', 'puzzle'];
+export const MAX_PROFILES = 4;
 const SELECTOR = {
   tag: { type: 'string', optional: true }, ids: { type: 'array', items: { type: 'string' }, optional: true },
   spell: { type: 'enum', values: SPELL, optional: true, orList: true }, pos: { type: 'enum', values: POS, optional: true },
   upToUnit: { type: 'bool', optional: true }, n: { type: 'int', min: 1 }, exclude: { type: 'array', items: { type: 'string' }, optional: true },
 };
-
-export const schemaDefaults = (schema = {}) =>
-  Object.fromEntries(Object.entries(schema).filter(([, s]) => 'default' in s).map(([k, s]) => [k, s.default]));
 
 const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 const isText = (v) => typeof v === 'string' && v.trim() !== '';
@@ -83,12 +82,13 @@ export function validateVocab(file, unitId) {
     if (w.pos === 'noun' && (!w.gender || !w.article)) err(p, 'a noun needs "gender" and "article"');
     if (w.article !== undefined) {
       const a = ARTICLES[w.article];
-      // "el agua", "el hada": feminine nouns starting with a stressed a take "el"
-      const elException = w.article === 'el' && w.gender === 'f' && /^h?[aá]/.test(w.es || '');
+      // "el agua", "el hada": marked per word, since not every feminine noun starting with a takes "el"
+      const elException = w.elException === true && w.article === 'el' && w.gender === 'f';
       if (!a) err(`${p}.article`, 'must be el, la, los or las');
       else if (a[0] !== w.gender && !elException) err(`${p}.article`, `"${w.article}" does not match gender "${w.gender}"`);
       else if (w.number && a[1] !== w.number) err(`${p}.article`, `"${w.article}" does not match number "${w.number}"`);
     }
+    if (w.elException !== undefined && !(w.elException === true && w.article === 'el' && w.gender === 'f')) err(`${p}.elException`, 'only for a feminine noun with "el"');
     if (w.forms !== undefined) {
       if (!isObj(w.forms)) err(`${p}.forms`, 'must be an object');
       else for (const [k, v] of Object.entries(w.forms)) if (!['m', 'f', 'pl', 'fpl'].includes(k) || !isText(v)) err(`${p}.forms.${k}`, 'keys m, f, pl, fpl with text');
@@ -130,8 +130,22 @@ export function validateUnit(u, archetypes) {
     text(`${p}.prompt`, e?.prompt);
     const arch = archetypes[e?.archetype];
     if (!arch) return err(`${p}.archetype`, `unknown archetype "${e?.archetype}" (available: ${Object.keys(archetypes).join(', ')})`);
-    errs.push(...checkParams(arch.paramsSchema, { ...arch.defaults?.(e.difficulty), ...e.params }, `${p}.params`));
+    errs.push(...checkParams(arch.paramsSchema, resolveParams(arch, e), `${p}.params`));
   });
+  return errs;
+}
+
+/** One archetype module (PLAN §4.3). */
+export function validateArchetype(m) {
+  const { errs, err, text } = collector();
+  if (typeof m?.id !== 'string' || !ID.test(m.id)) err('id', 'lowercase letters, numbers and dashes');
+  text('title', m?.title);
+  text('help', m?.help);
+  for (const k of ['make', 'judge', 'hint', 'mount']) if (typeof m?.[k] !== 'function') err(k, 'must be a function');
+  if (m?.defaults !== undefined && typeof m.defaults !== 'function') err('defaults', 'must be a function');
+  if (m?.skill !== undefined && !SKILLS.includes(m.skill)) err('skill', `must be one of ${SKILLS.join(', ')}`);
+  if (m?.pictures !== undefined && typeof m.pictures !== 'boolean') err('pictures', 'must be true or false');
+  if (!isObj(m?.paramsSchema)) err('paramsSchema', 'must be an object');
   return errs;
 }
 
@@ -159,7 +173,7 @@ export function validateContent({ archetypes, units, vocab }) {
     if (own.length) continue;
     u.exercises.forEach((e, i) => {
       const arch = archetypes[e.archetype];
-      const params = { ...schemaDefaults(arch.paramsSchema), ...arch.defaults?.(e.difficulty), ...e.params };
+      const params = resolveParams(arch, e);
       for (const [k, spec] of Object.entries(arch.paramsSchema || {})) {
         const sel = params[k];
         if (spec.type !== 'selector' || !sel) continue;
@@ -180,7 +194,7 @@ export function validateStore(s) {
   if (s?.schema !== 1) err('schema', 'must be 1');
   if (!isObj(s?.settings)) err('settings', 'must be an object');
   if (!Array.isArray(s?.profiles)) { err('profiles', 'must be a list'); return errs; }
-  if (s.profiles.length > 4) err('profiles', 'at most 4');
+  if (s.profiles.length > MAX_PROFILES) err('profiles', `at most ${MAX_PROFILES}`);
   const ids = new Set();
   s.profiles.forEach((p, i) => {
     const at = `profiles[${i}]`;

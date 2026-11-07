@@ -81,10 +81,16 @@ test('recordUnit keeps the best stars, counts attempts, merges words, caps histo
   assert.equal(p.history.length, HISTORY_MAX);
 });
 
+test('recordUnit ignores an unfinished result', () => {
+  const p = { id: 'x', units: {}, words: {}, history: [], badges: [], inProgress: null };
+  assert.equal(recordUnit(p, unit, { ...playUnit(1), finished: false }, 't1'), p);
+});
+
 test('a unit rev change keeps stars and badge, drops stale exercise stats', () => {
   let p = { id: 'x', units: {}, words: {}, history: [], badges: [], inProgress: null };
   p = recordUnit(p, unit, playUnit(1), 't1');
   p.units[unit.id].exercises['old-gone'] = { correct: 1, total: 1, tries: 1, hints: 0, reveals: 0 };
+  p.units[unit.id].bestCorrect = 99;
   p.inProgress = { unitId: unit.id, rev: unit.rev };
   const changed = { ...unit, rev: unit.rev + 1 };
   const q = applyRev(p, [changed]);
@@ -92,6 +98,7 @@ test('a unit rev change keeps stars and badge, drops stale exercise stats', () =
   assert.equal(q.units[unit.id].stars, 3);
   assert.equal(q.badges.length, 1);
   assert.equal(q.units[unit.id].exercises['old-gone'], undefined);
+  assert.equal(q.units[unit.id].bestCorrect, unit.exercises.length);
   assert.ok(q.units[unit.id].exercises[unit.exercises[0].id]);
   assert.equal(q.inProgress, null);
   assert.equal(applyRev(q, [changed]), q); // nothing to do: same object

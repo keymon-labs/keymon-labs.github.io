@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRng } from '../../shared/rng.js';
-import { seedFor, select, allowedWords, resolveParams, makeExercise, distractors } from '../core/generate.js';
+import { seedFor, select, allowedWords, schemaDefaults, resolveParams, makeExercise, distractors } from '../core/generate.js';
 import { buildContent } from '../core/content.js';
 import placeholder from '../archetypes/placeholder/index.js';
 import { word } from './helpers.js';
@@ -45,6 +45,22 @@ test('resolveParams layers schema defaults < defaults(difficulty) < explicit par
   assert.equal(resolveParams(placeholder, ex).options, placeholder.defaults(2).options);
   assert.equal(resolveParams(placeholder, { ...ex, params: { ...ex.params, options: 2 } }).options, 2);
   assert.equal(resolveParams({ paramsSchema: { k: { type: 'int', default: 7 } } }, { difficulty: 1, params: {} }).k, 7);
+});
+
+test('schemaDefaults collects defaults', () => {
+  assert.deepEqual(schemaDefaults(placeholder.paramsSchema), { options: 3 });
+});
+
+test('an unset optional selector gives targets: [] (exercise uses items)', () => {
+  let got;
+  const itemsArch = { id: 'items-game', paramsSchema: { from: { type: 'selector', optional: true }, items: { type: 'array', items: { type: 'string' }, optional: true } },
+    make: (params, words) => { got = words; return { rounds: params.items.map((t) => ({ t })) }; } };
+  const c = { ...content, archetypeById: { ...content.archetypeById, 'items-game': itemsArch } };
+  const u = { ...content.unitById.u1, exercises: [{ id: 'x-items', archetype: 'items-game', difficulty: 1, params: { items: ['a', 'b'] } }] };
+  const { rounds } = makeExercise(c, u, 0, createRng(1));
+  assert.deepEqual(got.targets, []);
+  assert.equal(got.pool.length, 3);
+  assert.equal(rounds.length, 2);
 });
 
 test('makeExercise is deterministic per seed and varies across seeds', () => {

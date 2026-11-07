@@ -19,11 +19,12 @@ function fakeSynth(voices, { late = false } = {}) {
   const synth = {
     spoken: [],
     getVoices: () => (late && !synth.loaded ? [] : voices),
-    addEventListener: (e, f) => { listeners[e] = f; },
-    removeEventListener: (e) => { delete listeners[e]; },
-    speak(u) { synth.spoken.push(u); queueMicrotask(() => u.onend?.()); },
+    addEventListener: (e, f) => { (listeners[e] ??= []).push(f); },
+    removeEventListener: (e, f) => { listeners[e] = (listeners[e] ?? []).filter((x) => x !== f); },
+    silent: false,
+    speak(u) { synth.spoken.push(u); if (!synth.silent) queueMicrotask(() => u.onend?.()); },
     cancel() {},
-    fireVoices() { synth.loaded = true; listeners.voiceschanged?.(); },
+    fireVoices() { synth.loaded = true; [...(listeners.voiceschanged ?? [])].forEach((f) => f()); },
   };
   return synth;
 }
@@ -55,6 +56,25 @@ test('no Spanish voice, no synth, or no tap yet: say() returns false', async () 
   const notTapped = createSpeech({ synth, Utterance, activation: { hasBeenActive: false } });
   assert.equal(await notTapped.say('hola'), false);
   assert.equal(synth.spoken.length, 0);
+});
+
+test('re-picks the voice when voiceschanged fires again', async () => {
+  const voices = [v('es-MX')];
+  const synth = fakeSynth(voices);
+  const sp = createSpeech({ synth, Utterance, activation: { hasBeenActive: true } });
+  assert.equal((await sp.ready()).lang, 'es-MX');
+  voices.push(v('es-ES', true));
+  synth.fireVoices();
+  assert.equal(sp.voice.lang, 'es-ES');
+  await sp.say('hola');
+  assert.equal(synth.spoken[0].lang, 'es-ES');
+});
+
+test('say() resolves false when the engine never reports back', async () => {
+  const synth = fakeSynth([v('es-ES')]);
+  synth.silent = true;
+  const sp = createSpeech({ synth, Utterance, activation: { hasBeenActive: true }, sayTimeoutMs: 20 });
+  assert.equal(await sp.say('hola'), false);
 });
 
 test('voices that never arrive time out to "no voice"', async () => {

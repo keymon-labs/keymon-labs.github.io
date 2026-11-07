@@ -1,6 +1,6 @@
 // Gathers archetypes (archetypes/*/index.js), units (units/*.json) and vocab (data/vocab/*.json) into one validated object.
 // buildContent is pure (tests pass modules read from disk); loadContent is the Vite-only import.meta.glob wrapper.
-import { validateContent } from './schema.js';
+import { validateContent, validateArchetype } from './schema.js';
 
 const base = (path) => path.split('/').filter(Boolean).at(-1).replace(/\.json$/, '');
 const folder = (path) => path.split('/').at(-2);
@@ -11,7 +11,10 @@ export function buildContent({ archetypes, units, vocab }) {
   const unitMap = Object.fromEntries(Object.entries(units).map(([p, u]) => [base(p), u]));
   const vocabMap = Object.fromEntries(Object.entries(vocab).map(([p, v]) => [base(p), v]));
   const errors = validateContent({ archetypes: archetypeById, units: unitMap, vocab: vocabMap });
-  for (const [p, m] of Object.entries(archetypes)) if (m?.id !== folder(p)) errors.push(`${p}: id must be "${folder(p)}" (the folder name)`);
+  for (const [p, m] of Object.entries(archetypes)) {
+    if (m?.id !== folder(p)) errors.push(`${p}: id must be "${folder(p)}" (the folder name)`);
+    errors.push(...validateArchetype(m).map((e) => `${p} ${e}`));
+  }
   const unitList = Object.values(unitMap).sort((a, b) => a.order - b.order);
   return {
     archetypeById,

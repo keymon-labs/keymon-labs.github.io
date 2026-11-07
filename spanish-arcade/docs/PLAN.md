@@ -58,6 +58,7 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
 - Spain Spanish by default (ordenador, bolígrafo); `es-ES` voice. `emoji` or our own `img` only.
 - **Selector** used by `params.from`: `{ tag?, ids?, spell?, pos?, upToUnit: true, n, exclude? }`. `upToUnit` (default true) limits the pool to words taught up to the current unit so a child is never tested on unseen words.
 - The validator checks unique ids across all files, article matches gender, emoji present for nouns used in picture games.
+- `elException: true` marks a feminine noun that takes `el` (el agua, el hada); without it, `el` + `f` is an error.
 
 ### 4.2 Unit, `units/<id>.json`
 ```json
@@ -87,20 +88,22 @@ export default {
   id: "listen-pick-word",                        // must equal the folder name
   title: { es, en }, emoji,
   help: { es, en },                              // first-time tip + "?" overlay text
+  skill: "listening",                            // optional: listening|spelling|reading|grammar|puzzle (unit mix check, task 014)
   pictures: true,                                // optional: validator then demands emoji on nouns in the pool
   paramsSchema: { options: { type: "int", min: 2, max: 6, default: 3 }, from: { type: "selector" }, accents: { type: "enum", values: ["strict","lenient"], default: "strict" } },
   defaults(difficulty) -> params,                // layered: schema defaults < defaults(difficulty) < exercise params
   make(params, { targets, pool }, rng) -> { rounds: [round] },   // pure; seeded
   judge(round, answer) -> { correct, feedback: { es, en } },     // pure
-  hint(round, level) -> hintSpec,                // level 1 = nudge, 2 = reveal; pure; returned to mount via submit()
+  hint(round, level, lastAnswer) -> hintSpec,    // level 1 = nudge, 2 = reveal; pure; returned to mount via submit()
   mount(host, round, ctx) -> { destroy() }       // DOM
 }
 // round: any JSON-safe object; optional round.wordIds = vocab ids practised (feeds profile.words).
 // ctx = { lang, t(key), say(text, {rate}) -> Promise<bool>, canSpeak, sfx(name), mascot(mood), reducedMotion,
 //         submit(answer) -> Promise<{ correct, feedback, action: "next"|"hint"|"reveal"|"retry", hint?, done }> }
 ```
-- `make` gets `targets` (the `from.n` words drawn from the selector, shuffled) and `pool` (every word taught up to this unit, for distractors; `core/generate.js` `distractors()` picks them). Archetypes without a `selector` param get `targets: []` and read their own `params.items`.
+- `make` gets `targets` (the `from.n` words drawn from the selector, shuffled) and `pool` (every word taught up to this unit, for distractors; `core/generate.js` `distractors()` picks them). Archetypes without a `selector` param, or whose optional selector is unset because the exercise gives `items`, get `targets: []` and read their own `params.items`.
 - **The session owns the rules**: `submit` calls `judge`, counts misses and picks the action: miss 1 → `hint` (with `hint(round, 1)`), miss 2 → `reveal` (with `hint(round, 2)`), later misses → `retry`. A round only advances on a correct answer, so after a reveal the child still picks/copies it. Archetypes never write progress.
+- **One round = one judged answer = one `submit`.** Boards (match-pairs, word-search, tile building) either collect the whole answer inside `mount` and submit it once as a composite answer (`judge` is correct only when everything is right; `hint(level)` may reveal part, e.g. one correct pair), or make one round per item over a shared board. Archetypes never count misses themselves.
 - Seeds: `hash(profileId, unitId, attempt)` (`progress.attemptSeed`); each exercise uses its own rng from `hash(seed, exerciseIndex)`, so resume never replays earlier rounds and tests are reproducible.
 - An exercise counts as **correct** when finished without a reveal; this feeds `bestCorrect`, `history.correct` and the 2-star rule.
 

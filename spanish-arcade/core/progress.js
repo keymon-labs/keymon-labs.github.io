@@ -5,6 +5,7 @@ export const HISTORY_MAX = 200;
 
 /** Store a finished unit (result from session.result()); at = ISO time from the injected clock. */
 export function recordUnit(profile, unit, result, at) {
+  if (!result.finished) return profile;
   const old = profile.units[unit.id];
   const words = { ...profile.words };
   for (const [id, w] of Object.entries(result.words)) {
@@ -37,7 +38,7 @@ export function applyRev(profile, units) {
     const u = out.units[unit.id];
     if (u && u.rev !== unit.rev) {
       const keep = new Set(unit.exercises.map((e) => e.id));
-      out.units[unit.id] = { ...u, rev: unit.rev, exercises: Object.fromEntries(Object.entries(u.exercises ?? {}).filter(([id]) => keep.has(id))) };
+      out.units[unit.id] = { ...u, rev: unit.rev, bestCorrect: Math.min(u.bestCorrect ?? 0, unit.exercises.length), exercises: Object.fromEntries(Object.entries(u.exercises ?? {}).filter(([id]) => keep.has(id))) };
       changed = true;
     }
     if (out.inProgress?.unitId === unit.id && out.inProgress.rev !== unit.rev) { out.inProgress = null; changed = true; }

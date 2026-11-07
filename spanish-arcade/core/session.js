@@ -53,7 +53,7 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
         if (action === 'hint') r.hints++;
         if (action === 'reveal') r.reveals++;
         const out = { correct, feedback, action, done: false };
-        if (action !== 'retry') out.hint = ex.archetype.hint(round, s.misses);
+        if (action !== 'retry') out.hint = ex.archetype.hint(round, s.misses, answer);
         return out;
       }
       r.total++;

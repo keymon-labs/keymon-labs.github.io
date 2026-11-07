@@ -19,9 +19,12 @@ export function createSpeech({
   Utterance = globalThis.SpeechSynthesisUtterance,
   activation = globalThis.navigator?.userActivation,
   timeoutMs = 2000,
+  sayTimeoutMs = 10000,
 } = {}) {
   let voice = null;
   let waiting = null;
+  // Voices can change later (installed, or a list that arrives in parts): pick again every time.
+  synth?.addEventListener?.('voiceschanged', () => { voice = pickVoice(synth.getVoices()); });
 
   const ready = () => {
     if (!synth || !Utterance) return Promise.resolve(null);
@@ -43,14 +46,21 @@ export function createSpeech({
     async say(text, { rate = 0.9 } = {}) {
       // Browsers block speech before the first user gesture; callers speak from a tap handler.
       if (activation && !activation.hasBeenActive) return false;
-      const v = await ready();
+      await ready();
+      const v = voice; // current pick, not the first one ready() resolved with
       if (!v) return false;
       synth.cancel();
       const u = new Utterance(text);
       u.voice = v;
       u.lang = v.lang;
       u.rate = rate;
-      return new Promise((resolve) => { u.onend = () => resolve(true); u.onerror = () => resolve(false); synth.speak(u); });
+      return new Promise((resolve) => {
+        // Some engines (Android) never fire onend/onerror: don't leave the caller waiting.
+        const timer = setTimeout(() => resolve(false), sayTimeoutMs + text.length * 150);
+        u.onend = () => { clearTimeout(timer); resolve(true); };
+        u.onerror = () => { clearTimeout(timer); resolve(false); };
+        synth.speak(u);
+      });
     },
     stop: () => synth?.cancel(),
   };

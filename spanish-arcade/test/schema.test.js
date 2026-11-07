@@ -1,7 +1,7 @@
 // Schema checker and validators (core/schema.js). Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkParams, schemaDefaults, validateVocab, validateUnit, validateStore, validateContent } from '../core/schema.js';
+import { checkParams, validateVocab, validateUnit, validateStore, validateContent, validateArchetype } from '../core/schema.js';
 import placeholder from '../archetypes/placeholder/index.js';
 import { word } from './helpers.js';
 
@@ -31,13 +31,20 @@ test('checkParams accepts valid params and reports readable paths', () => {
   has(checkParams(schema, {}), /^params\.from: missing$/);
 });
 
-test('schemaDefaults collects defaults', () => {
-  assert.deepEqual(schemaDefaults(placeholder.paramsSchema), { options: 3 });
+test('validateArchetype: module fields and optional skill', () => {
+  assert.deepEqual(validateArchetype(placeholder), []);
+  assert.equal(placeholder.skill, 'puzzle');
+  const { skill, ...noSkill } = placeholder;
+  assert.deepEqual(validateArchetype(noSkill), []);
+  has(validateArchetype({ ...placeholder, skill: 'singing' }), /^skill: must be one of listening, spelling, reading, grammar, puzzle$/);
+  has(validateArchetype({ ...placeholder, judge: undefined }), /^judge: must be a function$/);
 });
 
 test('validateVocab: fields, article/gender, spell list, file unit', () => {
   assert.deepEqual(validateVocab({ schema: 1, words: [word('gato'), word('casa', { gender: 'f', article: 'la' })] }, 'u1'), []);
-  assert.deepEqual(validateVocab({ schema: 1, words: [word('agua', { gender: 'f', article: 'el' })] }, 'u1'), []);
+  assert.deepEqual(validateVocab({ schema: 1, words: [word('agua', { gender: 'f', article: 'el', elException: true })] }, 'u1'), []);
+  has(validateVocab({ schema: 1, words: [word('alma', { gender: 'f', article: 'el' })] }, 'u1'), /^words\[0\]\.article: "el" does not match gender "f"$/);
+  has(validateVocab({ schema: 1, words: [word('agua', { gender: 'f', article: 'la', elException: true })] }, 'u1'), /^words\[0\]\.elException: only for a feminine noun with "el"$/);
   const errs = validateVocab({ schema: 1, words: [
     word('Gato X'), word('mesa', { gender: 'f', article: 'el' }), word('sol', { spell: ['zz'] }),
     word('pan', { unit: 'u2' }), word('rojo', { pos: 'colour' }), word('dos', { en: '' }),

@@ -15,8 +15,8 @@ export function judge(round, answer) {
   return { correct, feedback: correct ? { es: '¡Muy bien!', en: 'Well done!' } : { es: 'Casi. Prueba otra vez.', en: 'Nearly. Try again.' } };
 }
 
-/** Level 1 grays out one wrong option; level 2 shows the answer. */
-export function hint(round, level) {
+/** Level 1 greys out one wrong option other than the one just tapped (null if none left); level 2 shows the answer. */
+export function hint(round, level, lastAnswer) {
   if (level >= 2) return { level: 2, answer: round.answer };
-  return { level: 1, remove: round.options.find((o) => o.id !== round.answer)?.id ?? null };
+  return { level: 1, remove: round.options.find((o) => o.id !== round.answer && o.id !== lastAnswer)?.id ?? null };
 }

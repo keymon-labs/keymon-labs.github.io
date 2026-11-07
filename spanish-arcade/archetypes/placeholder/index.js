@@ -6,6 +6,7 @@ export default {
   title: { es: 'Toca la palabra', en: 'Tap the word' },
   emoji: '👆',
   help: { es: 'Mira el dibujo y toca la palabra en español.', en: 'Look at the picture and tap the Spanish word.' },
+  skill: 'puzzle',
   pictures: true,
   paramsSchema: {
     from: { type: 'selector' },
@@ -33,6 +34,7 @@ export default {
         const r = await ctx.submit(o.id);
         status.textContent = r.feedback[ctx.lang] ?? r.feedback.en;
         ctx.sfx(r.correct ? 'right' : 'wrong');
+        if (!r.correct) b.disabled = true; // the tapped wrong option stays greyed
         if (r.hint?.remove) buttons.find((x) => x.dataset.id === r.hint.remove).disabled = true;
         if (r.hint?.answer) buttons.find((x) => x.dataset.id === r.hint.answer).classList.add('reveal');
       });

@@ -1,8 +1,8 @@
 // Profile store in localStorage["spanish-arcade:v1"] (PLAN §4.4). Storage, clock and uuid are injected; no DOM.
-import { validateStore } from './schema.js';
+import { validateStore, MAX_PROFILES } from './schema.js';
 
 export const STORE_KEY = 'spanish-arcade:v1';
-export const MAX_PROFILES = 4;
+export { MAX_PROFILES };
 const DEFAULT_SETTINGS = { lang: 'en', sound: true, textSize: 1, lastBackupAt: null };
 
 const empty = () => ({ schema: 1, profiles: [], settings: { ...DEFAULT_SETTINGS } });

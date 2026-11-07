@@ -1,5 +1,4 @@
 // Seeded generation: exercise params + vocab (data/vocab/*.json) -> rounds. Pure, no DOM.
-import { schemaDefaults } from './schema.js';
 
 /** Stable 32-bit seed from any parts, e.g. seedFor(profileId, unitId, attempt). FNV-1a. */
 export function seedFor(...parts) {
@@ -13,6 +12,9 @@ export function shuffle(list, rng) {
   for (let i = a.length - 1; i > 0; i--) { const j = rng.int(0, i); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
+
+export const schemaDefaults = (schema = {}) =>
+  Object.fromEntries(Object.entries(schema).filter(([, s]) => 'default' in s).map(([k, s]) => [k, s.default]));
 
 /** schema defaults < archetype.defaults(difficulty) < the exercise's own params. */
 export const resolveParams = (arch, ex) =>
@@ -43,8 +45,9 @@ export function makeExercise(content, unit, index, rng) {
   const archetype = content.archetypeById[exercise.archetype];
   const params = resolveParams(archetype, exercise);
   const key = selectorKey(archetype);
-  const targets = key ? shuffle(select(params[key], content, unit.id), rng).slice(0, params[key].n) : [];
-  const pool = key && params[key].upToUnit === false ? content.words : allowedWords(content, unit.id);
+  const sel = key && params[key]; // unset optional selector (exercise uses items): targets = []
+  const targets = sel ? shuffle(select(sel, content, unit.id), rng).slice(0, sel.n) : [];
+  const pool = sel && sel.upToUnit === false ? content.words : allowedWords(content, unit.id);
   const { rounds } = archetype.make(params, { targets, pool }, rng);
   return { exercise, archetype, params, rounds };
 }
