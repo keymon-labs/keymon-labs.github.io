@@ -26,21 +26,46 @@ Reply with ONLY this JSON, no other text:
 {"lines":[{"written":"...","corrected":"..."}],"errors":[{"written":"...","correct":"...","kind":"spelling|capitals|punctuation|grammar","note":"friendly note for a child in ${L}, max 12 words"}],"unclear":["..."]}`;
 }
 
-/** Improvised reply for a sentence the episode's rules don't cover. The hero reacts with a pose, a speech bubble and a funny line. */
-export function buildImprovPrompt(ep, lang, state, sentence) {
+/**
+ * Improvised animation for a sentence the episode's rules don't cover. `menu` (improvMenu in episode.js) lists what Claude may use;
+ * the reply is checked by cleanImprov before it plays.
+ */
+export function buildImprovPrompt(ep, lang, state, sentence, menu, planText = "") {
   const L = LANG_NAME[lang] || "English";
   const scene = Object.entries(state).map(([k, v]) => `${k}: ${v}`).join(", ");
-  return `You run a story game for a child who is learning to write in ${L}.
+  const actors = menu.actors.map((a) => `- ${a.name}: ${a.about}${a.hero ? " (the hero)" : ""}; at x ${a.x}, y ${a.y}, size ${a.w}×${a.h}` +
+    `${a.spots.length ? `; spots: ${a.spots.join(", ")}` : ""}; poses: ${a.poses.join(", ") || "none"}`).join("\n");
+  return `You direct a short cartoon animation in a story game for a child who is learning to write in ${L}.
 Episode: "${ep.title[lang]}". Mission: "${ep.mission[lang]}".
-Scene now: ${scene || "nothing special"}.
+State now: ${scene || "nothing special"}.
 The child wrote: "${sentence}"
 
-The hero (a stick-figure kid) reacts. Be playful and a bit silly, always kind, never mean or scary.
-- If the sentence is simple, safe and fun (sing, dance, wave, jump, laugh, say hello…): "ok": true, a pose from [${ep.improvPoses.join(", ")}], "say": what the hero says in a speech bubble (max 5 words), "text": one funny sentence in ${L} (max 20 words) telling what happens.
-- If it is too complex, impossible, rude or unsafe: "ok": false, "say": a short funny excuse (max 5 words), "text": a funny, friendly sentence in ${L} with an idea to try instead.
-- Never move other characters or objects, and never complete the mission: only the planned sentences do that.
+${planText ? `The game has a planned reaction for this sentence: "${planText}"
+If the sentence asks for nothing more than that, reply only {"plan":true}. If it asks for more or something different (another place or thing, something happening next), improvise instead.
 
-Reply with ONLY this JSON: {"ok":true,"pose":"...","say":"...","text":"..."}`;
+` : ""}Act out what the child wrote, right now, like a cartoon: things can fly, spin, explode, vanish, dance, talk, or new things can appear. Be playful and a bit silly, always kind: no blood, nothing scary.
+- Never complete the mission and never defeat the target for real: only the planned sentences do that. After your animation everything goes back to its place by itself.
+- If the sentence is rude or unsafe, reply "ok": false with a funny, friendly "text" suggesting another idea.
+
+Actors (world is 1000 wide × 600 high, 0,0 is top-left, the ground starts at y ${ep.scene.groundTop}):
+${actors}
+Effects (emoji bursts): ${menu.fx.join(", ")}
+Sounds: ${menu.sounds.join(", ")}
+
+Beats play in order; a list inside the list plays at the same time. Any beat can wait first with "delay" (ms).
+{"move":"ball","to":"sun","dur":900,"arc":200,"spin":720}  "to" is one of the actor's spots, another actor's name, or {"x":…,"y":…}; dur, arc (height in px) and spin (degrees) are optional
+{"pose":"dance","actor":"kid"}  a pose from that actor's list (the hero if no actor)
+{"fx":"boom","at":"ball"}
+{"vanish":"ball"}  pops out of sight
+{"prop":"🚀","name":"rocket","at":"kid"}  a new emoji thing appears above an actor (max 3); then move, pose or fx it by its name
+{"say":"Too hot!","actor":"sun"}  speech bubble, max 5 words
+{"sound":"boing"}  {"shake":400}  {"wait":300}
+Use 3 to 10 beats.
+
+Example, for "The kid throws the ball to the sun and it explodes":
+{"ok":true,"say":"To the sun!","text":"The ball flies to the sun and goes BOOM. Too hot to hold!","beats":[{"move":"ball","to":"hand","dur":300},[{"pose":"throw"},{"move":"ball","to":"sun","dur":900,"arc":200,"spin":720,"delay":450}],[{"fx":"boom","at":"sun"},{"vanish":"ball"},{"sound":"splat"},{"shake":400}],{"say":"Too hot!","actor":"sun"}]}
+
+Reply with ONLY this JSON${planText ? ' (or {"plan":true})' : ""}: {"ok":true,"say":"what the hero says, max 5 words, in ${L}","text":"one funny sentence in ${L}, max 20 words, telling what happens","beats":[...]}`;
 }
 
 /** Pull the first JSON object out of the reply text, or null. */

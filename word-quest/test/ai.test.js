@@ -21,11 +21,21 @@ test("OCR prompt changes with the level and the language", () => {
   assert.match(buildOcrPrompt("en", "advanced"), /Check everything/);
 });
 
-test("improvisation prompt describes the scene and lists the hero's poses", () => {
+test("improvisation prompt describes the scene, the actors with their poses and spots, and the beat format", () => {
   const ep = readJson("episodes/frog/episode.json");
-  const p = buildImprovPrompt(ep, "es", { ball: "hand", frog: "here" }, "Bailo");
-  assert.match(p, /ball: hand, frog: here/);
-  assert.match(p, /Spanish/);
-  assert.match(p, new RegExp(ep.improvPoses.join(", ")));
+  const menu = { actors: [{ name: "kid", about: "a kid", hero: true, x: 1, y: 2, w: 3, h: 4, spots: [], poses: ["dance", "throw"] }, { name: "ball", about: "a ball", x: 0, y: 0, w: 1, h: 1, spots: ["hand"], poses: ["spin"] }], fx: ["boom"], sounds: ["splat"] };
+  const p = buildImprovPrompt(ep, "es", { ball: "hand", frog: "here" }, "Bailo", menu);
+  assert.match(p, /State now: ball: hand, frog: here/);
+  assert.match(p, /- kid: a kid \(the hero\).*poses: dance, throw/);
+  assert.match(p, /- ball: a ball.*spots: hand/);
+  assert.match(p, /Effects \(emoji bursts\): boom/);
   assert.match(p, /"Bailo"/);
+  assert.match(p, /in Spanish/);
+});
+
+test("improvisation prompt offers the planned reaction for loose rules", () => {
+  const ep = readJson("episodes/frog/episode.json");
+  const menu = { actors: [], fx: [], sounds: [] };
+  assert.match(buildImprovPrompt(ep, "en", {}, "Throw it to the sun", menu, "It flies far away."), /planned reaction.*"It flies far away\."[\s\S]*\{"plan":true\}/);
+  assert.doesNotMatch(buildImprovPrompt(ep, "en", {}, "Sing", menu), /planned reaction|"plan"/);
 });

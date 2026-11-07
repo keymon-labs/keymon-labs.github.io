@@ -1,7 +1,7 @@
 {
   "id": "door", "languages": ["en"],
   "title": {"en": "Open the Door"}, "mission": {"en": "Get inside!"}, "intro": {"en": "A locked door."},
-  "target": {"en": ["key", "open"]}, "hero": "kid", "improvPoses": ["wave"],
+  "target": {"en": ["key", "open"]}, "hero": "kid",
   "scene": {
     "groundTop": 470,
     "actors": {"kid": {"art": "kid", "x": 100, "y": 250, "w": 150, "h": 240}, "key": {"emoji": "🔑", "x": 400, "y": 420, "w": 50, "h": 50}},

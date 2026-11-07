@@ -1,7 +1,7 @@
 // Engine tests: matching, state, resets, turns, stars, coins. Uses the frog episode and a small generic fixture.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalize, hasGroup, stateMatches, evaluate, between, applySet, takeTurn, validImprov, starsFor, scoreWriting, addCoins, local } from "../game.js";
+import { normalize, hasGroup, stateMatches, evaluate, between, applySet, takeTurn, starsFor, scoreWriting, addCoins, local } from "../game.js";
 import { readJson } from "./helpers.js";
 
 const frog = readJson("episodes/frog/episode.json");
@@ -87,27 +87,29 @@ test("takeTurn: planned outcome with state, beats and texts", async () => {
   assert.equal(r.win, false);
 });
 
-test("takeTurn: unplanned sentence asks Claude and keeps the state", async () => {
+test("takeTurn: unplanned sentence uses Claude's animation and never changes the state", async () => {
   let asked = null;
-  const r = await takeTurn({
-    ep: frog, state: { ball: "mouth", frog: "here" }, sentence: "I dance", lang: "en", fallback: "nope",
-    improvise: async (state, s) => { asked = { state, s }; return { ok: true, pose: "dance", say: "Woo!", text: "The kid dances like jelly." }; },
-  });
+  const imp = { ok: true, say: "Woo!", text: "The kid dances like jelly.", beats: [{ pose: "dance" }] };
+  const r = await takeTurn({ ep: frog, state: { ball: "mouth", frog: "here" }, sentence: "I dance", lang: "en", improvise: async (state, s) => { asked = { state, s }; return imp; } });
   assert.deepEqual(asked, { state: { ball: "ground", frog: "here" }, s: "I dance" });
   assert.equal(r.source, "improvised");
-  assert.deepEqual(r.beats[0], { pose: "dance" });
-  assert.equal(r.state.ball, "ground");
+  assert.deepEqual(r.beats, imp.beats);
+  assert.deepEqual(r.state, { ball: "ground", frog: "here" });
   assert.equal(r.pre.length, 2);
+  assert.equal(r.win, false);
 });
 
-test("validImprov: known poses only, short texts, fallback when unusable", () => {
-  const poses = frog.improvPoses;
-  assert.deepEqual(validImprov({ ok: true, pose: "sing", say: "La la!", text: "Opera time." }, "x", poses), { ok: true, pose: "sing", say: "La la!", text: "Opera time." });
-  assert.equal(validImprov({ ok: true, pose: "fly", text: "Wow" }, "x", poses).pose, poses[0]);
-  assert.equal(validImprov({ ok: false, text: "My legs are on holiday." }, "can't", poses).text, "My legs are on holiday.");
-  assert.equal(validImprov(null, "can't", poses).text, "can't");
-  assert.equal(validImprov({ ok: true, text: "   " }, "can't", poses).ok, false);
-  assert.equal(validImprov({ ok: true, say: "x".repeat(99), text: "y" }, "", poses).say.length, 40);
+test("takeTurn: a loose rule lets Claude improvise instead, or keep the plan, and keeps the plan when Claude fails", async () => {
+  const imp = { ok: true, say: "Boom!", text: "The ball explodes on the sun.", beats: [{ vanish: "ball" }] };
+  const go = (improvise, demo = false) => takeTurn({ ep: frog, state: frog.state, sentence: "Throw the ball to the sun and it explodes.", lang: "en", improvise, demo });
+  let plan = null;
+  assert.equal((await go(async (st, s, p) => { plan = p; return imp; })).source, "improvised");
+  assert.match(plan, /pure air/);
+  assert.equal((await go(async () => null)).id, "no_ball");
+  assert.equal((await go(async () => { throw new Error("offline"); })).id, "no_ball");
+  assert.equal((await go(() => assert.fail("demos never ask Claude"), true)).id, "no_ball");
+  const strict = await takeTurn({ ep: frog, state: frog.state, sentence: "Pick the ball and throw it through the basket. It bounces on the frog.", lang: "en", improvise: () => assert.fail("not loose") });
+  assert.equal(strict.id, "win");
 });
 
 test("stars: 3 on the first photo, 2 on the second, 1 after; 2 at most without the bonus word", () => {

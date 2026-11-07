@@ -12,9 +12,9 @@ Episodes are **data**; the code is a small engine that plays any episode.
 | `episodes/<id>/episode.json` | One episode: scene, state, word groups, rules, outcomes, tutorial. Format: [EPISODES.md](EPISODES.md). |
 | `art/*.svg` | Shared art (kid rig, frog, ball, hoop, sun, cloud, hills). Movable parts are `data-part` groups. |
 | `library.json` | Shared poses (tween shorthand) and emoji effects, usable by every episode. |
-| `game.js` | Engine, pure: matching, state, `between` resets, `takeTurn`, stars, coins, Claude-reply checks. |
-| `episode.js` | Episode checks with friendly messages (tests and Help → *Try it*), library merge, tween → keyframes. |
-| `stage.js` | Scene renderer and beat player (move with arc/spin, pose, say, fx, sound, shake, wait). |
+| `game.js` | Engine, pure: matching, state, `between` resets, `takeTurn`, stars, coins. |
+| `episode.js` | Episode and beat checks with friendly messages (tests, Help → *Try it*, Claude's improvised beats), improvisation menu, library merge, tween → keyframes. |
+| `stage.js` | Scene renderer and beat player (move with arc/spin, pose, say, fx, vanish, prop, sound, shake, wait; `home()` puts everything back). |
 | `sounds.js` | Synthesized sound effects (names used by episodes). |
 | `ai.js` | Claude prompts (read the photo, improvise), reply parsing, API call (web). |
 | `app.js` | UI controller: screens, feedback box, tutorial, photo flow, help, debug. |
@@ -29,7 +29,7 @@ To change behaviour, prefer data: a new reaction is an outcome; a new move is a 
 - Photo → Claude lists mistakes for the level (age in Help: 4–5 basic, 6–8 standard, 9–12 advanced). Spanish accents are never required.
 - Coins (header): +1 per word written right, −1 per mistake, never below 0. Scored on every photo.
 - After two photos with mistakes, a hint shows a correct version.
-- A clean sentence runs the first matching rule; anything else goes to Claude, which picks a hero pose, a speech bubble and a funny line. It can't move other actors or win.
+- A clean sentence runs the first matching rule; anything else (or a `loose` catch-all rule, when the sentence asks for more than its plan) goes to Claude, which directs a short animation in the same beat format (move anything anywhere, vanish, emoji props, poses, fx, sounds, speech), plus a funny line. `cleanImprov` drops anything invalid; improvising never changes the state or wins, and everything returns to its place afterwards.
 - Stars on a win: 3 on the first photo, 2 on the second, 1 after; 2 at most without the episode's bonus word.
 
 ## Tutorial, help, debug

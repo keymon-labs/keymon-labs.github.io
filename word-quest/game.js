@@ -28,13 +28,13 @@ export function stateMatches(state, when = {}) {
   });
 }
 
-/** First rule whose words, missing words and state all fit. Returns { id, outcome } or null (then Claude improvises). */
+/** First rule whose words, missing words and state all fit. Returns { id, outcome, loose } or null (then Claude improvises). */
 export function evaluate(ep, state, sentence, lang) {
   const groups = ep.words[lang] || {};
   const has = (g) => hasGroup(sentence, groups[g]);
   for (const rule of ep.rules) {
     if ((rule.words || []).every(has) && !(rule.without || []).some(has) && stateMatches(state, rule.when)) {
-      return { id: rule.outcome, outcome: ep.outcomes[rule.outcome] };
+      return { id: rule.outcome, outcome: ep.outcomes[rule.outcome], loose: !!rule.loose };
     }
   }
   return null;
@@ -56,32 +56,22 @@ export function between(ep, state) {
 
 /**
  * One turn on a clean sentence: resets, then the planned outcome, or else Claude's improvisation.
- * `improvise(state, sentence)` returns Claude's parsed JSON (or throws). Never touches the DOM.
+ * `improvise(state, sentence, planText?)` returns Claude's reply already made safe ({ ok, say, text, beats }: cleanImprov in episode.js).
+ * For a `loose` rule, Claude sees the plan first and may improvise instead (it returns null to keep the plan; errors keep it too).
+ * Demos never ask Claude. Improvising never changes the state. Never touches the DOM.
  * Returns { id, source: planned|improvised|refused, state, pre, beats, say, text, win }.
  */
-export async function takeTurn({ ep, state, sentence, lang, improvise, fallback }) {
+export async function takeTurn({ ep, state, sentence, lang, improvise, demo = false }) {
   const pre = between(ep, state);
   const planned = evaluate(ep, pre.state, sentence, lang);
-  if (planned) {
-    const o = planned.outcome;
-    return {
-      id: planned.id, source: "planned", state: applySet(pre.state, o.set), pre: pre.beats,
-      beats: o.beats || [], say: local(o.say, lang), text: local(o.text, lang), win: !!o.win,
-    };
-  }
-  const imp = validImprov(await improvise(pre.state, sentence), fallback, ep.improvPoses);
-  return {
-    id: "", source: imp.ok ? "improvised" : "refused", state: pre.state, pre: pre.beats,
-    beats: [{ pose: imp.pose }, { sound: imp.ok ? "pop" : "bad" }], say: imp.say, text: imp.text, win: false,
+  const plan = planned && {
+    id: planned.id, source: "planned", state: applySet(pre.state, planned.outcome.set), pre: pre.beats,
+    beats: planned.outcome.beats || [], say: local(planned.outcome.say, lang), text: local(planned.outcome.text, lang), win: !!planned.outcome.win,
   };
-}
-
-/** Claude's improvised reply, made safe: known pose only, short texts, a fallback when it's unusable. */
-export function validImprov(json, fallback, poses = []) {
-  const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
-  const text = str(json?.text, 240), say = str(json?.say, 40);
-  if (json?.ok === true && text) return { ok: true, pose: poses.includes(json.pose) ? json.pose : poses[0] || "nod", say, text };
-  return { ok: false, pose: "shrug", say, text: text || fallback };
+  if (plan && (!planned.loose || demo)) return plan;
+  const imp = plan ? await improvise(pre.state, sentence, plan.text).catch(() => null) : await improvise(pre.state, sentence);
+  if (!imp) return plan;
+  return { id: "", source: imp.ok ? "improvised" : "refused", state: pre.state, pre: pre.beats, beats: imp.beats, say: imp.say, text: imp.text, win: false };
 }
 
 /** Stars for a win: 3 on the first photo, 2 on the second, 1 after. Without the bonus word, 2 at most. */

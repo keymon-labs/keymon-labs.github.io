@@ -10,20 +10,39 @@
   "target": {"en": ["throw", "through"], "es": ["lanza", "a través"]},
   "bonus": "through",
   "hero": "kid",
-  "improvPoses": ["wave", "dance", "sing", "cheer", "hop", "jump", "laugh", "spin", "nod", "point", "sad", "run", "shrug"],
   "scene": {
     "sky": ["#8fd8ff", "#e6f8ff"],
     "ground": "#6cc451",
     "groundTop": 470,
     "actors": {
-      "hills": {"art": "hills", "x": 0, "y": 330, "w": 1000, "h": 160},
-      "sun": {"art": "sun", "x": 850, "y": 24, "w": 110, "h": 110, "idle": "shine"},
-      "cloud": {"art": "cloud", "x": 80, "y": 40, "w": 180, "h": 100, "idle": "float"},
-      "cloud2": {"art": "cloud", "x": 430, "y": 86, "w": 120, "h": 68, "idle": "float"},
-      "basket": {"art": "hoop", "x": 620, "y": 80, "w": 220, "h": 390},
-      "frog": {"art": "frog", "x": 670, "y": 382, "w": 120, "h": 100, "idle": "breathe", "shadow": true, "icon": "🐸"},
-      "kid": {"art": "kid", "x": 120, "y": 250, "w": 150, "h": 240, "idle": "breathe", "shadow": true, "icon": "🧒"},
-      "ball": {"art": "ball", "x": 290, "y": 410, "w": 64, "h": 64}
+      "hills": {"art": "hills", "x": 0, "y": 330, "w": 1000, "h": 160, "about": "green hills in the background"},
+      "sun": {"art": "sun", "x": 850, "y": 24, "w": 110, "h": 110, "idle": "shine", "about": "a smiling sun", "icon": "☀️"},
+      "cloud": {"art": "cloud", "x": 80, "y": 40, "w": 180, "h": 100, "idle": "float", "about": "a fluffy cloud", "icon": "☁️"},
+      "cloud2": {"art": "cloud", "x": 430, "y": 86, "w": 120, "h": 68, "idle": "float", "about": "a small cloud", "icon": "☁️"},
+      "basket": {"art": "hoop", "x": 620, "y": 80, "w": 220, "h": 390, "about": "a basketball hoop on a pole", "icon": "🥅"},
+      "frog": {
+        "art": "frog",
+        "x": 670,
+        "y": 382,
+        "w": 120,
+        "h": 100,
+        "idle": "breathe",
+        "shadow": true,
+        "icon": "🐸",
+        "about": "a cheeky frog (the target)"
+      },
+      "kid": {
+        "art": "kid",
+        "x": 120,
+        "y": 250,
+        "w": 150,
+        "h": 240,
+        "idle": "breathe",
+        "shadow": true,
+        "icon": "🧒",
+        "about": "a stick-figure kid"
+      },
+      "ball": {"art": "ball", "x": 290, "y": 410, "w": 64, "h": 64, "about": "a basketball", "icon": "🏀"}
     },
     "spots": {
       "ball": {
@@ -77,15 +96,15 @@
     }
   },
   "rules": [
-    {"words": ["throw"], "without": ["pick"], "when": {"ball": "!hand"}, "outcome": "no_ball"},
-    {"words": ["eat"], "without": ["pick"], "when": {"ball": "!hand"}, "outcome": "nothing_to_eat"},
+    {"words": ["throw"], "without": ["pick"], "when": {"ball": "!hand"}, "outcome": "no_ball", "loose": true},
+    {"words": ["eat"], "without": ["pick"], "when": {"ball": "!hand"}, "outcome": "nothing_to_eat", "loose": true},
     {"words": ["catch", "frog"], "outcome": "frog_runs"},
     {"words": ["eat"], "outcome": "ate_ball"},
     {"words": ["throw", "basket", "bounce", "frog"], "outcome": "win"},
     {"words": ["throw", "basket"], "outcome": "basket_only"},
     {"words": ["throw", "frog"], "outcome": "frog_dodges"},
-    {"words": ["throw"], "outcome": "throw_far"},
-    {"words": ["pick"], "when": {"ball": "hand"}, "outcome": "already"},
+    {"words": ["throw"], "outcome": "throw_far", "loose": true},
+    {"words": ["pick"], "when": {"ball": "hand"}, "outcome": "already", "loose": true},
     {"words": ["pick"], "outcome": "picked"}
   ],
   "between": [

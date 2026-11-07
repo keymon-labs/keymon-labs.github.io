@@ -1,6 +1,6 @@
 # Writing a Word Quest episode
 
-An episode is **one JSON file**: `word-quest/episodes/<id>/episode.json`. No code. The child writes a sentence; the first **rule** whose words match picks an **outcome**; the outcome changes the **state** and plays **beats** (animations) on the **scene**. Sentences no rule covers go to Claude, which makes the hero do something silly but never finishes the mission.
+An episode is **one JSON file**: `word-quest/episodes/<id>/episode.json`. No code. The child writes a sentence; the first **rule** whose words match picks an **outcome**; the outcome changes the **state** and plays **beats** (animations) on the **scene**. Sentences no rule covers go to Claude, which directs its own short animation with the same beats (things fly, explode, vanish, appear…). Its beats are checked before they play, it can't change the state or win, and afterwards everything goes back to its place.
 
 Two ways to try one:
 - **On a phone:** in the app, Help → *Make your own episode* → paste the JSON → *Try it*. It's checked on the spot and kept on that device.
@@ -17,7 +17,6 @@ Start from a copy of [`episodes/frog/episode.json`](episodes/frog/episode.json).
 | `target` | Words the child must use, per language: `{"en": ["throw", "through"], …}`. Shown to the child. |
 | `bonus` | Optional word group needed for 3 stars (without it, 2 at most). |
 | `hero` | The actor the child controls. Claude can only move this one. |
-| `improvPoses` | Poses Claude may pick for the hero when it improvises. |
 | `order` | Optional number to sort the episode list. |
 | `scene`, `state`, `words`, `rules`, `between`, `outcomes`, `tutorial` | Below. |
 | `poses`, `fx` | Optional extra poses and effects (same shape as [`library.json`](library.json)); they override the library. |
@@ -28,13 +27,13 @@ The world is 1000 × 600; (0, 0) is the top left. `groundTop` is where the grass
 "scene": {
   "sky": ["#8fd8ff", "#e6f8ff"], "ground": "#6cc451", "groundTop": 470,
   "actors": {
-    "kid":  {"art": "kid", "x": 120, "y": 250, "w": 150, "h": 240, "idle": "breathe", "shadow": true, "icon": "🧒"},
-    "cake": {"emoji": "🎂", "x": 600, "y": 400, "w": 80, "h": 80}
+    "kid":  {"art": "kid", "x": 120, "y": 250, "w": 150, "h": 240, "idle": "breathe", "shadow": true, "icon": "🧒", "about": "a stick-figure kid"},
+    "cake": {"emoji": "🎂", "x": 600, "y": 400, "w": 80, "h": 80, "about": "a birthday cake"}
   },
   "spots": { "cake": {"table": {"x": 600, "y": 400}, "gone": {"x": 600, "y": 400, "opacity": 0}} }
 }
 ```
-- **Actors** are drawn in the order listed (later ones in front). `art` names an SVG in [`art/`](art/) (or in `episodes/<id>/art/`); `emoji` works too. `idle` is a pose that loops; `shadow` adds a ground shadow; `icon` labels the actor's lines in the box.
+- **Actors** are drawn in the order listed (later ones in front). `art` names an SVG in [`art/`](art/) (or in `episodes/<id>/art/`); `emoji` works too. `idle` is a pose that loops; `shadow` adds a ground shadow; `icon` labels the actor's lines in the box. `about` tells Claude what the actor is when it improvises.
 - **Art available:** `kid` (stick figure with parts `torso, head, mouth, armL, foreL, armR, foreR, legL, shinL, legR, shinR`), `frog` (`mouth, legs`), `ball`, `hoop`, `sun` (`rays`), `cloud`, `hills`. New art: an SVG with `viewBox`; mark movable groups with `data-part="name"` and `style="transform-box:view-box;transform-origin:Xpx Ypx"` (the joint).
 - **Spots** are named places an actor can move to (top-left corner, plus optional `opacity`).
 
@@ -56,6 +55,7 @@ Named facts about the scene: `"state": {"cake": "table", "door": "locked"}`. Whe
 - Rules are tried **in order; the first that fits wins**. Put specific rules before general ones.
   - `words`: all these groups must appear. `without`: none of these may appear.
   - `when`: state conditions: `"cake": "hand"`, not: `"cake": "!hand"`, any of: `"cake": ["hand", "table"]`.
+  - `loose: true`: a catch-all rule (like "any throw"). Claude sees its planned reaction and may improvise instead when the sentence asks for more ("throw the ball **to the sun and it explodes**"). If Claude is unavailable, the plan plays. Keep mission rules (the win, its near misses) strict.
 - `between`: checked before every sentence, to reset things: `{"when": {"frog": "away"}, "set": {"frog": "here"}, "beats": [...]}`.
 
 ## Outcomes
@@ -77,11 +77,13 @@ Named facts about the scene: `"state": {"cake": "table", "door": "locked"}`. Whe
 Played one after another; **a list inside the list plays at the same time**. Any beat can wait first with `"delay": ms`.
 | Beat | Does |
 |---|---|
-| `{"move": "ball", "to": "hand", "dur": 500, "arc": 120, "spin": 360}` | Move an actor to a spot. `arc` = height of the jump in px, `spin` = degrees. |
+| `{"move": "ball", "to": "hand", "dur": 500, "arc": 120, "spin": 360}` | Move an actor to one of its spots, onto another actor (`"to": "sun"`) or to a point (`"to": {"x": 500, "y": 100}`). `arc` = height of the jump in px, `spin` = degrees. |
 | `{"pose": "throw"}` / `{"pose": "leap", "actor": "frog"}` | Play a pose (hero unless `actor`). |
 | `{"say": {"en": "Nope!", "es": "¡No!"}, "actor": "frog"}` | Speech bubble, also shown in the box. |
 | `{"fx": "boom", "at": "frog"}` | Emoji burst. |
 | `{"sound": "boing"}` | Sound effect. |
+| `{"vanish": "ball"}` | Pop out of sight. |
+| `{"prop": "🚀", "name": "rocket", "at": "kid"}` | A new emoji thing appears above an actor (or at `"x"`, `"y"`); later beats use it by name. Gone at the end of the turn. |
 | `{"shake": 400}` | Shake the screen. |
 | `{"wait": 300}` | Pause. |
 
@@ -94,6 +96,8 @@ New pose: a list of tweens; each moves the whole actor or one `part` through ste
 "poses": { "bow": {"tweens": [{"part": "torso", "rotate": [0, 40, 40, 0], "at": [0, .3, .7, 1], "dur": 1200}], "sound": "pop"} }
 ```
 Tween keys: `rotate` (degrees), `x`, `y` (px), `scale` (number or `[x, y]`), all with the same number of steps; `at` (0–1 per step), `dur`, `delay`, `easing`, `loop`, `hold` (keep the last step), `origin` (for the whole body, e.g. `"50% 100%"`). On the kid, raising `armL` is positive degrees and raising `armR` negative.
+
+After every turn, actors go back to where the state puts them (or where they started), vanished ones pop back and props disappear.
 
 ## Tutorial
 Optional steps shown in the box with a **Next** button, the first time the episode opens. A step with `demo` plays that sentence and the test checks it gives `expect`:

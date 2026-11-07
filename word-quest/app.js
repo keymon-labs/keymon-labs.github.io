@@ -4,7 +4,7 @@ import { episodes as builtIn, art } from "./episodes/index.js";
 import library from "./library.json";
 import strings from "./strings.json";
 import { takeTurn, starsFor, hasGroup, scoreWriting, addCoins, local } from "./game.js";
-import { checkEpisode, withLibrary } from "./episode.js";
+import { checkEpisode, withLibrary, cleanImprov, improvMenu } from "./episode.js";
 import { buildOcrPrompt, buildImprovPrompt, parseOcr, parseJson } from "./ai.js";
 import { unlockAudio } from "../shared/audio.js";
 import { SOUNDS, playSound } from "./sounds.js";
@@ -151,10 +151,14 @@ export function start({ ask, root = document, notice = null }) {
   async function playTurn(sentence, { demo = false, ocr = null } = {}) {
     const mine = run, scene = stage, ep = run.ep;
     const r = await takeTurn({
-      ep, state: run.state, sentence, lang: lang(), fallback: t("cantDo"),
-      improvise: async (state, s) => {
+      ep, state: run.state, sentence, lang: lang(),
+      demo,
+      improvise: async (state, s, planText) => {
         setStatus(t("thinking"));
-        try { return parseJson(await ask({ prompt: buildImprovPrompt(ep, lang(), state, s), image: null })); } finally { setStatus(""); }
+        try {
+          const reply = await ask({ prompt: buildImprovPrompt(ep, lang(), state, s, improvMenu(ep, CHECK), planText), image: null });
+          return cleanImprov(parseJson(reply), ep, CHECK, t("cantDo"), !!planText);
+        } finally { setStatus(""); }
       },
     });
     if (run !== mine) return; // left the episode while Claude was thinking
@@ -162,7 +166,7 @@ export function start({ ask, root = document, notice = null }) {
     feedback(r.text);
     await scene.play(r.pre);
     await scene.play([...(r.say ? [{ say: r.say }] : []), ...r.beats]);
-    await scene.sync(r.state);
+    await scene.home(r.state);
     if (run !== mine || demo) return;
     log({ sentence, ocr, source: r.source, outcome: r.id, text: r.text });
     if (r.win) finish(sentence);
@@ -389,7 +393,8 @@ export function start({ ask, root = document, notice = null }) {
 
   async function runDebug() {
     const sentence = $("debug-text").value.trim();
-    if (!sentence || !run || busy || tutorial || run.over) return;
+    if (!sentence || !run || busy) return;
+    if (tutorial || run.over) { endTutorial(); openEpisode(run.ep, { withTutorial: false }); } // debug always gets a fresh, playable scene
     $("debug").hidden = true;
     $("debug-text").value = "";
     busy = true;
