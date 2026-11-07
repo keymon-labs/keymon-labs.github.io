@@ -5,7 +5,7 @@
 import levels from './levels.json' with { type: 'json' };
 import { makeRound, judge } from './logic.js';
 import { createScene } from './scene.js';
-import { createRng } from '../../core/rng.js';
+import { createRng } from '../../../shared/rng.js';
 import { createSession } from '../../core/session.js';
 import { createKeypad } from '../../ui/keypad.js';
 import { createPlayLayout } from '../../ui/play-layout.js';

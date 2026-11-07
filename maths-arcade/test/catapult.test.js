@@ -1,7 +1,7 @@
 // Catapult rules and level data. Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createRng } from '../core/rng.js';
+import { createRng } from '../../shared/rng.js';
 import { KINDS, makeRound, judge } from '../games/catapult/logic.js';
 import levels from '../games/catapult/levels.json' with { type: 'json' };
 

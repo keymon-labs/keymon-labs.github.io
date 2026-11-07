@@ -8,7 +8,7 @@ answer shows *why* it was wrong (the stone lands short, the wrong block gets hit
 ```
 index.html, app.js, style.css   shell: hash routes (#/, #/<game>, #/<game>/<level>), menus, stars
 core/                           pure logic, no DOM, unit tested
-  rng.js                        seeded random
+  (seeded random: ../shared/rng.js)
   problems.js                   skill generators: multiplication, addition, subtraction, fractionOf
   session.js                    rounds, retries, hint after 1 miss, answer after 2, stars
   progress.js                   best stars per level (localStorage, injected)
