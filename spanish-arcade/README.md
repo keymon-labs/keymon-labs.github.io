@@ -45,3 +45,6 @@ Test hook for headless runs: `window.__spanishArcade` (`store`, `content`, `spee
 
 ## Licence
 © 2026 keymon-labs, [CC BY-NC-SA 4.0](../NOTICE.md). No third-party code, fonts or images are bundled: artwork is emoji and CSS, sounds are synthesised, sentences are original.
+
+## Laboratorio (debug mode)
+Tap the footer version line 10 times (each tap within 2 s of the last) to turn debug mode on or off. While it is on, the menu shows a "Laboratorio" link to `lab/`: a page that plays any archetype with editable params, any exercise of a unit (`?unit=<id>&exercise=<id>`), a seed field and a "Copiar nota" button. It saves nothing, registers no service worker, is not linked from the landing page and is marked "no es para niños". Code: `lab/`, `ui/tapcount.js`.

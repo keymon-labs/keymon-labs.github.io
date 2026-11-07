@@ -78,7 +78,7 @@ function setDebug(on) {
 }
 const debugTools = () => (store.data.settings.debug
   ? h('p', { class: 'muted' }, link('./lab/', 'Laboratorio'), ' ', h('button', { type: 'button', id: 'debug-off', onclick: () => setDebug(false) }, 'Salir del modo de pruebas'))
-  : null);
+  : '');
 
 function footer() {
   const f = footerText();

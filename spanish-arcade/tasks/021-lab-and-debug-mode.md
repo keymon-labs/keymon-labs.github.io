@@ -3,7 +3,7 @@ id: "021"
 title: Lab page and hidden debug mode
 model: Sonnet 5.5
 why_model: New page reusing the existing archetype contract plus a small shell hook; two disjoint parts.
-status: in-progress
+status: done
 claimed: 2026-11-07
 depends_on: ["018", "019"]
 touches: [spanish-arcade/lab/**, spanish-arcade/app.js (debug toggle and menu link only), spanish-arcade/ui/settings.js, spanish-arcade/core/profiles.js (a `debug` setting only), spanish-arcade/test/**, spanish-arcade/README.md]
@@ -13,3 +13,7 @@ Owner wants to iterate fast on games from his phone. Part A: a lab page `spanish
 
 ## Acceptance
 - Lab plays every archetype in the repo and the real unit's exercises; debug toggle works headless; tests for the toggle count logic and the fake session rules; `npm test`, build pass; offline/service worker unaffected.
+
+Ruling: the lab replicates the app footer (the app's footer builder lives in app.js and is not exported) — cost if wrong: export it later.
+Ruling: the lab's "Saltar ronda" resumes a snapshot one round further, not session.skip() — cost if wrong: switch it to session.skip().
+Fixed by the coordinator: a stray "null" printed on the home and profile screens when debug mode was off.
