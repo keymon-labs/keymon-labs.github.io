@@ -11,7 +11,7 @@ description: Run keymon-labs apps inside Claude on the viewer's own Claude accou
 claude/apps.json       which apps the loader offers (id, name, description, entry, source, uses[])
 claude/build.js        npm run build:claude → claude/dist/<id>.js, one self-contained ES module per app
 claude/build-loader.js npm run build:loader → claude/out/loader.html + claude/out/apps/<id>.js (SRI hashes baked in)
-claude/loader.html     loader template: app list, trust screen, SRI loading, mounts the app
+claude/loader.html     loader template: intro, app list, "More on the website" (website-only apps read from the landing cards at build), trust screen, SRI loading, mounts the app
 claude/DISCLAIMER.md   user-facing security model + disclaimer (linked from the trust screen)
 ```
 No npm, no CDN: the app files are published as supporting files of the artifact itself. The repo is the only source; the artifact is a build of one commit (its build id).

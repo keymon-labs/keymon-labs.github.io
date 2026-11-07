@@ -25,11 +25,17 @@ if (!owner) { console.error("origin isn't a GitHub repo"); process.exit(1); }
 const REPO = `https://github.com/${owner}/${repo}`;
 const SITE = repo.toLowerCase() === `${owner.toLowerCase()}.github.io` ? `https://${repo.toLowerCase()}/` : `https://${owner.toLowerCase()}.github.io/${repo}/`;
 
+// Website-only apps for the "More on the website" list, read from the landing page cards so they stay in sync.
+const inLoader = new Set(apps.map((a) => a.id));
+const siteApps = [...readFileSync(here("../index.html"), "utf8").matchAll(/<li class="card" id="([^"]+)">[\s\S]*?<h2>([^<]+)<\/h2><p>([^<]+)<\/p>/g)]
+  .filter(([, id]) => !inLoader.has(id)).map(([, id, name, description]) => ({ id, name, description }));
+
 // </script> inside the embedded JSON would end the script tag early.
 const json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 const html = readFileSync(here("loader.html"), "utf8")
   .replace("__CATALOG__", json(apps))
   .replace("__BUILD__", json(build))
+  .replace("__SITE_APPS__", json(siteApps))
   .replaceAll("__BUILD_ID__", build.commit)
   .replaceAll("__BUILD_TIME__", new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC")
   .replaceAll("__REPO__", REPO)
