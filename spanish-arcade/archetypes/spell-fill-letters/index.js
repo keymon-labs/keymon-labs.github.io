@@ -1,5 +1,5 @@
 // spell-fill-letters archetype: fill the blanks of a word (pick a letter, or type with the special-letters row). Rules in logic.js, contract in ../README.md.
-import { make, judge, hint, FOCUSES } from './logic.js';
+import { make, judge, hint, FOCUS_CHOICES } from './logic.js';
 import { injectStyles, el, specialLettersRow } from '../../ui/tiles.js';
 
 export default {
@@ -14,9 +14,10 @@ export default {
   paramsSchema: {
     from: { type: 'selector', optional: true },
     items: { type: 'array', optional: true, items: { es: { type: 'string' }, en: { type: 'string', optional: true }, emoji: { type: 'string', optional: true } } },
-    focus: { type: 'enum', values: ['auto', ...FOCUSES], default: 'auto' },
+    focus: { type: 'enum', values: FOCUS_CHOICES, default: 'auto' },
     mode: { type: 'enum', values: ['choice', 'type'], default: 'choice' },
-    gaps: { type: 'int', min: 1, max: 3, default: 1 },
+    gaps: { type: 'int', min: 1, max: 4, default: 1 },
+    plain: { type: 'bool', default: false },
     accents: { type: 'enum', values: ['strict', 'lenient'], default: 'strict' },
   },
   defaults: (difficulty) => ({ mode: difficulty >= 3 ? 'type' : 'choice', gaps: difficulty >= 3 ? 2 : 1 }),
@@ -69,6 +70,11 @@ export default {
       const v = i.value + ch;
       i.value = v.length > maxLen(idx(i)) ? ch : v;
       i.focus();
+      advance(i);
+    }
+    function advance(i) { // a full gap hands the caret to the next empty gap, so 4 gaps need no extra taps
+      const next = inputs[idx(i) + 1];
+      if (next && !next.value && i.value.length >= maxLen(idx(i))) next.focus();
     }
     function backspace() {
       const i = lastInput ?? inputs[active];
@@ -119,6 +125,7 @@ export default {
           // a full gap restarts on the next letter, so o then ó works with a physical keyboard too
           if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && inp.value.length >= maxLen(i)) inp.value = '';
         });
+        inp.addEventListener('input', () => advance(inp));
         inputs.push(inp);
       });
     }

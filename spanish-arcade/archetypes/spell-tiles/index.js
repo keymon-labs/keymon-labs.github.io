@@ -1,5 +1,5 @@
 // spell-tiles archetype: build the word from letter tiles (tap or drag, or type on a keyboard). Rules in logic.js, contract in ../README.md.
-import { make, judge, hint } from './logic.js';
+import { make, judge, hint, wordOf, leadingTiles } from './logic.js';
 import { key } from '../../core/spelling.js';
 import { injectStyles, el, tapOrDrag } from '../../ui/tiles.js';
 
@@ -26,7 +26,6 @@ export default {
 
   mount(host, round, ctx) {
     injectStyles();
-    const letters = [...round.answer.normalize('NFC').toLowerCase()];
     let placed = []; // tile ids, in answer order
     let locked = 0; // leading tiles that stay (hint)
     let busy = false;
@@ -48,11 +47,7 @@ export default {
     host.append(root);
 
     const tileOf = (id) => round.tiles.find((t) => t.id === id);
-    const lock = (n) => { // place the first n letters of the answer, taking matching unplaced tiles
-      placed = [];
-      for (const c of letters.slice(0, n)) placed.push(round.tiles.find((t) => t.ch === c && !placed.includes(t.id)).id);
-      locked = n;
-    };
+    const lock = (n) => { placed = leadingTiles(round, n); locked = n; }; // the first n letters of the answer stay in place
     const tile = (t, onTap, onDrop, isLocked) => {
       const b = el('button', `sp-tile${isLocked ? ' locked' : ''}`, t.ch);
       b.type = 'button';
@@ -72,7 +67,7 @@ export default {
       if (busy || !placed.length) return;
       busy = true;
       render();
-      const r = await ctx.submit(placed.map((id) => tileOf(id).ch).join(''));
+      const r = await ctx.submit(wordOf(round, placed));
       status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback.es}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       busy = false;

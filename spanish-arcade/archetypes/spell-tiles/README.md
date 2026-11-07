@@ -17,4 +17,4 @@ Hints: first miss keeps the correct leading letters in place (at least the first
 { "archetype": "spell-tiles", "difficulty": 2, "params": { "from": { "tag": "animals", "n": 4 }, "extraLetters": 3 } }
 ```
 
-Rules live in `logic.js` (`make`, `judge`, `hint`, `formable`); tests in `test/spell.test.js`. UI helpers: `ui/tiles.js`. Accent/ñ comparison is in `core/spelling.js` (`sameWord`, `key`).
+Only the letters in each position count, never which identical tile was used (`wordOf`, `leadingTiles` keep that true for repeated letters, tested in `test/spell-repeats.test.js`). Rules live in `logic.js` (`make`, `judge`, `hint`, `formable`); tests in `test/spell.test.js`. UI helpers: `ui/tiles.js`. Accent/ñ comparison is in `core/spelling.js` (`sameWord`, `key`).

@@ -59,3 +59,13 @@ export function hint(round, level, lastAnswer) {
   while (n < want.length && got[n] === want[n]) n++;
   return { level: 1, keep: Math.min(Math.max(n, 1), want.length - 1) };
 }
+
+/** The word the placed tiles (ids, in order) spell. Only the letters count, never which identical tile was used. */
+export const wordOf = (round, ids) => ids.map((id) => round.tiles.find((t) => t.id === id).ch).join('');
+
+/** Ids of unused tiles that spell the first n letters of the answer (hint level 1 keeps these in place). */
+export function leadingTiles(round, n) {
+  const ids = [];
+  for (const c of [...round.answer.normalize('NFC').toLowerCase()].slice(0, n)) ids.push(round.tiles.find((t) => t.ch === c && !ids.includes(t.id)).id);
+  return ids;
+}
