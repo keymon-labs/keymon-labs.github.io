@@ -31,6 +31,19 @@
       <p class="ver" style="font-size:13px">Version <span id="appVer">2</span> · build __BUILD__ · <a href="../#piano-jump" style="color:inherit">other versions</a> · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md" style="color:inherit">CC BY-NC-SA 4.0</a></p>
       <p>Play the right note and the egg jumps to the next stone. Play on the beat for a star. Catch the flying clocks for extra time.</p>
       <div class="songs" id="songList"></div>
+      <details class="lib">
+        <summary>Song library</summary>
+        <p>Add songs from a library file (plain or password-protected). They stay on this device.</p>
+        <div class="row">
+          <input type="file" id="libFile" accept=".json,.pjlib,application/json" aria-label="Library file">
+          <input type="password" id="libPass" placeholder="Password, if protected" autocomplete="off" aria-label="Library password">
+        </div>
+        <div class="row">
+          <button id="btnLibLoad">Load library</button>
+          <button id="btnLibClear">Remove library</button>
+        </div>
+        <span class="conn" id="libMsg" role="status"></span>
+      </details>
       <div class="opts">
         <label>Speed<select id="oTempo"><option value="0.6">Very slow</option><option value="0.75">Slow</option><option value="0.9">Medium</option><option value="1">Song speed</option></select></label>
         <label>Note names<select id="oNames"><option value="letters">C D E</option><option value="solfege">Do Re Mi</option><option value="next">Next note only</option><option value="none">Hidden</option></select></label>

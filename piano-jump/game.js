@@ -5,6 +5,7 @@ import { toMidi, stepOf, isSharp as sharpOf, noteName } from "../shared/music.js
 import { unlockAudio as audio, tone as playTone } from "../shared/audio.js";
 import { registerServiceWorker, setupInstallButton, keepAwake, releaseWake } from "../shared/pwa.js";
 import { connectMidi, connectBluetoothMidi, keyboardNotes } from "../shared/midi.js";
+import { parseLibraryText, loadStored, saveStored, clearStored } from "./library.js";
 
 // ================= Music helpers =================
 const label=m=>noteName(m,opts.names);
@@ -23,8 +24,14 @@ const $=id=>document.getElementById(id);
 const sel={oTempo:"tempo",oNames:"names",oClock:"clock",oOct:"oct",oSfx:"sfx"};
 for(const [id,k] of Object.entries(sel)){$(id).value=String(opts[k]);if($(id).selectedIndex<0)$(id).selectedIndex=1;
   $(id).onchange=e=>{opts[k]=k==="tempo"?+e.target.value:e.target.value;saveOpts();};}
-$("songList").innerHTML=SONGS.map(s=>`<div><input type="radio" name="song" id="s_${s.id}" value="${s.id}" ${s.id===opts.song?"checked":""}><label for="s_${s.id}">${s.title}<small>${s.info}</small></label></div>`).join("");
-document.querySelectorAll('input[name=song]').forEach(r=>r.onchange=()=>{opts.song=r.value;saveOpts();});
+let ALL=[...SONGS,...loadStored()];   // built-in songs + library imported on this device
+const esc=t=>String(t).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");   // library text is untrusted
+function renderSongs(){
+  if(!ALL.some(s=>s.id===opts.song))opts.song=ALL[0].id;
+  $("songList").innerHTML=ALL.map(s=>`<div><input type="radio" name="song" id="s_${s.id}" value="${s.id}" ${s.id===opts.song?"checked":""}><label for="s_${s.id}">${esc(s.title)}<small>${esc(s.info)}</small></label></div>`).join("");
+  document.querySelectorAll('input[name=song]').forEach(r=>r.onchange=()=>{opts.song=r.value;saveOpts();});
+}
+renderSongs();
 
 // ================= Keep the screen on, install as app =================
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&state!=="menu")keepAwake();});
@@ -71,7 +78,7 @@ function layout(){
 }
 function placeOn(at){ch.x=at===startPlat?at.x+at.w*.6:landX(at);ch.y=at.top;}
 function loadSong(){
-  song=SONGS.find(s=>s.id===opts.song)||SONGS[0];
+  song=ALL.find(s=>s.id===opts.song)||ALL[0];
   plats=song.notes.map(([n,d,l,f],i)=>{const m=toMidi(n);return{midi:m,dur:d,lyric:l||"",step:stepOf(m),star:false,
     clock:i>=2&&(i%5===3),got:false,...fingerFor(m,f)};});
   idx=0;stars=0;tPrev=null;retried=false;jump=null;ghost=null;floats=[];confetti=[];
@@ -340,6 +347,20 @@ function onStatus(s){
 $("btnMidi").onclick=()=>{audio();connectMidi(onNote,onStatus);};
 $("btnBle").onclick=()=>{audio();connectBluetoothMidi(onNote,onStatus);};
 keyboardNotes(n=>{audio();onNote(n);});
+
+// ================= Song library (import a file; encrypted ones need the password) =================
+const libMsg=(t,bad)=>{$("libMsg").textContent=t;$("libMsg").style.color=bad?"var(--bad)":"var(--muted)";};
+$("btnLibLoad").onclick=async()=>{
+  const f=$("libFile").files[0];if(!f)return libMsg("Choose a library file first.",true);
+  try{
+    if(f.size>2e6)throw new Error("File too big (max 2 MB)");
+    const songs=await parseLibraryText(await f.text(),$("libPass").value);
+    saveStored(songs);ALL=[...SONGS,...loadStored()];$("libPass").value="";renderSongs();
+    libMsg(`Loaded ${songs.length} song${songs.length>1?"s":""}.`);
+  }catch(e){libMsg(e.message,true);}
+};
+$("btnLibClear").onclick=()=>{clearStored();ALL=[...SONGS];renderSongs();libMsg("Library removed.");};
+if(ALL.length>SONGS.length)libMsg(`${ALL.length-SONGS.length} library song${ALL.length-SONGS.length>1?"s":""} on this device.`);
 
 // ================= Buttons =================
 $("btnStart").onclick=()=>{audio();$("ovMenu").hidden=true;restart();};

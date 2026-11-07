@@ -40,6 +40,11 @@ button:active{transform:translateY(2px);box-shadow:none}
 .songs input{position:absolute;opacity:0}
 .songs input:checked+label{border-color:var(--accent);background:#fff2ec}
 .songs input:focus-visible+label{outline:3px solid var(--ink)}
+.lib{border:2px solid #dbe5f3;border-radius:14px;padding:8px 12px}
+.lib summary{cursor:pointer;font:700 17px var(--display)}
+.lib[open]{display:grid;gap:10px}
+.lib input[type=password],.lib input[type=file]{font:600 14px system-ui,sans-serif;max-width:100%;-webkit-user-select:text;user-select:text}
+.lib input[type=password]{padding:7px 8px;border-radius:10px;border:2px solid #dbe5f3;flex:1;min-width:150px}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .opts label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:grid;gap:3px}
 select{font:600 15px system-ui,sans-serif;padding:7px 8px;border-radius:10px;border:2px solid #dbe5f3;background:#fff;color:var(--ink)}
