@@ -6,7 +6,7 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 |---|---|---|---|---|---|
 | `listen-pick-word` | Hear a word (speech synthesis); tap the right word or picture | listening, vocab | `from`, `options`, `answerAs` (word/picture) | more options; similar-looking distractors; no replay | done |
 | `read-answer` | Short text, then pick the answer (a/b/c or true/false), optionally with a picture | reading comprehension | `text`, `questions[]`, `kind` (choice/tf) | longer text, inference questions | done |
-| `fill-gap-choice` | Sentence with a gap; pick the word that fits | grammar, vocab | `items[]` or `from`, `options`, `focus` (article, verb form, preposition) | more options; closer distractors | task-008 |
+| `fill-gap-choice` | Sentence with a gap; pick the word that fits | grammar, vocab | `items[]` or `from`, `options`, `focus` (article, verb form, preposition) | more options; closer distractors | done |
 | `spell-tiles` | Picture/audio prompt; drag letter tiles to build the word | spelling | `from`, `extraLetters`, `hintLetters` | extra decoy letters; no hint | done |
 | `spell-fill-letters` | Word with missing letters (ñ, r/rr, s/x, accents, h) | spelling rules | `from`/`items`, `focus` | more gaps; two-way choice → free typing | done |
 | `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | done |
