@@ -1,7 +1,7 @@
 // Pure-logic tests. Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createRng } from '../core/rng.js';
+import { createRng } from '../../shared/rng.js';
 import { multiplication, addition, subtraction, fractionOf, fractionText } from '../core/problems.js';
 import { createSession, starsFor } from '../core/session.js';
 import { createProgress } from '../core/progress.js';

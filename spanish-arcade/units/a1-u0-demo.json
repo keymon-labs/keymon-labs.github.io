@@ -1,0 +1,13 @@
+{ "schema": 1, "id": "a1-u0-demo", "rev": 1, "order": 0,
+  "title": { "es": "Prueba", "en": "Practice run" },
+  "theme": "sunny",
+  "intro": { "es": "¡Vamos a jugar!", "en": "Let's play!" },
+  "badge": { "name": { "es": "Primer paso", "en": "First step" }, "icon": "🌟" },
+  "pass": { "minCorrect": 4 },
+  "exercises": [
+    { "id": "demo-animals", "archetype": "placeholder", "difficulty": 1, "params": { "from": { "tag": "animals", "n": 3 } }, "prompt": { "es": "Toca el animal.", "en": "Tap the animal." } },
+    { "id": "demo-nature", "archetype": "placeholder", "difficulty": 1, "params": { "from": { "tag": "nature", "n": 3 } }, "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } },
+    { "id": "demo-rr", "archetype": "placeholder", "difficulty": 1, "params": { "from": { "spell": "rr", "n": 1 } }, "prompt": { "es": "¿Cuál tiene rr?", "en": "Which one has rr?" } },
+    { "id": "demo-accent", "archetype": "placeholder", "difficulty": 2, "params": { "from": { "spell": "accent", "n": 1 } }, "prompt": { "es": "¿Cuál lleva tilde?", "en": "Which one has an accent?" } },
+    { "id": "demo-mix", "archetype": "placeholder", "difficulty": 2, "params": { "from": { "ids": ["casa", "gato", "luna"], "n": 3 }, "options": 4 }, "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } }
+  ] }
