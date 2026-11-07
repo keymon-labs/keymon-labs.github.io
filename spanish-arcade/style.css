@@ -1,0 +1,22 @@
+/* Shell styles: plain on purpose; the visual design is task 002 (tokens will move to ui/theme/tokens.css). */
+:root { --bg: #fffaf0; --fg: #222; --accent: #f5a623; --muted: #666; --gap: 12px; --tap: 48px; }
+@media (prefers-color-scheme: dark) { :root { --bg: #1d1a14; --fg: #f3eee3; --muted: #aaa; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 18px/1.4 system-ui, sans-serif; }
+#app { min-height: 100dvh; display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; padding: 0 16px; }
+main { flex: 1; padding: 16px 0; }
+h1 { font-size: 1.5rem; margin: 0 0 var(--gap); }
+button, .btn { min-height: var(--tap); min-width: var(--tap); padding: 8px 16px; margin: 4px 4px 4px 0; font: inherit; color: inherit; background: transparent; border: 2px solid var(--accent); border-radius: 12px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+button:disabled { opacity: .4; }
+button.reveal { background: var(--accent); }
+input, select { min-height: var(--tap); font: inherit; padding: 4px 8px; margin: 4px 0; max-width: 100%; }
+label { display: block; margin: 8px 0; }
+ul.list { list-style: none; padding: 0; }
+ul.list li { margin: 8px 0; }
+.muted { color: var(--muted); font-size: .85rem; }
+.locked { opacity: .5; }
+.stars { color: var(--accent); letter-spacing: 2px; }
+.stars span { opacity: .3; }
+footer { padding: 12px 0 calc(12px + env(safe-area-inset-bottom)); color: var(--muted); font-size: .8rem; }
+footer a { color: inherit; }
+pre { white-space: pre-wrap; font-size: .75rem; }
