@@ -3,7 +3,8 @@ id: "010"
 title: Archetypes odd-one-out, match-pairs, order-words, word-search
 model: Sonnet 5.5
 why_model: Four small, independent games; a single chat can do them one after another.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/archetypes/{odd-one-out,match-pairs,order-words,word-search}/**, test/puzzles.test.js]
 ---
@@ -16,3 +17,5 @@ Implement the four puzzle archetypes from `docs/ARCHETYPES.md`: `odd-one-out` (c
 
 ## Notes
 If it grows too big, split into two chats: (odd-one-out, match-pairs) and (order-words, word-search).
+
+Ruling: MVP scope is `odd-one-out` and `match-pairs` only; `order-words` and `word-search` stay for a later run — the MVP unit uses only the first two — cost if wrong: a follow-up task, which remains in the idea list.
