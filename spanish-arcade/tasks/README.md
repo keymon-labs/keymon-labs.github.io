@@ -33,7 +33,7 @@ Board (source of truth is each file's front matter):
 | 015 | [Book extraction (private kit to public-safe digest)](015-book-extraction.md) | Sonnet | 000 | review |
 | 016 | [MVP hardening (whole-change review fixes)](016-mvp-hardening.md) | Sonnet | 001b, 006, 007, 008, 009, 010, 014 | done |
 | 017 | [listen-pick-word distractorFrom param](017-listen-distractor-from.md) | Sonnet | 006, 011 | done |
-| 018 | [UI fully in Spanish, answer in the spoken gap](018-ui-spanish-only.md) | Sonnet | 001b, 016 | in-progress |
+| 018 | [UI fully in Spanish, answer in the spoken gap](018-ui-spanish-only.md) | Sonnet | 001b, 016 | done |
 | 019 | [Harder content for native speakers (a1-u1-s1)](019-harder-unit.md) | Sonnet | 011, 017 | review |
 <!-- board:end -->
 

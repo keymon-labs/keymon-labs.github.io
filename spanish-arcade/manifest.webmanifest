@@ -1,8 +1,8 @@
 {
   "id": "/spanish-arcade/",
-  "name": "Spanish Arcade",
-  "short_name": "Spanish Arcade",
-  "description": "Mini games to practise written Spanish.",
+  "name": "Arcade de español",
+  "short_name": "Arcade español",
+  "description": "Minijuegos para practicar el español escrito.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
