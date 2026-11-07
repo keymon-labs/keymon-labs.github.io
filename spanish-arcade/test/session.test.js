@@ -100,3 +100,19 @@ test('a snapshot from another rev is ignored', () => {
   const s = createUnitSession({ unit, content, seed: 9, resume: { ...a.snapshot(), rev: unit.rev + 1 } });
   assert.equal(s.current.roundIndex, 0);
 });
+
+test('an exercise that makes 0 rounds is skipped with a warning; mount never sees an undefined round', () => {
+  const warn = console.warn; const logs = []; console.warn = (m) => logs.push(m);
+  try {
+    const empty = { ...unit, exercises: [{ ...unit.exercises[0], id: 'empty-one', params: { from: { tag: 'no-such-tag', n: 3 } } }, ...unit.exercises.slice(1)] };
+    const s = createUnitSession({ unit: empty, content, seed: 1 });
+    assert.ok(s.current.round);
+    assert.equal(s.current.exercise.id, unit.exercises[1].id);
+    assert.ok(logs.some((m) => /empty-one/.test(m)));
+    while (!s.done) { assert.ok(s.current.round); s.submit(s.current.round.answer); }
+    assert.equal(s.result().finished, true);
+    const none = createUnitSession({ unit: { ...unit, exercises: empty.exercises.slice(0, 1) }, content, seed: 1 });
+    assert.equal(none.done, true);
+    assert.equal(none.current, null);
+  } finally { console.warn = warn; }
+});

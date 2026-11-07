@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { buildContent } from '../core/content.js';
 import listen from '../archetypes/listen-pick-word/index.js';
 import placeholder from '../archetypes/placeholder/index.js';
-import { checkContent } from '../scripts/check-units.mjs';
+import { checkContent, checkAll } from '../scripts/check-units.mjs';
 import { loadRealContent, word } from './helpers.js';
 
 const noop = () => {};
@@ -88,4 +88,21 @@ test('dev units skip the mix rules', () => {
 
 test('the real content passes', async () => {
   assert.deepEqual(checkContent(await loadRealContent()).errors, []);
+});
+
+// C1: real units are checked without dev content; dev units may use it.
+const devUnit = () => unit({ id: 'u0', order: 0, dev: true, exercises: [1, 2, 3, 4, 5].map((i) => ex(`demo-tap-${i}`, 'placeholder', { params: { from: { tag: 'toys', n: 2 } } })) });
+const devVocab = { schema: 1, words: ['demo-a', 'demo-b', 'demo-c'].map((id) => word(id, { tags: ['toys'], unit: 'u0' })) };
+const fixture = (realUnit) => async (opts) => buildContent({ archetypes, units: { '../units/u0.json': devUnit(), '../units/u1.json': realUnit },
+  vocab: { '../data/vocab/u0.json': devVocab, '../data/vocab/u1.json': vocab.u1 } }, opts);
+
+test('a real unit using dev words fails check:units (checked without dev content)', async () => {
+  const bad = unit(); bad.exercises[0].params = { from: { tag: 'toys', n: 2 } };
+  has((await checkAll(fixture(bad))).errors, /^units\/u1\.json exercises\[0\]\.params\.from: only 0 words match/);
+  assert.deepEqual((await checkAll(fixture(unit()))).errors, []); // control: the dev unit may use its own dev words
+});
+
+test('real units that select dev words by id fail validation', async () => {
+  const bad = unit(); bad.exercises[0].params = { from: { ids: ['demo-a', 'demo-b'], n: 2 } };
+  assert.ok((await checkAll(fixture(bad))).errors.some((e) => e.startsWith('units/u1.json exercises[0]')));
 });

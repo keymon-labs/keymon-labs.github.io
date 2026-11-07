@@ -8,15 +8,18 @@ const folder = (path) => path.split('/').at(-2);
 /** Maps are { path: module-or-json } as import.meta.glob returns them (eager, default import). */
 export function buildContent({ archetypes, units, vocab }, { includeDev = true } = {}) {
   const archetypeById = Object.fromEntries(Object.entries(archetypes).map(([p, m]) => [m?.id ?? folder(p), m]));
-  const unitMap = Object.fromEntries(Object.entries(units).map(([p, u]) => [base(p), u]));
-  const vocabMap = Object.fromEntries(Object.entries(vocab).map(([p, v]) => [base(p), v]));
+  // Production (includeDev false): dev units and their vocab (data/vocab/<unitId>.json) are not loaded or validated at all,
+  // so a real unit that selects a demo word fails validation and demo words never reach content.words.
+  const keepUnit = (u) => includeDev || !u?.dev;
+  const unitMap = Object.fromEntries(Object.entries(units).map(([p, u]) => [base(p), u]).filter(([, u]) => keepUnit(u)));
+  const devIds = new Set(Object.entries(units).map(([p, u]) => [base(p), u]).filter(([, u]) => !keepUnit(u)).map(([id]) => id));
+  const vocabMap = Object.fromEntries(Object.entries(vocab).map(([p, v]) => [base(p), v]).filter(([id]) => !devIds.has(id)));
   const errors = validateContent({ archetypes: archetypeById, units: unitMap, vocab: vocabMap });
   for (const [p, m] of Object.entries(archetypes)) {
     if (m?.id !== folder(p)) errors.push(`${p}: id must be "${folder(p)}" (the folder name)`);
     errors.push(...validateArchetype(m).map((e) => `${p} ${e}`));
   }
-  // Units marked "dev": true (demo/test units) are validated but not listed in production builds.
-  const unitList = Object.values(unitMap).filter((u) => includeDev || !u.dev).sort((a, b) => a.order - b.order);
+  const unitList = Object.values(unitMap).sort((a, b) => a.order - b.order);
   return {
     archetypeById,
     units: unitList,

@@ -9,5 +9,5 @@
     { "id": "demo-nature", "archetype": "placeholder", "difficulty": 1, "params": { "from": { "tag": "nature", "n": 3 } }, "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } },
     { "id": "demo-rr", "archetype": "placeholder", "difficulty": 1, "params": { "from": { "spell": "rr", "n": 1 } }, "prompt": { "es": "¿Cuál tiene rr?", "en": "Which one has rr?" } },
     { "id": "demo-accent", "archetype": "placeholder", "difficulty": 2, "params": { "from": { "spell": "accent", "n": 1 } }, "prompt": { "es": "¿Cuál lleva tilde?", "en": "Which one has an accent?" } },
-    { "id": "demo-mix", "archetype": "placeholder", "difficulty": 2, "params": { "from": { "ids": ["casa", "gato", "luna"], "n": 3 }, "options": 4 }, "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } }
+    { "id": "demo-mix", "archetype": "placeholder", "difficulty": 2, "params": { "from": { "ids": ["demo-casa", "demo-gato", "demo-luna"], "n": 3 }, "options": 4 }, "prompt": { "es": "Toca la palabra.", "en": "Tap the word." } }
   ] }
