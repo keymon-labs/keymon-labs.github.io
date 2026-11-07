@@ -28,7 +28,7 @@ Board (source of truth is each file's front matter):
 | 010 | [Archetypes odd-one-out, match-pairs, order-words, word-search](010-archetypes-puzzles.md) | Sonnet | 001 | done |
 | 011 | [Units a1-u1-s1 and a1-u1-s3 plus vocabulary](011-units-u1-s1-s3.md) | Sonnet | 001, 006, 007, 008, 009, 010, 014, 015 | review |
 | 012 | [Jokes, mascot lines and animations pack](012-fun-pack.md) | Haiku | 001, 002 | todo |
-| 013 | [Ship: landing card, PWA, credits, README, release](013-ship.md) | Sonnet | 001, 001b, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 014 | todo |
+| 013 | [Ship: landing card, PWA, credits, README, release](013-ship.md) | Sonnet | 001, 001b, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 014 | in-progress |
 | 014 | [Authoring guide and unit validator](014-authoring-validator.md) | Sonnet | 001 | done |
 | 015 | [Book extraction (private kit to public-safe digest)](015-book-extraction.md) | Sonnet | 000 | review |
 | 016 | [MVP hardening (whole-change review fixes)](016-mvp-hardening.md) | Sonnet | 001b, 006, 007, 008, 009, 010, 014 | done |

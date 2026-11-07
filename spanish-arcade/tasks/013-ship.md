@@ -3,7 +3,8 @@ id: "013"
 title: Ship: landing card, PWA, credits, README, release
 model: Sonnet 5.5
 why_model: Checklist work following the labs-apps skill.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001", "001b", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "014"]
 touches: [index.html (landing card), README.md (apps table + shared "Used by"), CREDITS.md, spanish-arcade/README.md, manifest/icons, sw.js]
 ---
@@ -15,3 +16,5 @@ Follow `labs-apps` "New app" and "Ship": landing card (tag "Chrome" if a Chrome-
 
 ## Notes
 Decide with the user whether to include the app in `claude/apps.json` (it doesn't call Claude, so default no).
+
+Ruling: MVP ship is scoped to unit a1-u1-s1; 002, 003, 004, 005, 012 and unit a1-u1-s3 are not in this release, so the task stays open for the full release after this one.
