@@ -36,12 +36,23 @@ test('authored items: one round each, same seed same rounds, answer among unique
   }
 });
 
-test('n takes that many authored items; unusable items are skipped silently', () => {
+test('n takes that many authored items', () => {
   assert.equal(run({ items, n: 2 }).length, 2);
-  const bad = [{ text: 'sin hueco', options: ['a', 'b'], answer: 'a' }, { text: 'dos ___ huecos ___', options: ['a', 'b'], answer: 'a' },
-    { text: 'falta ___', options: ['a', 'b'], answer: 'c' }, { text: 'repite ___', options: ['a', 'a'], answer: 'a' },
-    { text: 'solo una ___', options: ['a'], answer: 'a' }, items[0]];
-  assert.equal(run({ items: bad }).length, 1);
+});
+
+test('bad authored items throw items[i], whatever the seed or n', () => {
+  const bad = [
+    ['no gap', { text: 'sin hueco', options: ['a', 'b'], answer: 'a' }],
+    ['two gaps', { text: 'dos ___ huecos ___', options: ['a', 'b'], answer: 'a' }],
+    ['answer missing', { text: 'falta ___', options: ['a', 'b'], answer: 'c' }],
+    ['duplicate', { text: 'repite ___', options: ['a', 'A'], answer: 'a' }],
+    ['blank', { text: 'vacía ___', options: ['a', ' '], answer: 'a' }],
+    ['one option', { text: 'solo una ___', options: ['a'], answer: 'a' }],
+    ['five options', { text: 'muchas ___', options: ['a', 'b', 'c', 'd', 'e'], answer: 'a' }],
+  ];
+  for (const [name, it] of bad) for (const seed of [1, 2, 3]) {
+    assert.throws(() => run({ items: [items[0], it, items[1]], n: 1 }, [], seed), /^Error: items\[1\]: /, name);
+  }
 });
 
 test('different seeds can shuffle options', () => {
@@ -110,25 +121,46 @@ test('accents, ñ, ¿ and ¡ survive in options and compare strictly', () => {
   assert.equal(arch.judge(r, 'esta').correct, false);
   assert.equal(arch.judge(q, '¡').correct, true);
   assert.equal(arch.judge(q, '¿').correct, false);
-  const [n] = run({ items: [{ text: 'El ___ es pequeño', options: ['año', 'ano'], answer: 'año' }] });
-  assert.equal(arch.judge(n, 'año').correct, true);
-  assert.equal(arch.judge(n, 'ano').correct, false);
-  assert.equal(arch.judge(n, 'AÑO').correct, true);
+  const [n] = run({ items: [{ text: 'Mi ___ es simpático', options: ['papá', 'papa'], answer: 'papá' }] });
+  assert.equal(arch.judge(n, 'papá').correct, true);
+  assert.equal(arch.judge(n, 'papa').correct, false);
+  assert.equal(arch.judge(n, 'PAPÁ').correct, true);
+  const [ñ] = run({ items: [{ text: 'Es muy ___', options: ['pequeño', 'pequeno'], answer: 'pequeño' }] });
+  assert.ok(ñ.options.includes('pequeño'));
+  assert.equal(arch.judge(ñ, 'pequeno').correct, false);
 });
 
-test('hint: level 1 never reveals, marks the gap, avoids the last answer; 2 options are not narrowed', () => {
+test('hint: level 1 never reveals and marks the gap; remove only with 4 options and never the answer or last answer', () => {
+  const four = run({ items: [{ text: 'A ___ b', options: ['w', 'x', 'y', 'z'], answer: 'w' }] })[0];
   const [two, three] = run({ items });
-  const h2 = arch.hint(two, 1, 'tienes');
-  assert.equal(h2.level, 1);
-  assert.equal(h2.mark, true);
-  assert.equal(h2.remove, null);
-  assert.equal('answer' in h2, false);
-  const last = three.options.find((o) => o !== three.answer);
-  const h3 = arch.hint(three, 1, last);
-  assert.notEqual(h3.remove, three.answer);
-  assert.notEqual(h3.remove, last);
-  assert.ok(three.options.includes(h3.remove));
+  for (const [r, wantRemove] of [[two, false], [three, false], [four, true]]) {
+    for (const last of r.options.filter((o) => o !== r.answer)) {
+      const h = arch.hint(r, 1, last);
+      assert.equal(h.level, 1);
+      assert.equal(h.mark, true);
+      assert.equal('answer' in h, false);
+      if (!wantRemove) assert.equal(h.remove, null);
+      else { assert.ok(h.remove && h.remove !== r.answer && h.remove !== last); }
+      // the shell disables the tapped option only while more than 2 are enabled, then applies remove only while more than 2 are enabled
+      let enabled = r.options.length;
+      if (enabled > 2) enabled--;
+      if (h.remove && enabled > 2) enabled--;
+      assert.ok(enabled >= 2);
+    }
+  }
   assert.deepEqual(arch.hint(three, 2), { level: 2, answer: three.answer });
+});
+
+test('speaker text before the answer never contains it; full does', () => {
+  const [r] = run({ items });
+  assert.ok(!r.heard.includes('tengo'));
+  assert.ok(r.heard.includes('hueco'));
+  assert.equal(r.full, 'Yo tengo una caja');
+});
+
+test('feeling focus only uses adjectives', () => {
+  const noun = word('alegria', { tags: ['feelings'], emoji: '🎉' });
+  assert.deepEqual(run({ from: { n: 1 }, focus: 'feeling' }, [noun]), []);
 });
 
 test('params: schema accepts a valid exercise, rejects unknown params and bad values', () => {

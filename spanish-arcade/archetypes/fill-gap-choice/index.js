@@ -7,6 +7,7 @@ const CSS = `
 .fg-gap{display:inline-block;min-width:4.5ch;min-height:48px;line-height:48px;vertical-align:middle;border-bottom:3px dashed currentColor;text-align:center}
 .fg-gap.hinted{background:rgba(255,200,0,.35);outline:3px dotted currentColor}
 .fg-gap.filled{border-bottom-style:solid;font-weight:bold}
+.fg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .fg-gap.land{animation:fg-land .45s ease-out}
 @keyframes fg-land{from{transform:translateY(60px) scale(.6);opacity:.2}to{transform:none;opacity:1}}
 .fg-pic{font-size:3rem;text-align:center;margin:4px 0}
@@ -50,14 +51,15 @@ export default {
 
     const root = el('div', 'fg-root');
     const gap = el('span', 'fg-gap');
-    gap.setAttribute('aria-label', es ? 'hueco' : 'gap');
+    const gapName = el('span', 'fg-sr', es ? 'hueco' : 'gap');
+    gap.append(gapName);
     const sentence = el('p', 'fg-sentence');
     sentence.append(round.parts[0], gap, round.parts[1]);
     const say = el('button', 'sp-key', '🔊');
     say.type = 'button';
     say.setAttribute('aria-label', es ? 'Escuchar la frase' : 'Hear the sentence');
     say.hidden = !ctx.canSpeak;
-    say.addEventListener('click', () => ctx.say(round.full));
+    say.addEventListener('click', () => ctx.say(done ? round.full : round.heard)); // never the answer before it is picked
     const row = el('div', 'sp-row');
     const status = el('p');
     status.setAttribute('aria-live', 'polite');
@@ -81,7 +83,7 @@ export default {
       busy = true;
       const r = await ctx.submit(o);
       busy = false;
-      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}`;
+      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}${r.correct ? ` ${round.full}` : ''}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       if (r.correct) {
         done = true;
@@ -93,18 +95,23 @@ export default {
         if (ctx.canSpeak) ctx.say(round.full);
         return;
       }
-      b.disabled = true;
-      b.classList.add('wrong');
-      b.textContent = `✖ ${o}`;
+      const enabled = () => [...buttons.values()].filter((x) => !x.disabled);
+      if (enabled().length > 2) { // with 2 left the tapped one stays, so the child is never left with only the answer
+        b.disabled = true;
+        b.classList.add('wrong');
+        b.textContent = `✖ ${o}`;
+      }
       const h = r.hint;
       if (h?.mark) gap.classList.add('hinted');
-      if (h?.remove) buttons.get(h.remove).disabled = true;
+      if (h?.remove && enabled().length > 2) buttons.get(h.remove).disabled = true;
       if (h?.answer !== undefined) { // level 2: show it and let the child pick it
         const a = buttons.get(h.answer);
         a.classList.add('reveal');
         a.textContent = `👉 ${h.answer}`;
         gap.classList.add('hinted');
+        status.textContent += es ? ' La respuesta correcta está marcada con 👉.' : ' The right answer is marked with 👉.';
       }
+      enabled()[0]?.focus();
     }
     return { destroy: () => root.remove() };
   },

@@ -12,17 +12,21 @@ const FRAMES = {
 
 const roundOf = (text, options, answer, extra, rng) => {
   const [before, after] = text.split(GAP);
-  return { parts: [before, after], full: `${before}${answer}${after}`, options: shuffle(options, rng), answer, ...extra };
+  // `heard` is what the speaker says before the answer (never the answer itself); `full` only after a correct pick
+  return { parts: [before, after], heard: `${before} hueco ${after}`, full: `${before}${answer}${after}`, options: shuffle(options, rng), answer, ...extra };
 };
 
-/** An authored item as a round, or null (no single gap, 2-4 options, duplicates, answer not among them): skipped silently. */
-function fromItem(it, rng) {
-  if (typeof it?.text !== 'string' || it.text.split(GAP).length !== 2 || !Array.isArray(it.options)) return null;
-  const options = it.options.filter((o) => typeof o === 'string' && o.trim()).map((o) => o.trim());
-  if (options.length !== it.options.length || options.length < 2 || options.length > 4) return null;
-  if (new Set(options.map((o) => key(o))).size !== options.length) return null;
+/** Checks an authored item and returns { text, options, answer }; throws "items[i]: ..." so check:units shows it. */
+function checkItem(it, i) {
+  const fail = (msg) => { throw new Error(`items[${i}]: ${msg}`); };
+  if (typeof it?.text !== 'string' || it.text.split(GAP).length !== 2) fail(`text needs exactly one ${GAP}`);
+  if (!Array.isArray(it.options) || it.options.length < 2 || it.options.length > 4) fail('needs 2-4 options');
+  const options = it.options.map((o) => (typeof o === 'string' ? o.trim() : ''));
+  if (options.some((o) => !o)) fail('has a blank option');
+  if (new Set(options.map((o) => key(o))).size !== options.length) fail('has duplicate options');
   const answer = options.find((o) => sameWord(o, String(it.answer)));
-  return answer === undefined ? null : roundOf(it.text, options, answer, { gloss: it.en ?? '', emoji: '', wordIds: [] }, rng);
+  if (answer === undefined) fail('answer is not one of the options');
+  return { text: it.text, options, answer, en: it.en };
 }
 
 function article(w, params, rng) {
@@ -36,8 +40,8 @@ function article(w, params, rng) {
 
 function feeling(w, params, pool, rng) {
   // the picture is what makes one feeling right, so a feeling without an emoji gets no round
-  if (!w.tags?.includes('feelings') || !w.emoji) return null;
-  const filter = (o) => o.tags?.includes('feelings') && o.emoji !== w.emoji;
+  if (w.pos !== 'adj' || !w.tags?.includes('feelings') || !w.emoji) return null;
+  const filter = (o) => o.pos === 'adj' && o.tags?.includes('feelings') && o.emoji !== w.emoji;
   const options = [w.es, ...distractors(w, pool, params.options - 1, rng, { filter }).map((o) => o.es)];
   return roundOf(rng.pick(FRAMES.feeling), options, w.es, { gloss: w.en, emoji: w.emoji, wordIds: [w.id] }, rng);
 }
@@ -45,8 +49,9 @@ function feeling(w, params, pool, rng) {
 export function make(params, { targets, pool }, rng) {
   const rounds = [];
   if (params.items) {
-    const list = params.n ? shuffle(params.items, rng).slice(0, params.n) : params.items;
-    rounds.push(...list.map((it) => fromItem(it, rng)).filter(Boolean));
+    const ok = params.items.map(checkItem); // validate all first, so a bad item fails whatever the seed
+    const list = params.n ? shuffle(ok, rng).slice(0, params.n) : ok;
+    rounds.push(...list.map((it) => roundOf(it.text, it.options, it.answer, { gloss: it.en ?? '', emoji: '', wordIds: [] }, rng)));
   }
   for (const w of targets) {
     const r = params.focus === 'feeling' ? feeling(w, params, pool, rng) : article(w, params, rng);
@@ -60,9 +65,12 @@ export function judge(round, answer) {
   return { correct, feedback: correct ? { es: '¡Muy bien!', en: 'Well done!' } : { es: 'Casi. Prueba otra vez.', en: 'Nearly. Try again.' } };
 }
 
-/** Level 1 only points at the gap (`mark`), and with 3+ options greys one wrong one other than the last; level 2 gives the answer. */
+/**
+ * Level 1 only points at the gap (`mark`). `remove` (a wrong option other than the last) comes only with 4 options: the shell also
+ * disables the tapped option while more than 2 are enabled, so 2 choices always stay. Level 2 gives the answer.
+ */
 export function hint(round, level, lastAnswer) {
   if (level >= 2) return { level: 2, answer: round.answer };
-  const remove = round.options.length > 2 ? round.options.find((o) => o !== round.answer && o !== lastAnswer) ?? null : null;
+  const remove = round.options.length >= 4 ? round.options.find((o) => o !== round.answer && o !== lastAnswer) ?? null : null;
   return { level: 1, mark: true, remove };
 }
