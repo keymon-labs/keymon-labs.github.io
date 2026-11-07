@@ -22,7 +22,6 @@ export default {
     root.className = 'odd-one-out';
     const status = document.createElement('p');
     status.setAttribute('aria-live', 'polite');
-    const note = document.createElement('p'); // the theme nudge
     const grid = document.createElement('div');
     grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;justify-content:center';
     const buttons = round.options.map((o) => {
@@ -36,17 +35,17 @@ export default {
         if (ctx.canSpeak) ctx.say(o.es);
         const r = await ctx.submit(o.id);
         if (r.ignored) return;
-        status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback[ctx.lang] ?? r.feedback.en);
+        status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback[ctx.lang] ?? r.feedback.en) + (r.hint?.theme ? ` 💡 ${r.hint.theme}` : ''); // the theme nudge is read out too
         ctx.sfx(r.correct ? 'right' : 'wrong');
         if (!r.correct) b.disabled = true;
         if (r.hint?.remove) buttons.find((x) => x.dataset.id === r.hint.remove).disabled = true;
-        if (r.hint?.theme) note.textContent = `💡 ${r.hint.theme}`;
         if (r.hint?.answer) buttons.find((x) => x.dataset.id === r.hint.answer).classList.add('reveal');
+        if (!r.correct) buttons.find((x) => !x.disabled)?.focus(); // keep focus on the cloud after a miss
       });
       return b;
     });
     grid.append(...buttons);
-    root.append(grid, note, status);
+    root.append(grid, status);
     host.append(root);
     return { destroy: () => root.remove() };
   },

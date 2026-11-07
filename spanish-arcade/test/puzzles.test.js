@@ -55,6 +55,20 @@ test('odd-one-out: authored groups; bad groups skipped; size caps the cloud', ()
   assert.deepEqual(make(odd, { params: { groups } }, 5), make(odd, { params: { groups } }, 5));
 });
 
+test('odd-one-out: authored text keeps its case and accents; only the id is lowercase', () => {
+  const [r] = make(odd, { params: { groups: [{ words: [' España ', 'españa', 'Chile'], odd: ' Mesa ' }], size: 4 } });
+  assert.deepEqual(r.options.map((o) => o.es).sort(), ['Chile', 'España', 'Mesa']);
+  assert.equal(r.answer, 'mesa');
+});
+
+test('odd-one-out: vocab mode records only the intruder, nudges with the topic, skips untagged targets', () => {
+  const [r] = make(odd, { params: { from: { n: 1 }, size: 3 } }, 1, [pool[0]]);
+  assert.deepEqual(r.wordIds, ['gato']);
+  assert.equal(r.theme, 'home');
+  assert.equal(odd.hint(r, 1, 'x').theme, 'home');
+  assert.deepEqual(make(odd, { params: { from: { n: 1 }, size: 3 } }, 1, [word('x', { tags: [] })]), []);
+});
+
 test('odd-one-out: judge and hints (nudge never reveals; theme when too few to grey out)', () => {
   const r = make(odd, { params: { groups: [{ words: ['a', 'b', 'c', 'd', 'e'], odd: 'z', theme: 'letras' }], size: 5 } })[0];
   assert.equal(odd.judge(r, r.answer).correct, true);
@@ -80,7 +94,7 @@ test('match-pairs: word-picture is seeded, boards chunk the targets, words witho
   const t = pool.slice(0, 8);
   assert.deepEqual(make(match, ex, 4, t), make(match, ex, 4, t));
   assert.deepEqual(make(match, ex, 4, t).map((r) => r.pairs.length), [3, 3, 2]);
-  assert.deepEqual(make(match, ex, 4, t.slice(0, 7)).map((r) => r.pairs.length), [3, 4]); // a lone leftover joins the last board
+  assert.deepEqual(make(match, ex, 4, t.slice(0, 7)).map((r) => r.pairs.length), [3, 2, 2]); // balanced: no lone leftover
   const noEmoji = make(match, { params: { from: { n: 3 }, size: 3 } }, 1, [pool[0], pool[1], pool[8]]);
   assert.deepEqual(noEmoji.map((r) => r.pairs.length), [2]); // the word without an emoji is skipped
 });
@@ -130,16 +144,48 @@ test('match-pairs: judge needs every pair right, once', () => {
   assert.equal(match.judge(r, 'nope').correct, false);
 });
 
-test('match-pairs: hints nudge by unjoining wrong pairs; level 2 reveals exactly one pair', () => {
+test('match-pairs: hint 1 only counts the wrong pairs; level 2 reveals exactly one pair', () => {
   const [r] = make(match, { params: { from: { n: 3 }, size: 3 } }, 1, pool.slice(0, 3));
   const [p0, p1, p2] = r.pairs.map((p) => p.id);
   const last = [[p0, p1], [p1, p0], [p2, p2]];
-  const h1 = match.hint(r, 1, last);
-  assert.deepEqual(h1, { level: 1, wrong: [p0, p1] });
-  assert.ok(!('pair' in h1));
+  assert.deepEqual(match.hint(r, 1, last), { level: 1, wrongCount: 2 }); // no ids, nothing to reveal
   const h2 = match.hint(r, 2, last);
   assert.deepEqual(h2.pair, [p0, p0]); // one correct pair, never the whole solution
-  assert.deepEqual(match.hint(r, 1, undefined), { level: 1, wrong: [] });
+  assert.deepEqual(match.hint(r, 1, undefined), { level: 1, wrongCount: 0 });
+});
+
+test('match-pairs: judge rejects a right item used twice', () => {
+  const [r] = make(match, { params: { from: { n: 2 }, size: 2 } }, 1, pool.slice(0, 2));
+  const [p0, p1] = r.pairs.map((p) => p.id);
+  assert.equal(match.judge(r, [[p0, p0], [p1, p0]]).correct, false);
+});
+
+test('match-pairs: boards never exceed 6 pairs; 7 words with size 6 make 4+3', () => {
+  const many = Array.from({ length: 13 }, (_, i) => word(`w${i}`, { emoji: String.fromCodePoint(0x1f600 + i) }));
+  assert.deepEqual(make(match, { params: { from: { n: 7 }, size: 6 } }, 1, many.slice(0, 7)).map((r) => r.pairs.length), [4, 3]);
+  for (const n of [2, 5, 6, 7, 11, 13]) for (const size of [2, 3, 5, 6]) {
+    const sizes = make(match, { params: { from: { n }, size } }, 1, many.slice(0, n)).map((r) => r.pairs.length);
+    assert.ok(sizes.every((x) => x >= 2 && x <= Math.max(size, 3) + 1 && x <= 6), `${n}/${size}: ${sizes}`);
+    assert.equal(sizes.reduce((a, b) => a + b, 0), n);
+  }
+});
+
+test('match-pairs: authored pairs above 6 are an error, trimmed and case-insensitive de-duplication', () => {
+  const seven = Array.from({ length: 7 }, (_, i) => ({ a: `a${i}`, b: `b${i}` }));
+  assert.throws(() => make(match, { params: { pairs: seven } }), /at most 6/);
+  const [r] = make(match, { params: { pairs: [{ a: ' Sol ', b: 'x' }, { a: 'sol', b: 'y' }, { a: 'Luna', b: 'X ' }, { a: 'Mar', b: 'z' }] } });
+  assert.deepEqual(r.pairs.map((p) => [p.a, p.b]), [['Sol', 'x'], ['Mar', 'z']]);
+});
+
+test('match-pairs: article boards need 2 different articles; elException nouns take el', () => {
+  const els = ['gato', 'perro', 'pez', 'pato'].map((id) => word(id));
+  assert.deepEqual(make(match, { params: { from: { n: 4 }, size: 4, mode: 'article-noun' } }, 1, els), []);
+  const agua = word('agua', { gender: 'f', article: 'el', elException: true });
+  const mixed = [...els.slice(0, 3), word('mesa', { gender: 'f', article: 'la' }), agua, word('cama', { gender: 'f', article: 'la' })];
+  const rounds = make(match, { params: { from: { n: 6 }, size: 3, mode: 'article-noun' } }, 2, mixed);
+  assert.equal(rounds.length, 2);
+  for (const r of rounds) assert.ok(new Set(r.pairs.map((p) => p.b)).size >= 2);
+  assert.equal(rounds.flatMap((r) => r.pairs).find((p) => p.a === 'agua').b, 'el');
 });
 
 test('match-pairs: params validate', () => {

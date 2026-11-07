@@ -10,9 +10,9 @@ const round = (members, odd, rng, { theme = null, wordIds = [] } = {}) => ({
 function fromGroups(groups, size, rng) {
   const out = [];
   for (const g of groups) {
-    const words = [...new Set(g.words.map(key))];
-    if (words.length < 2 || words.includes(key(g.odd))) continue;
-    const members = shuffle(words, rng).slice(0, size - 1).map((es) => ({ id: es, es }));
+    const shown = new Map(g.words.slice().reverse().map((w) => [key(w), w.trim()])); // lowercase key for ids and de-duplication; the first spelling is displayed
+    if (shown.size < 2 || shown.has(key(g.odd))) continue;
+    const members = shuffle([...shown], rng).slice(0, size - 1).map(([id, es]) => ({ id, es }));
     out.push(round(members, { id: key(g.odd), es: g.odd.trim() }, rng, { theme: g.theme ?? null }));
   }
   return out;
@@ -23,6 +23,7 @@ function fromTargets(targets, pool, size, rng) {
   const out = [];
   const o = (p) => ({ id: p.id, es: p.es, emoji: p.emoji ?? '' });
   for (const w of targets) {
+    if (!w.tags?.length) continue; // no topic to be an intruder from
     const byTag = new Map();
     for (const p of pool) {
       if (p.id === w.id || p.es === w.es || p.tags?.some((t) => w.tags?.includes(t))) continue;
@@ -31,8 +32,9 @@ function fromTargets(targets, pool, size, rng) {
     const ok = [...byTag.keys()].sort().filter((t) => new Set(byTag.get(t).map((p) => p.es)).size >= size - 1);
     if (!ok.length) continue;
     const seen = new Set();
-    const members = shuffle(byTag.get(rng.pick(ok)), rng).filter((p) => !seen.has(p.es) && seen.add(p.es)).slice(0, size - 1);
-    out.push(round(members.map(o), o(w), rng, { wordIds: [w.id, ...members.map((m) => m.id)] }));
+    const tag = rng.pick(ok);
+    const members = shuffle(byTag.get(tag), rng).filter((p) => !seen.has(p.es) && seen.add(p.es)).slice(0, size - 1);
+    out.push(round(members.map(o), o(w), rng, { theme: tag, wordIds: [w.id] }));
   }
   return out;
 }
