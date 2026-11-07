@@ -11,6 +11,14 @@
   { "id": "nueve", "es": "nueve", "en": "nine", "emoji": "9️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
   { "id": "diez", "es": "diez", "en": "ten", "emoji": "🔟", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
 
+  { "id": "once", "es": "once", "en": "eleven", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "doce", "es": "doce", "en": "twelve", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "trece", "es": "trece", "en": "thirteen", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "catorce", "es": "catorce", "en": "fourteen", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "quince", "es": "quince", "en": "fifteen", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "dieciseis", "es": "dieciséis", "en": "sixteen", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "veinte", "es": "veinte", "en": "twenty", "emoji": "🔢", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+
   { "id": "rojo", "es": "rojo", "en": "red", "emoji": "🔴", "tags": ["colours"], "pos": "adj", "forms": { "f": "roja", "pl": "rojos" }, "unit": "a1-u1-s1" },
   { "id": "azul", "es": "azul", "en": "blue", "emoji": "🔵", "tags": ["colours"], "pos": "adj", "forms": { "pl": "azules" }, "unit": "a1-u1-s1" },
   { "id": "verde", "es": "verde", "en": "green", "emoji": "🟢", "tags": ["colours"], "pos": "adj", "forms": { "pl": "verdes" }, "unit": "a1-u1-s1" },
@@ -31,11 +39,20 @@
   { "id": "tia", "es": "tía", "en": "aunt","tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "tío", "pl": "tías" }, "spell": ["accent"], "unit": "a1-u1-s1" },
   { "id": "primo", "es": "primo", "en": "cousin (boy)", "emoji": "🧑", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "prima", "pl": "primos" }, "unit": "a1-u1-s1" },
   { "id": "prima", "es": "prima", "en": "cousin (girl)", "emoji": "🧒", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "primo", "pl": "primas" }, "unit": "a1-u1-s1" },
+  { "id": "mama", "es": "mamá", "en": "mum", "emoji": "👩", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "mamás" }, "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "papa", "es": "papá", "en": "dad", "emoji": "👨", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "papás" }, "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "nino", "es": "niño", "en": "boy", "emoji": "👦", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "niños" }, "spell": ["ñ"], "unit": "a1-u1-s1" },
+  { "id": "nina", "es": "niña", "en": "girl", "emoji": "👧", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "niñas" }, "spell": ["ñ"], "unit": "a1-u1-s1" },
 
   { "id": "mochila", "es": "mochila", "en": "backpack", "emoji": "🎒", "tags": ["school"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "mochilas" }, "unit": "a1-u1-s1" },
   { "id": "libro", "es": "libro", "en": "book", "emoji": "📖", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "libros" }, "unit": "a1-u1-s1" },
   { "id": "lapiz", "es": "lápiz", "en": "pencil", "emoji": "✏️", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "lápices" }, "spell": ["accent"], "unit": "a1-u1-s1" },
   { "id": "cuaderno", "es": "cuaderno", "en": "notebook", "emoji": "📓", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "cuadernos" }, "unit": "a1-u1-s1" },
+  { "id": "boligrafo", "es": "bolígrafo", "en": "pen", "emoji": "🖊️", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "bolígrafos" }, "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "regla", "es": "regla", "en": "ruler", "emoji": "📏", "tags": ["school"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "reglas" }, "unit": "a1-u1-s1" },
+  { "id": "silla", "es": "silla", "en": "chair", "emoji": "🪑", "tags": ["school"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "sillas" }, "unit": "a1-u1-s1" },
+  { "id": "papel", "es": "papel", "en": "paper", "emoji": "📄", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "papeles" }, "unit": "a1-u1-s1" },
+  { "id": "tijeras", "es": "tijeras", "en": "scissors", "emoji": "✂️", "tags": ["school"], "pos": "noun", "gender": "f", "number": "pl", "article": "las", "unit": "a1-u1-s1" },
 
   { "id": "ano", "es": "año", "en": "year", "emoji": "🎂", "tags": ["age"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "años" }, "spell": ["ñ"], "unit": "a1-u1-s1" }
 ] }

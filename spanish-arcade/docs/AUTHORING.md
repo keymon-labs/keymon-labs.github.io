@@ -65,3 +65,11 @@ Copy this and change it (add three more animal words so `n: 4` can be met; it is
 - Spain Spanish (ordenador, bolígrafo, vosotros), kid-safe and friendly. Names and places are invented.
 - Spanish quality checklist: accents (á é í ó ú), `ñ`, `ü`, `¿...?` and `¡...!` at both ends, right article for the gender, singular/plural agreement, English help text that is simple and short.
 - No personal data: the repo is public.
+
+## 5. Difficulty: the children speak Spanish
+Our learners are native Spanish speakers (about 6-8) who learn to read and write in English at school. They know the words by ear and by picture, so "recognise the picture" is trivial. Make the unit test **written Spanish**:
+- Spelling and reading carry the unit. Prefer longer words (hermana, amarillo, cuaderno, dieciséis), no hint letters, extra decoy letters, and typing over tapping. Aim for 5-8 rounds per exercise.
+- Target the real traps for native speakers: rr/r, silent h, tildes (lápiz, mamá), ñ. Use `spell-fill-letters` `items` with only `es` (no `en`, no `emoji`) so no picture or gloss gives the word away.
+- Listening should end in a written word (`answerAs: "word"`, `similar: true`, `distractorFrom` the same category), not a picture.
+- Grammar items use natural agreement and verb forms with 4 close options; reading texts are 4-5 sentences with a question that needs inference (no `evidence`), and `showTextWhileAnswering: false`.
+- Units 1-4 may only use `difficulty` 1-2 (checker rule), so raise the challenge with explicit params (`mode`, `hintLetters`, `extraLetters`, `showTextWhileAnswering`, `similar`) instead of the difficulty number.
