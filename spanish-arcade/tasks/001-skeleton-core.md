@@ -3,7 +3,7 @@ id: "001"
 title: Core engine and contracts
 model: Opus 5.5
 why_model: Sets the contracts everything else plugs into (schema, session engine, archetype registry, store).
-status: in-progress
+status: done
 claimed: 2026-11-07
 depends_on: ["000"]
 touches: [shared/rng.js, maths-arcade (rng import only), spanish-arcade/core/**, archetypes/README.md, archetypes/placeholder/**, ui/speech.js, data/vocab/** (seed), units/** (stub), test/**, docs/PLAN.md (contract edits)]
@@ -27,3 +27,9 @@ Do NOT build real archetypes, export/import, reports or styling.
 
 ## Notes
 `core/` stays DOM-free; storage and clock are injected. Don't touch the landing page (task 013).
+
+Ruling: one round = one judged answer = one `submit`; boards submit a composite answer from `mount` (or use one round per item), archetypes never count misses — the Opus review found parallel archetype tasks would otherwise invent their own rules — cost if wrong: an archetype adjusts how it packages answers.
+Ruling: archetype modules get an optional `skill` field (listening, spelling, reading, grammar, puzzle) so task 014 can check unit mix without editing every archetype — cost if wrong: one field to drop.
+Ruling: `hint(round, level, lastAnswer)` takes an optional third argument so the level-1 hint avoids the option just tapped (PLAN 4.3 and archetypes/README.md updated) — cost if wrong: archetypes ignore the argument.
+Ruling: the "el agua" article rule needs an explicit `elException: true` on the word (PLAN 4.1) — cost if wrong: a vocab flag.
+Reviewed by Opus, then a scoped Sonnet re-review of the fix round: clean. Known limit: no Spanish Arcade page yet, so the browser check was a throwaway harness; the lasting drive-the-unit test runs in node on the real unit and vocab files (`test/session.test.js`). The build publishes non-README markdown under `dist/spanish-arcade/docs/` (existing `copy-unbundled` behaviour): left as is.

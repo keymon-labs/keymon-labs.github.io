@@ -15,7 +15,7 @@ Board (source of truth is each file's front matter):
 | # | Task | Model | Needs | Status |
 |---|---|---|---|---|
 | 000 | [Plan review (gate before any implementation or design)](000-plan-review.md) | Opus | — | done |
-| 001 | [Core engine and contracts](001-skeleton-core.md) | Opus | 000 | in-progress |
+| 001 | [Core engine and contracts](001-skeleton-core.md) | Opus | 000 | done |
 | 001b | [Shell, routes, PWA and footer](001b-shell-pwa.md) | Sonnet | 001 | todo |
 | 002 | [Visual design system and mascot](002-visual-design.md) | Opus | 000 | todo |
 | 003 | [Export, import and migrations](003-export-import.md) | Sonnet | 001, 001b | todo |
