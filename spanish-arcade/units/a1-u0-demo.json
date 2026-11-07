@@ -1,4 +1,4 @@
-{ "schema": 1, "id": "a1-u0-demo", "rev": 1, "order": 0,
+{ "schema": 1, "id": "a1-u0-demo", "rev": 1, "order": 0, "dev": true,
   "title": { "es": "Prueba", "en": "Practice run" },
   "theme": "sunny",
   "intro": { "es": "¡Vamos a jugar!", "en": "Let's play!" },

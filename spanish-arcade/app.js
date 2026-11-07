@@ -10,24 +10,46 @@ import { renderSettings } from './ui/settings.js';
 import { registerServiceWorker } from '../shared/pwa.js';
 
 const root = document.getElementById('app');
-const content = loadContent();
 const speech = createSpeech();
 const NEXT_DELAY = 700;
-
-function safeStorage() {
-  try { localStorage.getItem('x'); return localStorage; }
-  catch { const m = new Map(); return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) }; }
-}
-const store = createStore({ storage: safeStorage() });
-for (const p of store.data.profiles) store.update(p.id, (x) => applyRev(x, content.units));
 
 // Local-only error ring buffer (last 20). Nothing is sent anywhere.
 const errors = [];
 const logError = (msg) => { errors.push({ at: new Date().toISOString(), msg: String(msg).slice(0, 300) }); if (errors.length > 20) errors.shift(); };
-for (const e of [...content.errors, ...(store.loadError ? [`store: ${store.loadError}`] : [])]) logError(e);
 addEventListener('error', (e) => logError(e.message));
 addEventListener('unhandledrejection', (e) => logError(e.reason?.message ?? e.reason));
+
+// Storage: probe a real write; a failing write is logged and play goes on in memory with a notice.
+let unsaved = false;
+const markUnsaved = (why) => { unsaved = true; logError(why); showUnsaved(); };
+function safeStorage() {
+  try {
+    localStorage.setItem('spanish-arcade:probe', '1'); localStorage.removeItem('spanish-arcade:probe');
+    return {
+      getItem: (k) => localStorage.getItem(k),
+      setItem: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { markUnsaved(`save failed: ${e.message}`); } },
+      removeItem: (k) => localStorage.removeItem(k),
+    };
+  } catch (e) {
+    unsaved = true; logError(`no browser storage: ${e.message}`);
+    const m = new Map();
+    return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) };
+  }
+}
+const store = createStore({ storage: safeStorage() });
+// Production builds leave out "dev" units (demo/test units).
+const content = loadContent({ includeDev: import.meta.env.DEV });
+for (const e of [...content.errors, ...(store.loadError ? [`store: ${store.loadError}`] : [])]) logError(e);
+for (const p of store.data.profiles) { const next = applyRev(p, content.units); if (next !== p) store.update(p.id, () => next); }
 const diagnostic = () => JSON.stringify({ app: 'spanish-arcade', build: __BUILD__, ua: navigator.userAgent, errors }, null, 2);
+
+// Settings that change the page itself: help language (<html lang>) and text size.
+function applySettings() {
+  const { lang, textSize } = store.data.settings;
+  document.documentElement.lang = lang;
+  document.documentElement.style.setProperty('--text-scale', String(textSize || 1));
+}
+applySettings();
 
 // Parent gate hook: task 004 replaces this with the real gate (hold 2 s or a sum).
 const gate = (run) => run();
@@ -42,7 +64,7 @@ function h(tag, attrs = {}, ...kids) {
   return el;
 }
 const link = (href, text, cls = 'btn') => h('a', { href, class: cls }, text);
-const stars = (n) => h('span', { class: 'stars', 'aria-label': `${n} of 3 stars` }, '★'.repeat(n), h('span', {}, '★'.repeat(3 - n)));
+const stars = (n) => h('span', { class: 'stars', role: 'img', 'aria-label': `${n} of 3 stars` }, '★'.repeat(n), h('span', {}, '★'.repeat(3 - n)));
 
 function footer() {
   return h('footer', {}, `Spanish Arcade v1 · build ${__BUILD__} · © 2026 keymon-labs · `,
@@ -53,24 +75,32 @@ let current = null; // mounted screen, if any: { destroy() }
 let activeId = null;
 const activeProfile = () => store.profile(activeId) ?? store.data.profiles[0] ?? null;
 
-function screen(...kids) {
-  const main = h('main', {}, ...kids);
+const unsavedNote = () => h('p', { id: 'unsaved', role: 'status', class: 'muted' }, "Progress won't be saved in this browser.");
+function showUnsaved() { const main = root.querySelector('main'); if (main && !root.querySelector('#unsaved')) main.prepend(unsavedNote()); }
+
+/** Builds a screen: heading first (it gets focus on route change), then the rest. */
+function screen(title, ...kids) {
+  const main = h('main', {}, title ? h('h1', { tabindex: '-1' }, title) : null, ...kids);
   root.replaceChildren(main, footer());
+  if (unsaved) showUnsaved();
   return main;
 }
 
 function route() {
   current?.destroy(); current = null;
-  const [page, id] = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-  if (page === 'profile' && store.profile(id)) { activeId = id; return renderProfile(store.profile(id)); }
-  if (page === 'unit' && content.unitById[id] && activeProfile()) return playUnit(activeProfile(), content.unitById[id]);
-  if (page === 'settings') return gate(renderSettingsScreen);
-  renderHome();
+  const [page, id, sub] = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  const unit = content.unitById[id];
+  const profile = activeProfile();
+  if (page === 'profile' && store.profile(id)) { activeId = id; renderProfile(store.profile(id)); }
+  else if (page === 'unit' && unit && profile && isUnlocked(profile, content.units, unit.id)) (sub === 'play' ? playUnit : renderIntro)(profile, unit);
+  else if (page === 'settings') gate(renderSettingsScreen);
+  else renderHome();
+  root.querySelector('h1')?.focus();
 }
 
 function renderHome() {
   const profiles = store.data.profiles;
-  const main = screen(h('h1', {}, 'Spanish Arcade'));
+  const main = screen('Spanish Arcade');
   if (profiles.length) main.append(h('ul', { class: 'list' }, profiles.map((p) => h('li', {}, link(`#/profile/${p.id}`, p.firstName)))));
   if (profiles.length < 1) { // MVP: one profile
     const first = h('input', { id: 'first-name', required: '', autocomplete: 'off' });
@@ -87,7 +117,7 @@ function renderHome() {
 }
 
 function renderProfile(profile) {
-  const main = screen(h('h1', {}, `Hello, ${profile.firstName}!`));
+  const main = screen(`Hello, ${profile.firstName}!`);
   main.append(h('ul', { class: 'list' }, content.units.map((u) => {
     const open = isUnlocked(profile, content.units, u.id);
     const st = profile.units[u.id]?.stars ?? 0;
@@ -97,31 +127,57 @@ function renderProfile(profile) {
   main.append(link('#/', 'Back'), link('#/settings', 'Settings'));
 }
 
+function renderIntro(profile, unit) {
+  const lang = store.data.settings.lang;
+  const resumable = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev;
+  const main = screen(unit.title[lang] ?? unit.title.en, h('p', { id: 'unit-intro' }, unit.intro[lang] ?? unit.intro.en));
+  const start = link(`#/unit/${unit.id}/play`, resumable ? 'Continue' : 'Start');
+  start.id = 'start-unit';
+  main.append(start, link(`#/profile/${profile.id}`, 'Back'));
+  speech.ready().then(() => {
+    if (!speech.available || !main.isConnected) return;
+    const say = h('button', { type: 'button', id: 'say-intro', 'aria-label': 'Listen' }, '🔊');
+    say.onclick = () => ctx0.say(unit.intro.es);
+    start.before(say);
+  });
+}
+const ctx0 = { say: (text, opts) => (store.data.settings.sound ? speech.say(text, opts) : Promise.resolve(false)) };
+
 function renderSettingsScreen() {
-  const main = screen();
-  current = renderSettings(main, { store, content, diagnostic });
+  const main = screen(null);
+  current = renderSettings(main, { store, content, diagnostic, gate, logError, applySettings });
   main.append(link(activeProfile() ? `#/profile/${activeProfile().id}` : '#/', 'Back'));
 }
 
 function playUnit(profile, unit) {
   const lang = store.data.settings.lang;
   const session = createUnitSession({ unit, content, seed: attemptSeed(profile, unit.id), resume: profile.inProgress });
-  const main = screen();
+  const stage = h('div', { id: 'stage' });
+  const live = h('div', { id: 'live', 'aria-live': 'polite' });
+  const main = screen(unit.title[lang] ?? unit.title.en, stage, live);
   let mounted = null;
   let timer = null;
+  let busy = false; // true from a correct answer until the next round is shown: ignores double taps
+  let lastResult = null;
+  let result = null;
   const self = { destroy() { clearTimeout(timer); mounted?.destroy(); } };
   current = self;
   window.__spanishArcade.session = session;
 
   const ctx = {
     lang, t: (k) => k,
-    say: (text, opts) => (store.data.settings.sound ? speech.say(text, opts) : Promise.resolve(false)),
+    say: ctx0.say,
     canSpeak: false, sfx: () => {}, mascot: () => {},
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
+      if (busy) return { ...lastResult, ignored: true };
       const r = session.submit(answer);
-      store.update(profile.id, (p) => (r.done ? p : saveInProgress(p, session.snapshot())));
-      if (r.action === 'next') timer = setTimeout(r.done ? finish : show, NEXT_DELAY);
+      lastResult = r;
+      if (r.done) { // saved now, only the screen change is delayed
+        result = session.result();
+        store.update(profile.id, (p) => recordUnit(p, unit, result, store.now()));
+      } else store.update(profile.id, (p) => saveInProgress(p, session.snapshot()));
+      if (r.action === 'next') { busy = true; timer = setTimeout(r.done ? finish : show, NEXT_DELAY); }
       return r;
     },
   };
@@ -129,28 +185,25 @@ function playUnit(profile, unit) {
   function show() {
     mounted?.destroy();
     const cur = session.current;
-    main.replaceChildren(
-      h('p', { class: 'muted', id: 'progress' }, `${unit.title[lang] ?? unit.title.en} · exercise ${cur.exerciseIndex + 1}/${unit.exercises.length} · ${cur.roundIndex + 1}/${cur.rounds}`),
-      h('p', { id: 'exercise-prompt' }, cur.exercise.prompt?.[lang] ?? ''),
-    );
     const host = h('div', { id: 'round' });
-    main.append(host, link(`#/profile/${profile.id}`, 'Leave'));
+    stage.replaceChildren(
+      h('p', { class: 'muted', id: 'progress' }, `Exercise ${cur.exerciseIndex + 1}/${unit.exercises.length} · ${cur.roundIndex + 1}/${cur.rounds}`),
+      h('p', { id: 'exercise-prompt' }, cur.exercise.prompt?.[lang] ?? ''),
+      host, link(`#/profile/${profile.id}`, 'Leave'));
+    busy = false;
     mounted = cur.archetype.mount(host, cur.round, ctx);
   }
 
   function finish() {
     mounted?.destroy(); mounted = null;
-    const res = session.result();
-    store.update(profile.id, (p) => recordUnit(p, unit, res, store.now()));
-    main.replaceChildren(
-      h('h1', {}, 'All done!'), h('p', { id: 'result-stars' }, stars(res.stars)),
-      h('p', {}, `${res.correct} of ${unit.exercises.length} exercises without a reveal.`),
-      h('p', { class: 'muted' }, 'Joke of the day: (placeholder)'),
-      link(`#/profile/${profile.id}`, 'Back to the map'));
+    stage.replaceChildren(link(`#/profile/${profile.id}`, 'Back to the map'));
+    live.replaceChildren(h('h2', {}, 'All done!'), h('p', { id: 'result-stars' }, stars(result.stars)),
+      h('p', {}, `${result.correct} of ${unit.exercises.length} exercises without a reveal.`),
+      h('p', { class: 'muted' }, 'Joke of the day: (placeholder)'));
   }
 
   // Archetypes read ctx.canSpeak at mount, so wait for the voice list first.
-  speech.ready().then(() => { if (current !== self) return; ctx.canSpeak = speech.available; session.done ? finish() : show(); });
+  speech.ready().then(() => { if (current !== self) return; ctx.canSpeak = speech.available; show(); });
 }
 
 window.__spanishArcade = { store, content, speech, errors, go: (hash) => { location.hash = hash; }, session: null };

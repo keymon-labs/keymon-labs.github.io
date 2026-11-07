@@ -3,11 +3,21 @@
 // forever is safe even though they sit outside this folder.
 // Vite's hashed bundles sit next to the app folders: /assets/ or /<repo>/assets/ on a fork.
 const ASSETS = new URL('../assets/', location).pathname;
-const CACHE = 'spanish-arcade-v1';
+const CACHE = 'spanish-arcade-v2';
 const SHELL = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
+// Also cache the page's hashed /assets/ files, so the very first visit already works offline.
+// Best effort: if this fails the files are cached on first use as before.
+async function precacheAssets(c) {
+  try {
+    const html = await (await fetch('./', { cache: 'reload' })).text();
+    const urls = [...html.matchAll(/(?:src|href)="([^"]*\/assets\/[^"]+)"/g)].map((m) => new URL(m[1], location).href);
+    await c.addAll(urls);
+  } catch {}
+}
+
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL).then(() => precacheAssets(c))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys()
