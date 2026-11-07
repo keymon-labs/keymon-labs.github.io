@@ -1,0 +1,25 @@
+{
+  "id": "door", "languages": ["en"],
+  "title": {"en": "Open the Door"}, "mission": {"en": "Get inside!"}, "intro": {"en": "A locked door."},
+  "target": {"en": ["key", "open"]}, "hero": "kid", "improvPoses": ["wave"],
+  "scene": {
+    "groundTop": 470,
+    "actors": {"kid": {"art": "kid", "x": 100, "y": 250, "w": 150, "h": 240}, "key": {"emoji": "🔑", "x": 400, "y": 420, "w": 50, "h": 50}},
+    "spots": {"key": {"floor": {"x": 400, "y": 420}, "hand": {"x": 200, "y": 370}}}
+  },
+  "state": {"key": "floor", "door": "locked", "tries": "0"},
+  "words": {"en": {"take": ["take", "pick up"], "open": ["open", "opens"], "kick": ["kick"]}},
+  "rules": [
+    {"words": ["open"], "when": {"key": "hand"}, "outcome": "win"},
+    {"words": ["open"], "when": {"door": ["locked", "stuck"]}, "outcome": "locked"},
+    {"words": ["kick"], "outcome": "stuck"},
+    {"words": ["take"], "outcome": "got_key"}
+  ],
+  "between": [{"when": {"door": "stuck"}, "set": {"door": "locked"}}],
+  "outcomes": {
+    "win": {"text": {"en": "It opens!"}, "set": {"door": "open"}, "win": true},
+    "locked": {"text": {"en": "Locked."}},
+    "stuck": {"text": {"en": "Ouch."}, "set": {"door": "stuck"}},
+    "got_key": {"text": {"en": "Got the key."}, "set": {"key": "hand"}, "beats": [{"move": "key", "to": "hand", "arc": 40}]}
+  }
+}

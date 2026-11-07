@@ -1,0 +1,175 @@
+{
+  "poses": {
+    "breathe": {"tweens": [{"y": [0, -3, 0], "dur": 2400, "loop": true}]},
+    "hop": {
+      "tweens": [
+        {"y": [0, -55, 0], "dur": 520, "easing": "cubic-bezier(.3,.6,.4,1)"},
+        {"part": "legL", "rotate": [0, 20, 0], "dur": 520},
+        {"part": "shinL", "rotate": [0, -45, 0], "dur": 520},
+        {"part": "legR", "rotate": [0, -20, 0], "dur": 520},
+        {"part": "shinR", "rotate": [0, 45, 0], "dur": 520}
+      ],
+      "sound": "boing"
+    },
+    "jump": {
+      "tweens": [
+        {"y": [0, 10, -90, 0], "dur": 800, "easing": "ease-out"},
+        {"part": "armL", "rotate": [0, -20, 150, 0], "dur": 800},
+        {"part": "armR", "rotate": [0, 20, -150, 0], "dur": 800},
+        {"part": "shinL", "rotate": [0, -30, -50, 0], "dur": 800},
+        {"part": "shinR", "rotate": [0, 30, 50, 0], "dur": 800}
+      ],
+      "sound": "boing"
+    },
+    "cheer": {
+      "tweens": [
+        {"part": "armL", "rotate": [0, 150, 130, 150, 0], "at": [0, 0.25, 0.5, 0.75, 1], "dur": 1200},
+        {"part": "armR", "rotate": [0, -150, -130, -150, 0], "at": [0, 0.25, 0.5, 0.75, 1], "dur": 1200},
+        {"part": "foreL", "rotate": [0, 20, -10, 20, 0], "dur": 1200},
+        {"part": "foreR", "rotate": [0, -20, 10, -20, 0], "dur": 1200},
+        {"y": [0, -40, 0, -40, 0], "dur": 1200}
+      ],
+      "fx": "sparkle"
+    },
+    "wave": {
+      "tweens": [
+        {"part": "armR", "rotate": [0, -140, -140, -140, -140, 0], "dur": 1400},
+        {"part": "foreR", "rotate": [0, -35, 25, -35, 25, 0], "dur": 1400},
+        {"part": "head", "rotate": [0, 6, 0], "dur": 1400}
+      ]
+    },
+    "throw": {
+      "tweens": [
+        {"part": "armR", "rotate": [0, -170, -70, 0], "at": [0, 0.45, 0.7, 1], "dur": 750},
+        {"part": "foreR", "rotate": [0, -70, 10, 0], "at": [0, 0.45, 0.7, 1], "dur": 750},
+        {"part": "torso", "rotate": [0, -10, 12, 0], "at": [0, 0.45, 0.7, 1], "dur": 750},
+        {"part": "armL", "rotate": [0, 40, -20, 0], "at": [0, 0.45, 0.7, 1], "dur": 750}
+      ],
+      "sound": "whoosh"
+    },
+    "shrug": {
+      "tweens": [
+        {"part": "armL", "rotate": [0, 60, 60, 0], "at": [0, 0.3, 0.7, 1], "dur": 1000},
+        {"part": "foreL", "rotate": [0, 70, 70, 0], "at": [0, 0.3, 0.7, 1], "dur": 1000},
+        {"part": "armR", "rotate": [0, -60, -60, 0], "at": [0, 0.3, 0.7, 1], "dur": 1000},
+        {"part": "foreR", "rotate": [0, -70, -70, 0], "at": [0, 0.3, 0.7, 1], "dur": 1000},
+        {"part": "head", "rotate": [0, -12, 12, 0], "dur": 1000}
+      ]
+    },
+    "dance": {
+      "tweens": [
+        {"part": "torso", "rotate": [0, -10, 10, -10, 10, 0], "dur": 1400},
+        {"part": "armL", "rotate": [0, 130, 40, 130, 40, 0], "dur": 1400},
+        {"part": "armR", "rotate": [0, -40, -130, -40, -130, 0], "dur": 1400},
+        {"part": "legL", "rotate": [0, 15, 0, 15, 0, 0], "dur": 1400},
+        {"part": "legR", "rotate": [0, 0, -15, 0, -15, 0], "dur": 1400},
+        {"y": [0, -12, 0, -12, 0], "dur": 1400},
+        {"part": "head", "rotate": [0, 10, -10, 10, -10, 0], "dur": 1400}
+      ],
+      "fx": "music"
+    },
+    "sing": {
+      "tweens": [
+        {"part": "armL", "rotate": [0, 95, 95, 0], "at": [0, 0.2, 0.8, 1], "dur": 1500},
+        {"part": "armR", "rotate": [0, -95, -95, 0], "at": [0, 0.2, 0.8, 1], "dur": 1500},
+        {"part": "head", "rotate": [0, -10, 10, -10, 0], "dur": 1500},
+        {"part": "mouth", "scale": [1, 1.6, 1, 1.6, 1], "dur": 1500}
+      ],
+      "fx": "music",
+      "sound": "sing"
+    },
+    "eat": {
+      "tweens": [
+        {"part": "armR", "rotate": [0, -120, -120, -120, 0], "at": [0, 0.25, 0.5, 0.75, 1], "dur": 1200},
+        {"part": "foreR", "rotate": [0, -130, -110, -130, 0], "at": [0, 0.25, 0.5, 0.75, 1], "dur": 1200},
+        {"part": "head", "rotate": [0, 0, 6, -6, 6, 0], "dur": 1200},
+        {"part": "mouth", "scale": [1, 1.8, 0.8, 1.8, 1], "dur": 1200}
+      ],
+      "sound": "munch"
+    },
+    "point": {
+      "tweens": [
+        {"part": "armR", "rotate": [0, -75, -75, 0], "at": [0, 0.2, 0.8, 1], "dur": 1100},
+        {"part": "foreR", "rotate": [0, -15, -15, 0], "at": [0, 0.2, 0.8, 1], "dur": 1100},
+        {"part": "torso", "rotate": [0, 5, 5, 0], "at": [0, 0.2, 0.8, 1], "dur": 1100}
+      ]
+    },
+    "laugh": {
+      "tweens": [
+        {"part": "torso", "rotate": [0, -6, 6, -6, 6, 0], "dur": 1000},
+        {"part": "head", "rotate": [0, -14, -6, -14, -6, 0], "dur": 1000},
+        {"part": "armL", "rotate": [0, 20, 30, 20, 0], "dur": 1000},
+        {"part": "armR", "rotate": [0, -20, -30, -20, 0], "dur": 1000},
+        {"part": "mouth", "scale": [1, 1.7, 1.3, 1.7, 1], "dur": 1000}
+      ],
+      "sound": "giggle"
+    },
+    "sad": {
+      "tweens": [
+        {"part": "head", "rotate": [0, 18, 18, 0], "at": [0, 0.25, 0.75, 1], "dur": 1600},
+        {"part": "torso", "rotate": [0, 6, 6, 0], "at": [0, 0.25, 0.75, 1], "dur": 1600},
+        {"part": "armL", "rotate": [0, -10, -10, 0], "at": [0, 0.25, 0.75, 1], "dur": 1600},
+        {"part": "armR", "rotate": [0, 10, 10, 0], "at": [0, 0.25, 0.75, 1], "dur": 1600}
+      ],
+      "sound": "bad"
+    },
+    "nod": {"tweens": [{"part": "head", "y": [0, 5, 0, 5, 0], "dur": 700}]},
+    "run": {
+      "tweens": [
+        {"part": "legL", "rotate": [0, 35, -35, 35, -35, 0], "dur": 900},
+        {"part": "legR", "rotate": [0, -35, 35, -35, 35, 0], "dur": 900},
+        {"part": "armL", "rotate": [0, -40, 40, -40, 40, 0], "dur": 900},
+        {"part": "armR", "rotate": [0, 40, -40, 40, -40, 0], "dur": 900},
+        {"y": [0, -8, 0, -8, 0], "dur": 900}
+      ]
+    },
+    "spin": {"tweens": [{"scale": [[1, 1], [-1, 1], [1, 1]], "dur": 700}], "sound": "whoosh"},
+    "wobble": {"tweens": [{"rotate": [0, -12, 10, -6, 4, 0], "dur": 700}]},
+    "pulse": {"tweens": [{"scale": [1, 1.15, 1, 1.15, 1], "dur": 700, "origin": "50% 100%"}]},
+    "squash": {
+      "tweens": [
+        {
+          "scale": [[1, 1], [1.2, 0.8], [1.6, 0.25]],
+          "dur": 350,
+          "hold": true,
+          "origin": "50% 100%",
+          "easing": "ease-in"
+        }
+      ],
+      "sound": "splat"
+    },
+    "float": {"tweens": [{"x": [0, 30, 0], "dur": 9000, "loop": true}]},
+    "bob": {"tweens": [{"y": [0, -6, 0], "dur": 1800, "loop": true}]},
+    "shine": {"tweens": [{"part": "rays", "rotate": [0, 360], "dur": 24000, "loop": true, "easing": "linear"}]},
+    "croak": {
+      "tweens": [
+        {"scale": [[1, 1], [1.12, 0.92], [1, 1], [1.12, 0.92], [1, 1]], "dur": 700, "origin": "50% 100%"},
+        {"part": "mouth", "scale": [1, 1.4, 1, 1.4, 1], "dur": 700}
+      ],
+      "sound": "croak"
+    },
+    "leap": {
+      "tweens": [
+        {
+          "y": [0, 8, -120, 0, 0],
+          "scale": [[1, 1], [1.15, 0.85], [0.9, 1.1], [1.15, 0.85], [1, 1]],
+          "at": [0, 0.15, 0.5, 0.85, 1],
+          "dur": 800,
+          "origin": "50% 100%"
+        }
+      ],
+      "sound": "boing"
+    }
+  },
+  "fx": {
+    "boom": {"emoji": ["💥", "⭐", "✨", "🎉"], "count": 14, "spread": 340, "rise": 240},
+    "sparkle": {"emoji": ["✨", "⭐"], "count": 7},
+    "music": {"emoji": ["🎵", "🎶"], "count": 6, "spread": 160, "rise": 220},
+    "hearts": {"emoji": ["❤️", "💖"], "count": 6},
+    "smoke": {"emoji": ["💨"], "count": 4, "spread": 140, "rise": 60},
+    "splash": {"emoji": ["💦"], "count": 7},
+    "confetti": {"emoji": ["🎉", "🎊", "⭐", "✨"], "count": 20, "spread": 520, "rise": 320},
+    "yum": {"emoji": ["😋", "✨"], "count": 5, "spread": 140, "rise": 160},
+    "question": {"emoji": ["❓"], "count": 3, "spread": 100, "rise": 160}
+  }
+}

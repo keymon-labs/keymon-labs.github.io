@@ -1,0 +1,277 @@
+{
+  "id": "frog",
+  "languages": ["en", "es"],
+  "title": {"en": "Smash the Frog", "es": "Aplasta a la rana"},
+  "mission": {"en": "Smash the frog with the ball!", "es": "¡Aplasta a la rana con la pelota!"},
+  "intro": {
+    "en": "A cheeky frog sits under the basket. Write one sentence on paper to get it.",
+    "es": "Una rana descarada está debajo de la canasta. Escribe una frase en papel para pillarla."
+  },
+  "target": {"en": ["throw", "through"], "es": ["lanza", "a través"]},
+  "bonus": "through",
+  "hero": "kid",
+  "improvPoses": ["wave", "dance", "sing", "cheer", "hop", "jump", "laugh", "spin", "nod", "point", "sad", "run", "shrug"],
+  "scene": {
+    "sky": ["#8fd8ff", "#e6f8ff"],
+    "ground": "#6cc451",
+    "groundTop": 470,
+    "actors": {
+      "hills": {"art": "hills", "x": 0, "y": 330, "w": 1000, "h": 160},
+      "sun": {"art": "sun", "x": 850, "y": 24, "w": 110, "h": 110, "idle": "shine"},
+      "cloud": {"art": "cloud", "x": 80, "y": 40, "w": 180, "h": 100, "idle": "float"},
+      "cloud2": {"art": "cloud", "x": 430, "y": 86, "w": 120, "h": 68, "idle": "float"},
+      "basket": {"art": "hoop", "x": 620, "y": 80, "w": 220, "h": 390},
+      "frog": {"art": "frog", "x": 670, "y": 382, "w": 120, "h": 100, "idle": "breathe", "shadow": true, "icon": "🐸"},
+      "kid": {"art": "kid", "x": 120, "y": 250, "w": 150, "h": 240, "idle": "breathe", "shadow": true, "icon": "🧒"},
+      "ball": {"art": "ball", "x": 290, "y": 410, "w": 64, "h": 64}
+    },
+    "spots": {
+      "ball": {
+        "ground": {"x": 290, "y": 410},
+        "hand": {"x": 196, "y": 370},
+        "mouth": {"x": 163, "y": 262, "opacity": 0},
+        "offstage": {"x": -90, "y": 410, "opacity": 0},
+        "basket": {"x": 698, "y": 110},
+        "net": {"x": 698, "y": 200},
+        "frog": {"x": 698, "y": 350},
+        "far": {"x": 905, "y": 410},
+        "hoopside": {"x": 560, "y": 410}
+      },
+      "frog": {"here": {"x": 670, "y": 382}, "away": {"x": 1090, "y": 382, "opacity": 0}, "squashed": {"x": 670, "y": 382}}
+    }
+  },
+  "state": {"ball": "ground", "frog": "here"},
+  "words": {
+    "en": {
+      "pick": ["pick", "picks", "picked", "grab", "grabs", "take", "takes", "get", "gets", "lift", "lifts", "collect"],
+      "throw": ["throw", "throws", "threw", "toss", "tosses", "tossed", "shoot", "shoots"],
+      "basket": ["basket", "hoop", "net"],
+      "through": ["through"],
+      "frog": ["frog", "frogs", "froggy"],
+      "eat": ["eat", "eats", "ate", "swallow", "swallows", "bite", "bites"],
+      "catch": ["catch", "catches", "chase", "chases"],
+      "bounce": ["bounce", "bounces", "bounced", "hit", "hits", "smash", "smashes", "land", "lands", "fall", "falls"]
+    },
+    "es": {
+      "pick": [
+        "coge",
+        "coger",
+        "cogela",
+        "recoge",
+        "recoger",
+        "toma",
+        "tomar",
+        "tomala",
+        "agarra",
+        "agarrar",
+        "levanta",
+        "levantar"
+      ],
+      "throw": ["lanza", "lanzala", "lanzar", "lanzas", "tira", "tirala", "tirar", "tiras", "arroja"],
+      "basket": ["canasta", "canastas", "cesta", "aro"],
+      "through": ["a traves", "traves"],
+      "frog": ["rana", "ranas"],
+      "eat": ["come", "comela", "comer", "comes", "traga", "tragar", "muerde", "morder"],
+      "catch": ["atrapa", "atrapar", "persigue", "perseguir", "pilla"],
+      "bounce": ["rebota", "rebotar", "golpea", "golpear", "aplasta", "aplastar", "cae", "caer"]
+    }
+  },
+  "rules": [
+    {"words": ["throw"], "without": ["pick"], "when": {"ball": "!hand"}, "outcome": "no_ball"},
+    {"words": ["eat"], "without": ["pick"], "when": {"ball": "!hand"}, "outcome": "nothing_to_eat"},
+    {"words": ["catch", "frog"], "outcome": "frog_runs"},
+    {"words": ["eat"], "outcome": "ate_ball"},
+    {"words": ["throw", "basket", "bounce", "frog"], "outcome": "win"},
+    {"words": ["throw", "basket"], "outcome": "basket_only"},
+    {"words": ["throw", "frog"], "outcome": "frog_dodges"},
+    {"words": ["throw"], "outcome": "throw_far"},
+    {"words": ["pick"], "when": {"ball": "hand"}, "outcome": "already"},
+    {"words": ["pick"], "outcome": "picked"}
+  ],
+  "between": [
+    {
+      "when": {"frog": "away"},
+      "set": {"frog": "here"},
+      "beats": [
+        {"move": "frog", "to": "here", "dur": 700, "arc": 90},
+        {"say": {"en": "I'm back!", "es": "¡He vuelto!"}, "actor": "frog"}
+      ]
+    },
+    {
+      "when": {"ball": "mouth"},
+      "set": {"ball": "ground"},
+      "beats": [{"move": "ball", "to": "offstage", "dur": 0}, {"move": "ball", "to": "ground", "dur": 800, "spin": 720}]
+    }
+  ],
+  "outcomes": {
+    "no_ball": {
+      "say": {"en": "Throw... what?", "es": "¿Lanzar... qué?"},
+      "text": {
+        "en": "The kid throws pure air. Very strong air! Pick up the ball first, then throw it.",
+        "es": "El niño lanza aire. ¡Aire muy fuerte! Primero coge la pelota y después lánzala."
+      },
+      "beats": [{"pose": "throw"}, [{"pose": "shrug"}, {"fx": "smoke", "at": "kid"}, {"sound": "bad"}]]
+    },
+    "nothing_to_eat": {
+      "say": {"en": "Eat... my shoe?", "es": "¿Comer... mi zapato?"},
+      "text": {
+        "en": "There's nothing in your hands to eat. Pick up the ball first!",
+        "es": "No tienes nada en las manos para comer. ¡Primero coge la pelota!"
+      },
+      "beats": [[{"pose": "shrug"}, {"fx": "question", "at": "kid"}, {"sound": "bad"}]]
+    },
+    "frog_runs": {
+      "say": {"en": "Come here, froggy!", "es": "¡Ven aquí, ranita!"},
+      "set": {"frog": "away"},
+      "text": {
+        "en": "The frog hops away. Frogs are fast and a bit rude. Try another plan.",
+        "es": "La rana se va saltando. Las ranas son rápidas y un poco maleducadas. Prueba otro plan."
+      },
+      "beats": [
+        {"pose": "run"},
+        {"say": {"en": "Nope!", "es": "¡Ni hablar!"}, "actor": "frog"},
+        {"move": "frog", "to": "away", "dur": 800, "arc": 160},
+        {"pose": "shrug"}
+      ]
+    },
+    "ate_ball": {
+      "say": {"en": "Yum!", "es": "¡Ñam!"},
+      "set": {"ball": "mouth"},
+      "text": {
+        "en": "You ate the ball! Crunchy. The frog is still there, laughing. A new ball rolls in.",
+        "es": "¡Te comiste la pelota! Crujiente. La rana sigue ahí, riéndose. Llega rodando una pelota nueva."
+      },
+      "beats": [
+        {"move": "ball", "to": "hand", "dur": 450, "arc": 70, "spin": 360},
+        [{"pose": "eat"}, {"move": "ball", "to": "mouth", "dur": 400, "delay": 250}],
+        {"fx": "yum", "at": "kid"},
+        [{"pose": "croak", "actor": "frog"}, {"say": {"en": "Ha ha, ribbit!", "es": "¡Ja ja, croac!"}, "actor": "frog"}]
+      ]
+    },
+    "basket_only": {
+      "say": {"en": "Swish!", "es": "¡Canasta!"},
+      "set": {"ball": "hoopside"},
+      "text": {
+        "en": "Right through the basket! But the frog just watches. Make the ball bounce into the frog.",
+        "es": "¡Justo a través de la canasta! Pero la rana solo mira. Haz que la pelota rebote en la rana."
+      },
+      "beats": [
+        {"move": "ball", "to": "hand", "dur": 450, "arc": 70, "spin": 360},
+        [{"pose": "throw"}, {"move": "ball", "to": "basket", "dur": 750, "arc": 180, "spin": 540, "delay": 450}],
+        {"move": "ball", "to": "net", "dur": 220},
+        [{"move": "ball", "to": "hoopside", "dur": 500, "arc": 60, "spin": -360}, {"sound": "boing"}],
+        [{"pose": "cheer"}, {"fx": "sparkle", "at": "basket"}],
+        {"say": {"en": "Is that all?", "es": "¿Eso es todo?"}, "actor": "frog"}
+      ]
+    },
+    "frog_dodges": {
+      "say": {"en": "Take that!", "es": "¡Toma!"},
+      "set": {"ball": "far"},
+      "text": {
+        "en": "The frog jumps out of the way. Show-off! Maybe the basket can help.",
+        "es": "La rana salta y la esquiva. ¡Qué presumida! Quizá la canasta pueda ayudar."
+      },
+      "beats": [
+        {"move": "ball", "to": "hand", "dur": 450, "arc": 70, "spin": 360},
+        [
+          {"pose": "throw"},
+          {"move": "ball", "to": "frog", "dur": 600, "arc": 120, "spin": 360, "delay": 450},
+          {"pose": "leap", "actor": "frog", "delay": 600}
+        ],
+        {"move": "ball", "to": "far", "dur": 500, "arc": 60, "spin": 360},
+        {"say": {"en": "Missed me!", "es": "¡Fallaste!"}, "actor": "frog"},
+        {"pose": "sad"}
+      ]
+    },
+    "throw_far": {
+      "say": {"en": "Here it goes!", "es": "¡Allá va!"},
+      "set": {"ball": "far"},
+      "text": {
+        "en": "Whoosh! The ball flies far, far away. Aim for the basket and the frog.",
+        "es": "¡Zas! La pelota vuela muy, muy lejos. Apunta a la canasta y a la rana."
+      },
+      "beats": [
+        {"move": "ball", "to": "hand", "dur": 450, "arc": 70, "spin": 360},
+        [{"pose": "throw"}, {"move": "ball", "to": "far", "dur": 900, "arc": 260, "spin": 720, "delay": 450}],
+        {"pose": "point"}
+      ]
+    },
+    "already": {
+      "say": {"en": "Got it already!", "es": "¡Ya la tengo!"},
+      "text": {"en": "The ball is already in your hand. Now throw it!", "es": "La pelota ya está en tu mano. ¡Ahora lánzala!"},
+      "beats": [{"pose": "nod"}]
+    },
+    "picked": {
+      "say": {"en": "Got it!", "es": "¡La tengo!"},
+      "set": {"ball": "hand"},
+      "text": {"en": "You picked up the ball. Now throw it!", "es": "Cogiste la pelota. ¡Ahora lánzala!"},
+      "beats": [[{"move": "ball", "to": "hand", "dur": 450, "arc": 70, "spin": 360}, {"pose": "hop"}], {"sound": "pop"}]
+    },
+    "win": {
+      "say": {"en": "Watch this!", "es": "¡Mira esto!"},
+      "set": {"ball": "far", "frog": "squashed"},
+      "win": true,
+      "text": {
+        "en": "Through the basket, BOING, right on the frog! Flat as a pancake. Mission complete!",
+        "es": "¡A través de la canasta y BOING, justo en la rana! Plana como una tortita. ¡Misión cumplida!"
+      },
+      "beats": [
+        {"move": "ball", "to": "hand", "dur": 450, "arc": 70, "spin": 360},
+        [{"pose": "throw"}, {"move": "ball", "to": "basket", "dur": 750, "arc": 180, "spin": 540, "delay": 450}],
+        {"move": "ball", "to": "net", "dur": 200},
+        [{"move": "ball", "to": "frog", "dur": 260}, {"sound": "boing"}],
+        [{"pose": "squash", "actor": "frog"}, {"fx": "boom", "at": "frog"}, {"shake": 450}],
+        {"move": "ball", "to": "far", "dur": 650, "arc": 140, "spin": 540},
+        [{"pose": "cheer"}, {"fx": "confetti", "at": "kid"}, {"sound": "win"}],
+        {"say": {"en": "Ribbit... ouch.", "es": "Croac... ay."}, "actor": "frog"}
+      ]
+    }
+  },
+  "tutorial": [
+    {
+      "text": {
+        "en": "Hi! Here's how to play. Write ONE sentence on paper, take a photo, and the story does what you wrote.",
+        "es": "¡Hola! Así se juega. Escribe UNA frase en papel, haz una foto y la historia hace lo que escribiste."
+      }
+    },
+    {
+      "text": {
+        "en": "Your sentence must use the words \"throw\" and \"through\". The mission: smash the frog with the ball!",
+        "es": "Tu frase debe usar las palabras \"lanza\" y \"a través\". La misión: ¡aplastar a la rana con la pelota!"
+      }
+    },
+    {
+      "text": {
+        "en": "If there are mistakes, fix them on paper and take a new photo. Every word written right wins a coin 🪙.",
+        "es": "Si hay errores, arréglalos en el papel y haz otra foto. Cada palabra bien escrita gana una moneda 🪙."
+      }
+    },
+    {
+      "text": {"en": "Example 1: \"Throw the ball.\" Let's see…", "es": "Ejemplo 1: \"Lanza la pelota.\" A ver…"},
+      "demo": {"sentence": {"en": "Throw the ball.", "es": "Lanza la pelota."}, "expect": "no_ball"}
+    },
+    {
+      "text": {"en": "Example 2: \"Pick up the ball and eat it.\" Hmm…", "es": "Ejemplo 2: \"Coge la pelota y cómela.\" Mmm…"},
+      "demo": {"sentence": {"en": "Pick up the ball and eat it.", "es": "Coge la pelota y cómela."}, "expect": "ate_ball"}
+    },
+    {
+      "text": {
+        "en": "Example 3: pick up the ball, throw it through the basket, and make it bounce on the frog.",
+        "es": "Ejemplo 3: coge la pelota, lánzala a través de la canasta y haz que rebote en la rana."
+      },
+      "demo": {
+        "sentence": {
+          "en": "Pick up the ball and throw it through the basket. It bounces on the frog.",
+          "es": "Coge la pelota y lánzala a través de la canasta. Rebota en la rana."
+        },
+        "expect": "win"
+      }
+    },
+    {
+      "text": {
+        "en": "Now it's your turn! Write your own sentence and tap the camera. First photo with no mistakes = 3 stars.",
+        "es": "¡Ahora te toca! Escribe tu frase y toca la cámara. Primera foto sin errores = 3 estrellas."
+      }
+    }
+  ]
+}

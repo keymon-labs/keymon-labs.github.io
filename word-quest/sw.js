@@ -3,7 +3,7 @@
 // forever is safe even though they sit outside this folder.
 // Vite's hashed bundles sit next to the app folders: /assets/ or /<repo>/assets/ on a fork.
 const ASSETS = new URL('../assets/', location).pathname;
-const CACHE = 'word-quest-v2';
+const CACHE = 'word-quest-v3';
 const SHELL = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {

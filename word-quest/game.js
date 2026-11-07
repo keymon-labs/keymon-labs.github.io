@@ -1,94 +1,103 @@
-// Word Quest rules: normalise sentences, match planned outcomes, scene state, stars, improvised-reply check. Pure logic, no DOM; tested in test/.
+// Word Quest engine: pure rules for one episode (sentence matching, scene state, turns, scoring). No DOM; tested in test/game.test.js.
+// Episode format: EPISODES.md. Beats are played by stage.js.
 
 /** Lowercase, drop accents and punctuation (¡ ¿ . , ! ?), collapse spaces. Accents are never required. */
 export function normalize(s) {
-  return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+  return String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
     .replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
 }
 
-const has = (tokens, words = []) => words.some((w) => tokens.includes(w));
-
-export function initialState() {
-  return { ballHeld: false, ballAt: "idle", ballGone: false, frog: "alive" };
+/** Text in the player's language: `{en, es}` → string. Plain strings pass through. */
+export function local(text, lang) {
+  if (text == null || typeof text === "string") return text ?? "";
+  return text[lang] ?? text.en ?? "";
 }
 
-/**
- * Before each new sentence: a hopped frog returns and an eaten ball is replaced.
- * Returns the new state and the beats that show it (see stage.js for beat shapes).
- */
-export function refresh(state) {
-  let s = { ...state };
-  const beats = [];
-  if (s.frog === "away") { s.frog = "alive"; beats.push({ move: { actor: "frog", to: "alive", dur: 500 } }); }
-  if (s.ballGone) {
-    s = { ...s, ballGone: false, ballAt: "idle", ballHeld: false };
-    beats.push({ move: { actor: "ball", to: "idle", dur: 400 } });
-  }
-  return { state: s, beats };
+/** Does the sentence contain any entry of the word group? Entries can be phrases ("a traves"). */
+export function hasGroup(sentence, list = []) {
+  const padded = ` ${normalize(sentence)} `;
+  return list.some((w) => padded.includes(` ${normalize(w)} `));
 }
 
-/** Apply an outcome's effects (only state keys), returning a new state. */
-export function applyEffects(state, effects = {}) {
-  const keys = ["ballHeld", "ballAt", "ballGone", "frog"];
-  const next = { ...state };
-  for (const k of keys) if (k in effects) next[k] = effects[k];
-  return next;
+/** `when: {ball: "hand", frog: "!away", door: ["open", "ajar"]}` against the scene state. */
+export function stateMatches(state, when = {}) {
+  return Object.entries(when).every(([key, want]) => {
+    if (Array.isArray(want)) return want.includes(state[key]);
+    if (String(want).startsWith("!")) return state[key] !== want.slice(1);
+    return state[key] === want;
+  });
 }
 
-/**
- * Match a corrected sentence against the story's rules, in order. First rule that fits wins.
- * Returns { id, outcome } or null when nothing is planned (then Claude improvises).
- */
-export function evaluate(sentence, state, story, lang) {
-  const tokens = normalize(sentence).split(" ").filter(Boolean);
-  const groups = story.groups[lang];
-  const held = state.ballHeld || has(tokens, groups.pick);
-  for (const rule of story.rules) {
-    if (!(rule.if || []).every((g) => has(tokens, groups[g]))) continue;
-    if (rule.not && rule.not.some((g) => has(tokens, groups[g]))) continue;
-    if (rule.held !== undefined && rule.held !== held) continue;
-    return { id: rule.outcome, outcome: story.outcomes[rule.outcome] };
+/** First rule whose words, missing words and state all fit. Returns { id, outcome } or null (then Claude improvises). */
+export function evaluate(ep, state, sentence, lang) {
+  const groups = ep.words[lang] || {};
+  const has = (g) => hasGroup(sentence, groups[g]);
+  for (const rule of ep.rules) {
+    if ((rule.words || []).every(has) && !(rule.without || []).some(has) && stateMatches(state, rule.when)) {
+      return { id: rule.outcome, outcome: ep.outcomes[rule.outcome] };
+    }
   }
   return null;
 }
 
-/** Does the sentence use one of the story's word groups (e.g. "through")? */
-export function usesWord(sentence, story, lang, group) {
-  return has(normalize(sentence).split(" "), story.groups[lang][group]);
-}
+export const applySet = (state, set = {}) => ({ ...state, ...set });
 
-/** Stars: 3 for a win on the first photo, 2 on the second, 1 after that. Using "through" is needed for 3. */
-export function starsFor(photos, usedThrough) {
-  let stars = photos <= 1 ? 3 : photos === 2 ? 2 : 1;
-  if (!usedThrough) stars = Math.min(stars, 2);
-  return stars;
-}
-
-export function outcomeText(outcome, lang) {
-  return outcome.text[lang] || outcome.text.en;
-}
-
-/** Check Claude's improvised answer. Unknown poses become "idle"; anything unexpected becomes a safe "can't do that". */
-export function validImprov(json, fallbackText, poses = ["idle"]) {
-  const pose = poses.includes(json?.pose) ? json.pose : "idle";
-  const text = typeof json?.text === "string" && json.text.trim() ? json.text.trim().slice(0, 240) : null;
-  if (json?.ok === true && text) return { ok: true, pose, text };
-  return { ok: false, pose: "shrug", text: fallbackText };
+/** Before each turn: the episode's "between" resets (a frog that ran away comes back…). Returns the new state and beats to show it. */
+export function between(ep, state) {
+  let next = state;
+  const beats = [];
+  for (const r of ep.between || []) {
+    if (!stateMatches(next, r.when)) continue;
+    next = applySet(next, r.set);
+    beats.push(...(r.beats || []));
+  }
+  return { state: next, beats };
 }
 
 /**
- * Coins for one photo: +1 per word written right, −1 per mistake. Words inside a mistake don't count as right.
- * Returns { right, mistakes, delta }.
+ * One turn on a clean sentence: resets, then the planned outcome, or else Claude's improvisation.
+ * `improvise(state, sentence)` returns Claude's parsed JSON (or throws). Never touches the DOM.
+ * Returns { id, source: planned|improvised|refused, state, pre, beats, say, text, win }.
  */
+export async function takeTurn({ ep, state, sentence, lang, improvise, fallback }) {
+  const pre = between(ep, state);
+  const planned = evaluate(ep, pre.state, sentence, lang);
+  if (planned) {
+    const o = planned.outcome;
+    return {
+      id: planned.id, source: "planned", state: applySet(pre.state, o.set), pre: pre.beats,
+      beats: o.beats || [], say: local(o.say, lang), text: local(o.text, lang), win: !!o.win,
+    };
+  }
+  const imp = validImprov(await improvise(pre.state, sentence), fallback, ep.improvPoses);
+  return {
+    id: "", source: imp.ok ? "improvised" : "refused", state: pre.state, pre: pre.beats,
+    beats: [{ pose: imp.pose }, { sound: imp.ok ? "pop" : "bad" }], say: imp.say, text: imp.text, win: false,
+  };
+}
+
+/** Claude's improvised reply, made safe: known pose only, short texts, a fallback when it's unusable. */
+export function validImprov(json, fallback, poses = []) {
+  const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+  const text = str(json?.text, 240), say = str(json?.say, 40);
+  if (json?.ok === true && text) return { ok: true, pose: poses.includes(json.pose) ? json.pose : poses[0] || "nod", say, text };
+  return { ok: false, pose: "shrug", say, text: text || fallback };
+}
+
+/** Stars for a win: 3 on the first photo, 2 on the second, 1 after. Without the bonus word, 2 at most. */
+export function starsFor(photos, usedBonus = true) {
+  const stars = photos <= 1 ? 3 : photos === 2 ? 2 : 1;
+  return usedBonus ? stars : Math.min(stars, 2);
+}
+
+/** Coins for one photo: +1 per word written right, −1 per mistake. Words inside a mistake don't count as right. */
 export function scoreWriting(ocr) {
-  const words = normalize(ocr.lines.map((l) => l.written).join(" ")).split(" ").filter(Boolean);
-  const wrong = ocr.errors.reduce((n, e) => n + normalize(e.written || "").split(" ").filter(Boolean).length, 0);
-  const right = Math.max(0, words.length - wrong);
-  const mistakes = ocr.errors.length;
-  return { right, mistakes, delta: right - mistakes };
+  const count = (s) => normalize(s).split(" ").filter(Boolean).length;
+  const words = count(ocr.lines.map((l) => l.written).join(" "));
+  const wrong = ocr.errors.reduce((n, e) => n + count(e.written), 0);
+  const right = Math.max(0, words - wrong);
+  return { right, mistakes: ocr.errors.length, delta: right - ocr.errors.length };
 }
 
 /** Add coins, never below zero. */
-export function addCoins(total, delta) {
-  return Math.max(0, (total || 0) + delta);
-}
+export const addCoins = (total, delta) => Math.max(0, (total || 0) + delta);

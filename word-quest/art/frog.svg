@@ -1,0 +1,10 @@
+<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" overflow="visible" stroke="#1f5130" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+  <g data-part="legs"><path d="M8 98 Q14 84 28 90 M112 98 Q106 84 92 90" fill="none" stroke-width="5"/></g>
+  <path d="M16 94 Q8 66 30 54 Q60 40 90 54 Q112 66 104 94 Q60 102 16 94 Z" fill="#5cc96b"/>
+  <ellipse cx="60" cy="82" rx="30" ry="12" fill="#c8f0b4" stroke="none"/>
+  <circle cx="38" cy="44" r="14" fill="#5cc96b"/><circle cx="82" cy="44" r="14" fill="#5cc96b"/>
+  <circle cx="38" cy="43" r="8.5" fill="#fff"/><circle cx="82" cy="43" r="8.5" fill="#fff"/>
+  <g class="blink"><circle cx="40" cy="44" r="3.8" fill="#1c1b19" stroke="none"/><circle cx="80" cy="44" r="3.8" fill="#1c1b19" stroke="none"/></g>
+  <path data-part="mouth" style="transform-box:view-box;transform-origin:60px 66px" d="M40 64 Q60 78 80 64" fill="none"/>
+  <circle cx="30" cy="68" r="4.5" fill="#ff9aa2" stroke="none" opacity=".8"/><circle cx="90" cy="68" r="4.5" fill="#ff9aa2" stroke="none" opacity=".8"/>
+</svg>

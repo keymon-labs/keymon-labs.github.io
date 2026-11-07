@@ -1,0 +1,16 @@
+<svg viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg" overflow="visible" fill="none" stroke="#1c1b19" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+  <g data-part="legL" style="transform-box:view-box;transform-origin:50px 96px"><path d="M50 96 L41 124"/><g data-part="shinL" style="transform-box:view-box;transform-origin:41px 124px"><path d="M41 124 L36 152 L29 153"/></g></g>
+  <g data-part="legR" style="transform-box:view-box;transform-origin:50px 96px"><path d="M50 96 L59 124"/><g data-part="shinR" style="transform-box:view-box;transform-origin:59px 124px"><path d="M59 124 L64 152 L71 153"/></g></g>
+  <g data-part="torso" style="transform-box:view-box;transform-origin:50px 96px">
+    <path d="M50 44 L50 96"/>
+    <path d="M44 50 Q50 56 56 50" stroke="#ff6b35" stroke-width="7"/>
+    <g data-part="armL" style="transform-box:view-box;transform-origin:50px 56px"><path d="M50 56 L35 77"/><g data-part="foreL" style="transform-box:view-box;transform-origin:35px 77px"><path d="M35 77 L26 99"/></g></g>
+    <g data-part="armR" style="transform-box:view-box;transform-origin:50px 56px"><path d="M50 56 L65 77"/><g data-part="foreR" style="transform-box:view-box;transform-origin:65px 77px"><path d="M65 77 L74 99"/></g></g>
+    <g data-part="head" style="transform-box:view-box;transform-origin:50px 44px">
+      <circle cx="50" cy="27" r="16" fill="#ffd23f" stroke-width="5"/>
+      <path d="M36 20 Q42 8 54 10 Q63 12 65 21" stroke-width="5"/>
+      <g class="blink"><circle cx="44" cy="26" r="2.4" fill="#1c1b19" stroke="none"/><circle cx="56" cy="26" r="2.4" fill="#1c1b19" stroke="none"/></g>
+      <path data-part="mouth" style="transform-box:view-box;transform-origin:50px 33px" d="M44 33 Q50 38 56 33" stroke-width="2.6"/>
+    </g>
+  </g>
+</svg>

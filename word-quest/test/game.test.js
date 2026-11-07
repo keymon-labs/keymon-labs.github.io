@@ -1,99 +1,124 @@
+// Engine tests: matching, state, resets, turns, stars, coins. Uses the frog episode and a small generic fixture.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { normalize, initialState, refresh, applyEffects, evaluate, starsFor, usesWord, validImprov } from "../game.js";
+import { normalize, hasGroup, stateMatches, evaluate, between, applySet, takeTurn, validImprov, starsFor, scoreWriting, addCoins, local } from "../game.js";
+import { readJson } from "./helpers.js";
 
-const story = JSON.parse(readFileSync(new URL("../stories/frog/story.json", import.meta.url)));
-const play = (sentence, state = initialState(), lang = "en") => {
-  const r = evaluate(sentence, refresh(state).state, story, lang);
-  return r && r.id;
-};
+const frog = readJson("episodes/frog/episode.json");
+const door = readJson("test/fixtures/door.json");
+const play = (sentence, state = frog.state, lang = "en") => evaluate(frog, between(frog, state).state, sentence, lang)?.id ?? null;
 
 test("normalize drops accents, punctuation and case", () => {
   assert.equal(normalize("¡Lánzala, a través!"), "lanzala a traves");
   assert.equal(normalize("Throw  it."), "throw it");
 });
 
-test("throwing without picking up the ball does not work", () => {
-  assert.equal(play("Throw the ball."), "no_pick");
+test("word groups match whole words and phrases, never parts of words", () => {
+  assert.equal(hasGroup("Lánzala a través de la canasta", ["a traves"]), true);
+  assert.equal(hasGroup("I threw it", ["throw"]), false);
+  assert.equal(hasGroup("Pick up the key", ["pick up"]), true);
+  assert.equal(hasGroup("frogger", ["frog"]), false);
 });
 
-test("pick and eat: ball eaten, frog still there", () => {
-  const r = evaluate("Pick the ball and eat it.", initialState(), story, "en");
-  assert.equal(r.id, "ate_ball");
-  assert.equal(r.outcome.effects.ballGone, true);
-  assert.equal(r.outcome.effects.frog, undefined);
+test("state conditions: equal, not, any of", () => {
+  const s = { ball: "hand", frog: "here" };
+  assert.ok(stateMatches(s, { ball: "hand" }));
+  assert.ok(stateMatches(s, { frog: "!away" }));
+  assert.ok(stateMatches(s, { ball: ["far", "hand"] }));
+  assert.ok(!stateMatches(s, { ball: "!hand" }));
 });
 
-test("pick, throw through the basket, bounce into the frog wins", () => {
-  assert.equal(play("Pick the ball and throw it through the basket. It bounces into the frog."), "win");
-  assert.equal(play("Pick the ball and throw to the basket and bounces into the frog."), "win");
+test("frog: throwing without the ball does nothing", () => {
+  assert.equal(play("Throw the ball."), "no_ball");
+  assert.equal(play("Eat it."), "nothing_to_eat");
 });
 
-test("throw to the basket without the frog is close but not the win", () => {
+test("frog: the three tutorial examples", () => {
+  assert.equal(play("Pick up the ball and eat it."), "ate_ball");
+  assert.equal(play("Pick the ball and throw it through the basket. It bounces on the frog."), "win");
+  assert.equal(play("Pick the ball and throw it to the hoop and it hits the frog."), "win");
+});
+
+test("frog: near misses", () => {
   assert.equal(play("Pick the ball and throw it into the basket."), "basket_only");
-});
-
-test("throwing straight at the frog makes it run away", () => {
-  assert.equal(play("Pick the ball and throw it at the frog."), "frog_runs");
+  assert.equal(play("Pick the ball and throw it at the frog."), "frog_dodges");
   assert.equal(play("Catch the frog!"), "frog_runs");
+  assert.equal(play("Grab the ball."), "picked");
+  assert.equal(play("Grab the ball.", { ...frog.state, ball: "hand" }), "already");
 });
 
-test("a held ball from an earlier sentence can be thrown", () => {
-  const held = applyEffects(initialState(), { ballHeld: true, ballAt: "hand" });
-  assert.equal(play("Throw it through the basket and bounce on the frog", held), "win");
+test("frog: a ball already in hand can be thrown", () => {
+  assert.equal(play("Throw it through the basket and bounce on the frog.", { ...frog.state, ball: "hand" }), "win");
 });
 
-test("Spanish rules work without accents", () => {
-  assert.equal(play("Coge la pelota y lanzala a traves de la canasta. Rebota en la rana.", initialState(), "es"), "win");
-  assert.equal(play("Lanza la pelota.", initialState(), "es"), "no_pick");
-  assert.equal(play("Coge la pelota y comela.", initialState(), "es"), "ate_ball");
+test("frog: Spanish works without accents", () => {
+  assert.equal(play("Coge la pelota y lanzala a traves de la canasta. Rebota en la rana.", frog.state, "es"), "win");
+  assert.equal(play("Lanza la pelota.", frog.state, "es"), "no_ball");
+  assert.equal(play("Coge la pelota y cómela.", frog.state, "es"), "ate_ball");
 });
 
-test("refresh brings a hopped frog back and replaces an eaten ball, with beats to show it", () => {
-  const r = refresh(applyEffects(initialState(), { frog: "away", ballGone: true, ballAt: "gone" }));
-  assert.equal(r.state.frog, "alive");
-  assert.equal(r.state.ballGone, false);
-  assert.equal(r.state.ballAt, "idle");
-  assert.equal(r.beats.length, 2);
+test("frog: between turns, the frog comes back and an eaten ball is replaced", () => {
+  const r = between(frog, { ball: "mouth", frog: "away" });
+  assert.deepEqual(r.state, { ball: "ground", frog: "here" });
+  assert.ok(r.beats.length >= 3);
+  assert.deepEqual(between(frog, frog.state), { state: frog.state, beats: [] });
 });
 
-test("unplanned sentence returns null (Claude improvises)", () => {
-  assert.equal(evaluate("The cat sings a song.", initialState(), story, "en"), null);
+test("unplanned sentences return null, so Claude improvises", () => {
+  assert.equal(play("The cat sings a song."), null);
 });
 
-test("stars: 3 on the first photo with 'through', capped at 2 without it", () => {
-  assert.equal(starsFor(1, true), 3);
-  assert.equal(starsFor(2, true), 2);
-  assert.equal(starsFor(4, true), 1);
+test("the engine is generic: another episode with its own state and words", () => {
+  let s = door.state;
+  assert.equal(evaluate(door, s, "Open the door", "en").id, "locked");
+  assert.equal(evaluate(door, s, "Kick it", "en").id, "stuck");
+  s = applySet(s, door.outcomes.stuck.set);
+  assert.equal(between(door, s).state.door, "locked");
+  s = applySet(s, door.outcomes.got_key.set);
+  assert.equal(evaluate(door, s, "Open the door", "en").id, "win");
+});
+
+test("takeTurn: planned outcome with state, beats and texts", async () => {
+  const r = await takeTurn({ ep: frog, state: frog.state, sentence: "Coge la pelota.", lang: "es", improvise: () => assert.fail("no Claude") });
+  assert.equal(r.source, "planned");
+  assert.equal(r.state.ball, "hand");
+  assert.equal(r.text, local(frog.outcomes.picked.text, "es"));
+  assert.equal(r.say, "¡La tengo!");
+  assert.equal(r.win, false);
+});
+
+test("takeTurn: unplanned sentence asks Claude and keeps the state", async () => {
+  let asked = null;
+  const r = await takeTurn({
+    ep: frog, state: { ball: "mouth", frog: "here" }, sentence: "I dance", lang: "en", fallback: "nope",
+    improvise: async (state, s) => { asked = { state, s }; return { ok: true, pose: "dance", say: "Woo!", text: "The kid dances like jelly." }; },
+  });
+  assert.deepEqual(asked, { state: { ball: "ground", frog: "here" }, s: "I dance" });
+  assert.equal(r.source, "improvised");
+  assert.deepEqual(r.beats[0], { pose: "dance" });
+  assert.equal(r.state.ball, "ground");
+  assert.equal(r.pre.length, 2);
+});
+
+test("validImprov: known poses only, short texts, fallback when unusable", () => {
+  const poses = frog.improvPoses;
+  assert.deepEqual(validImprov({ ok: true, pose: "sing", say: "La la!", text: "Opera time." }, "x", poses), { ok: true, pose: "sing", say: "La la!", text: "Opera time." });
+  assert.equal(validImprov({ ok: true, pose: "fly", text: "Wow" }, "x", poses).pose, poses[0]);
+  assert.equal(validImprov({ ok: false, text: "My legs are on holiday." }, "can't", poses).text, "My legs are on holiday.");
+  assert.equal(validImprov(null, "can't", poses).text, "can't");
+  assert.equal(validImprov({ ok: true, text: "   " }, "can't", poses).ok, false);
+  assert.equal(validImprov({ ok: true, say: "x".repeat(99), text: "y" }, "", poses).say.length, 40);
+});
+
+test("stars: 3 on the first photo, 2 on the second, 1 after; 2 at most without the bonus word", () => {
+  assert.deepEqual([1, 2, 4].map((p) => starsFor(p, true)), [3, 2, 1]);
   assert.equal(starsFor(1, false), 2);
 });
 
-test("usesWord finds the target word", () => {
-  assert.equal(usesWord("Throw it through the hoop", story, "en", "through"), true);
-  assert.equal(usesWord("Throw it into the hoop", story, "en", "through"), false);
-});
-
-test("validImprov keeps only known poses and sensible text", () => {
-  const poses = story.kidPoses;
-  assert.deepEqual(validImprov({ ok: true, pose: "sing", text: "La la la!" }, "x", poses), { ok: true, pose: "sing", text: "La la la!" });
-  assert.equal(validImprov({ ok: true, pose: "fly", text: "Wow" }, "x", poses).pose, "idle");
-  assert.equal(validImprov({ ok: false, text: "no" }, "can't", poses).text, "can't");
-  assert.equal(validImprov({ ok: true, text: "   " }, "can't", poses).ok, false);
-});
-
-import { scoreWriting, addCoins } from "../game.js";
-
-test("coins: +1 per word written right, −1 per mistake", () => {
-  const clean = { lines: [{ written: "Throw the ball.", corrected: "Throw the ball." }], errors: [] };
-  assert.deepEqual(scoreWriting(clean), { right: 3, mistakes: 0, delta: 3 });
-  const oneWrong = { lines: [{ written: "Throw the bal.", corrected: "Throw the ball." }], errors: [{ written: "bal", correct: "ball", kind: "spelling" }] };
-  assert.deepEqual(scoreWriting(oneWrong), { right: 2, mistakes: 1, delta: 1 });
-  const two = { lines: [{ written: "throw it throug", corrected: "Throw it through." }], errors: [{ written: "throw", correct: "Throw", kind: "capitals" }, { written: "throug", correct: "through", kind: "spelling" }] };
-  assert.deepEqual(scoreWriting(two), { right: 1, mistakes: 2, delta: -1 });
-});
-
-test("coins never go below zero", () => {
+test("coins: +1 per word written right, −1 per mistake, never below zero", () => {
+  assert.deepEqual(scoreWriting({ lines: [{ written: "Throw the ball." }], errors: [] }), { right: 3, mistakes: 0, delta: 3 });
+  assert.deepEqual(scoreWriting({ lines: [{ written: "Throw the bal." }], errors: [{ written: "bal" }] }), { right: 2, mistakes: 1, delta: 1 });
+  assert.deepEqual(scoreWriting({ lines: [{ written: "throw it throug" }], errors: [{ written: "throw" }, { written: "throug" }] }), { right: 1, mistakes: 2, delta: -1 });
   assert.equal(addCoins(1, -5), 0);
   assert.equal(addCoins(undefined, 3), 3);
 });

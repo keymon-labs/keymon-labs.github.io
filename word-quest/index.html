@@ -17,19 +17,34 @@
   <header class="top">
     <button id="back" class="icon" type="button" aria-label="Back" hidden>←</button>
     <h1 id="title" data-t="title">Word Quest</h1>
-    <span id="coins" class="coins" hidden></span>
+    <span id="coins" class="coins" aria-label="Coins"></span>
     <button id="help" class="icon" type="button" aria-label="Help">?</button>
   </header>
 
   <section id="home">
-    <ul id="stories" class="stories"></ul>
+    <p class="muted" data-t="pick">Pick an episode</p>
+    <ul id="episodes" class="episodes"></ul>
   </section>
 
   <section id="play" hidden>
-    <div id="scene-wrap">
-      <div id="scene"></div>
-      <p id="bubble" class="bubble" hidden></p>
-      <button id="debug-zone" type="button" aria-hidden="true" tabindex="-1"></button>
+    <div id="scene-col">
+      <div id="scene-wrap">
+        <div id="scene"></div>
+        <button id="debug-zone" type="button" aria-hidden="true" tabindex="-1"></button>
+      </div>
+    </div>
+    <div id="feedback" class="feedback" aria-live="polite">
+      <div class="fb-head">
+        <span id="fb-step" class="muted small"></span>
+        <button id="fb-say" class="icon mini" type="button" aria-label="Read aloud">🔊</button>
+      </div>
+      <p id="fb-text"></p>
+      <ul id="fb-lines" class="fb-lines"></ul>
+      <p id="stars" class="stars" hidden></p>
+      <div class="fb-actions">
+        <button id="fb-skip" class="ghost" type="button" data-t="skip" hidden>Skip</button>
+        <button id="fb-next" class="primary" type="button" hidden>Next</button>
+      </div>
     </div>
     <div id="paper" class="paper" hidden>
       <p id="written" class="written"></p>
@@ -37,12 +52,10 @@
       <ul id="errors" class="errors"></ul>
       <p id="hint" class="hint" hidden></p>
     </div>
-    <p id="stars" class="stars" hidden></p>
-    <p id="status" role="status" aria-live="polite"></p>
-    <button id="next" class="primary" type="button" hidden></button>
+    <p id="status" role="status"></p>
     <div class="controls">
       <label id="camera" class="camera" for="photo" aria-label="Take a photo" title="Take a photo">
-        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>
       </label>
       <input id="photo" type="file" accept="image/*" hidden>
     </div>
@@ -58,6 +71,7 @@
   <div id="sheet" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="help-title">
     <div class="sheet-card">
       <h2 id="help-title" data-t="help">Help</h2>
+      <p class="small" data-t="howTo"></p>
       <button id="replay" class="ghost big" type="button" data-t="replay">Watch the tutorial again</button>
       <div class="row between">
         <span data-t="language">Language</span>
@@ -69,6 +83,19 @@
       <label class="row between"><span data-t="age">Age</span><input id="age" type="number" min="4" max="12" inputmode="numeric"></label>
       <p id="tier" class="muted small"></p>
       <button id="show-log" class="ghost big" type="button" data-t="log">Log</button>
+      <details id="make" class="make">
+        <summary data-t="makeTitle">Make your own episode</summary>
+        <ol id="make-steps" class="small"></ol>
+        <p class="small"><a id="guide-link" href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/word-quest/EPISODES.md" target="_blank" rel="noopener" data-t="guideLink">Episode guide</a></p>
+        <label class="small" for="ep-prompt" data-t="promptLabel">Prompt for Claude</label>
+        <textarea id="ep-prompt" rows="5" readonly></textarea>
+        <button id="ep-copy" class="ghost" type="button" data-t="copy">Copy</button>
+        <label class="small" for="ep-json" data-t="pasteLabel">Paste an episode</label>
+        <textarea id="ep-json" rows="5" spellcheck="false" autocomplete="off"></textarea>
+        <button id="ep-try" class="primary" type="button" data-t="tryIt">Try it</button>
+        <ul id="ep-status" class="ep-status small" role="status"></ul>
+        <ul id="ep-custom" class="ep-custom"></ul>
+      </details>
       <div id="settings">
         <p class="muted small" data-t="keyHelp">Only for the web version. Inside Claude, no key is needed.</p>
         <button type="button" class="ghost big" data-open-in-claude="word-quest" data-t="openInClaude">Open in Claude</button>

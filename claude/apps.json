@@ -19,7 +19,7 @@
     "uses": [
       "Sends the photos you choose to Claude, on your Claude account (uses your plan's usage).",
       "Sends the sentence you wrote to Claude to decide what happens in the story, and may ask it for a fun reply to unplanned sentences.",
-      "Saves progress, stars and a log of sentences on this device only (browser storage). Nothing is uploaded by the app."
+      "Saves progress, coins, stars, episodes you paste and a log of sentences on this device only (browser storage). Nothing is uploaded by the app."
     ]
   }
 ]

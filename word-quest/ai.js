@@ -1,4 +1,4 @@
-// Word Quest Claude calls: prompts, reply parsing, and the API call for the web version. No DOM; tested in test/ai.test.js.
+// Word Quest Claude calls: prompts (reading the photo, improvising), reply parsing, and the API call for the web version. No DOM; tested in test/ai.test.js.
 
 export const API_URL = "https://api.anthropic.com/v1/messages";
 export const MODEL = "claude-sonnet-5-5";
@@ -26,20 +26,21 @@ Reply with ONLY this JSON, no other text:
 {"lines":[{"written":"...","corrected":"..."}],"errors":[{"written":"...","correct":"...","kind":"spelling|capitals|punctuation|grammar","note":"friendly note for a child in ${L}, max 12 words"}],"unclear":["..."]}`;
 }
 
-/** Improvised reply for a sentence the planned rules don't cover. */
-export function buildImprovPrompt(story, lang, state, sentence) {
+/** Improvised reply for a sentence the episode's rules don't cover. The hero reacts with a pose, a speech bubble and a funny line. */
+export function buildImprovPrompt(ep, lang, state, sentence) {
   const L = LANG_NAME[lang] || "English";
-  return `You run a game for a child who is learning to write in ${L}.
-Story: "${story.title[lang]}". Mission: "${story.mission[lang]}".
-Scene now: ball is ${state.ballHeld ? "held by the kid" : `at "${state.ballAt}"`}; frog is "${state.frog}".
-The child wrote this sentence: "${sentence}"
+  const scene = Object.entries(state).map(([k, v]) => `${k}: ${v}`).join(", ");
+  return `You run a story game for a child who is learning to write in ${L}.
+Episode: "${ep.title[lang]}". Mission: "${ep.mission[lang]}".
+Scene now: ${scene || "nothing special"}.
+The child wrote: "${sentence}"
 
-Decide what the kid character does on screen.
-- If the sentence is simple, safe and fun (sing, dance, wave, jump, say hello, clap), make it happen: "ok": true, a pose from [${story.kidPoses.join(", ")}], and a short friendly sentence in ${L} (max 15 words) saying what happens.
-- If it is too complex, impossible, rude or unsafe, "ok": false, pose "shrug", and a short friendly sentence in ${L} saying you can't do that, with an idea to try instead.
-- Never move the ball or the frog, and never finish the mission: only the planned actions smash the frog.
+The hero (a stick-figure kid) reacts. Be playful and a bit silly, always kind, never mean or scary.
+- If the sentence is simple, safe and fun (sing, dance, wave, jump, laugh, say hello…): "ok": true, a pose from [${ep.improvPoses.join(", ")}], "say": what the hero says in a speech bubble (max 5 words), "text": one funny sentence in ${L} (max 20 words) telling what happens.
+- If it is too complex, impossible, rude or unsafe: "ok": false, "say": a short funny excuse (max 5 words), "text": a funny, friendly sentence in ${L} with an idea to try instead.
+- Never move other characters or objects, and never complete the mission: only the planned sentences do that.
 
-Reply with ONLY this JSON: {"ok":true|false,"pose":"...","text":"..."}`;
+Reply with ONLY this JSON: {"ok":true,"pose":"...","say":"...","text":"..."}`;
 }
 
 /** Pull the first JSON object out of the reply text, or null. */
