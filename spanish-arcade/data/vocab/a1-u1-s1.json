@@ -1,0 +1,41 @@
+{ "schema": 1, "words": [
+  { "id": "cero", "es": "cero", "en": "zero", "emoji": "0️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "uno", "es": "uno", "en": "one", "emoji": "1️⃣", "tags": ["numbers"], "pos": "adj", "forms": { "f": "una" }, "unit": "a1-u1-s1" },
+  { "id": "dos", "es": "dos", "en": "two", "emoji": "2️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "tres", "es": "tres", "en": "three", "emoji": "3️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "cuatro", "es": "cuatro", "en": "four", "emoji": "4️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "cinco", "es": "cinco", "en": "five", "emoji": "5️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "seis", "es": "seis", "en": "six", "emoji": "6️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "siete", "es": "siete", "en": "seven", "emoji": "7️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "ocho", "es": "ocho", "en": "eight", "emoji": "8️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "nueve", "es": "nueve", "en": "nine", "emoji": "9️⃣", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+  { "id": "diez", "es": "diez", "en": "ten", "emoji": "🔟", "tags": ["numbers"], "pos": "adj", "unit": "a1-u1-s1" },
+
+  { "id": "rojo", "es": "rojo", "en": "red", "emoji": "🔴", "tags": ["colours"], "pos": "adj", "forms": { "f": "roja", "pl": "rojos" }, "unit": "a1-u1-s1" },
+  { "id": "azul", "es": "azul", "en": "blue", "emoji": "🔵", "tags": ["colours"], "pos": "adj", "forms": { "pl": "azules" }, "unit": "a1-u1-s1" },
+  { "id": "verde", "es": "verde", "en": "green", "emoji": "🟢", "tags": ["colours"], "pos": "adj", "forms": { "pl": "verdes" }, "unit": "a1-u1-s1" },
+  { "id": "amarillo", "es": "amarillo", "en": "yellow", "emoji": "🟡", "tags": ["colours"], "pos": "adj", "forms": { "f": "amarilla", "pl": "amarillos" }, "unit": "a1-u1-s1" },
+  { "id": "naranja", "es": "naranja", "en": "orange", "emoji": "🟠", "tags": ["colours"], "pos": "adj", "forms": { "pl": "naranjas" }, "unit": "a1-u1-s1" },
+  { "id": "morado", "es": "morado", "en": "purple", "emoji": "🟣", "tags": ["colours"], "pos": "adj", "forms": { "f": "morada", "pl": "morados" }, "unit": "a1-u1-s1" },
+  { "id": "negro", "es": "negro", "en": "black", "emoji": "⚫", "tags": ["colours"], "pos": "adj", "forms": { "f": "negra", "pl": "negros" }, "unit": "a1-u1-s1" },
+  { "id": "blanco", "es": "blanco", "en": "white", "emoji": "⚪", "tags": ["colours"], "pos": "adj", "forms": { "f": "blanca", "pl": "blancos" }, "unit": "a1-u1-s1" },
+  { "id": "marron", "es": "marrón", "en": "brown", "emoji": "🟤", "tags": ["colours"], "pos": "adj", "forms": { "pl": "marrones" }, "spell": ["rr", "accent"], "unit": "a1-u1-s1" },
+
+  { "id": "madre", "es": "madre", "en": "mother", "emoji": "👩", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "madres" }, "unit": "a1-u1-s1" },
+  { "id": "padre", "es": "padre", "en": "father", "emoji": "👨", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "padres" }, "unit": "a1-u1-s1" },
+  { "id": "hermano", "es": "hermano", "en": "brother", "emoji": "👦", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "hermana", "pl": "hermanos" }, "spell": ["h"], "unit": "a1-u1-s1" },
+  { "id": "hermana", "es": "hermana", "en": "sister", "emoji": "👧", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "hermano", "pl": "hermanas" }, "spell": ["h"], "unit": "a1-u1-s1" },
+  { "id": "abuelo", "es": "abuelo", "en": "grandfather", "emoji": "👴", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "abuela", "pl": "abuelos" }, "unit": "a1-u1-s1" },
+  { "id": "abuela", "es": "abuela", "en": "grandmother", "emoji": "👵", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "abuelo", "pl": "abuelas" }, "unit": "a1-u1-s1" },
+  { "id": "tio", "es": "tío", "en": "uncle", "emoji": "🧔", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "tía", "pl": "tíos" }, "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "tia", "es": "tía", "en": "aunt","tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "tío", "pl": "tías" }, "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "primo", "es": "primo", "en": "cousin (boy)", "emoji": "🧑", "tags": ["family"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "prima", "pl": "primos" }, "unit": "a1-u1-s1" },
+  { "id": "prima", "es": "prima", "en": "cousin (girl)", "emoji": "🧒", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "primo", "pl": "primas" }, "unit": "a1-u1-s1" },
+
+  { "id": "mochila", "es": "mochila", "en": "backpack", "emoji": "🎒", "tags": ["school"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "mochilas" }, "unit": "a1-u1-s1" },
+  { "id": "libro", "es": "libro", "en": "book", "emoji": "📖", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "libros" }, "unit": "a1-u1-s1" },
+  { "id": "lapiz", "es": "lápiz", "en": "pencil", "emoji": "✏️", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "lápices" }, "spell": ["accent"], "unit": "a1-u1-s1" },
+  { "id": "cuaderno", "es": "cuaderno", "en": "notebook", "emoji": "📓", "tags": ["school"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "cuadernos" }, "unit": "a1-u1-s1" },
+
+  { "id": "ano", "es": "año", "en": "year", "emoji": "🎂", "tags": ["age"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "años" }, "spell": ["ñ"], "unit": "a1-u1-s1" }
+] }
