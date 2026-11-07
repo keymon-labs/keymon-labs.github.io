@@ -57,8 +57,8 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
         const action = s.misses === HINT_AFTER ? 'hint' : s.misses === REVEAL_AFTER ? 'reveal' : 'retry';
         if (action === 'hint') r.hints++;
         if (action === 'reveal') r.reveals++;
-        const out = { correct, feedback, action, done: false };
-        if (action !== 'retry') out.hint = ex.archetype.hint(round, s.misses, answer);
+        // retry repeats the level-2 reveal: after a reload misses is already 2, so the mount may never have shown it
+        const out = { correct, feedback, action, done: false, hint: ex.archetype.hint(round, Math.min(s.misses, REVEAL_AFTER), answer) };
         return out;
       }
       r.total++;

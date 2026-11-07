@@ -48,6 +48,7 @@ test('miss 1 gives a hint, miss 2 reveals, then retry until correct', () => {
   assert.equal(a1.hint.level, 1);
   assert.equal(a2.hint.level, 2);
   assert.equal(a2.hint.answer, round.answer);
+  assert.deepEqual(a3.hint, a2.hint); // retry repeats the reveal (a resumed round has misses 2)
   assert.equal(a1.correct, false);
   assert.ok(a1.feedback.es && a1.feedback.en);
   assert.equal(s.current.roundIndex, 0);

@@ -54,7 +54,7 @@ A field with no `default` and no `optional: true` is required.
 `mount` shows one round and calls `ctx.submit(answer)`, which resolves to `{ correct, feedback, action, hint?, done }`:
 - `next`: correct; the shell destroys your mount and mounts the next round.
 - `hint` (1st miss) / `reveal` (2nd miss): show `hint` (your own `hint()` output) and let the child try again.
-- `retry`: later misses; keep the reveal visible. A round only moves on when answered correctly (after a reveal the child picks/copies it).
+- `retry`: later misses; `hint` is the level-2 reveal again (so a resumed round still shows it): show it idempotently (no doubled prefixes). A round only moves on when answered correctly (after a reveal the child picks/copies it).
 Stars, progress, `words` stats and resume are the session's job (`core/session.js`). Archetypes never touch storage.
 
 `ctx`: `{ lang ('en'|'es', help language), t(key), say(text, { rate }) -> Promise<bool> (false = no Spanish voice or no tap yet), canSpeak (a Spanish voice exists; the shell awaits `speech.ready()` before mounting), sfx(name), mascot(mood), reducedMotion, submit(answer) }`. Audio games use `say` (backed by `ui/speech.js`) and switch to a picture mode when `ctx.canSpeak` is false. Tap targets ≥ 48px, feedback in an `aria-live` region plus an icon, a tap-tap alternative to every drag.
