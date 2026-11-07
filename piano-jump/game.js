@@ -17,11 +17,11 @@ function fingerFor(midi,explicit){
 }
 
 // ================= Settings =================
-const opts={tempo:.75,names:"letters",clock:"on",oct:"exact",sfx:"on",song:"humpty"};
+const opts={tempo:.75,names:"letters",keys:"on",clock:"on",oct:"exact",sfx:"on",song:"humpty"};
 try{Object.assign(opts,JSON.parse(localStorage.getItem("pianojump")||"{}"));}catch(e){}
 const saveOpts=()=>{try{localStorage.setItem("pianojump",JSON.stringify(opts));}catch(e){}};
 const $=id=>document.getElementById(id);
-const sel={oTempo:"tempo",oNames:"names",oClock:"clock",oOct:"oct",oSfx:"sfx"};
+const sel={oTempo:"tempo",oNames:"names",oKeys:"keys",oClock:"clock",oOct:"oct",oSfx:"sfx"};
 for(const [id,k] of Object.entries(sel)){$(id).value=String(opts[k]);if($(id).selectedIndex<0)$(id).selectedIndex=1;
   $(id).onchange=e=>{opts[k]=k==="tempo"?+e.target.value:e.target.value;saveOpts();};}
 let ALL=[...SONGS,...loadStored()];   // built-in songs + library imported on this device
@@ -170,7 +170,7 @@ function frame(nowMs){
 
 const STAFF=[10,8,6,4,2,-2,-4,-6,-8,-10];
 const LINE="#141414";
-function staffLines(x0,x1){ctx.strokeStyle=LINE;ctx.lineWidth=Math.max(1.3,S*.14);
+function staffLines(x0,x1){ctx.strokeStyle=LINE;ctx.lineWidth=Math.max(1.7,S*.2);
   for(const st of STAFF){const y=Math.round(yOf(st))+.5;ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x1,y);ctx.stroke();}}
 function draw(now){
   ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -195,6 +195,7 @@ function draw(now){
   // platforms (stones) under every note
   stone(startPlat,false,false);
   plats.forEach((p,i)=>stone(p,i<idx,i===idx));
+  staffLines(camX,camX+W);   // staff over the see-through stones
   // goal flag
   const lp=plats[plats.length-1],fx=lp.x+lp.w-S*1.2;
   ctx.strokeStyle="#1c2a4a";ctx.lineWidth=S*.35;ctx.beginPath();ctx.moveTo(fx,lp.top);ctx.lineTo(fx,lp.top-S*9);ctx.stroke();
@@ -240,8 +241,10 @@ function brace(x,y0,y1){const m=(y0+y1)/2,w=S*1.1;ctx.fillStyle=LINE;ctx.beginPa
 function cloud(x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.arc(x+r,y-r*.4,r*1.2,0,7);ctx.arc(x+r*2.1,y,r*.9,0,7);ctx.fill();}
 function stone(p,done,next){
   const top=p.top,h=S*1.7;
-  ctx.fillStyle=done?"rgba(155,128,100,.55)":"#9b8064";roundRect(p.x,top,p.w,h,S*.7);ctx.fill();
-  ctx.fillStyle=next?"#ffcf3a":done?"rgba(92,191,74,.55)":"#5cbf4a";roundRect(p.x-S*.2,top-S*.2,p.w+S*.4,S*.9,S*.45);ctx.fill();
+  ctx.globalAlpha=done?.3:next?.8:.5;   // see-through so the staff shows through
+  ctx.fillStyle="#9b8064";roundRect(p.x,top,p.w,h,S*.7);ctx.fill();
+  ctx.fillStyle=next?"#ffcf3a":"#5cbf4a";roundRect(p.x-S*.2,top-S*.2,p.w+S*.4,S*.9,S*.45);ctx.fill();
+  ctx.globalAlpha=1;
   if(p.star){ctx.fillStyle="#ffbf1f";ctx.font=`800 ${S*1.7}px "Baloo 2",sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("★",p.x+p.w-S*1.4,top+S*.95);}
 }
 function noteBits(p,done,next){
@@ -285,10 +288,25 @@ function handBand(now){
   whites.forEach((m,i)=>{const hit=t&&m===t.midi;
     ctx.fillStyle=hit?`rgb(255,${Math.round(107+60*pulse)},61)`:"#fff";ctx.strokeStyle="#1c2a4a";ctx.lineWidth=Math.max(1,S*.12);
     roundRect(kx+i*kw,ky,kw,kh,S*.35);ctx.fill();ctx.stroke();
-    if(m===60){ctx.fillStyle="#1c2a4a";ctx.beginPath();ctx.arc(kx+i*kw+kw/2,ky+kh-kw*.32,kw*.12,0,7);ctx.fill();}  // middle C dot
-    if(hit){ctx.fillStyle="#fff";ctx.font=`800 ${kw*.7}px "Baloo 2",sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(t.finger,kx+i*kw+kw/2,ky+kh*.72);}
+    const letters=opts.keys==="on";
+    if(m===60){ctx.fillStyle="#1c2a4a";ctx.beginPath();ctx.arc(kx+i*kw+kw/2,letters?ky+kh*.5:ky+kh-kw*.32,kw*.12,0,7);ctx.fill();}  // middle C dot
+    if(letters){ctx.fillStyle=hit?"#fff":"#56658a";ctx.font=`800 ${Math.min(kw*.55,S*1.8)}px "Baloo 2",sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
+      ctx.fillText(noteName(m,opts.names==="solfege"?"solfege":"letters"),kx+i*kw+kw/2,ky+kh*.88);}
+    if(hit){ctx.fillStyle="#fff";ctx.font=`800 ${kw*.7}px "Baloo 2",sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(t.finger,kx+i*kw+kw/2,ky+kh*(letters?.64:.72));}
   });
   whites.forEach((m,i)=>{if(i<whites.length-1&&sharpOf(m+1)){ctx.fillStyle="#1c2a4a";roundRect(kx+(i+1)*kw-kw*.3,ky,kw*.6,kh*.6,S*.25);ctx.fill();}});
+  if(t){   // see-through hand from below the keys: where the five fingers sit for the next note
+    const wi=whites.indexOf(sharpOf(t.midi)?t.midi-1:t.midi),r=t.hand==="R",base=r?wi-(t.finger-1):wi+(t.finger-1),len=[.55,.76,.86,.76,.64];   // base = key under the thumb
+    if(wi>=0){
+      ctx.save();roundRect(S*.6,top,W-S*1.2,bh,S*1.2);ctx.clip();
+      const idxOf=f=>r?base+f-1:base-(f-1),i0=Math.min(idxOf(1),idxOf(5)),i1=Math.max(idxOf(1),idxOf(5));
+      ctx.fillStyle="rgba(28,42,74,.24)";roundRect(kx+i0*kw+kw*.08,ky+kh*.9,(i1-i0+1)*kw-kw*.16,kh*.5,kw*.5);ctx.fill();   // palm
+      for(let f=1;f<=5;f++){const i=idxOf(f);if(i<0||i>=whites.length)continue;
+        const fw=kw*.62,fh=kh*len[f-1];
+        ctx.fillStyle=f===t.finger?"rgba(255,107,61,.42)":"rgba(28,42,74,.24)";roundRect(kx+i*kw+(kw-fw)/2,ky+kh-fh,fw,fh+kw,fw/2);ctx.fill();}
+      ctx.restore();
+    }
+  }
   const hy=top+bh*.5;
   hand(kx-S*1.5-handW*.5,hy,handW,false,t&&t.hand==="L"?t.finger:0,!t||t.hand!=="L",now);
   hand(kx+kw*KW+S*1.5+handW*.5,hy,handW,true,t&&t.hand==="R"?t.finger:0,!t||t.hand!=="R",now);
