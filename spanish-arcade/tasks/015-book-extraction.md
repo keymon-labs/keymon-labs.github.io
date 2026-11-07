@@ -4,7 +4,8 @@ title: Book extraction (private kit to public-safe digest)
 model: Sonnet 5.5 (Haiku drafts per-session extracts; Sonnet checks)
 why_model: Batch reading and structuring; a reviewer checks the notes stay in our own words.
 kind: content
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["000"]
 touches: [spanish-arcade/docs/BOOK-NOTES.md, spanish-arcade/docs/UNITS.md, spanish-arcade/docs/ARCHETYPES.md, spanish-arcade/docs/book/**]
 ---
@@ -25,3 +26,5 @@ Then merge the results into `docs/BOOK-NOTES.md`, `docs/UNITS.md` (refine each u
 
 ## Notes
 Ends in `review`: the owner confirms the digest is faithful to the book's topics and levels while staying in our own words.
+
+Ruling: MVP scope is Unit 1 only (PDF pages 10–41); U2 and U3 stay for a later run — the MVP plays one unit (a1-u1-s1) — cost if wrong: one more extraction run later.

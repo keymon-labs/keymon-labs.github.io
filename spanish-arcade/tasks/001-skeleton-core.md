@@ -3,7 +3,8 @@ id: "001"
 title: Core engine and contracts
 model: Opus 5.5
 why_model: Sets the contracts everything else plugs into (schema, session engine, archetype registry, store).
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["000"]
 touches: [shared/rng.js, maths-arcade (rng import only), spanish-arcade/core/**, archetypes/README.md, archetypes/placeholder/**, ui/speech.js, data/vocab/** (seed), units/** (stub), test/**, docs/PLAN.md (contract edits)]
 ---

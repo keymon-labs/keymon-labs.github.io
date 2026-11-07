@@ -15,7 +15,7 @@ Board (source of truth is each file's front matter):
 | # | Task | Model | Needs | Status |
 |---|---|---|---|---|
 | 000 | [Plan review (gate before any implementation or design)](000-plan-review.md) | Opus | — | done |
-| 001 | [Core engine and contracts](001-skeleton-core.md) | Opus | 000 | todo |
+| 001 | [Core engine and contracts](001-skeleton-core.md) | Opus | 000 | in-progress |
 | 001b | [Shell, routes, PWA and footer](001b-shell-pwa.md) | Sonnet | 001 | todo |
 | 002 | [Visual design system and mascot](002-visual-design.md) | Opus | 000 | todo |
 | 003 | [Export, import and migrations](003-export-import.md) | Sonnet | 001, 001b | todo |
@@ -30,7 +30,7 @@ Board (source of truth is each file's front matter):
 | 012 | [Jokes, mascot lines and animations pack](012-fun-pack.md) | Haiku | 001, 002 | todo |
 | 013 | [Ship: landing card, PWA, credits, README, release](013-ship.md) | Sonnet | 001, 001b, 002, 003, 004, 005, 006, 007, 008, 009, 010, 011, 012, 014 | todo |
 | 014 | [Authoring guide and unit validator](014-authoring-validator.md) | Sonnet | 001 | todo |
-| 015 | [Book extraction (private kit to public-safe digest)](015-book-extraction.md) | Sonnet | 000 | todo |
+| 015 | [Book extraction (private kit to public-safe digest)](015-book-extraction.md) | Sonnet | 000 | in-progress |
 <!-- board:end -->
 
 Parallelism: 002 can run beside 001. After 001: 001b, 006–010 and 014 are independent; 003 needs 001b. Archetype tasks (006–010) may be restyled once 002's tokens exist. 011 needs the archetypes it uses (it may start with the ones that exist and leave others for a follow-up). Later units (u1-s5 onwards) become new Haiku/Sonnet data tasks cloned from 011.
