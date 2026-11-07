@@ -102,6 +102,19 @@ test('a real unit using dev words fails check:units (checked without dev content
   assert.deepEqual((await checkAll(fixture(unit()))).errors, []); // control: the dev unit may use its own dev words
 });
 
+// a1-u1-s1 is written for native speakers: enough rounds per exercise on every seed (words are skipped silently otherwise).
+test('a1-u1-s1 makes its target number of rounds', async () => {
+  const { makeExercise } = await import('../core/generate.js');
+  const { createRng } = await import('../../shared/rng.js');
+  const content = await loadRealContent();
+  const u = content.unitById['a1-u1-s1'];
+  const want = { 'numbers-listen': 6, 'colours-spell': 7, 'intro-gaps': 8, 'traps-choice': 7, 'traps-type': 6, 'intro-read': 3 };
+  assert.deepEqual(u.exercises.map((e) => e.id), Object.keys(want));
+  for (let seed = 1; seed <= 50; seed++) u.exercises.forEach((e, i) => {
+    assert.ok(makeExercise(content, u, i, createRng(seed)).rounds.length >= want[e.id], `${e.id} seed ${seed}`);
+  });
+});
+
 test('real units that select dev words by id fail validation', async () => {
   const bad = unit(); bad.exercises[0].params = { from: { ids: ['demo-a', 'demo-b'], n: 2 } };
   assert.ok((await checkAll(fixture(bad))).errors.some((e) => e.startsWith('units/u1.json exercises[0]')));
