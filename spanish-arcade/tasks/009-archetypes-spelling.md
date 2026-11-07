@@ -3,7 +3,8 @@ id: "009"
 title: Archetypes spell-tiles and spell-fill-letters
 model: Sonnet 5.5
 why_model: Spelling is the core skill; needs careful handling of Spanish characters.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/archetypes/spell-tiles/**, archetypes/spell-fill-letters/**, ui/tiles.js, test/spell.test.js]
 ---

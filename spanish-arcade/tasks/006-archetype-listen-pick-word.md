@@ -3,7 +3,8 @@ id: "006"
 title: Archetype listen-pick-word
 model: Sonnet 5.5
 why_model: Clear contract; the main risk is audio behaviour on the target device.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/archetypes/listen-pick-word/**, test/listen-pick-word.test.js]
 ---
