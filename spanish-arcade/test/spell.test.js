@@ -6,7 +6,7 @@ import { resolveParams } from '../core/generate.js';
 import { checkParams } from '../core/schema.js';
 import tiles from '../archetypes/spell-tiles/index.js';
 import fill from '../archetypes/spell-fill-letters/index.js';
-import { sameWord } from '../archetypes/spell-fill-letters/logic.js';
+import { sameWord } from '../core/spelling.js';
 import { formable } from '../archetypes/spell-tiles/logic.js';
 import { word } from './helpers.js';
 
@@ -122,8 +122,8 @@ test('fill: an option that spells another pool word is never offered (perro/pero
 test('fill: judging with and without accents, ñ vs n', () => {
   const [s] = run(fill, [by('avión')], { from: { n: 1 }, focus: 'accent' });
   assert.ok(!fill.judge(s, 'avion').correct);
-  const [l] = run(fill, [by('avión')], { from: { n: 1 }, focus: 'accent', accents: 'lenient' });
-  assert.ok(fill.judge(l, 'avion').correct);
+  const [l] = run(fill, [by('huevo')], { from: { n: 1 }, focus: 'h', accents: 'lenient' });
+  assert.ok(fill.judge(l, 'huevo').correct);
   const [n] = run(fill, [by('niño')], { from: { n: 1 }, focus: 'ñ', accents: 'lenient' });
   assert.ok(!fill.judge(n, 'nino').correct);
   assert.ok(fill.judge(n, 'NIÑO').correct);
@@ -162,6 +162,21 @@ test('fill: hint finds the first wrong gap and gives its first letter; hint 2 re
   assert.equal(h.level, 1);
   assert.equal(h.gap, 0);
   assert.equal(h.first, 'r');
-  assert.notEqual(h.remove, 'rr');
+  assert.equal(h.remove, null, 'two options: nothing to grey out');
   assert.deepEqual(fill.hint(r, 2, 'pero'), { level: 2, answer: 'perro' });
+});
+
+test('fill: a one-letter gap hint gives no first letter and no removal with two options', () => {
+  const [r] = run(fill, [by('niño')], { from: { n: 1 }, focus: 'ñ' });
+  const h = fill.hint(r, 1, 'nino');
+  assert.equal(h.first, null);
+  assert.equal(h.remove, null);
+  assert.ok(h.rule.en);
+});
+
+test('fill: accent and ü are always strict, even when lenient is asked', () => {
+  const [a] = run(fill, [by('avión')], { from: { n: 1 }, focus: 'accent', accents: 'lenient' });
+  assert.ok(!fill.judge(a, 'avion').correct);
+  const [u] = run(fill, [by('pingüino')], { from: { n: 1 }, focus: 'ü', accents: 'lenient' });
+  assert.ok(!fill.judge(u, 'pinguino').correct);
 });

@@ -11,7 +11,6 @@ export default {
     en: 'Some letters are missing. Pick or type them, then tap Check. Watch out for ñ, rr and accent marks.',
   },
   skill: 'spelling',
-  pictures: true,
   paramsSchema: {
     from: { type: 'selector', optional: true },
     items: { type: 'array', optional: true, items: { es: { type: 'string' }, en: { type: 'string', optional: true }, emoji: { type: 'string', optional: true } } },
@@ -28,19 +27,22 @@ export default {
   mount(host, round, ctx) {
     injectStyles();
     const typing = round.mode === 'type';
+    const es = ctx.lang === 'es';
     const gapCells = round.cells.filter((c) => c.gap);
     const values = gapCells.map(() => null); // choice mode: picked option ('' = no letter) or null
     const off = gapCells.map(() => new Set()); // options greyed by a hint
     let active = 0;
     let busy = false;
     let lastInput = null;
+    let hinted = -1; // gap to highlight after a level-1 hint
 
     const root = el('div', 'sp-root');
     const prompt = el('p', 'sp-prompt', round.emoji || round.prompt[ctx.lang] || '');
     const say = el('button', 'sp-key', '🔊');
     say.type = 'button';
-    say.setAttribute('aria-label', ctx.t?.('listen') ?? 'Listen');
+    say.setAttribute('aria-label', es ? 'Escuchar' : 'Listen');
     say.addEventListener('click', () => ctx.say(round.word));
+    say.hidden = !ctx.canSpeak;
     const reveal = el('p', 'sp-reveal');
     const wordEl = el('div', 'sp-word');
     const options = el('div', 'sp-row');
@@ -49,7 +51,8 @@ export default {
     const status = el('p');
     status.setAttribute('aria-live', 'polite');
     root.append(prompt, say, reveal, wordEl);
-    if (typing) root.append(specialLettersRow((ch) => insert(ch)));
+    const gapLetters = [...new Set(gapCells.flatMap((c) => c.options))].filter(Boolean);
+    if (typing) root.append(specialLettersRow(insert, { letters: gapLetters, onBackspace: backspace, backLabel: es ? 'Borrar' : 'Delete' }));
     else root.append(options);
     root.append(check, status);
     host.append(root);
@@ -59,11 +62,17 @@ export default {
       let g = 0;
       return round.cells.map((c) => (c.gap ? (typing ? inputs[g++].value : values[g++] ?? '') : c.ch)).join('');
     };
-    function insert(ch) { // special-letters row: type into the gap that last had focus
+    const maxLen = (i) => Math.max(...gapCells[i].options.map((o) => o.length));
+    function insert(ch) { // adds to the gap that last had focus; a full gap starts again, so o + ó never gives oó
       const i = lastInput ?? inputs[active];
       if (!i) return;
-      i.value = (i.value + ch).slice(0, 2);
+      const v = i.value + ch;
+      i.value = v.length > i.maxLength ? ch : v;
       i.focus();
+    }
+    function backspace() {
+      const i = lastInput ?? inputs[active];
+      if (i) { i.value = i.value.slice(0, -1); i.focus(); }
     }
 
     function render() {
@@ -71,8 +80,8 @@ export default {
       wordEl.replaceChildren(...round.cells.map((c) => {
         if (!c.gap) return el('span', '', c.ch);
         const idx = g++;
-        if (typing) return inputs[idx];
-        const b = el('button', `sp-gap${idx === active ? ' active' : ''}`, values[idx] === null ? '_' : values[idx] || '·');
+        if (typing) { inputs[idx].classList.toggle('hinted', idx === hinted); return inputs[idx]; }
+        const b = el('button', `sp-gap${idx === active ? ' active' : ''}${idx === hinted ? ' hinted' : ''}`, values[idx] === null ? '_' : values[idx] || '·');
         b.type = 'button';
         b.addEventListener('click', () => { active = idx; render(); });
         return b;
@@ -82,7 +91,7 @@ export default {
           const b = el('button', 'sp-opt', o || '—');
           b.type = 'button';
           b.disabled = off[active].has(o);
-          b.setAttribute('aria-label', o || 'no letter');
+          b.setAttribute('aria-label', o || (es ? 'sin letra' : 'no letter'));
           b.addEventListener('click', () => {
             values[active] = o;
             const next = values.findIndex((v) => v === null);
@@ -96,15 +105,15 @@ export default {
     }
 
     if (typing) {
-      gapCells.forEach((c, i) => {
+      gapCells.forEach((_, i) => {
         const inp = el('input', 'sp-gap');
         inp.type = 'text';
         inp.setAttribute('inputmode', 'none'); // no phone keyboard; the special-letters row does the work
         inp.autocomplete = 'off';
         inp.autocapitalize = 'off';
         inp.spellcheck = false;
-        inp.maxLength = 2;
-        inp.setAttribute('aria-label', `${i + 1}`);
+        inp.maxLength = maxLen(i);
+        inp.setAttribute('aria-label', es ? `Letras que faltan ${i + 1}` : `Missing letters ${i + 1}`);
         inp.addEventListener('focus', () => { lastInput = inp; active = i; });
         inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
         inputs.push(inp);
@@ -116,7 +125,7 @@ export default {
       busy = true;
       render();
       const r = await ctx.submit(answer());
-      status.textContent = r.feedback[ctx.lang] ?? r.feedback.en;
+      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       busy = false;
       if (!r.correct) {
@@ -124,11 +133,12 @@ export default {
         const clear = (i) => { values[i] = null; if (typing) inputs[i].value = ''; };
         if (!h || h.level === 2) { gapCells.forEach((_, i) => clear(i)); active = 0; }
         if (h?.level === 2) reveal.textContent = h.answer; // stays visible; the child now copies it
-        if (h?.level === 1) {
+        if (h?.level === 1) { // a nudge only: look at this gap, here is the rule
           clear(h.gap);
           active = h.gap;
-          if (h.remove !== null) off[h.gap].add(h.remove);
-          if (typing) inputs[h.gap].value = h.first; // first-letter hint
+          hinted = h.gap;
+          if (h.remove) off[h.gap].add(h.remove);
+          if (typing && h.first) inputs[h.gap].value = h.first;
         }
       }
       render();

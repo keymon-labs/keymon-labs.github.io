@@ -1,6 +1,6 @@
 // spell-tiles archetype: build the word from letter tiles (tap or drag, or type on a keyboard). Rules in logic.js, contract in ../README.md.
 import { make, judge, hint } from './logic.js';
-import { key } from '../spell-fill-letters/logic.js';
+import { key } from '../../core/spelling.js';
 import { injectStyles, el, tapOrDrag } from '../../ui/tiles.js';
 
 export default {
@@ -34,8 +34,9 @@ export default {
     const prompt = el('p', 'sp-prompt', `${round.emoji || round.prompt[ctx.lang] || ''}`);
     const say = el('button', 'sp-key', '🔊');
     say.type = 'button';
-    say.setAttribute('aria-label', ctx.t?.('listen') ?? 'Listen');
+    say.setAttribute('aria-label', ctx.lang === 'es' ? 'Escuchar' : 'Listen');
     say.addEventListener('click', () => ctx.say(round.answer));
+    say.hidden = !ctx.canSpeak;
     const reveal = el('p', 'sp-reveal');
     const slots = el('div', 'sp-tiles slots');
     const tray = el('div', 'sp-tiles');
@@ -72,7 +73,7 @@ export default {
       busy = true;
       render();
       const r = await ctx.submit(placed.map((id) => tileOf(id).ch).join(''));
-      status.textContent = r.feedback[ctx.lang] ?? r.feedback.en;
+      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       busy = false;
       if (!r.correct && r.hint?.level === 1) lock(r.hint.keep);
@@ -87,7 +88,7 @@ export default {
     check.addEventListener('click', submit);
 
     const onKey = (e) => {
-      if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input,textarea')) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input,textarea,button')) return;
       if (e.key === 'Enter') return submit();
       if (e.key === 'Backspace') { if (placed.length > locked) { placed.pop(); render(); } return; }
       const c = e.key.length === 1 ? e.key.toLowerCase() : '';

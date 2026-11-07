@@ -4,13 +4,15 @@ export const SPECIAL = ['ñ', 'á', 'é', 'í', 'ó', 'ú', 'ü', '¿', '¡'];
 const CSS = `
 .sp-tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0;min-height:56px}
 .sp-tiles.slots{border-bottom:3px solid currentColor;padding-bottom:8px}
-.sp-tile,.sp-key,.sp-opt,.sp-check{min-width:48px;min-height:48px;padding:6px 12px;font:inherit;font-size:1.4rem;border-radius:10px;border:2px solid currentColor;background:Canvas;color:inherit;cursor:pointer;touch-action:none}
+.sp-tile,.sp-key,.sp-opt,.sp-check{min-width:48px;min-height:48px;padding:6px 12px;font:inherit;font-size:1.4rem;border-radius:10px;border:2px solid currentColor;background:Canvas;color:inherit;cursor:pointer;touch-action:manipulation}
+.sp-tile{touch-action:none}
 .sp-tile.locked{opacity:.6}
 .sp-tile.ghost{position:relative;z-index:5;pointer-events:none}
 .sp-opt[disabled],.sp-tile[disabled]{opacity:.35}
 .sp-check{touch-action:manipulation;font-size:1.1rem}
 .sp-key{touch-action:manipulation;font-size:1.1rem}
 .sp-gap{min-width:48px;min-height:48px;font:inherit;font-size:1.6rem;text-align:center;border:0;border-bottom:3px dashed currentColor;background:transparent;color:inherit;width:3ch}
+.sp-gap.hinted{background:rgba(255,200,0,.35)}
 .sp-gap.active{border-bottom-style:solid;outline:2px solid currentColor}
 .sp-word{font-size:1.8rem;letter-spacing:.05em;margin:10px 0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px}
 .sp-reveal{font-size:1.6rem;font-weight:bold;text-align:center;margin:6px 0}
@@ -33,18 +35,24 @@ export function el(tag, cls, text) {
   return e;
 }
 
-/** Row of ñ á é í ó ú ü ¿ ¡ buttons. They never take focus, so a typing field keeps its caret. */
-export function specialLettersRow(onPick) {
+/**
+ * Row of buttons for typing without the phone keyboard: the gap's own letters (letters), ñ á é í ó ú ü ¿ ¡, and a backspace.
+ * They never take focus, so a typing field keeps its caret.
+ */
+export function specialLettersRow(onPick, { letters = [], onBackspace, backLabel = 'Delete' } = {}) {
   const row = el('div', 'sp-row');
   row.setAttribute('role', 'group');
   row.setAttribute('aria-label', 'ñ á é í ó ú ü ¿ ¡');
-  for (const ch of SPECIAL) {
-    const b = el('button', 'sp-key', ch);
+  const add = (text, fn, label) => {
+    const b = el('button', 'sp-key', text);
     b.type = 'button';
+    if (label) b.setAttribute('aria-label', label);
     b.addEventListener('pointerdown', (e) => e.preventDefault());
-    b.addEventListener('click', () => onPick(ch));
+    b.addEventListener('click', fn);
     row.append(b);
-  }
+  };
+  for (const ch of new Set([...letters, ...SPECIAL])) add(ch, () => onPick(ch));
+  if (onBackspace) add('⌫', onBackspace, backLabel);
   return row;
 }
 

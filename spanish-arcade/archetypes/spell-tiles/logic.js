@@ -1,6 +1,6 @@
 // spell-tiles rules: letter tiles (plus decoys) for a word, judge the built word, hint with the right leading letters. Pure, no DOM.
 import { shuffle } from '../../core/generate.js';
-import { key, sameWord } from '../spell-fill-letters/logic.js';
+import { key, sameWord } from '../../core/spelling.js';
 
 const ALPHABET = [...'abcdefghijklmnñopqrstuvxyz'];
 const LOOKALIKES = { a: ['á'], á: ['a'], e: ['é'], é: ['e'], i: ['í'], í: ['i'], o: ['ó'], ó: ['o'], u: ['ú', 'ü'], ú: ['u'], ü: ['u'], n: ['ñ'], ñ: ['n'] };

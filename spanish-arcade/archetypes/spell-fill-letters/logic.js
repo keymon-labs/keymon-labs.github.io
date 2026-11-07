@@ -1,14 +1,6 @@
 // spell-fill-letters rules: blank the letters of a focus (ñ, rr, r, x, s, h, accent, ü, ¿¡), judge the word. Pure, no DOM.
-// sameWord/key are also used by spell-tiles (one place for the accent and ñ rules).
 import { shuffle } from '../../core/generate.js';
-
-/** Compare form of a word: lower case, one space, NFC. "lenient" also drops accents and ü's dots, but ñ stays ñ. */
-export function key(s, accents = 'strict') {
-  let t = String(s).normalize('NFC').trim().toLowerCase().replace(/\s+/g, ' ');
-  if (accents === 'lenient') t = t.replace(/ñ/g, '\u0001').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\u0001/g, 'ñ');
-  return t;
-}
-export const sameWord = (a, b, accents = 'strict') => key(a, accents) === key(b, accents);
+import { key, sameWord } from '../../core/spelling.js';
 
 const VOWEL = /[aeiouáéíóúü]/;
 const isV = (c) => c !== undefined && VOWEL.test(c.toLowerCase());
@@ -49,6 +41,8 @@ export function pickFocus(text, focus, spellTags = []) {
   return tagged.find((f) => FOCI[f].find(text).length) ?? null;
 }
 
+// lenient accents would make both options right for these, so they are always strict
+const STRICT_FOCI = ['accent', 'ü'];
 const cased = (opt, answer) => (answer !== answer.toLowerCase() ? opt.toUpperCase() : opt);
 
 /** One round for one text, or null when the focus has no blank (or no safe alternative) in it. */
@@ -77,7 +71,7 @@ function roundFor(text, source, params, poolKeys, rng) {
   for (const ch of text.slice(at)) cells.push({ ch });
   const emoji = source.emoji ?? '';
   return {
-    word: text, answer: text, cells, focus, accents: params.accents, mode: params.mode, rule: RULES[focus],
+    word: text, answer: text, cells, focus, accents: STRICT_FOCI.includes(focus) ? 'strict' : params.accents, mode: params.mode, rule: RULES[focus],
     prompt: { es: emoji || source.en || '', en: source.en ?? emoji }, emoji, wordIds: source.id ? [source.id] : [],
   };
 }
@@ -115,10 +109,14 @@ function firstWrongGap(round, lastAnswer) {
   return 0;
 }
 
-/** Level 1: which gap to look at, its first letter, and one wrong option to grey out. Level 2: the whole word. */
+/** Level 1 is only a nudge: which gap to look at, and (choice mode, 3+ options) one wrong option to grey out; a first letter only when the gap has two. Level 2: the whole word. */
 export function hint(round, level, lastAnswer) {
   if (level >= 2) return { level: 2, answer: round.word };
   const gap = firstWrongGap(round, lastAnswer);
   const cell = round.cells.filter((c) => c.gap)[gap];
-  return { level: 1, gap, first: cell.answer[0], remove: cell.options.find((o) => o !== cell.answer) ?? null };
+  return {
+    level: 1, gap, rule: round.rule,
+    first: cell.answer.length > 1 ? cell.answer[0] : null,
+    remove: cell.options.length > 2 ? cell.options.find((o) => o !== cell.answer) : null,
+  };
 }

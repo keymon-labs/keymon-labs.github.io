@@ -9,10 +9,12 @@ Build a word from letter tiles. The prompt is a picture (the word's emoji, or it
 | `hintLetters` | bool | false | First letter is placed from the start. On at difficulty 1. |
 | `accents` | `strict` \| `lenient` | `strict` | `lenient` accepts a missing accent; `ñ` is never `n`. |
 
+`make` silently skips words with spaces or symbols, so an exercise can yield fewer rounds than `n` (or none).
+
 Hints: first miss keeps the correct leading letters in place (at least the first); second miss shows the word, and the child builds it again.
 
 ```json
 { "archetype": "spell-tiles", "difficulty": 2, "params": { "from": { "tag": "animals", "n": 4 }, "extraLetters": 3 } }
 ```
 
-Rules live in `logic.js` (`make`, `judge`, `hint`, `formable`); tests in `test/spell.test.js`. UI helpers: `ui/tiles.js`. Accent/ñ comparison is shared with `spell-fill-letters/logic.js` (`sameWord`).
+Rules live in `logic.js` (`make`, `judge`, `hint`, `formable`); tests in `test/spell.test.js`. UI helpers: `ui/tiles.js`. Accent/ñ comparison is in `core/spelling.js` (`sameWord`, `key`).
