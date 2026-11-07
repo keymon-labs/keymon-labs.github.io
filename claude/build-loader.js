@@ -25,17 +25,27 @@ if (!owner) { console.error("origin isn't a GitHub repo"); process.exit(1); }
 const REPO = `https://github.com/${owner}/${repo}`;
 const SITE = repo.toLowerCase() === `${owner.toLowerCase()}.github.io` ? `https://${repo.toLowerCase()}/` : `https://${owner.toLowerCase()}.github.io/${repo}/`;
 
-// Website-only apps for the "More on the website" list, read from the landing page cards so they stay in sync.
-const inLoader = new Set(apps.map((a) => a.id));
-const siteApps = [...readFileSync(here("../index.html"), "utf8").matchAll(/<li class="card" id="([^"]+)">[\s\S]*?<h2>([^<]+)<\/h2><p>([^<]+)<\/p>/g)]
-  .filter(([, id]) => !inLoader.has(id)).map(([, id, name, description]) => ({ id, name, description }));
+// Home view = the website's landing page: Claude apps open here (trust check), every other link goes to the website.
+const landing = readFileSync(here("../index.html"), "utf8");
+const landingStyle = landing.match(/<style>([\s\S]*?)<\/style>/)[1];
+let landingMain = landing.match(/<main>[\s\S]*?<\/main>/)[0]
+  .replace(/<!--[\s\S]*?-->/g, "")
+  .replace(/<footer>[\s\S]*?<\/footer>/, "")
+  .replace(/\s*<button[^>]*data-open-in-claude[^>]*>[\s\S]*?<\/button>/g, "");
+for (const { id } of apps) {
+  landingMain = landingMain.replace(new RegExp(`(<li class="card" id="${id}">[\\s\\S]*?)<a class="app" href="[^"]*">([\\s\\S]*?)<span class="tag need">[^<]*</span>([\\s\\S]*?</a>)\\s*<div class="versions">[\\s\\S]*?</div>`),
+    `$1<a class="app" href="#${id}" data-claude-app="${id}">$2<span class="tag need">Runs here, on your Claude account</span>$3`);
+}
+for (const { id } of apps) if (!landingMain.includes(`data-claude-app="${id}"`)) { console.error(`Landing card for ${id} needs an <a class="app"> link, a "tag need" span and a versions row`); process.exit(1); }
+landingMain = landingMain.replace(/href="\.\/([^"]*)"/g, `href="${SITE}$1" target="_blank" rel="noopener"`);
 
 // </script> inside the embedded JSON would end the script tag early.
 const json = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 const html = readFileSync(here("loader.html"), "utf8")
   .replace("__CATALOG__", json(apps))
   .replace("__BUILD__", json(build))
-  .replace("__SITE_APPS__", json(siteApps))
+  .replace("__LANDING_STYLE__", () => landingStyle)
+  .replace("__LANDING_MAIN__", () => landingMain)
   .replaceAll("__BUILD_ID__", build.commit)
   .replaceAll("__BUILD_TIME__", new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC")
   .replaceAll("__REPO__", REPO)
