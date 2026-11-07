@@ -3,7 +3,7 @@ id: "017"
 title: listen-pick-word distractorFrom param
 model: Sonnet 5.5
 why_model: Small contract-compatible extension plus unit data tweak.
-status: in-progress
+status: done
 claimed: 2026-11-07
 depends_on: ["006", "011"]
 touches: [spanish-arcade/archetypes/listen-pick-word/**, spanish-arcade/units/a1-u1-s1.json, spanish-arcade/test/listen-pick-word.test.js]
@@ -13,3 +13,6 @@ touches: [spanish-arcade/archetypes/listen-pick-word/**, spanish-arcade/units/a1
 
 ## Acceptance
 - With `distractorFrom` numbers, every distractor over 200 seeds is a number; default behaviour unchanged; `npm test`, `check:units` and build pass.
+
+Ruling: `core/generate.js` `makeExercise` passes `pools` (the other selector params, resolved by name) to `make`, outside `touches`; default behaviour unchanged — cost if wrong: one argument.
+Checked by the coordinator from the diff plus 200-seed test; no browser run of this change (the ship playthrough covers it).

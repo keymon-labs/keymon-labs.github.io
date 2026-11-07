@@ -32,7 +32,7 @@ Board (source of truth is each file's front matter):
 | 014 | [Authoring guide and unit validator](014-authoring-validator.md) | Sonnet | 001 | done |
 | 015 | [Book extraction (private kit to public-safe digest)](015-book-extraction.md) | Sonnet | 000 | review |
 | 016 | [MVP hardening (whole-change review fixes)](016-mvp-hardening.md) | Sonnet | 001b, 006, 007, 008, 009, 010, 014 | done |
-| 017 | [listen-pick-word distractorFrom param](017-listen-distractor-from.md) | Sonnet | 006, 011 | in-progress |
+| 017 | [listen-pick-word distractorFrom param](017-listen-distractor-from.md) | Sonnet | 006, 011 | done |
 <!-- board:end -->
 
 Parallelism: 002 can run beside 001. After 001: 001b, 006–010 and 014 are independent; 003 needs 001b. Archetype tasks (006–010) may be restyled once 002's tokens exist. 011 needs the archetypes it uses (it may start with the ones that exist and leave others for a follow-up). Later units (u1-s5 onwards) become new Haiku/Sonnet data tasks cloned from 011.
