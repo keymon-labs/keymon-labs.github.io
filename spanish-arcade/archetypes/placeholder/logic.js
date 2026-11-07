@@ -15,8 +15,12 @@ export function judge(round, answer) {
   return { correct, feedback: correct ? { es: '¡Muy bien!', en: 'Well done!' } : { es: 'Casi. Prueba otra vez.', en: 'Nearly. Try again.' } };
 }
 
-/** Level 1 greys out one wrong option other than the one just tapped (null if none left); level 2 shows the answer. */
+/**
+ * Level 1 greys out one wrong option other than the one just tapped, only with 4+ options (null otherwise); level 2 shows the answer.
+ * The shell also disables the tapped option only while more than 2 are enabled, so 2 choices always stay.
+ */
 export function hint(round, level, lastAnswer) {
   if (level >= 2) return { level: 2, answer: round.answer };
-  return { level: 1, remove: round.options.find((o) => o.id !== round.answer && o.id !== lastAnswer)?.id ?? null };
+  const remove = round.options.length >= 4 ? round.options.find((o) => o.id !== round.answer && o.id !== lastAnswer)?.id ?? null : null;
+  return { level: 1, remove };
 }

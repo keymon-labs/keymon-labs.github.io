@@ -65,8 +65,23 @@ export function checkContent(content) {
   return { errors: [...core, ...errors], warnings };
 }
 
+/**
+ * Real units must pass against production content (no dev units, no demo words); dev units are checked with dev content.
+ * build(opts) -> buildContent result (async ok). Production content has no dev units, so its run covers real units only.
+ */
+export async function checkAll(build) {
+  const prodContent = await build({ includeDev: false });
+  const prod = checkContent(prodContent);
+  const all = checkContent(await build({ includeDev: true }));
+  const prodUnits = new Set(Object.keys(prodContent.unitByFile));
+  // errors of the dev run that belong to real units were already judged without dev content; keep the rest (dev units, shared files)
+  const devOnly = (m) => { const f = /^units\/(\S+?)\.json /.exec(m); return !f || !prodUnits.has(f[1]); };
+  const seen = new Set(prod.errors);
+  return { errors: [...prod.errors, ...all.errors.filter((m) => devOnly(m) && !seen.has(m))], warnings: [...new Set([...prod.warnings, ...all.warnings])] };
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const { errors, warnings } = checkContent(await loadRealContent());
+  const { errors, warnings } = await checkAll(loadRealContent);
   warnings.forEach((w) => console.warn(`warning: ${w}`));
   errors.forEach((e) => console.error(`error: ${e}`));
   console.log(errors.length ? `check:units found ${errors.length} error(s)` : 'check:units ok');

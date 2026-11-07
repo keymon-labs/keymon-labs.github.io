@@ -105,7 +105,7 @@ export default {
           if (r.hint.answer) {
             const right = buttons.find((x) => x.dataset.id === r.hint.answer);
             right.classList.add('reveal');
-            right.textContent = `✔ ${right.textContent}`;
+            if (!right.textContent.startsWith('✔ ')) right.textContent = `✔ ${right.textContent}`;
             status.textContent += ` ${L(T.marked)}`;
           }
         }

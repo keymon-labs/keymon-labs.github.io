@@ -10,3 +10,11 @@ test('production content excludes dev units, default includes them', async () =>
   assert.equal(prod.units.some((u) => u.dev), false);
   assert.equal(prod.errors.length, 0);
 });
+
+test('dev vocab stays out of production content.words, so upToUnit:false cannot pick it', async () => {
+  const all = await loadRealContent();
+  const prod = await loadRealContent({ includeDev: false });
+  assert.ok(all.words.some((w) => w.id.startsWith('demo-')));
+  assert.deepEqual(prod.words.filter((w) => w.id.startsWith('demo-')), []);
+  assert.equal(prod.words.length, prod.words.filter((w) => prod.unitById[w.unit]).length);
+});

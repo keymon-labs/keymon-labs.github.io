@@ -82,7 +82,6 @@ export default {
         placed = [];
         locked = 0;
       }
-      if (!r.correct && !r.hint) { placed = []; locked = 0; } // later misses: reveal stays, build it again
       render();
     }
     check.addEventListener('click', submit);

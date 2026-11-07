@@ -24,9 +24,14 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
   const s = ok ? structuredClone(resume)
     : { unitId: unit.id, rev: unit.rev, seed, exerciseIndex: 0, roundIndex: 0, misses: 0, results: {}, words: {} };
   let ex = null;
+  // An exercise that makes 0 rounds (words missing from the content) is skipped, never shown: mount always gets a round.
   const load = () => {
-    ex = s.exerciseIndex < unit.exercises.length
-      ? makeExercise(content, unit, s.exerciseIndex, createRng(seedFor(s.seed, s.exerciseIndex))) : null;
+    ex = null;
+    while (!ex && s.exerciseIndex < unit.exercises.length) {
+      const made = makeExercise(content, unit, s.exerciseIndex, createRng(seedFor(s.seed, s.exerciseIndex)));
+      if (made.rounds.length) ex = made;
+      else { console.warn(`unit ${unit.id}: exercise "${made.exercise.id}" makes 0 rounds, skipped`); s.exerciseIndex++; s.roundIndex = 0; }
+    }
     if (ex) s.results[ex.exercise.id] ??= blank();
   };
   load();
@@ -52,8 +57,8 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
         const action = s.misses === HINT_AFTER ? 'hint' : s.misses === REVEAL_AFTER ? 'reveal' : 'retry';
         if (action === 'hint') r.hints++;
         if (action === 'reveal') r.reveals++;
-        const out = { correct, feedback, action, done: false };
-        if (action !== 'retry') out.hint = ex.archetype.hint(round, s.misses, answer);
+        // retry repeats the level-2 reveal: after a reload misses is already 2, so the mount may never have shown it
+        const out = { correct, feedback, action, done: false, hint: ex.archetype.hint(round, Math.min(s.misses, REVEAL_AFTER), answer) };
         return out;
       }
       r.total++;

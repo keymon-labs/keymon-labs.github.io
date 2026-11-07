@@ -1,8 +1,9 @@
 /* Shell styles: plain on purpose; the visual design is task 002 (tokens will move to ui/theme/tokens.css). */
-:root { --bg: #fffaf0; --fg: #222; --accent: #f5a623; --muted: #666; --gap: 12px; --tap: 48px; }
-@media (prefers-color-scheme: dark) { :root { --bg: #1d1a14; --fg: #f3eee3; --muted: #aaa; } }
+:root { color-scheme: light dark; --bg: #fffaf0; --fg: #222; --accent: #f5a623; --muted: #666; --gap: 12px; --tap: 48px; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: light dark; --bg: #1d1a14; --fg: #f3eee3; --muted: #aaa; } }
+html { font-size: 100%; } /* the text-size setting changes this inline; everything else is rem */
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: calc(18px * var(--text-scale, 1))/1.4 system-ui, sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 1.125rem/1.4 system-ui, sans-serif; }
 #app { min-height: 100dvh; display: flex; flex-direction: column; max-width: 640px; margin: 0 auto; padding: 0 16px; }
 main { flex: 1; padding: 16px 0; }
 h1 { font-size: 1.5rem; margin: 0 0 var(--gap); }

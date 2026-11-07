@@ -48,6 +48,7 @@ test('miss 1 gives a hint, miss 2 reveals, then retry until correct', () => {
   assert.equal(a1.hint.level, 1);
   assert.equal(a2.hint.level, 2);
   assert.equal(a2.hint.answer, round.answer);
+  assert.deepEqual(a3.hint, a2.hint); // retry repeats the reveal (a resumed round has misses 2)
   assert.equal(a1.correct, false);
   assert.ok(a1.feedback.es && a1.feedback.en);
   assert.equal(s.current.roundIndex, 0);
@@ -99,4 +100,20 @@ test('a snapshot from another rev is ignored', () => {
   a.submit(a.current.round.answer);
   const s = createUnitSession({ unit, content, seed: 9, resume: { ...a.snapshot(), rev: unit.rev + 1 } });
   assert.equal(s.current.roundIndex, 0);
+});
+
+test('an exercise that makes 0 rounds is skipped with a warning; mount never sees an undefined round', () => {
+  const warn = console.warn; const logs = []; console.warn = (m) => logs.push(m);
+  try {
+    const empty = { ...unit, exercises: [{ ...unit.exercises[0], id: 'empty-one', params: { from: { tag: 'no-such-tag', n: 3 } } }, ...unit.exercises.slice(1)] };
+    const s = createUnitSession({ unit: empty, content, seed: 1 });
+    assert.ok(s.current.round);
+    assert.equal(s.current.exercise.id, unit.exercises[1].id);
+    assert.ok(logs.some((m) => /empty-one/.test(m)));
+    while (!s.done) { assert.ok(s.current.round); s.submit(s.current.round.answer); }
+    assert.equal(s.result().finished, true);
+    const none = createUnitSession({ unit: { ...unit, exercises: empty.exercises.slice(0, 1) }, content, seed: 1 });
+    assert.equal(none.done, true);
+    assert.equal(none.current, null);
+  } finally { console.warn = warn; }
 });
