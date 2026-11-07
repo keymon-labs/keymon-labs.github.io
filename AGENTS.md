@@ -2,6 +2,17 @@
 
 Read after [CLAUDE.md](CLAUDE.md), which wins on conflicts. Goal: **prototypes fast, iterate with the owner, enough structure and tests to keep going**, no more engineering than the change needs. The pattern is inspired by [superpowers](https://github.com/obra/superpowers) (MIT), done lightly.
 
+## Start: guess the direction, then decide build or plan
+Requests often come from a phone, short and loose. Don't stall on them:
+1. **Read the intent**: what the owner is after, using what's in the repo (the app's README, its open tasks, recent commits) and what was said earlier. Fill the gaps with the most likely reading for a kids' web app on this site.
+2. **Decide the level** with the table below. Ask yourself:
+   - Can it be undone with one revert? Does it touch `shared/` or saved data? Does it span more than one chat?
+   - Is the direction itself unclear: several very different products would fit, or it's a whole new app idea?
+3. **Say it in one line, then act**:
+   - "Building: <what>, assuming <guess>." → do it now. The owner corrects on the result, which is cheaper than a question.
+   - "This needs a quick plan: <why>." → a ≤5-line plan with your recommended direction (and one alternative if they really differ), then build unless the owner objects. Wait for a reply only when the change is hard to undo.
+   - Truly unclear (two readings lead to different products): ask **one** question with 2–3 options and a recommendation.
+
 ## Pick the level by risk, not habit
 | Level | When | How |
 |---|---|---|
