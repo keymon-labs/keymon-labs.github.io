@@ -64,7 +64,7 @@ function h(tag, attrs = {}, ...kids) {
   return el;
 }
 const link = (href, text, cls = 'btn') => h('a', { href, class: cls }, text);
-const stars = (n) => h('span', { class: 'stars', role: 'img', 'aria-label': `${n} de 3 estrellas` }, '★'.repeat(n), h('span', {}, '★'.repeat(3 - n)));
+const stars = (n) => h('span', { class: 'stars', role: 'img', 'aria-label': `${n} de 3 estrellas` }, '★'.repeat(n), h('span', {}, '☆'.repeat(3 - n)));
 
 function footer() {
   return h('footer', {}, `Arcade de español v1 · versión ${__BUILD__} · © 2026 keymon-labs · `,
@@ -140,13 +140,13 @@ function renderIntro(profile, unit) {
   const resumable = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev;
   const up = unitProgress(profile, unit);
   const main = screen(unit.title.es, h('p', { id: 'unit-intro' }, unit.intro.es));
-  main.append(h('p', { id: 'unit-status' }, stars(up.stars), ' ', statusLine(up)),
+  main.append(...[h('p', { id: 'unit-status' }, stars(up.stars), ' ', statusLine(up)),
     up.last && up.attempts ? h('p', { class: 'muted', id: 'unit-last' }, `Último intento: ${'★'.repeat(up.last.stars)}${'☆'.repeat(3 - up.last.stars)} · Mejor: ${'★'.repeat(up.stars)}${'☆'.repeat(3 - up.stars)}`) : null,
     h('ol', { id: 'exercise-list', class: 'list' }, unit.exercises.map((e, i) => {
       const r = up.rows[i];
       const mark = !r.done ? '○ pendiente' : r.ok ? '✔ sin ayuda' : '● con ayuda';
       return h('li', { class: r.done ? '' : 'muted' }, `${content.archetypeById[e.archetype]?.title.es ?? e.id}: `, h('span', {}, mark), r.done && !r.ok && r.bestOk ? ' (antes, sin ayuda)' : null);
-    })));
+    }))].filter(Boolean));
   const start = link(`#/unit/${unit.id}/play`, resumable ? 'Seguir' : up.attempts ? 'Jugar otra vez' : 'Empezar');
   start.id = 'start-unit';
   main.append(start, link(`#/profile/${profile.id}`, 'Volver'));
@@ -242,7 +242,7 @@ function playUnit(profile, unit) {
     stage.replaceChildren(link(`#/profile/${profile.id}`, 'Volver al mapa'));
     live.replaceChildren(h('h2', {}, '¡Todo hecho!'), h('p', { id: 'result-stars' }, stars(result.stars)),
       h('p', {}, `${result.correct} de ${unit.exercises.length} ejercicios sin ayuda.`),
-      before ? h('p', { id: 'result-before' }, 'Antes: ', stars(before.stars), before.correct != null ? ` (${before.correct} de ${unit.exercises.length} sin ayuda)` : '') : null);
+      ...(before ? [h('p', { id: 'result-before' }, 'Antes: ', stars(before.stars), before.correct != null ? ` (${before.correct} de ${unit.exercises.length} sin ayuda)` : '')] : []));
   }
 
   // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.
