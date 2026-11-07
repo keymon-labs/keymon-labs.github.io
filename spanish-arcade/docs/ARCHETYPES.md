@@ -7,8 +7,8 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `listen-pick-word` | Hear a word (speech synthesis); tap the right word or picture | listening, vocab | `from`, `options`, `answerAs` (word/picture) | more options; similar-looking distractors; no replay | done |
 | `read-answer` | Short text, then pick the answer (a/b/c or true/false), optionally with a picture | reading comprehension | `text`, `questions[]`, `kind` (choice/tf) | longer text, inference questions | task-007 |
 | `fill-gap-choice` | Sentence with a gap; pick the word that fits | grammar, vocab | `items[]` or `from`, `options`, `focus` (article, verb form, preposition) | more options; closer distractors | task-008 |
-| `spell-tiles` | Picture/audio prompt; drag letter tiles to build the word | spelling | `from`, `extraLetters`, `hintLetters` | extra decoy letters; no hint | task-009 |
-| `spell-fill-letters` | Word with missing letters (ñ, r/rr, s/x, accents, h) | spelling rules | `from`/`items`, `focus` | more gaps; two-way choice → free typing | task-009 |
+| `spell-tiles` | Picture/audio prompt; drag letter tiles to build the word | spelling | `from`, `extraLetters`, `hintLetters` | extra decoy letters; no hint | done |
+| `spell-fill-letters` | Word with missing letters (ñ, r/rr, s/x, accents, h) | spelling rules | `from`/`items`, `focus` | more gaps; two-way choice → free typing | done |
 | `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | task-010 |
 | `match-pairs` | Join word ↔ picture/emoji, article ↔ noun, question ↔ answer | vocab, grammar | `pairs[]` or `from`, `mode` | more pairs; text-only | task-010 |
 | `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | task-010 |

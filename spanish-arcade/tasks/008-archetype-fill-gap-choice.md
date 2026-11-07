@@ -3,7 +3,8 @@ id: "008"
 title: Archetype fill-gap-choice
 model: Sonnet 5.5
 why_model: Clear contract.
-status: todo
+status: in-progress
+claimed: 2026-11-07
 depends_on: ["001"]
 touches: [spanish-arcade/archetypes/fill-gap-choice/**, test/fill-gap-choice.test.js]
 ---
