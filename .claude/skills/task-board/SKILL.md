@@ -14,9 +14,9 @@ For any app, project or repo. A board is a folder `tasks/` (repo-wide work) or `
 ```
 
 ## Board or plan?
-- **Board** when work spans several chats, days or models, or the owner wants to track it: features, content packs, a new app.
-- **Superpowers plan** (`writing-plans` skill) for the steps *inside* one code task, when that task is multi-step. Save it as `<area>/docs/plans/NNN-name.md` and link it from the task's `plan:` field. Don't put a plan's TDD steps in the task file.
-- One small change: neither. Just do it.
+- **Board** when work spans several chats, days or models, or the owner wants to track it: a big new app, a content pack.
+- Most work needs no board: build it (AGENTS.md levels). Don't split a feature one chat can finish.
+- A task that needs a step plan gets a short one in `<area>/docs/plans/NNN-name.md`, linked from `plan:`. Most don't.
 
 ## Task file
 ```markdown
@@ -30,7 +30,7 @@ status: todo                 # todo | in-progress | review | blocked | done
 claimed: 2026-11-07          # date set with in-progress
 depends_on: ["001"]          # ids that must be `done` first
 touches: [spanish-arcade/archetypes/listen-pick-word/**, spanish-arcade/test/listen-pick-word.test.js]
-plan: spanish-arcade/docs/plans/006-listen-pick-word.md   # optional superpowers plan
+plan: spanish-arcade/docs/plans/006-listen-pick-word.md   # optional step plan
 ---
 ## Prompt       self-contained: what to build, which docs/sections to read, exact names and values
 ## Acceptance   checkable bullets (a test, a command and its output, a page that loads)
@@ -45,14 +45,14 @@ plan: spanish-arcade/docs/plans/006-listen-pick-word.md   # optional superpowers
 | in-progress | claimed; `claimed:` set | the chat or coordinator taking it, pushed **before** work starts |
 | review | built, waiting on the owner (Spanish check, art, gameplay feel) | the worker, in the same commit as the work |
 | blocked | can't continue; reason in `Notes` | the worker |
-| done | accepted | worker for `code` that passed the task review; **only the owner** for `content`/`design` |
+| done | accepted | the worker for `code` once its checks pass (and its review, if it needed one); **only the owner** for `content`/`design` |
 
 `review` does not unblock dependants: tasks waiting on it stay out of the ready list until the owner says done.
 
 ## Writing tasks
 - **Contracts first.** Put shared schemas, interfaces and folder layout in `docs/PLAN.md`. Parallel work is only safe when tasks meet at written contracts. A task that must change a contract edits PLAN.md in the same commit and says so in the commit message.
-- **Gate task 000**: an Opus review of PLAN.md and every task before anything is built. Cheapest place to fix mistakes.
-- **Right size**: one chat, one reviewable diff, one independently testable deliverable. Fold setup and docs into the task that needs them; split only where a reviewer could reject one half and accept the other.
+- **Gate task 000** for a big board only: an Opus read of PLAN.md and the tasks before building. Skip it for small boards.
+- **Right size: big.** One chat's worth of work, ending in something testable. Fewer, larger tasks beat many small ones: each task costs a session's start-up. Group similar work (all game archetypes in one task).
 - **Self-contained prompt**: a worker sees only its task file, CLAUDE.md, AGENTS.md and the docs it names. Give exact file paths, names and values; never "see the chat".
 - **Disjoint `touches`**: the fixed part of each pattern (before `*`) is what tooling compares. Tasks whose paths overlap are never run at the same time.
 - **Acceptance you can check** without the author: a test name, a command, a page with no console errors.
@@ -60,10 +60,10 @@ plan: spanish-arcade/docs/plans/006-listen-pick-word.md   # optional superpowers
 
 | Tier | Use for |
 |---|---|
-| Fable | the hardest calls only: architecture with many unknowns, a final review of a large run, a bug two Opus attempts couldn't find |
-| Opus | contracts, plan review, design, code review, advisor |
-| Sonnet | coordinator; default implementer; prose specs; multi-file work |
-| Haiku | drafting data/content, transcribing complete code from a plan, one-file mechanical fixes; always reviewed by Sonnet or above |
+| Fable | only if the owner asks |
+| Opus | contracts, design, reviewing risky changes (shared code, saved data), advice when stuck |
+| Sonnet | the default for everything else |
+| Haiku | drafting data/content, transcribing complete code from a plan, one-file mechanical fixes; checked by the session that merges it |
 
 Cheap models take more turns on multi-step work and can cost more overall; Sonnet is the floor for anything that needs judgement.
 
@@ -76,7 +76,7 @@ Cheap models take more turns on multi-step work and can cost more overall; Sonne
 1. `git pull`; read CLAUDE.md, AGENTS.md, the board README preamble, the task, and only the docs it names.
 2. Check it is `todo` and every `depends_on` is `done`. Otherwise stop and say which task is in the way.
 3. **Claim**: set `status: in-progress` and `claimed: <today>`, run `npm run tasks`, commit `Claim <area> task NNN`, push. If the push is rejected, `git pull --rebase` and re-check the status: if someone else claimed it, pick another ready task or stop. The push is the lock.
-4. Work inside `touches` following AGENTS.md (superpowers skills per task kind). Need another path? Make the minimal change and record it under `Notes`.
+4. Work inside `touches` at the task's level (AGENTS.md: most are Quick). Need another path? Make the minimal change and record it under `Notes`.
 5. Finish in **one commit**: the work, `status: done` (or `review` for content/design, or `blocked` with the reason), Notes/rulings, regenerated board. Push, check the Actions run.
 6. Reply: one line on what changed, one on what was skipped, and which tasks are now ready.
 
@@ -86,11 +86,11 @@ Cheap models take more turns on multi-step work and can cost more overall; Sonne
 - Approving content: read the change, then set `status: done` yourself (or ask a chat to, saying it is approved).
 
 ## Using it in another repo
-Copy `.claude/skills/task-board/`, `scripts/tasks.mjs` and `scripts/tasks.test.js` (Node 22+, no dependencies), add `"tasks": "node scripts/tasks.mjs"` to `package.json`, and copy `AGENTS.md`, replacing its repo-specific lines (the skills it routes to, the checks it runs before pushing). For superpowers, copy `scripts/sync-superpowers.sh` and run it. Without Node, the files still work by hand: the front matter is the board.
+Copy `.claude/skills/task-board/`, `scripts/tasks.mjs` and `scripts/tasks.test.js` (Node 22+, no dependencies), add `"tasks": "node scripts/tasks.mjs"` to `package.json`, and copy `AGENTS.md`, replacing its repo-specific lines (the skills it routes to, the checks it runs before pushing). Without Node, the files still work by hand: the front matter is the board.
 
 ## Why it is built this way
 - Front matter is the single source of truth and the table is generated, so the board can't drift from the files (hand-kept tables did).
 - Claims are commits on `main`: git's rejected push is a free lock, and history shows who did what and when.
 - Overlapping file paths were the most common failure when agents ran in parallel; checking `touches` before starting each batch avoids most of it ([orchestrator write-up](https://dev.to/cloudx/one-brain-many-hands-building-a-parallel-task-orchestrator-for-ai-agents-3nb4)). Split along file and module boundaries ([agent teams guide](https://www.datacamp.com/tutorial/claude-code-agent-teams)).
 - Markdown tasks with statuses, dependencies validated for cycles, and acceptance criteria are the common shape of agent task tools ([Backlog.md](https://github.com/MrLesk/Backlog.md)).
-- Stronger model coordinating, cheaper models working, a durable ledger that survives context compaction, rulings recorded instead of stalls: from superpowers' subagent-driven development (vendored here, see `.claude/skills/SUPERPOWERS.md`).
+- Cheaper models for bulk work, decisions recorded as rulings instead of stalling, the task file as the durable record: a light take on [superpowers](https://github.com/obra/superpowers)' subagent-driven development.

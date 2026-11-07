@@ -9,6 +9,7 @@ Rules live in `CLAUDE.md` (public-data rule, ponytail, structure, copyright). Th
 
 ## New app
 1. `git pull`; read `README.md` and `shared/README.md`. Reuse `shared/` modules before writing code.
+   **Fast start:** copy the closest existing app as the shell (a game → `maths-arcade/`; a Claude-calling tool → `homework-reader/`; a data-driven story/quiz → `word-quest/` or `spanish-arcade/`), rename the app id, cache prefix, manifest and footer, delete what you don't need, then build the new idea in it. Get a playable first version pushed before polishing.
 2. Create `<app>/` with the default shape:
    - `index.html` (markup only; `<link rel="manifest">`, icon links, `<script type="module" src="./<entry>.js">`)
    - `style.css` (tokens on `:root`, light/dark), `<app>.js` or `game.js` (logic, one-line header comment)

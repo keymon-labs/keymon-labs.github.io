@@ -2,7 +2,6 @@ node_modules/
 dist/
 claude/dist/
 claude/out/
-.superpowers/
 
 # local reference copies (kept in a separate repo, not part of the site)
 /private-assets/

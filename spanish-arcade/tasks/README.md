@@ -6,7 +6,7 @@ How the board works (claiming, statuses, model choice, coordinator runs): [`task
 
 ## How to take a task
 - **One task per chat:** open a chat on the keymon-labs project with the task's **recommended model** and say *"Do task spanish-arcade/tasks/NNN-name.md"*.
-- **Coordinator:** open one chat (Sonnet) and say *"Coordinate spanish-arcade/tasks"* (optionally *"…up to 3 tasks"*). It dispatches ready tasks to subagents on each task's model, has Opus review them before merging, and consults an Opus advisor on hard calls (seats: [AGENTS.md](../../AGENTS.md#team-shape)).
+- **Coordinator:** open one chat (Sonnet) and say *"Coordinate spanish-arcade/tasks"* (optionally *"…up to 3 tasks"*). It works through ready tasks, handing bigger or parallel ones to subagents on each task's model ([AGENTS.md](../../AGENTS.md#board-runs-light)).
 - Either way: the standard preamble below, then the task's `Prompt`; `status: in-progress` + `claimed:` pushed at the start, `status: done` (or `review`) in the same commit as the work. `npm run tasks` regenerates the table below and lists what is ready.
 
 Board (source of truth is each file's front matter):

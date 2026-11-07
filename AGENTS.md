@@ -1,69 +1,34 @@
 # AGENTS.md: how sessions work in this repo
 
-Read after [CLAUDE.md](CLAUDE.md); CLAUDE.md wins on any conflict, and both win over skills. Development method: the vendored [superpowers](.claude/skills/SUPERPOWERS.md) skills, adjusted below. Multi-session work: the [task-board](.claude/skills/task-board/SKILL.md) skill.
+Read after [CLAUDE.md](CLAUDE.md), which wins on conflicts. Goal: **prototypes fast, iterate with the owner, enough structure and tests to keep going**, no more engineering than the change needs. The pattern is inspired by [superpowers](https://github.com/obra/superpowers) (MIT), done lightly.
 
-## Your role: coordinator
-The session the owner talks to (often from a phone) is the **coordinator**. It works out what is wanted, routes it to the right skill, keeps its own context small, hands heavy or parallel work to subagents on the right model, reviews what comes back, merges, pushes and reports.
-- Do small things yourself (a one-file fix, a doc edit, a status change). Spawn a subagent only when it buys something: parallel work, a cheaper or stronger model for that piece, or keeping a big read or diff out of your context.
-- **Always pass `model` explicitly** when spawning (`fable`, `opus`, `sonnet`, `haiku`). An omitted model inherits yours.
-
-## Team shape
-| Seat | Model | Does |
+## Pick the level by risk, not habit
+| Level | When | How |
 |---|---|---|
-| Coordinator | **Sonnet** (the chat the owner opens) | routes, writes briefs, dispatches, merges, runs checks, pushes, reports. Doesn't do design or deep review itself |
-| Advisor | **Opus**, on demand | a side seat for judgement: contracts and architecture questions, a ruling the coordinator isn't sure of, a plan or approach before dispatching it, a task stuck after 2 fix rounds. Spawned once per session when first needed and then reused (`SendMessage`), so it keeps its context. Reads files, never edits; answers with a recommendation, why, and what it costs if wrong. The owner can also say "ask the advisor" |
-| Designer / planner | **Opus** | brainstorming designs, `writing-plans` for multi-step code tasks, task 000 plan reviews, `design` tasks |
-| Reviewer | **Opus** | the task review of every code change and the final whole-change review. Scoped re-review of a small fix: Sonnet |
-| Implementer | **Sonnet** default, **Haiku** for mundane work | Sonnet for anything needing judgement or several files; Haiku for drafting data/content, transcribing code a plan spells out, one-file mechanical fixes (always reviewed) |
-| Fable | only when the owner asks or the advisor recommends it | the hardest calls |
+| **Quick** (default) | tweaks, a new game/screen in an existing app, a prototype, a bug | Build it yourself straight away. Ask at most 1–2 questions, only if the answer changes what gets built; otherwise state your call and go. No plan doc, no subagents, no review. |
+| **Feature** | a new app, a change to `shared/`, anything touching saved data (export/import, migrations, storage schema) | A ≤5-line plan in the reply, then build. One review subagent at the end (Opus) **only** for `shared/` or data-loss risk. |
+| **Board** | work spanning several chats or models | `task-board` skill. Light gates, see below. |
 
-A task's `model:` is its implementer tier (an Opus task is built by an Opus subagent). The seats above apply around it.
-- Subagents never push, never spawn their own subagents, never edit task statuses or the board. Only the coordinator pushes.
-- At most 3 workers at once unless the owner asks for more.
+When unsure, go one level lower and ship; the owner's feedback is the review.
 
-## Route the request (instead of superpowers' always-load bootstrap)
-| Request | Use |
-|---|---|
-| A new app, feature or idea that isn't pinned down | `brainstorming` → approved design → `writing-plans` (one session's work) or `task-board` (bigger) |
-| Work for several sessions or models; "split this into tasks" | `task-board`: create or extend a board |
-| "Do task <path>" | `task-board`: taking one task |
-| "Coordinate <board>" / "work through the board" | the coordinator run below |
-| A written plan to execute | `subagent-driven-development` (3+ tasks or risky) or `executing-plans` (small) |
-| A bug, failing test or broken build | `systematic-debugging` before any fix |
-| Pure logic (parsers, rules, scoring, validators) | `test-driven-development` |
-| Independent investigations or fixes | `dispatching-parallel-agents` |
-| About to say "done" | `verification-before-completion` plus the Ship checks in `labs-apps` |
-| Reviewing, or handling review findings | `requesting-code-review`, `receiving-code-review` |
-| Apps, versions, the Claude loader, coding style | `labs-apps`, `labs-claude-loader`, `ponytail` (always on) |
-| "Status of the boards" | `npm run tasks`, report in a few lines |
+## How to build fast
+- **Reuse first**: `shared/`, then a pattern from another app (copy and adapt), then a platform feature, then a library (CLAUDE.md order). New apps start from the closest existing app's shell (manifest, `sw.js`, footer, test hook), not from scratch.
+- **Pull patterns into `shared/`** when a second app needs them. That is the investment that makes the next prototype quick.
+- **Tests where they pay**: pure logic that's easy to break (scoring, parsers, validators, data migrations). UI: one headless smoke load, plus driving the test hook for games. No tests for markup or styling.
+- **Bugs**: reproduce first, find the root cause, fix once where it lives. If the first fix doesn't work, stop guessing: trace the data back to where it goes wrong before the next attempt.
+- **Done means checked**: `npm test`, `npm run build`, smoke load, then push. Say what you didn't check.
+- Data (levels, word lists, episodes) stays in JSON so the owner and cheaper models can extend it without touching code.
 
-## Superpowers, adjusted for this repo
-- **Where things go**: specs `<area>/docs/specs/YYYY-MM-DD-<topic>.md`; plans `<area>/docs/plans/NNN-<task>.md` (or `YYYY-MM-DD-<topic>.md` with no task). Not `docs/superpowers/…`. They are public: no personal data.
-- **`main`**: the owner has given standing consent to commit straight to `main` after the checks in CLAUDE.md; that is how the site deploys. Parallel workers use worktree branches that the coordinator merges locally (the "merge locally" option of `finishing-a-development-branch`). No PRs unless asked.
-- **Parallel implementers**: superpowers runs one at a time. Here several may run, but only in separate worktrees and only for tasks whose `touches` don't overlap (`npm run tasks` batches them that way).
-- **TDD** covers pure logic (`npm test`). UI is verified by the headless Chromium check, not unit tests.
-- **Proportion** (ponytail): a plan is never longer than the code it describes; brainstorming asks only questions whose answer changes what gets built, one at a time, short on a phone. Its browser companion doesn't run in cloud chats: show designs with an inline visual or a Design artifact.
-- **The ledger**: the superpowers workspace (`.superpowers/`, git-ignored) dies with the chat. The durable record is the task file (status, `Notes`, `Ruling:` lines) plus commits. Push after every merged task so a lost session costs at most one task.
-- **When to stop and ask** (superpowers' four, made concrete): anything irreversible (history rewrites, deleting published versions); security (keys, loader capabilities); personal data or licences needing consent (CLAUDE.md); a plan so broken every path is a guess. Everything else: make a ruling, record it, keep going.
-- **Commits**: short imperative message plus `Co-Authored-By`. No `Claude-Session:` lines or private links.
+## Subagents: only when they buy something
+- Parallel independent work, a cheaper model for bulk/mundane work (Haiku: drafting data or content; Sonnet: routine implementation), an Opus second opinion on a hard call, or keeping a huge read out of your context.
+- Always pass `model` explicitly. Hand over file paths, not the conversation. Workers don't push or spawn agents; you merge and push.
+- Stuck after two attempts? Ask an Opus subagent for advice (read-only, recommendation + why) before a third.
 
-## Coordinator run over a board
-1. `git pull`, `npm run tasks`. Take the first ready batch (or what the owner named), at most 3 tasks. Skip `design` tasks (they need the owner iterating in their own chat) and say so.
-2. Claim them in one commit (`status: in-progress`, `claimed: <today>`, board regenerated) and push. A rejected push means someone else moved: pull and re-plan.
-3. For each task, `BASE=$(git rev-parse HEAD)`, then spawn the implementer: `model` = the task's tier, `isolation: "worktree"` when more than one runs, in the background. Use the implementer brief below. A multi-step code task with no `plan:` gets one first: spawn an Opus planner with `writing-plans` first (save to `<area>/docs/plans/`), or, for a small Sonnet task, have the implementer write it as step 1.
-4. When a worker reports DONE: write its diff to a file (`git diff $BASE <branch> > .superpowers/runs/NNN.diff`) and spawn a reviewer with the reviewer brief. Reviewer model: Opus.
-5. Findings (Critical/Important, or spec ❌): send them back to the same worker (`SendMessage`), then re-review only the fix (Sonnet). After 2 rounds, ask the advisor; after 3, re-run the task one tier up; after that, record a `Ruling:` and park it or set `blocked`.
-6. Clean review: merge the branch into `main`, `npm test`, `npm run build`, headless check of changed pages (CLAUDE.md). Set `status: done` for `code`, `review` for `content`, append rulings to the task's `Notes`, `npm run tasks`, commit, push, confirm the Actions run. Then the next batch.
-7. After 3 or more merged code tasks, one whole-change review on Opus against the board's PLAN.md.
-8. Reply: one line per task (done / review / blocked), the rulings list verbatim, what is waiting on the owner, what is ready next.
+## Board runs (light)
+- "Do task <path>": take that task at its level (most are Quick or Feature), claim, build, finish in one commit. Details: `task-board` skill.
+- "Coordinate <board>": take up to 3 ready tasks with disjoint `touches`. Small ones you do yourself in sequence; bigger or parallel ones go to subagents on the task's `model` (worktrees if parallel). Review only tasks that set contracts or touch `shared/`; everything else gets one batch review at the end of the run, or none for a small run. Push after each merged task.
+- Content tasks (Haiku drafts) end in `review` for the owner; that is their review.
+- Record decisions you made without the owner as `Ruling: <decision> — <why>` in the task's `Notes`. Stop and ask only for: irreversible actions, security or loader capabilities, personal data or licences needing consent.
 
-Content tasks: Haiku drafts, a Sonnet reviewer (Opus if it is subtle, e.g. language correctness) checks correctness, originality (nothing copied from books or the web) and kid-safety, the task ends in `review` for the owner.
-
-## Briefs
-Hand over files and paths, never the conversation. Each brief is one task; no history of earlier tasks.
-
-**Implementer**
-> You are implementing one task in the keymon-labs repo (public: no personal data, CLAUDE.md rules). Read, in order: `CLAUDE.md`, `AGENTS.md` (section "Superpowers, adjusted"), the task file `<path>` (your requirements), its `plan:` if any, and only the docs it names. Stay inside the task's `touches`. Use `test-driven-development` for pure logic and `systematic-debugging` if something fails. Commit in your branch with short imperative messages; do not push, do not spawn agents, do not edit the task's status or the board. Before reporting run `npm test`, `npm run build` and the headless check of pages you changed. Write your full report to `<abs path>/.superpowers/runs/NNN-report.md` (what changed, files, test output summary, decisions, concerns). Reply only: status (DONE / DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED), branch, commits, one-line test summary, concerns.
-
-**Reviewer**
-> Review one task's change in the keymon-labs repo. Inputs: the task file `<path>` (the spec), the worker report `<report path>`, the diff `<diff path>`, and these binding constraints: `<copied from PLAN.md/CLAUDE.md>`. Use the method in `.claude/skills/subagent-driven-development/task-reviewer-prompt.md`. Also check: public-data rule, licences/CREDITS, the `touches` boundary, ponytail (nothing beyond the task). Don't modify files. Reply with: spec ✅/❌ with gaps, findings as Critical / Important / Minor with file:line, and anything you could not verify from the diff.
+## Where things go
+Specs and plans, when one is worth writing: `<area>/docs/`. Board: `<area>/tasks/`. Everything is public (CLAUDE.md).

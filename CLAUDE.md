@@ -24,8 +24,8 @@ Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission (
 - When unsure, flag it to the user in one line rather than silently including or dropping it.
 
 ## Sessions, skills and task boards
-**Every session is a coordinator: read [AGENTS.md](AGENTS.md)** (routing to skills, when to spawn subagents and on which model, how to run a task board). Development method: superpowers skills, vendored in `.claude/skills/` (see `.claude/skills/SUPERPOWERS.md`). Work spanning several sessions or models: `task-board` skill, `npm run tasks` for status.
-`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `ponytail`, plus the superpowers set. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
+**Read [AGENTS.md](AGENTS.md)**: build fast by default, add process only when the change is risky (levels Quick / Feature / Board), when subagents and which model. Work spanning several sessions or models: `task-board` skill, `npm run tasks` for status.
+`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `ponytail`. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
 
 ## Start of every task
 1. `git pull` (other chats push here too).
