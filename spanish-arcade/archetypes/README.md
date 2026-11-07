@@ -20,7 +20,7 @@ export default {
   paramsSchema: { from: { type: 'selector' }, options: { type: 'int', min: 2, max: 6, default: 3 } },
   defaults: (difficulty) => ({ options: difficulty + 1 }),   // 1..3
   make(params, { targets, pool }, rng) { return { rounds: [...] }; },
-  judge(round, answer) { return { correct, feedback: { es, en } }; },
+  judge(round, answer) { return { correct, feedback: { es, en } }; }, // only `es` is shown
   hint(round, level, lastAnswer) { return { level, ... }; }, // 1 = nudge, 2 = reveal the answer
   mount(host, round, ctx) { ...; return { destroy() {} }; },
 };
@@ -57,7 +57,7 @@ A field with no `default` and no `optional: true` is required.
 - `retry`: later misses; `hint` is the level-2 reveal again (so a resumed round still shows it): show it idempotently (no doubled prefixes). A round only moves on when answered correctly (after a reveal the child picks/copies it).
 Stars, progress, `words` stats and resume are the session's job (`core/session.js`). Archetypes never touch storage.
 
-`ctx`: `{ lang ('en'|'es', help language), t(key), say(text, { rate }) -> Promise<bool> (false = no Spanish voice or no tap yet), canSpeak (a Spanish voice exists; the shell awaits `speech.ready()` before mounting), sfx(name), mascot(mood), reducedMotion, submit(answer) }`. Audio games use `say` (backed by `ui/speech.js`) and switch to a picture mode when `ctx.canSpeak` is false. Tap targets ≥ 48px, feedback in an `aria-live` region plus an icon, a tap-tap alternative to every drag.
+`ctx`: `{ difficulty (1-3, of the exercise), t(key), say(text, { rate }) -> Promise<bool> (false = no Spanish voice or no tap yet), canSpeak (a Spanish voice exists; the shell awaits `speech.ready()` before mounting), sfx(name), mascot(mood), reducedMotion, submit(answer) }`. Audio games use `say` (backed by `ui/speech.js`) and switch to a picture mode when `ctx.canSpeak` is false. Tap targets ≥ 48px, feedback in an `aria-live` region plus an icon, a tap-tap alternative to every drag.
 
 ## Testing
 ```js

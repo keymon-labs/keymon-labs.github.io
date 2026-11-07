@@ -31,10 +31,10 @@ export default {
     let locked = 0; // leading tiles that stay (hint)
     let busy = false;
     const root = el('div', 'sp-root');
-    const prompt = el('p', 'sp-prompt', `${round.emoji || round.prompt[ctx.lang] || ''}`);
+    const prompt = el('p', 'sp-prompt', `${round.emoji || round.prompt.es || ''}`);
     const say = el('button', 'sp-key', '🔊');
     say.type = 'button';
-    say.setAttribute('aria-label', ctx.lang === 'es' ? 'Escuchar' : 'Listen');
+    say.setAttribute('aria-label', 'Escuchar');
     say.addEventListener('click', () => ctx.say(round.answer));
     say.hidden = !ctx.canSpeak;
     const reveal = el('p', 'sp-reveal');
@@ -73,7 +73,7 @@ export default {
       busy = true;
       render();
       const r = await ctx.submit(placed.map((id) => tileOf(id).ch).join(''));
-      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}`;
+      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback.es}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       busy = false;
       if (!r.correct && r.hint?.level === 1) lock(r.hint.keep);

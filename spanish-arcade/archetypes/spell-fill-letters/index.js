@@ -27,7 +27,6 @@ export default {
   mount(host, round, ctx) {
     injectStyles();
     const typing = round.mode === 'type';
-    const es = ctx.lang === 'es';
     const gapCells = round.cells.filter((c) => c.gap);
     const values = gapCells.map(() => null); // choice mode: picked option ('' = no letter) or null
     const off = gapCells.map(() => new Set()); // options greyed by a hint
@@ -37,10 +36,10 @@ export default {
     let hinted = -1; // gap to highlight after a level-1 hint
 
     const root = el('div', 'sp-root');
-    const prompt = el('p', 'sp-prompt', round.emoji || round.prompt[ctx.lang] || '');
+    const prompt = el('p', 'sp-prompt', round.emoji || round.prompt.es || '');
     const say = el('button', 'sp-key', '🔊');
     say.type = 'button';
-    say.setAttribute('aria-label', es ? 'Escuchar' : 'Listen');
+    say.setAttribute('aria-label', 'Escuchar');
     say.addEventListener('click', () => ctx.say(round.word));
     say.hidden = !ctx.canSpeak;
     const reveal = el('p', 'sp-reveal');
@@ -52,7 +51,7 @@ export default {
     status.setAttribute('aria-live', 'polite');
     root.append(prompt, say, reveal, wordEl);
     const gapLetters = [...new Set(gapCells.flatMap((c) => c.options))].filter(Boolean);
-    if (typing) root.append(specialLettersRow(insert, { letters: gapLetters, onBackspace: backspace, backLabel: es ? 'Borrar' : 'Delete' }));
+    if (typing) root.append(specialLettersRow(insert, { letters: gapLetters, onBackspace: backspace, backLabel: 'Borrar' }));
     else root.append(options);
     root.append(check, status);
     host.append(root);
@@ -92,7 +91,7 @@ export default {
           const b = el('button', 'sp-opt', o || '—');
           b.type = 'button';
           b.disabled = off[active].has(o);
-          b.setAttribute('aria-label', o || (es ? 'sin letra' : 'no letter'));
+          b.setAttribute('aria-label', o || 'sin letra');
           b.addEventListener('click', () => {
             values[active] = o;
             const next = values.findIndex((v) => v === null);
@@ -113,7 +112,7 @@ export default {
         inp.autocomplete = 'off';
         inp.autocapitalize = 'off';
         inp.spellcheck = false;
-        inp.setAttribute('aria-label', es ? `Letras que faltan ${i + 1}` : `Missing letters ${i + 1}`);
+        inp.setAttribute('aria-label', `Letras que faltan ${i + 1}`);
         inp.addEventListener('focus', () => { lastInput = inp; active = i; });
         inp.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') return submit();
@@ -129,7 +128,7 @@ export default {
       busy = true;
       render();
       const r = await ctx.submit(answer());
-      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback[ctx.lang] ?? r.feedback.en}`;
+      status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback.es}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       busy = false;
       if (!r.correct) {

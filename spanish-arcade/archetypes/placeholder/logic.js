@@ -5,7 +5,7 @@ export function make(params, { targets, pool }, rng) {
   const rounds = targets.map((w) => {
     const options = shuffle([w, ...distractors(w, pool, params.options - 1, rng)], rng)
       .map((o) => ({ id: o.id, es: o.es, emoji: o.emoji ?? '' }));
-    return { prompt: { es: w.emoji ?? w.en, en: w.en }, emoji: w.emoji ?? '', options, answer: w.id, wordIds: [w.id] };
+    return { prompt: { es: w.emoji ?? '', en: w.en }, emoji: w.emoji ?? '', options, answer: w.id, wordIds: [w.id] };
   });
   return { rounds };
 }

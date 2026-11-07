@@ -3,7 +3,7 @@ import { validateStore, MAX_PROFILES } from './schema.js';
 
 export const STORE_KEY = 'spanish-arcade:v1';
 export { MAX_PROFILES };
-const DEFAULT_SETTINGS = { lang: 'en', sound: true, textSize: 1, lastBackupAt: null };
+const DEFAULT_SETTINGS = { lang: 'es', sound: true, textSize: 1, lastBackupAt: null };
 
 const empty = () => ({ schema: 1, profiles: [], settings: { ...DEFAULT_SETTINGS } });
 

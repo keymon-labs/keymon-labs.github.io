@@ -97,13 +97,13 @@ export default {
       }
       const owner = [...join].find(([, r]) => r === id)?.[0];
       if (owner) { join.delete(owner); picked = null; return paint(); }
-      if (!picked) { status.textContent = ctx.lang === 'es' ? 'Toca primero algo de la izquierda.' : 'Tap something on the left first.'; return; }
+      if (!picked) { status.textContent = 'Toca primero algo de la izquierda.'; return; }
       const l = picked;
       slot.set(l, freeSlot());
       join.set(l, id);
       picked = null;
       paint();
-      status.textContent = `${ctx.lang === 'es' ? 'Unido' : 'Joined'}: ${byId[l].a} + ${byId[id].b}`;
+      status.textContent = `Unido: ${byId[l].a} + ${byId[id].b}`;
       if (join.size < round.pairs.length) return;
       busy = true;
       paint();
@@ -111,12 +111,12 @@ export default {
       const r = await ctx.submit(answer);
       busy = false;
       if (r.ignored) return paint();
-      status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback[ctx.lang] ?? r.feedback.en);
+      status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback.es);
       ctx.sfx(r.correct ? 'right' : 'wrong');
       if (r.correct) { busy = true; return paint(); }
       if (r.hint?.level === 1) {
         join.clear(); // a nudge only: how many were wrong, then start again
-        status.textContent += ` (${r.hint.wrongCount} ${ctx.lang === 'es' ? 'mal' : 'wrong'})`;
+        status.textContent += ` (${r.hint.wrongCount} mal)`;
       } else {
         for (const x of wrongLefts(round, answer)) join.delete(x); // keep the right pairs
         if (r.hint?.pair) {

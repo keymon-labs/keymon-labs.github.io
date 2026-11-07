@@ -2,12 +2,12 @@
 import { make, judge, hint } from './logic.js';
 
 const T = {
-  ready: { es: 'Ya lo he leído', en: 'I have read it' },
-  listenText: { es: 'Escuchar el texto', en: 'Listen to the text' },
-  listenQ: { es: 'Escuchar la pregunta', en: 'Listen to the question' },
-  marked: { es: 'La respuesta correcta lleva ✔.', en: 'The right answer has a ✔.' },
-  look: { es: 'Mira la frase marcada.', en: 'Look at the marked sentence.' },
-  reread: { es: 'Lee el texto otra vez.', en: 'Read the text again.' },
+  ready: 'Ya lo he leído',
+  listenText: 'Escuchar el texto',
+  listenQ: 'Escuchar la pregunta',
+  marked: 'La respuesta correcta lleva ✔.',
+  look: 'Mira la frase marcada.',
+  reread: 'Lee el texto otra vez.',
 };
 
 export default {
@@ -38,7 +38,6 @@ export default {
   hint,
 
   mount(host, round, ctx) {
-    const L = (o) => o[ctx.lang] ?? o.en;
     const el = (tag, css, text) => {
       const e = document.createElement(tag);
       if (css) e.style.cssText = css;
@@ -68,7 +67,7 @@ export default {
     const body = el('p', 'margin:0;line-height:1.7');
     sentences.forEach((s, i) => { if (i) body.append(' '); body.append(s); });
     box.append(body);
-    if (ctx.canSpeak) box.append(speaker(L(T.listenText), round.text.join(' ')));
+    if (ctx.canSpeak) box.append(speaker(T.listenText, round.text.join(' ')));
 
     const mark = (index) => {
       sentences.forEach((s, i) => {
@@ -85,28 +84,28 @@ export default {
 
     const qRow = el('div', 'display:flex;align-items:center;gap:8px');
     qRow.append(el('p', 'flex:1;font-weight:bold;margin:8px 0', round.q));
-    if (ctx.canSpeak) qRow.append(speaker(L(T.listenQ), round.q));
+    if (ctx.canSpeak) qRow.append(speaker(T.listenQ, round.q));
 
     const buttons = round.options.map((o) => {
       const b = el('button', 'display:block;width:100%;min-height:56px;margin:8px 0;text-align:left');
       b.type = 'button';
       b.dataset.id = o.id;
-      b.textContent = typeof o.text === 'string' ? o.text : (ctx.lang === 'es' ? o.text.es : `${o.text.es} / ${o.text.en}`);
+      b.textContent = typeof o.text === 'string' ? o.text : o.text.es;
       b.addEventListener('click', async () => {
         const r = await ctx.submit(o.id);
-        status.textContent = (r.correct ? '✅ ' : '❌ ') + L(r.feedback);
+        status.textContent = (r.correct ? '✅ ' : '❌ ') + r.feedback.es;
         ctx.sfx(r.correct ? 'right' : 'wrong');
         if (r.correct) return;
         if (round.options.length > 2) b.disabled = true; // with two options this would give the answer away
         if (r.hint) {
           showText();
           mark(r.hint.evidence);
-          status.textContent += ` ${L(r.hint.evidence == null ? T.reread : T.look)}`;
+          status.textContent += ` ${(r.hint.evidence == null ? T.reread : T.look)}`;
           if (r.hint.answer) {
             const right = buttons.find((x) => x.dataset.id === r.hint.answer);
             right.classList.add('reveal');
             if (!right.textContent.startsWith('✔ ')) right.textContent = `✔ ${right.textContent}`;
-            status.textContent += ` ${L(T.marked)}`;
+            status.textContent += ` ${T.marked}`;
           }
         }
       });
@@ -120,7 +119,7 @@ export default {
     const showText = () => { box.hidden = false; answers.hidden = false; ready?.remove(); ready = null; };
     if (!round.showText) {
       answers.hidden = true;
-      ready = el('button', '', L(T.ready));
+      ready = el('button', '', T.ready);
       ready.type = 'button';
       ready.addEventListener('click', () => { box.hidden = true; answers.hidden = false; ready.remove(); ready = null; buttons[0].focus(); });
       root.append(box, ready, answers);

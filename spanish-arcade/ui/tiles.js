@@ -39,7 +39,7 @@ export function el(tag, cls, text) {
  * Row of buttons for typing without the phone keyboard: the gap's own letters (letters), ñ á é í ó ú ü ¿ ¡, and a backspace.
  * They never take focus, so a typing field keeps its caret.
  */
-export function specialLettersRow(onPick, { letters = [], onBackspace, backLabel = 'Delete' } = {}) {
+export function specialLettersRow(onPick, { letters = [], onBackspace, backLabel = 'Borrar' } = {}) {
   const row = el('div', 'sp-row');
   row.setAttribute('role', 'group');
   row.setAttribute('aria-label', 'ñ á é í ó ú ü ¿ ¡');

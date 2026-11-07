@@ -1,6 +1,6 @@
 # Spanish Arcade
 
-Mini games to practise written Spanish, for kids at A1 level. Pick a unit, play 5 or 6 short exercises (listening, reading, spelling, puzzles, grammar), earn stars. Several profiles per device; progress is stored in the browser only (no sign-in, no tracking, no ads). Works offline once loaded and is installable. Help text is English, switchable to Spanish. The voice uses the browser's speech synthesis (`es-ES`) and is optional: without a voice, listening games show the written word instead.
+Mini games to practise written Spanish, for kids at A1 level. Pick a unit, play 5 or 6 short exercises (listening, reading, spelling, puzzles, grammar), earn stars. Several profiles per device; progress is stored in the browser only (no sign-in, no tracking, no ads). Works offline once loaded and is installable. The whole interface is in Spanish (no English is shown or announced); `en` fields in the data are optional metadata and never displayed. The voice uses the browser's speech synthesis (`es-ES`) and is optional: without a voice, listening games show the written word instead.
 
 > An unofficial game inspired by «Mis unidades de español. Primer cuatrimestre A1, Serie Luna» and following the topics and levels of the ALCE classes. Artwork, sentences, jokes and sounds are original.
 

@@ -72,7 +72,7 @@ function roundFor(text, source, params, poolKeys, rng) {
   const emoji = source.emoji ?? '';
   return {
     word: text, answer: text, cells, focus, accents: STRICT_FOCI.includes(focus) ? 'strict' : params.accents, mode: params.mode, rule: RULES[focus],
-    prompt: { es: emoji || source.en || '', en: source.en ?? emoji }, emoji, wordIds: source.id ? [source.id] : [],
+    prompt: { es: emoji || '', en: source.en ?? emoji }, emoji, wordIds: source.id ? [source.id] : [],
   };
 }
 

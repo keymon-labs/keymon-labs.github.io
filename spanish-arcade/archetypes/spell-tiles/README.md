@@ -1,6 +1,6 @@
 # spell-tiles
 
-Build a word from letter tiles. The prompt is a picture (the word's emoji, or its English gloss) plus a speaker button. Tap tiles in order or drag them onto the answer row; tap a placed tile to take it back. A physical keyboard also works (letters, Backspace, Enter). The whole word is one round and one `submit`.
+Build a word from letter tiles. The prompt is a picture (the word's emoji; English glosses are never shown) plus a speaker button. Tap tiles in order or drag them onto the answer row; tap a placed tile to take it back. A physical keyboard also works (letters, Backspace, Enter). The whole word is one round and one `submit`.
 
 | Param | Type | Default | Notes |
 |---|---|---|---|

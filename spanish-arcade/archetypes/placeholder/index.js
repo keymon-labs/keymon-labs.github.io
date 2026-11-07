@@ -21,7 +21,7 @@ export default {
     const root = document.createElement('div');
     root.className = 'placeholder';
     const prompt = document.createElement('p');
-    prompt.textContent = `${round.emoji} ${round.prompt[ctx.lang] ?? round.prompt.en}`;
+    prompt.textContent = `${round.emoji} ${round.prompt.es}`;
     const status = document.createElement('p');
     status.setAttribute('aria-live', 'polite');
     const buttons = round.options.map((o) => {
@@ -32,7 +32,7 @@ export default {
       b.addEventListener('click', async () => {
         ctx.say(o.es);
         const r = await ctx.submit(o.id);
-        status.textContent = r.feedback[ctx.lang] ?? r.feedback.en;
+        status.textContent = r.feedback.es;
         ctx.sfx(r.correct ? 'right' : 'wrong');
         const enabled = () => buttons.filter((x) => !x.disabled);
         if (!r.correct && enabled().length > 2) b.disabled = true; // the tapped wrong option is greyed while 2+ others remain

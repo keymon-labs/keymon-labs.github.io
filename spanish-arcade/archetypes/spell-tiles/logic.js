@@ -38,7 +38,7 @@ export function make(params, { targets, pool }, rng) {
     const emoji = w.emoji ?? '';
     return {
       word: w.es, answer: w.es, tiles: chars.map((ch, id) => ({ id, ch })), accents: params.accents, hintLetters: params.hintLetters,
-      prompt: { es: emoji || w.en, en: w.en }, emoji, wordIds: [w.id],
+      prompt: { es: emoji || '', en: w.en }, emoji, wordIds: [w.id],
     };
   });
   return { rounds };

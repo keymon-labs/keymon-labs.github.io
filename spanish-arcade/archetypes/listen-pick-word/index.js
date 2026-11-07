@@ -1,10 +1,7 @@
 // listen-pick-word: speak a Spanish word, the child taps the word or picture. Rules in logic.js, params in README.md.
 import { make, judge, hint } from './logic.js';
 
-const NOTICE = {
-  es: 'Este dispositivo no tiene voz en español. Mira el dibujo y toca la palabra.',
-  en: 'This device has no Spanish voice. Look at the picture and tap the word.',
-};
+const NOTICE = 'Este aparato no tiene voz en español. Mira el dibujo y toca la palabra.';
 
 export default {
   id: 'listen-pick-word',
@@ -51,13 +48,13 @@ export default {
         if (played && round.replay === false) return;
         if (await ctx.say(round.prompt.es, { rate }) && round.replay === false) { played = true; btn.disabled = true; }
       };
-      const listen = control(ctx.lang === 'es' ? 'Escuchar' : 'Listen', '🔊', () => play(0.9, listen));
+      const listen = control('Escuchar', '🔊', () => play(0.9, listen));
       bar.append(listen);
-      if (round.replay !== false) bar.append(control(ctx.lang === 'es' ? 'Más despacio' : 'Slower', '🐢', () => play(0.5)));
+      if (round.replay !== false) bar.append(control('Más despacio', '🐢', () => play(0.5)));
       play(0.9, listen); // works if the child already tapped; otherwise they press the speaker
     } else {
       const notice = document.createElement('p');
-      notice.textContent = NOTICE[ctx.lang] ?? NOTICE.en;
+      notice.textContent = NOTICE;
       const pic = document.createElement('p');
       pic.style.fontSize = '4rem';
       pic.textContent = round.emoji;
@@ -74,7 +71,7 @@ export default {
       if (asPicture) b.setAttribute('aria-label', o.es);
       b.addEventListener('click', async () => {
         const r = await ctx.submit(o.id);
-        status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback[ctx.lang] ?? r.feedback.en);
+        status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback.es);
         ctx.sfx(r.correct ? 'right' : 'wrong');
         if (r.correct && voice) ctx.say(o.es);
         const enabled = () => buttons.filter((x) => !x.disabled);

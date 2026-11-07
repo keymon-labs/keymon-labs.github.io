@@ -35,7 +35,7 @@ export default {
         if (ctx.canSpeak) ctx.say(o.es);
         const r = await ctx.submit(o.id);
         if (r.ignored) return;
-        status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback[ctx.lang] ?? r.feedback.en) + (r.hint?.theme ? ` 💡 ${r.hint.theme}` : ''); // the theme nudge is read out too
+        status.textContent = (r.correct ? '✅ ' : '❌ ') + (r.feedback.es) + (r.hint?.theme ? ` 💡 ${r.hint.theme}` : ''); // the theme nudge is read out too
         ctx.sfx(r.correct ? 'right' : 'wrong');
         if (!r.correct) b.disabled = true;
         if (r.hint?.remove) buttons.find((x) => x.dataset.id === r.hint.remove).disabled = true;

@@ -43,10 +43,9 @@ for (const e of [...content.errors, ...(store.loadError ? [`store: ${store.loadE
 for (const p of store.data.profiles) { const next = applyRev(p, content.units); if (next !== p) store.update(p.id, () => next); }
 const diagnostic = () => JSON.stringify({ app: 'spanish-arcade', build: __BUILD__, ua: navigator.userAgent, errors }, null, 2);
 
-// Settings that change the page itself: help language (<html lang>) and text size.
+// Settings that change the page itself: text size (the page language is always Spanish).
 function applySettings() {
-  const { lang, textSize } = store.data.settings;
-  document.documentElement.lang = lang;
+  const { textSize } = store.data.settings;
   document.documentElement.style.fontSize = `${(textSize || 1) * 100}%`; // archetypes size in rem, so scale the root
 }
 applySettings();
@@ -64,10 +63,10 @@ function h(tag, attrs = {}, ...kids) {
   return el;
 }
 const link = (href, text, cls = 'btn') => h('a', { href, class: cls }, text);
-const stars = (n) => h('span', { class: 'stars', role: 'img', 'aria-label': `${n} of 3 stars` }, '★'.repeat(n), h('span', {}, '★'.repeat(3 - n)));
+const stars = (n) => h('span', { class: 'stars', role: 'img', 'aria-label': `${n} de 3 estrellas` }, '★'.repeat(n), h('span', {}, '★'.repeat(3 - n)));
 
 function footer() {
-  return h('footer', {}, `Spanish Arcade v1 · build ${__BUILD__} · © 2026 keymon-labs · `,
+  return h('footer', {}, `Arcade de español v1 · versión ${__BUILD__} · © 2026 keymon-labs · `,
     h('a', { href: 'https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md' }, 'CC BY-NC-SA 4.0'));
 }
 
@@ -75,7 +74,7 @@ let current = null; // mounted screen, if any: { destroy() }
 let activeId = null;
 const activeProfile = () => store.profile(activeId) ?? store.data.profiles[0] ?? null;
 
-const unsavedNote = () => h('p', { id: 'unsaved', role: 'status', class: 'muted' }, "Progress won't be saved in this browser.");
+const unsavedNote = () => h('p', { id: 'unsaved', role: 'status', class: 'muted' }, 'El progreso no se guardará en este navegador.');
 function showUnsaved() { const main = root.querySelector('main'); if (main && !root.querySelector('#unsaved')) main.prepend(unsavedNote()); }
 
 /** Builds a screen: heading first (it gets focus on route change), then the rest. */
@@ -100,11 +99,11 @@ function route() {
 
 function renderHome() {
   const profiles = store.data.profiles;
-  const main = screen('Spanish Arcade');
+  const main = screen('Arcade de español');
   if (profiles.length) main.append(h('ul', { class: 'list' }, profiles.map((p) => h('li', {}, link(`#/profile/${p.id}`, p.firstName)))));
   if (profiles.length < 1) { // MVP: one profile
     const first = h('input', { id: 'first-name', required: '', autocomplete: 'off' });
-    const form = h('form', { id: 'new-profile' }, h('label', {}, 'First name ', first), h('button', { type: 'submit' }, 'Start'));
+    const form = h('form', { id: 'new-profile' }, h('label', {}, 'Nombre ', first), h('button', { type: 'submit' }, 'Empezar'));
     form.onsubmit = (e) => {
       e.preventDefault();
       if (!first.value.trim()) return;
@@ -113,30 +112,29 @@ function renderHome() {
     };
     main.append(form);
   }
-  main.append(link('#/settings', 'Settings'));
+  main.append(link('#/settings', 'Ajustes'));
 }
 
 function renderProfile(profile) {
-  const main = screen(`Hello, ${profile.firstName}!`);
+  const main = screen(`¡Hola, ${profile.firstName}!`);
   main.append(h('ul', { class: 'list' }, content.units.map((u) => {
     const open = isUnlocked(profile, content.units, u.id);
     const st = profile.units[u.id]?.stars ?? 0;
     const resumable = profile.inProgress?.unitId === u.id;
-    return h('li', { class: open ? '' : 'locked' }, open ? link(`#/unit/${u.id}`, u.title.en, 'btn unit') : h('span', {}, `🔒 ${u.title.en}`), ' ', stars(st), resumable ? h('span', { class: 'muted' }, ' (resume)') : null);
+    return h('li', { class: open ? '' : 'locked' }, open ? link(`#/unit/${u.id}`, u.title.es, 'btn unit') : h('span', {}, `🔒 ${u.title.es}`), ' ', stars(st), resumable ? h('span', { class: 'muted' }, ' (seguir)') : null);
   })));
-  main.append(link('#/', 'Back'), link('#/settings', 'Settings'));
+  main.append(link('#/', 'Volver'), link('#/settings', 'Ajustes'));
 }
 
 function renderIntro(profile, unit) {
-  const lang = store.data.settings.lang;
   const resumable = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev;
-  const main = screen(unit.title[lang] ?? unit.title.en, h('p', { id: 'unit-intro' }, unit.intro[lang] ?? unit.intro.en));
-  const start = link(`#/unit/${unit.id}/play`, resumable ? 'Continue' : 'Start');
+  const main = screen(unit.title.es, h('p', { id: 'unit-intro' }, unit.intro.es));
+  const start = link(`#/unit/${unit.id}/play`, resumable ? 'Seguir' : 'Empezar');
   start.id = 'start-unit';
-  main.append(start, link(`#/profile/${profile.id}`, 'Back'));
+  main.append(start, link(`#/profile/${profile.id}`, 'Volver'));
   speech.ready().then(() => {
     if (!speech.available || !main.isConnected) return;
-    const say = h('button', { type: 'button', id: 'say-intro', 'aria-label': 'Listen' }, '🔊');
+    const say = h('button', { type: 'button', id: 'say-intro', 'aria-label': 'Escuchar' }, '🔊');
     say.onclick = () => ctx0.say(unit.intro.es);
     start.before(say);
   });
@@ -146,15 +144,14 @@ const ctx0 = { say: (text, opts) => (store.data.settings.sound ? speech.say(text
 function renderSettingsScreen() {
   const main = screen(null);
   current = renderSettings(main, { store, content, diagnostic, gate, logError, applySettings });
-  main.append(link(activeProfile() ? `#/profile/${activeProfile().id}` : '#/', 'Back'));
+  main.append(link(activeProfile() ? `#/profile/${activeProfile().id}` : '#/', 'Volver'));
 }
 
 function playUnit(profile, unit) {
-  const lang = store.data.settings.lang;
   const session = createUnitSession({ unit, content, seed: attemptSeed(profile, unit.id), resume: profile.inProgress });
   const stage = h('div', { id: 'stage' });
   const live = h('div', { id: 'live', 'aria-live': 'polite' });
-  const main = screen(unit.title[lang] ?? unit.title.en, stage, live);
+  const main = screen(unit.title.es, stage, live);
   let mounted = null;
   let timer = null;
   let busy = false; // true from a correct answer until the next round is shown: ignores double taps
@@ -165,7 +162,8 @@ function playUnit(profile, unit) {
   window.__spanishArcade.session = session;
 
   const ctx = {
-    lang, t: (k) => k,
+    t: (k) => k,
+    difficulty: 1, // set per exercise in show()
     say: ctx0.say,
     canSpeak: false, // speech.available && settings.sound, set once the voices are known
     sfx: () => {}, mascot: () => {},
@@ -187,25 +185,26 @@ function playUnit(profile, unit) {
     mounted?.destroy();
     const cur = session.current;
     const host = h('div', { id: 'round' });
+    ctx.difficulty = cur.exercise.difficulty ?? 1;
     stage.replaceChildren(
-      h('p', { class: 'muted', id: 'progress' }, `Exercise ${cur.exerciseIndex + 1}/${unit.exercises.length} · ${cur.roundIndex + 1}/${cur.rounds}`),
-      h('p', { id: 'exercise-prompt' }, cur.exercise.prompt?.[lang] ?? ''),
-      host, link(`#/profile/${profile.id}`, 'Leave'));
+      h('p', { class: 'muted', id: 'progress' }, `Ejercicio ${cur.exerciseIndex + 1}/${unit.exercises.length} · ${cur.roundIndex + 1}/${cur.rounds}`),
+      h('p', { id: 'exercise-prompt' }, cur.exercise.prompt?.es ?? ''),
+      host, link(`#/profile/${profile.id}`, 'Salir'));
     busy = false;
     mounted = cur.archetype.mount(host, cur.round, ctx);
   }
 
   function finish() {
     mounted?.destroy(); mounted = null;
-    stage.replaceChildren(link(`#/profile/${profile.id}`, 'Back to the map'));
-    live.replaceChildren(h('h2', {}, 'All done!'), h('p', { id: 'result-stars' }, stars(result.stars)),
-      h('p', {}, `${result.correct} of ${unit.exercises.length} exercises without a reveal.`));
+    stage.replaceChildren(link(`#/profile/${profile.id}`, 'Volver al mapa'));
+    live.replaceChildren(h('h2', {}, '¡Todo hecho!'), h('p', { id: 'result-stars' }, stars(result.stars)),
+      h('p', {}, `${result.correct} de ${unit.exercises.length} ejercicios sin ayuda.`));
   }
 
   // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.
   function start() {
     if (!session.done) return show();
-    stage.replaceChildren(h('p', {}, 'Nothing to play in this unit yet.'), link(`#/profile/${profile.id}`, 'Back to the map'));
+    stage.replaceChildren(h('p', {}, 'Todavía no hay nada que jugar en esta unidad.'), link(`#/profile/${profile.id}`, 'Volver al mapa'));
   }
 
   // Archetypes read ctx.canSpeak at mount, so wait for the voice list first.

@@ -11,7 +11,7 @@ A word with blanks for one spelling focus. `mode: "choice"` picks the missing le
 | `gaps` | int 1-3 | 1 | Blanks per word (capped by what the word has); difficulty 3 gives 2. |
 | `accents` | `strict` \| `lenient` | `strict` | `lenient` accepts a missing accent; `ñ` is never `n`. Always strict for focus `accent` and `ü` (lenient would make both options right). |
 
-`make` silently skips words that have no safe blank for the focus, so an exercise can yield fewer rounds than `n` (or none): pick words that match the focus. A wrong option never spells another taught word (perro/pero); a word with no safe alternative is skipped. `pictures` is not required (items exercises have no emoji); the prompt falls back to the English gloss. Hints (a nudge only): first miss highlights the gap and shows the rule; with 3+ options it also greys a wrong one, and in type mode it fills the first letter only for multi-letter gaps (rr); second miss shows the word to copy.
+`make` silently skips words that have no safe blank for the focus, so an exercise can yield fewer rounds than `n` (or none): pick words that match the focus. A wrong option never spells another taught word (perro/pero); a word with no safe alternative is skipped. `pictures` is not required (items exercises have no emoji); with no emoji the prompt is empty (the speaker still says the word); English glosses are never shown. Hints (a nudge only): first miss highlights the gap and shows the rule; with 3+ options it also greys a wrong one, and in type mode it fills the first letter only for multi-letter gaps (rr); second miss shows the word to copy.
 
 ```json
 { "archetype": "spell-fill-letters", "difficulty": 1, "params": { "from": { "spell": "rr", "n": 4 }, "focus": "rr" } }

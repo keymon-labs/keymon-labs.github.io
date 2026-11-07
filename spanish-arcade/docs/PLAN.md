@@ -81,7 +81,7 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
 - `exercises`: 5–6 items. **Exercise ids are stable, meaningful and never reused** (progress is stored by id). Bump `rev` when exercises change meaningfully.
 - An exercise yields several **rounds** (`from.n` or `items.length`, default 4–6 questions). Unit time cap: about 8 minutes.
 - `params` are validated against the archetype's `paramsSchema`; `difficulty` (1–3) is applied via the archetype's `defaults(difficulty)` and any explicit `params` override it. Difficulty is non-decreasing within a unit; units 1–4 use 1–2, later units may use 3.
-- All learner-facing text is `{es, en}`. Spanish is the target; English is the help language (default, switchable).
+- All learner-facing text is `{es, en}`. The UI is Spanish only (the children are native speakers; English is only their school language): only `es` is ever shown or announced, `en` is optional metadata, there is no help-language setting.
 
 ### 4.3 Archetype module
 Implemented in task 001 (`core/session.js`, `core/generate.js`, `core/schema.js`); how-to in [archetypes/README.md](../archetypes/README.md).
@@ -100,7 +100,7 @@ export default {
   mount(host, round, ctx) -> { destroy() }       // DOM
 }
 // round: any JSON-safe object; optional round.wordIds = vocab ids practised (feeds profile.words).
-// ctx = { lang, t(key), say(text, {rate}) -> Promise<bool>, canSpeak, sfx(name), mascot(mood), reducedMotion,
+// ctx = { difficulty, t(key), say(text, {rate}) -> Promise<bool>, canSpeak, sfx(name), mascot(mood), reducedMotion,
 //         submit(answer) -> Promise<{ correct, feedback, action: "next"|"hint"|"reveal"|"retry", hint?, done }> }
 ```
 - `make` gets `targets` (the `from.n` words drawn from the selector, shuffled) and `pool` (every word taught up to this unit, for distractors; `core/generate.js` `distractors()` picks them). Archetypes without a `selector` param, or whose optional selector is unset because the exercise gives `items`, get `targets: []` and read their own `params.items`.
@@ -151,12 +151,12 @@ export default {
 - **Stars** (never "failed"): 3 = no reveals and at most 1 hint across the unit; 2 = at least `pass.minCorrect` exercises completed without a reveal; 1 = finished.
 - **Unlocking**: next unit opens when the previous is finished (any stars); earlier units stay replayable. (Owner can switch to "all open".)
 - **Retry**: hint after 1 miss, answer revealed after 2; in spelling games a revealed word must then be copied correctly.
-- **Accessibility**: every drag has a tap-tap alternative; tap targets ≥ 48px; feedback uses `aria-live` and an icon as well as colour; text-size setting; sound off still shows text; `prefers-reduced-motion` respected (in `ctx.reducedMotion`); free typing uses an on-screen special-letters row (ñ á é í ó ú ü ¿ ¡) with `inputmode="none"` so the phone keyboard doesn't cover the screen; every prompt has a speaker button because English help text can be above a 7-year-old's reading level.
+- **Accessibility**: every drag has a tap-tap alternative; tap targets ≥ 48px; feedback uses `aria-live` and an icon as well as colour; text-size setting; sound off still shows text; `prefers-reduced-motion` respected (in `ctx.reducedMotion`); free typing uses an on-screen special-letters row (ñ á é í ó ú ü ¿ ¡) with `inputmode="none"` so the phone keyboard doesn't cover the screen; every prompt has a speaker button because written Spanish can be above a 7-year-old's reading level.
 - **Speech** (`ui/speech.js`, owned by task 001): wait for `voiceschanged`; the first `speak()` must follow a tap; prefer voices with `localService`; choose `es-ES`, then any `es-*`. Fallback when none exists: listening games switch to picture → pick the word (never "match identical words").
 - **Parent gate** (hold 2 seconds or an easy sum) on Settings, export, import and delete.
 
 ## 6. Screens
-Home (profile picker, 1–4) → Profile (unit map, badges shelf) → Unit intro → Exercises (with "?" help) → Result (stars, joke, badge) → back to map. Settings/Parents (behind gate): export, import, report, badges, help language, text size, sound, name-on-badge, delete, diagnostics, credits.
+Home (profile picker, 1–4) → Profile (unit map, badges shelf) → Unit intro → Exercises (with "?" help) → Result (stars, joke, badge) → back to map. Settings/Parents (behind gate): export, import, report, badges, text size, sound, name-on-badge, delete, diagnostics, credits.
 
 ## 7. Credit and licence
 Footer per CLAUDE.md on every screen. The credits screen and the app README say: *"An unofficial game inspired by «Mis unidades de español. Primer cuatrimestre A1, Serie Luna» and following the topics and levels of the ALCE classes. Artwork, sentences, jokes and sounds are original."* The landing card says only *"Inspired by «Mis unidades de español» (A1)"*. Keep this wording plain and short everywhere. `*.pdf` is git-ignored so a book file can't be committed by accident.
@@ -168,7 +168,7 @@ Footer per CLAUDE.md on every screen. The credits screen and the app README say:
 | Name on badge/report | first name + surname initial; full name opt-in |
 | Unlocking | in order, any stars |
 | Accents | strict (per-exercise `accents` param) |
-| Help language | English, switchable to Spanish |
+| Help language | None: the UI is Spanish only |
 | Spanish review | the owner (a Spanish speaker) reviews every content task before `done` |
 | Spanish variety | Spain Spanish, `es-ES` voice |
 | Audio | speech synthesis only; recorded clips later only if voices are poor, by a non-family voice (public-data rule) |
