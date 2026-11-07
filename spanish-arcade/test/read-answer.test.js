@@ -82,6 +82,10 @@ test('make rejects content the schema cannot check', () => {
   bad({ questions: [{ q: 'x', options: ['a', 'b'], answer: 2 }] }, /answer/);
   bad({ questions: [{ q: 'x', options: ['a', 'b'] }] }, /answer/);
   bad({ questions: [{ q: 'x', options: ['a', 'b'], answer: 0, evidence: 3 }] }, /evidence/);
+  bad({ text: ['a', ' '], questions: abc }, /blank/);
+  bad({ questions: [{ q: ' ', options: ['a', 'b'], answer: 0 }] }, /blank/);
+  bad({ questions: [{ q: 'x', options: ['a', ''], answer: 0 }] }, /blank/);
+  bad({ questions: [{ q: 'x', options: ['a', 'b'], answer: 0, ok: true }] }, /not ok/);
   bad({ kind: 'tf', questions: [{ q: 'x' }] }, /ok/);
   bad({ kind: 'tf', questions: [{ q: 'x', ok: true, options: ['a', 'b'] }] }, /options/);
 });

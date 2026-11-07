@@ -3,7 +3,9 @@ import { make, judge, hint } from './logic.js';
 
 const T = {
   ready: { es: 'Ya lo he leído', en: 'I have read it' },
-  listen: { es: 'Escuchar', en: 'Listen' },
+  listenText: { es: 'Escuchar el texto', en: 'Listen to the text' },
+  listenQ: { es: 'Escuchar la pregunta', en: 'Listen to the question' },
+  marked: { es: 'La respuesta correcta lleva ✔.', en: 'The right answer has a ✔.' },
   look: { es: 'Mira la frase marcada.', en: 'Look at the marked sentence.' },
   reread: { es: 'Lee el texto otra vez.', en: 'Read the text again.' },
 };
@@ -66,7 +68,7 @@ export default {
     const body = el('p', 'margin:0;line-height:1.7');
     sentences.forEach((s, i) => { if (i) body.append(' '); body.append(s); });
     box.append(body);
-    if (ctx.canSpeak) box.append(speaker(L(T.listen), round.text.join(' ')));
+    if (ctx.canSpeak) box.append(speaker(L(T.listenText), round.text.join(' ')));
 
     const mark = (index) => {
       sentences.forEach((s, i) => {
@@ -74,6 +76,8 @@ export default {
         s.style.background = on ? 'var(--accent)' : '';
         s.style.fontWeight = on ? 'bold' : '';
         s.style.textDecoration = on ? 'underline' : '';
+        s.style.color = on ? '#222' : '';
+        s.style.outline = on ? '2px dotted #222' : '';
         s.dataset.mark = on ? '1' : '';
       });
       if (index != null) sentences[index].scrollIntoView?.({ block: 'nearest', behavior: ctx.reducedMotion ? 'auto' : 'smooth' });
@@ -81,7 +85,7 @@ export default {
 
     const qRow = el('div', 'display:flex;align-items:center;gap:8px');
     qRow.append(el('p', 'flex:1;font-weight:bold;margin:8px 0', round.q));
-    if (ctx.canSpeak) qRow.append(speaker(L(T.listen), round.q));
+    if (ctx.canSpeak) qRow.append(speaker(L(T.listenQ), round.q));
 
     const buttons = round.options.map((o) => {
       const b = el('button', 'display:block;width:100%;min-height:56px;margin:8px 0;text-align:left');
@@ -102,6 +106,7 @@ export default {
             const right = buttons.find((x) => x.dataset.id === r.hint.answer);
             right.classList.add('reveal');
             right.textContent = `✔ ${right.textContent}`;
+            status.textContent += ` ${L(T.marked)}`;
           }
         }
       });
@@ -117,7 +122,7 @@ export default {
       answers.hidden = true;
       ready = el('button', '', L(T.ready));
       ready.type = 'button';
-      ready.addEventListener('click', () => { box.hidden = true; answers.hidden = false; ready.remove(); ready = null; });
+      ready.addEventListener('click', () => { box.hidden = true; answers.hidden = false; ready.remove(); ready = null; buttons[0].focus(); });
       root.append(box, ready, answers);
     } else root.append(box, answers);
     host.append(root);
