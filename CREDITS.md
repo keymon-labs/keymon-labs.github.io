@@ -7,6 +7,7 @@ Everything not listed here is keymon-labs' own work under [NOTICE.md](NOTICE.md)
 |---|---|---|---|---|
 | Module preload polyfill and helpers injected by Vite | built pages | [vitejs/vite](https://github.com/vitejs/vite) | MIT | Copyright (c) 2019-present VoidZero Inc. and Vite contributors |
 | Melodies: Humpty Dumpty, Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle Little Star | piano-jump/songs.json | Traditional | Public domain | Note sequences only |
+| Song "Bow, Wow, Wow": words are the traditional nursery rhyme; the melody is our own, written for this app | piano-jump/songs.json | Traditional rhyme (public domain) + keymon-labs | Public domain words; melody under repo licence | |
 | Melody: Ode to Joy (Beethoven, Symphony No. 9, 1824) | piano-jump/songs.json | Traditional | Public domain | Note sequence only |
 
 ## Inspiration (nothing copied)
