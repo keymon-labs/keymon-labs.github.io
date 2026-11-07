@@ -117,7 +117,22 @@ test('hint: level 1 greys a wrong option other than the one tapped; level 2 reve
   const h = arch.hint(r, 1, wrongs[0]);
   assert.ok(wrongs.includes(h.remove) && h.remove !== wrongs[0]);
   assert.equal(arch.hint({ ...r, options: r.options.slice(0, 2) }, 1, wrongs[0]).remove, null);
+  assert.equal(arch.hint({ ...r, options: r.options.slice(0, 3) }, 1, wrongs[0]).remove, null);
   assert.deepEqual(arch.hint(r, 2, wrongs[0]), { level: 2, answer: r.answer });
+});
+
+test('hint: with 2, 3 or 4 options at least 2 stay enabled (shell disables the tapped option, then remove, only while >2 are enabled)', () => {
+  for (const n of [2, 3, 4]) {
+    const [r] = run({ params: { options: n } });
+    for (const last of r.options.filter((o) => o.id !== r.answer).map((o) => o.id)) {
+      const h = arch.hint(r, 1, last);
+      assert.equal(h.remove === null, n < 4);
+      let enabled = n;
+      if (enabled > 2) enabled--;
+      if (h.remove && enabled > 2) enabled--;
+      assert.ok(enabled >= 2, `${n} options`);
+    }
+  }
 });
 
 test('module metadata: listening skill, pictures, valid params', () => {

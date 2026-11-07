@@ -34,8 +34,9 @@ export default {
         const r = await ctx.submit(o.id);
         status.textContent = r.feedback[ctx.lang] ?? r.feedback.en;
         ctx.sfx(r.correct ? 'right' : 'wrong');
-        if (!r.correct) b.disabled = true; // the tapped wrong option stays greyed
-        if (r.hint?.remove) buttons.find((x) => x.dataset.id === r.hint.remove).disabled = true;
+        const enabled = () => buttons.filter((x) => !x.disabled);
+        if (!r.correct && enabled().length > 2) b.disabled = true; // the tapped wrong option is greyed while 2+ others remain
+        if (r.hint?.remove && enabled().length > 2) buttons.find((x) => x.dataset.id === r.hint.remove).disabled = true;
         if (r.hint?.answer) buttons.find((x) => x.dataset.id === r.hint.answer).classList.add('reveal');
       });
       return b;
