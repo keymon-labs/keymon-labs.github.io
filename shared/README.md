@@ -14,7 +14,7 @@ import { connectMidi } from "../shared/midi.js";
 | [`audio.js`](audio.js) | Simple synthesized sound effects (Web Audio oscillator with envelope). | `unlockAudio()`, `tone(freq, dur, type, gain, delay, slideTo)` | piano-jump, word-quest |
 | [`claude-link.js`](claude-link.js) | "Open in Claude" buttons that open the keymon-labs loader artifact; link kept out of plain text for crawlers. | `wireOpenInClaude(root?)` for `[data-open-in-claude="<app id>"]` | landing page, homework-reader, word-quest |
 | [`rng.js`](rng.js) | Seeded random numbers (mulberry32), so rounds and tests are reproducible. | `createRng(seed)` → `{ next(), int(min, max), pick(list) }` | maths-arcade, spanish-arcade |
-| [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump, maths-arcade, homework-reader, word-quest |
+| [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump, maths-arcade, homework-reader, word-quest, spanish-arcade |
 
 ## Callback contracts
 - `onNote(midi)`: a MIDI note number on note-on.
