@@ -35,7 +35,7 @@ Board (source of truth is each file's front matter):
 | 017 | [listen-pick-word distractorFrom param](017-listen-distractor-from.md) | Sonnet | 006, 011 | done |
 | 018 | [UI fully in Spanish, answer in the spoken gap](018-ui-spanish-only.md) | Sonnet | 001b, 016 | done |
 | 019 | [Harder content for native speakers (a1-u1-s1)](019-harder-unit.md) | Sonnet | 011, 017 | review |
-| 020 | [Bugs from the owner's play test (spell-tiles repeats, progress, gaps)](020-bugs-spelling-progress.md) | Sonnet | 018, 019 | in-progress |
+| 020 | [Bugs from the owner's play test (spell-tiles repeats, progress, gaps)](020-bugs-spelling-progress.md) | Sonnet | 018, 019 | review |
 | 021 | [Lab page and hidden debug mode](021-lab-and-debug-mode.md) | Sonnet | 018, 019 | in-progress |
 <!-- board:end -->
 
