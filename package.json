@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "test": "node --test",
     "build:claude": "node claude/build.js",
-    "build:loader": "node claude/build-loader.js"
+    "build:loader": "node claude/build-loader.js",
+    "tasks": "node scripts/tasks.mjs"
   },
   "devDependencies": {
     "vite": "^6.4.5"

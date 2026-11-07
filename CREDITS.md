@@ -19,3 +19,4 @@ Everything not listed here is keymon-labs' own work under [NOTICE.md](NOTICE.md)
 |---|---|---|
 | Vite and its build dependencies (`package-lock.json`) | MIT, ISC, BSD-3-Clause | Build tooling; only the Vite helpers above end up in the site |
 | ponytail skill (`.claude/skills/ponytail/`) | MIT | Vendored with its LICENSE and SOURCE.md |
+| superpowers skills v7.0.2 ([obra/superpowers](https://github.com/obra/superpowers)), 12 folders in `.claude/skills/` | MIT | Copyright (c) 2025 Jesse Vincent. Verbatim; licence in `.claude/skills/SUPERPOWERS-LICENSE`, list in `SUPERPOWERS.md` |

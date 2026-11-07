@@ -23,8 +23,9 @@ Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission (
 - Every app and page shows a footer line: `<App> v<N> · build __BUILD__ · © <year> keymon-labs · CC BY-NC-SA 4.0` linking to NOTICE.md (menu or footer). `__BUILD__` is stamped at build (`build-id.js`). Frozen `vN/` folders are covered by the repo licence; don't edit them.
 - When unsure, flag it to the user in one line rather than silently including or dropping it.
 
-## Skills (how-tos for this repo)
-`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release). Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
+## Sessions, skills and task boards
+**Every session is a coordinator: read [AGENTS.md](AGENTS.md)** (routing to skills, when to spawn subagents and on which model, how to run a task board). Development method: superpowers skills, vendored in `.claude/skills/` (see `.claude/skills/SUPERPOWERS.md`). Work spanning several sessions or models: `task-board` skill, `npm run tasks` for status.
+`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `ponytail`, plus the superpowers set. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
 
 ## Start of every task
 1. `git pull` (other chats push here too).
