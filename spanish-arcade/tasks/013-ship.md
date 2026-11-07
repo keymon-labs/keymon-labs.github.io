@@ -18,3 +18,6 @@ Follow `labs-apps` "New app" and "Ship": landing card (tag "Chrome" if a Chrome-
 Decide with the user whether to include the app in `claude/apps.json` (it doesn't call Claude, so default no).
 
 Ruling: MVP ship is scoped to unit a1-u1-s1; 002, 003, 004, 005, 012 and unit a1-u1-s3 are not in this release, so the task stays open for the full release after this one.
+
+Ruling: MVP release = unit a1-u1-s1 only. Removed the joke placeholder from the result screen; stopped publishing spanish-arcade docs, tasks and scripts to the site (vite IGNORE) — cost if wrong: one regex.
+Known: the dev demo unit's bytes are still in the JS bundle (not listed or playable); the app is not in claude/apps.json (it does not call Claude).

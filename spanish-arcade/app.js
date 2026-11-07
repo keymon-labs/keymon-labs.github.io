@@ -199,8 +199,7 @@ function playUnit(profile, unit) {
     mounted?.destroy(); mounted = null;
     stage.replaceChildren(link(`#/profile/${profile.id}`, 'Back to the map'));
     live.replaceChildren(h('h2', {}, 'All done!'), h('p', { id: 'result-stars' }, stars(result.stars)),
-      h('p', {}, `${result.correct} of ${unit.exercises.length} exercises without a reveal.`),
-      h('p', { class: 'muted' }, 'Joke of the day: (placeholder)'));
+      h('p', {}, `${result.correct} of ${unit.exercises.length} exercises without a reveal.`));
   }
 
   // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.
