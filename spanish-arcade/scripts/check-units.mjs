@@ -43,7 +43,8 @@ export function checkContent(content) {
       let rounds = -1;
       try { rounds = makeExercise(content, u, i, createRng(1)).rounds.length; } catch (err) { extra('', `could not generate rounds (${err.message})`); }
       const sel = Object.values(e.params || {}).find((p) => p?.n);
-      const want = Math.min(3, sel?.n ?? e.params?.items?.length ?? 3);
+      // without a selector the rounds are authored (items/questions) and nothing is skipped
+      const want = Math.min(3, sel ? (sel.n ?? 3) : (e.params?.n ?? e.params?.items?.length ?? e.params?.questions?.length ?? 1));
       if (rounds >= 0 && rounds < want) extra('', `makes ${rounds} round(s), needs at least ${want}; words skipped: no emoji / spaces / no matching focus. Widen the selector or add words`);
     });
 
