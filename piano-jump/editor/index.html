@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Piano Jump · Song editor</title>
+<meta name="theme-color" content="#ff6b3d">
+<link rel="icon" href="../icon-192.png">
+<link rel="stylesheet" href="./editor.css">
+</head>
+<body>
+<header class="top">
+  <a class="back" href="../">← Piano Jump</a>
+  <h1>Song editor</h1>
+  <button id="btnScan" class="go">📷 Scan a page</button>
+</header>
+
+<main>
+  <!-- Part 2: scan a page (scan.js) -->
+  <section id="scan" class="card" hidden aria-labelledby="scanTitle">
+    <h2 id="scanTitle">Scan a page</h2>
+    <p class="privacy">For pieces from books you own. Scans stay on this device.</p>
+    <p id="scanMsg" role="alert" class="hint bad"></p>
+
+    <div id="scanPick">
+      <div class="row">
+        <button class="go" id="btnCam">📷 Take a photo</button>
+        <button id="btnImg">🖼 Choose an image</button>
+        <input type="file" id="fileCam" accept="image/*" capture="environment" hidden>
+        <input type="file" id="fileImg" accept="image/*" hidden>
+      </div>
+      <h3>Tips for a good scan</h3>
+      <ul class="tips">
+        <li><b>One staff at a time.</b> You will crop to a single line of music, starting just after the clef and time signature.</li>
+        <li><b>Keep it clean.</b> Crop out lyrics, pencil marks, finger numbers, titles and pictures. They confuse the reader.</li>
+        <li><b>Two staves joined by a brace (grand staff)?</b> Scan the top line, then the bottom line, and pick the matching clef.</li>
+        <li><b>Flat, bright, straight.</b> Hold the page flat in good light. If the lines slope, use Straighten.</li>
+        <li><b>It is a first draft.</b> Rests, sharps and ties are not read. You will check and fix everything in the editor.</li>
+      </ul>
+    </div>
+
+    <div id="scanAdjust" hidden>
+      <p class="hint">Drag the corners so the box holds <b>one staff</b>, without lyrics or notes written in pencil.</p>
+      <div id="cropWrap"><canvas id="cropCanvas"></canvas><div id="cropBox" aria-label="Crop box"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div>
+      <div class="adjust">
+        <div class="row">
+          <button id="btnRotL" aria-label="Rotate left">⟲ 90°</button>
+          <button id="btnRotR" aria-label="Rotate right">⟳ 90°</button>
+        </div>
+        <label>Straighten <input type="range" id="rngTilt" min="-10" max="10" step="0.1" value="0"></label>
+        <label>Contrast <input type="range" id="rngContrast" min="0" max="100" step="1" value="40"></label>
+        <fieldset class="row clef"><legend>Clef</legend>
+          <label><input type="radio" name="clef" value="treble" checked> Treble</label>
+          <label><input type="radio" name="clef" value="bass"> Bass</label>
+        </fieldset>
+      </div>
+      <div class="row">
+        <button class="go" id="btnRead">Read this staff</button>
+        <button id="btnOther">Choose another photo</button>
+      </div>
+    </div>
+
+    <div id="scanBusy" hidden role="status">Reading the notes…</div>
+
+    <div id="scanFail" hidden role="alert">
+      <p id="scanFailMsg"></p>
+      <div class="row">
+        <button id="btnTryAgain">Adjust the crop</button>
+        <button class="go" id="btnManual">Enter the notes by tapping</button>
+      </div>
+    </div>
+
+    <button id="btnScanClose" class="plain">Close scanner</button>
+  </section>
+
+  <!-- Part 1: tap editor (editor.js); the photo pane shows beside it while reviewing a scan -->
+  <section id="work">
+    <div class="split" id="split">
+      <aside id="photoPane" class="card" hidden aria-labelledby="photoTitle">
+        <h2 id="photoTitle">Your photo</h2>
+        <div class="photowrap"><canvas id="photoCanvas" aria-label="Photo of the scanned staff"></canvas></div>
+        <p class="hint">Orange notes in the editor are the ones the reader was least sure about. Compare them with the photo and fix them. Scans stay on this device.</p>
+        <div class="row">
+          <button id="btnScanMore">Scan another staff</button>
+          <button id="btnPhotoDiscard">Discard photo</button>
+        </div>
+      </aside>
+
+      <div class="col">
+        <div class="card meta">
+          <label>Title <input id="inTitle" maxlength="60" autocomplete="off"></label>
+          <label>Info <input id="inInfo" maxlength="40" placeholder="e.g. 4/4 · C to G" autocomplete="off"></label>
+          <label>Tempo (bpm) <input id="inBpm" type="number" min="30" max="300" inputmode="numeric"></label>
+          <label>Beats per bar <select id="inBar"></select></label>
+        </div>
+
+        <div class="card">
+          <div class="tools" role="toolbar" aria-label="Note tools">
+            <div class="group" role="group" aria-label="Length of the next note">
+              <button data-dur="0.5"><i></i><span>Eighth</span></button>
+              <button data-dur="1"><i></i><span>Quarter</span></button>
+              <button data-dur="2"><i></i><span>Half</span></button>
+              <button data-dur="4"><i></i><span>Whole</span></button>
+            </div>
+            <div class="group">
+              <button id="btnDot" aria-pressed="false"><i></i><span>Dotted</span></button>
+              <button id="btnRest" aria-pressed="false"><i></i><span>Rest</span></button>
+            </div>
+            <div class="group">
+              <button id="btnUndo"><i>↶</i><span>Undo</span></button>
+              <button id="btnRedo"><i>↷</i><span>Redo</span></button>
+              <button id="btnPlay" class="go"><i>▶</i><span>Play</span></button>
+              <button id="btnClear"><i>🗑</i><span>Clear</span></button>
+            </div>
+            <div class="group">
+              <button id="btnBass" aria-pressed="false"><i>𝄢</i><span>Bass staff</span></button>
+              <button id="btnSmaller"><i>A−</i><span>Smaller</span></button>
+              <button id="btnBigger"><i>A+</i><span>Bigger</span></button>
+              <button id="btnNew"><i>＋</i><span>New song</span></button>
+            </div>
+          </div>
+          <p class="hint">Tap the staff to add a note. Tap a note to make it longer (quarter, half, whole, gone). Tap just above or below a note to flip its stem. Type a syllable under a note for the words.</p>
+          <p id="msg" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="scroller" id="scroller"><div id="stage"></div></div>
+
+        <div class="card" id="check" aria-live="polite"></div>
+
+        <div class="card">
+          <h2>This song</h2>
+          <div class="row">
+            <button class="go" id="btnSave">Save to library</button>
+            <button id="btnCopy">Copy JSON</button>
+            <button id="btnDownload">Download .json</button>
+            <button id="btnLoad">Load into Piano Jump</button>
+          </div>
+          <textarea id="exportOut" readonly rows="6" hidden aria-label="Song JSON" spellcheck="false"></textarea>
+        </div>
+
+        <div class="card">
+          <h2>Library on this device</h2>
+          <ul id="libList" class="liblist"></ul>
+          <div class="row">
+            <button id="btnLibCopy">Copy library</button>
+            <button id="btnLibDownload">Download library</button>
+          </div>
+          <p class="hint">Saved songs show up in the Piano Jump menu. To use them on another device, download the library and load it there with Song library.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>Song editor v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></footer>
+
+<script type="module" src="./editor.js"></script>
+</body>
+</html>

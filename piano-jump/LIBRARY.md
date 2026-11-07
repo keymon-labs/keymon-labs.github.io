@@ -4,6 +4,8 @@ A library is one JSON file with a list of songs. Load it from the menu: **Song l
 
 Which songs you add is up to you; a library stays on the device that loads it.
 
+The [Song editor](editor/README.md) can also make songs by tapping or from a photo, save them to this library, and export the library as a file or text.
+
 ## Plain format
 ```json
 { "songs": [

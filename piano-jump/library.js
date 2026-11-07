@@ -84,3 +84,23 @@ export function loadStored() {
 }
 export function saveStored(songs) { try { localStorage.setItem(STORE, JSON.stringify(songs)); return true; } catch { return false; } }
 export function clearStored() { try { localStorage.removeItem(STORE); } catch { /* nothing stored */ } }
+
+// ---- Editor helpers: add/replace one song, export the whole library ----
+/** Stored songs (ids "lib-…") + one validated song → merged list; same id replaces, so saving twice never duplicates. */
+export function mergeSong(stored, song) {
+  const next = stored.filter((s) => s.id !== song.id).concat(song);
+  if (next.length > 200) throw new LibraryError("Library is full (max 200 songs)");
+  return next;
+}
+/** Validate one library-format song and save it into the on-device library. Returns all stored songs, or null if storage failed. */
+export function upsertStored(song) {
+  const merged = mergeSong(loadStored(), validateLibrary([song])[0]);
+  return saveStored(merged) ? merged : null;
+}
+/** Remove one stored song by its stored id ("lib-…"). */
+export function removeStored(id) { saveStored(loadStored().filter((s) => s.id !== id)); }
+/** Stored songs → plain library object (ids without the "lib-" prefix), ready to be loaded again. */
+export const libraryObject = (songs) => ({ songs: songs.map((s) => ({ ...s, id: s.id.replace(/^lib-/, "") })) });
+/** Library object → readable JSON text: one note per line. Parses back to the same object. */
+export const libraryJson = (obj) => '{"songs":[\n' + obj.songs.map((s) =>
+  " " + JSON.stringify({ ...s, notes: 0 }).replace('"notes":0', '"notes":[\n  ' + s.notes.map((n) => JSON.stringify(n)).join(",\n  ") + "\n ]")).join(",\n") + "\n]}\n";
