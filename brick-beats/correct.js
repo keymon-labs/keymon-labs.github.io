@@ -84,7 +84,8 @@ function fitSide(a, b, pts, cen) {
     samples = samples.map((q) => [q[0], q[1], Math.abs(q[1] - (c + m * q[0]))]).sort((p, q) => p[2] - q[2]).slice(0, Math.ceil(n * 0.7));
   }
   const p = [a[0] + nx * c, a[1] + ny * c], d = [tx + nx * m / len, ty + ny * m / len]; // direction tilts by the fitted slope
-  return { p, d };
+  const rms = samples.length >= 6 ? Math.sqrt(samples.reduce((t, q) => t + q[2] * q[2], 0) / samples.length) / len : 1; // how far the edge wobbles, as a share of its length
+  return { p, d, rms };
 }
 const cross = (l, k) => { // intersection of two {p, d} lines
   const den = l.d[0] * k.d[1] - l.d[1] * k.d[0], t = ((k.p[0] - l.p[0]) * k.d[1] - (k.p[1] - l.p[1]) * k.d[0]) / den;
@@ -107,40 +108,38 @@ function homography(from, to) {
   return [...A.map((r, i) => r[8] / r[i]), 1];
 }
 
-/**
- * correct(rgba, W, H) → { data, W, H, quad } or null when the whole plate is not in view (the caller then uses the photo as it is).
- * The input can be large (1000+ px wide): the plate is found on a shrunk copy, the warp samples the full image.
- */
-export function correct(src, SW, SH, { side = 640, margin = 60 } = {}) {
+/** Colour masks of a shrunk copy (the plate is found on ~640 px, the warp samples the full image). */
+function scan(src, SW, SH) {
   const k = Math.max(1, Math.floor(SW / 640)), sm = shrink(src, SW, SH, k), W = sm.W, H = sm.H, N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N);
   for (let i = 0; i < N; i++) {
     const [h, s, v] = rgbToHsv(sm.data[i * 4], sm.data[i * 4 + 1], sm.data[i * 4 + 2]);
     if (isPlate(h, s, v)) plate[i] = 1; else if (isTape(h, s, v)) tape[i] = 1;
   }
+  return { k, W, H, N, plate, tape };
+}
+
+/** Plate outline: plate + the tape lying on it → hull → four sides refitted → corners (shrunk coordinates), or null. */
+function plateQuad({ W, H, N, plate, tape }) {
   const both = plate.map((v, i) => v | tape[i]); // tape lanes cut the green into strips, so the plate is green + tape together
   const region = biggestBlob(both, W, H);
   if (!region || region.length < N * 0.04) return null;
-
-  // plate outline: plate + the tape lying on it → hull → four sides refitted → corners
   const pts = region.map((i) => [i % W, (i / W) | 0]);
   const cen = pts.reduce((a, p) => [a[0] + p[0] / pts.length, a[1] + p[1] / pts.length], [0, 0]);
   const hq = toQuad(hull(pts.filter((_, i) => i % 3 === 0)));
-  let quad = null;
-  if (hq.length === 4) {
-    const sides = hq.map((a, i) => fitSide(a, hq[(i + 1) % 4], pts, cen));
-    const c = sides.map((s, i) => cross(sides[(i + 3) % 4], s)); // corner i = side i-1 ∩ side i, same order as hq
-    const area = Math.abs(c.reduce((a, p, i) => a + p[0] * c[(i + 1) % 4][1] - c[(i + 1) % 4][0] * p[1], 0)) / 2;
-    const edge = 0.01 * Math.min(W, H);
-    const inside = c.every((p) => p[0] > edge && p[0] < W - 1 - edge && p[1] > edge && p[1] < H - 1 - edge); // a plate cut off by the frame cannot be rectified
-    if (inside && area > N * 0.08 && c.every((p) => isFinite(p[0]) && isFinite(p[1]))) quad = c;
-  }
+  if (hq.length !== 4) return null;
+  const sides = hq.map((a, i) => fitSide(a, hq[(i + 1) % 4], pts, cen));
+  const c = sides.map((s, i) => cross(sides[(i + 3) % 4], s)); // corner i = side i-1 ∩ side i, same order as hq
+  const area = Math.abs(c.reduce((a, p, i) => a + p[0] * c[(i + 1) % 4][1] - c[(i + 1) % 4][0] * p[1], 0)) / 2;
+  const edge = 0.01 * Math.min(W, H);
+  const inside = c.every((p) => p[0] > edge && p[0] < W - 1 - edge && p[1] > edge && p[1] < H - 1 - edge); // a plate cut off by the frame cannot be rectified
+  if (!inside || area < N * 0.08 || !c.every((p) => isFinite(p[0]) && isFinite(p[1]))) return null;
+  return { quad: c, rms: Math.max(...sides.map((s) => s.rms)) };
+}
 
-  if (!quad) return null;
-
-  // turn the quad so the tape (or else the flattest side) runs left to right, corners TL, TR, BR, BL
-  // lane direction = perpendicular to the dominant edge direction of the tape mask (the strips are long, so their edges agree)
-  let phi = null, gxx = 0, gyy = 0, gxy = 0, tn = 0;
+/** Direction the tape lanes run (radians, in (-90, 90]) from the tape mask's edges, or null without tape. */
+function laneAngle({ W, H, N, tape }) {
+  let gxx = 0, gyy = 0, gxy = 0, tn = 0;
   for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
     const i = y * W + x;
     if (!tape[i] && !tape[i - 1] && !tape[i + 1] && !tape[i - W] && !tape[i + W]) continue;
@@ -148,10 +147,14 @@ export function correct(src, SW, SH, { side = 640, margin = 60 } = {}) {
     const gx = tape[i + 1] - tape[i - 1], gy = tape[i + W] - tape[i - W];
     gxx += gx * gx; gyy += gy * gy; gxy += gx * gy;
   }
-  if (tn > 0.005 * N) { // gradient axis + 90 degrees, folded into (-90, 90]
-    phi = 0.5 * Math.atan2(2 * gxy, gxx - gyy) + Math.PI / 2;
-    if (phi > Math.PI / 2) phi -= Math.PI;
-  }
+  if (tn <= 0.005 * N) return null;
+  let phi = 0.5 * Math.atan2(2 * gxy, gxx - gyy) + Math.PI / 2; // gradient axis + 90 degrees, folded
+  if (phi > Math.PI / 2) phi -= Math.PI;
+  return phi;
+}
+
+/** Turn a quad (any scale) so the lanes (or else the flattest side) run left to right: corners TL, TR, BR, BL. */
+function orderQuad(quad, phi) {
   const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]);
   const edges = quad.map((a, i) => ({ i, a: ang(a, quad[(i + 1) % 4]) }));
   const target = phi ?? edges.reduce((b, e) => (Math.abs(Math.sin(e.a)) < Math.abs(Math.sin(b.a)) ? e : b)).a;
@@ -159,13 +162,52 @@ export function correct(src, SW, SH, { side = 640, margin = 60 } = {}) {
   const cand = edges.filter((e) => dist(e) < 0.7).sort((p, q) => dist(p) - dist(q)).slice(0, 2);
   const upY = (i) => { const a = quad[i], b = quad[(i + 1) % 4]; return -((a[0] + b[0]) / 2) * Math.sin(target) + ((a[1] + b[1]) / 2) * Math.cos(target); };
   const top = cand.length ? cand.reduce((b, e) => (upY(e.i) < upY(b.i) ? e : b)).i : 0;
-  // walk round the quad so that it is clockwise as seen with the top edge flat, starting at the top edge's left end
-  const walk = [0, 1, 2, 3].map((j) => quad[(top + j) % 4]);
+  const walk = [0, 1, 2, 3].map((j) => quad[(top + j) % 4]); // clockwise as seen with the top edge flat, from its left end
   const cr = (walk[1][0] - walk[0][0]) * (walk[2][1] - walk[1][1]) - (walk[1][1] - walk[0][1]) * (walk[2][0] - walk[1][0]);
-  const tl = cr > 0 ? walk : [walk[1], walk[0], walk[3], walk[2]]; // reverse winding if needed
-  const [A, B, C, D] = tl;
+  return cr > 0 ? walk : [walk[1], walk[0], walk[3], walk[2]];
+}
+
+/**
+ * How much the camera angle squashed the square, from its four corners (TL, TR, BR, BL): 0 = seen straight on.
+ * score 1 is where a straight-on retake is worth asking for; level is "good" (< 0.5), "ok" (< 1) or "high".
+ */
+export function distortion(q) {
+  const d = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]), [A, B, C, D] = q;
+  const top = d(A, B), right = d(B, C), bottom = d(C, D), left = d(D, A);
+  const pr = Math.max(Math.abs(top - bottom) / Math.max(top, bottom), Math.abs(left - right) / Math.max(left, right)); // far side looks shorter
+  const w = (top + bottom) / 2, h = (left + right) / 2, asp = Math.max(w, h) / Math.min(w, h) - 1; // one direction squashed
+  let dev = 0;
+  for (let i = 0; i < 4; i++) {
+    const p = q[(i + 3) % 4], c = q[i], n = q[(i + 1) % 4];
+    const a = Math.acos(Math.max(-1, Math.min(1, ((p[0] - c[0]) * (n[0] - c[0]) + (p[1] - c[1]) * (n[1] - c[1])) / (d(p, c) * d(c, n) || 1))));
+    dev = Math.max(dev, Math.abs((a * 180) / Math.PI - 90));
+  }
+  const score = Math.max(pr / 0.25, asp / 0.5, dev / 30);
+  return { score, level: score < 0.5 ? "good" : score < 1 ? "ok" : "high" };
+}
+
+/**
+ * findCorners(rgba, W, H) → { quad: [TL, TR, BR, BL] in photo pixels, score, level, sure } or null when the whole plate is not in view.
+ * `sure` says the four sides were straight lines (not hidden by a hand or cut by clutter) and the angle is not extreme.
+ */
+export function findCorners(src, SW, SH) {
+  const m = scan(src, SW, SH), f = plateQuad(m);
+  if (!f) return null;
+  const quad = orderQuad(f.quad, laneAngle(m)).map((p) => [p[0] * m.k, p[1] * m.k]);
+  const dis = distortion(quad);
+  return { quad, ...dis, rms: f.rms, sure: f.rms < 0.03 && dis.score < 2.5 };
+}
+
+/** Corners the player placed (any order of turning) → turned so the lanes run left to right, when the tape shows which way that is. */
+export function turnQuad(src, SW, SH, quad) {
+  const phi = laneAngle(scan(src, SW, SH));
+  return phi == null ? quad : orderQuad(quad, phi);
+}
+
+/** Flat top-down square (plate side `side`, with a margin) from a quad [TL, TR, BR, BL] in photo pixels. */
+export function warp(src, SW, SH, quad, { side = 640, margin = 60 } = {}) {
   const Wout = side + 2 * margin;
-  const Hm = homography([[margin, margin], [margin + side, margin], [margin + side, margin + side], [margin, margin + side]], [A, B, C, D].map((p) => [p[0] * k, p[1] * k]));
+  const Hm = homography([[margin, margin], [margin + side, margin], [margin + side, margin + side], [margin, margin + side]], quad);
   const out = new Uint8ClampedArray(Wout * Wout * 4);
   for (let y = 0; y < Wout; y++) for (let x = 0; x < Wout; x++) {
     const w = Hm[6] * x + Hm[7] * y + 1, sx = (Hm[0] * x + Hm[1] * y + Hm[2]) / w, sy = (Hm[3] * x + Hm[4] * y + Hm[5]) / w, o = (y * Wout + x) * 4;
@@ -177,5 +219,11 @@ export function correct(src, SW, SH, { side = 640, margin = 60 } = {}) {
     }
     out[o + 3] = 255;
   }
-  return { data: out, W: Wout, H: Wout, quad: tl };
+  return { data: out, W: Wout, H: Wout };
+}
+
+/** correct(rgba, W, H) → { data, W, H, quad, score, level, sure } (the straightened view and how it went), or null when the whole plate is not in view. */
+export function correct(src, SW, SH, opts) {
+  const f = findCorners(src, SW, SH);
+  return f && { ...warp(src, SW, SH, f.quad, opts), quad: f.quad, score: f.score, level: f.level, sure: f.sure, rms: f.rms };
 }

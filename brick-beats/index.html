@@ -47,6 +47,7 @@
       <div class="panel" id="selpanel" hidden></div>
       <div class="transport">
         <button class="btn btn-primary" id="play" type="button"></button>
+        <button class="btn" id="fixbtn" type="button" disabled>Fix corners</button>
         <button class="btn" id="fruitsbtn" type="button" aria-pressed="false">Show fruits</button>
       </div>
     </section>
@@ -90,7 +91,13 @@
       </details>
     </section>
   </div>
-  <footer class="foot">Brick Beats v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · Your photos stay on this device.</footer>
+  <dialog id="corners" class="corners" aria-label="Fix the corners">
+  <p><b>Fix the corners.</b> Drag the four dots onto the corners of the green square (or of the area where the bricks are). Start top-left, the way the bricks should read.</p>
+  <div class="cwrap" id="cwrap"><img id="cimg" alt="Your photo"><svg id="cpoly-svg" viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true"><polygon id="cpoly" points=""/></svg><i class="cdot" aria-label="Top left corner">1</i><i class="cdot" aria-label="Top right corner">2</i><i class="cdot" aria-label="Bottom right corner">3</i><i class="cdot" aria-label="Bottom left corner">4</i></div>
+  <p id="cscore" class="status"></p>
+  <div class="get"><button class="btn btn-primary" id="cok" type="button">Use these corners</button><button class="btn" id="cno" type="button">Cancel</button></div>
+</dialog>
+<footer class="foot">Brick Beats v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · Your photos stay on this device.</footer>
 </main>
 <noscript>This app needs JavaScript.</noscript>
 <script type="module" src="./app.js"></script>

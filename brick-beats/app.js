@@ -1,7 +1,7 @@
 // Brick Beats: photo of a brick mat → lanes of notes → playback with a moving line over the photo.
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
 import { detect, probe } from "./vision.js";
-import { correct } from "./correct.js";
+import { findCorners, turnQuad, warp, distortion } from "./correct.js";
 import { clearFor, tidy, mergeTracks } from "./merge.js";
 import { emptyProfile, learnColour, learnedClass, reviveProfile } from "./profile.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
@@ -29,14 +29,23 @@ const noteOf = (tr, b) => midiOf(tr.instrument, state.key, state.scale, b.cls);
 const setStatus = (t, err) => { const s = $("#status"); s.textContent = t; s.classList.toggle("err", !!err); };
 
 /* ---------- reading the photo ---------- */
-function analyse(im) {
+function analyse(im, manualQuad) {
   const t0 = performance.now();
   const canvasOf = (w, h) => { const cv = document.createElement("canvas"); cv.width = w; cv.height = h; return cv; };
   // 1. whole plate in view: straighten it (perspective, rotation) and read the straightened view
   const BW = Math.min(1280, im.naturalWidth), BH = Math.max(1, Math.round((im.naturalHeight * BW) / im.naturalWidth));
   const big = canvasOf(BW, BH), bc = big.getContext("2d", { willReadFrequently: true });
   bc.drawImage(im, 0, 0, BW, BH);
-  const fixed = correct(bc.getImageData(0, 0, BW, BH).data, BW, BH);
+  const bd = bc.getImageData(0, 0, BW, BH).data;
+  let fixed = null, corr = null; // corr: how the straightening went: auto (found by the reader) or manual (the player's corners)
+  if (manualQuad) {
+    const quad = turnQuad(bd, BW, BH, manualQuad);
+    fixed = warp(bd, BW, BH, quad); corr = { mode: "manual", quad, ...distortion(quad), sure: true };
+  } else {
+    const f = findCorners(bd, BW, BH);
+    if (f) { fixed = warp(bd, BW, BH, f.quad); corr = { mode: "auto", quad: f.quad, score: f.score, level: f.level, sure: f.sure }; }
+  }
+  const shot = { url: big.toDataURL("image/jpeg", 0.85), W: BW, H: BH, quad: corr?.quad || null }; // the photo as taken, for the corner editor
   let px, W, H, view = null;
   if (fixed) {
     px = fixed.data; W = fixed.W; H = fixed.H;
@@ -51,18 +60,20 @@ function analyse(im) {
     px = c.getImageData(0, 0, W, H).data;
   }
   const r = detect(px, W, H, { classify: (rgb) => learnedClass(profile, rgb) });
-  r.data = px; r.view = view; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
+  r.data = px; r.view = view; r.corr = corr; r.shot = shot; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
   r.ms = performance.now() - t0;
   return r;
 }
 
-async function useSource(src, example) {
+let lastSrc = null, shot = null;
+async function useSource(src, example, quad) {
   setStatus("Reading the mat…");
   const im = new Image();
   im.src = src;
   try { await im.decode(); } catch { setStatus("That file could not be opened as a photo.", true); return false; }
-  const r = analyse(im);
-  if (!r.ok) { setStatus(r.msg, true); return false; }
+  const r = analyse(im, quad);
+  shot = r.shot; lastSrc = src;
+  if (!r.ok) { setStatus(r.msg, true); if (!quad && !example) openCorners(); return false; }
   res = r;
   const fresh = r.tracks.map((t, i) => ({
     row: t.row, mid: t.mid, instrument: DEFAULT_INSTRUMENTS[i % DEFAULT_INSTRUMENTS.length], mute: false, solo: false,
@@ -95,7 +106,9 @@ async function useSource(src, example) {
   world.style.top = `${(-crop.y0 / r.H / ch) * 100}%`;
   $("#img").src = r.view || src;
   $("#tag").hidden = !example;
+  $("#fixbtn").disabled = false;
   refresh();
+  if (!example && !quad && (!r.corr || !r.corr.sure)) openCorners(); // the reader is not sure where the square is: ask
   return true;
 }
 
@@ -213,7 +226,11 @@ function renderStatus() {
   let t = `Found ${n} bricks in ${tracks.length} ${res.lanes ? "lanes" : "rows"} in ${Math.max(1, Math.round(res.ms))} ms. One loop is ${(loopLen * secPerStud()).toFixed(1)} s.`;
   t += (un ? " Dashed bricks need a check: tap them." : " Tap a brick if it looks wrong.") + " Missed one? Tap it on the photo.";
   if (!res.lanes) t += " Tip: tape across the plate makes clear lanes.";
-  if (res.view) t += " The photo was straightened first.";
+  const c = res.corr;
+  if (!c) t += " Could not find the whole green square: tap Fix corners to mark it, or retake with the whole square in view.";
+  else if (!c.sure) t += " Not sure where the corners of the square are: tap Fix corners to check them.";
+  else if (c.level === "high") t += " The photo is very slanted. For the best reading, hold the phone straight above the mat with the whole square in view and retake, or tap Fix corners.";
+  else t += c.mode === "manual" ? " Straightened with your corners." : " The photo was straightened first.";
   if (res.merged) t += " Joined with your earlier photo of this mat.";
   if (state.fruits) {
     const c = fruitCounts(tracks), list = FRUITS.filter((f) => c[f.id]).map((f) => `${f.name} ×${c[f.id]}`);
@@ -433,6 +450,39 @@ $("#boxes").addEventListener("pointerdown", (e) => {
   };
   el.addEventListener("pointermove", move); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
 });
+
+/* ---------- fixing the corners by hand ---------- */
+const dlg = $("#corners"), cdots = [...dlg.querySelectorAll(".cdot")];
+let cq = [];
+function drawCorners() {
+  const w = shot.W, h = shot.H, d = distortion(cq);
+  $("#cpoly").setAttribute("points", cq.map((p) => p.join(",")).join(" "));
+  cdots.forEach((e, i) => { e.style.left = `${(cq[i][0] / w) * 100}%`; e.style.top = `${(cq[i][1] / h) * 100}%`; });
+  $("#cscore").textContent = d.level === "high" ? "Very slanted: the reading will be rough. Retake from straight above if you can." : d.level === "ok" ? "A little slanted: fine, it will be straightened." : "Looks straight on.";
+}
+function openCorners() {
+  if (!shot || dlg.open) return;
+  const w = shot.W, h = shot.H;
+  cq = shot.quad ? shot.quad.map((p) => p.slice()) : [[0.2 * w, 0.2 * h], [0.8 * w, 0.2 * h], [0.8 * w, 0.8 * h], [0.2 * w, 0.8 * h]];
+  $("#cimg").src = shot.url;
+  $("#cwrap").style.width = `min(100%, ${(70 * w) / h}vh)`; // whole photo visible, dots map straight onto it
+  $("#cpoly-svg").setAttribute("viewBox", `0 0 ${w} ${h}`);
+  drawCorners();
+  dlg.showModal();
+}
+cdots.forEach((e, i) => e.addEventListener("pointerdown", (ev) => {
+  e.setPointerCapture(ev.pointerId);
+  const mv = (m) => {
+    const r = $("#cwrap").getBoundingClientRect();
+    cq[i] = [Math.min(shot.W, Math.max(0, ((m.clientX - r.left) / r.width) * shot.W)), Math.min(shot.H, Math.max(0, ((m.clientY - r.top) / r.height) * shot.H))];
+    drawCorners();
+  };
+  const up = () => { e.removeEventListener("pointermove", mv); e.removeEventListener("pointerup", up); e.removeEventListener("pointercancel", up); };
+  e.addEventListener("pointermove", mv); e.addEventListener("pointerup", up); e.addEventListener("pointercancel", up);
+}));
+$("#fixbtn").addEventListener("click", openCorners);
+$("#cno").addEventListener("click", () => dlg.close());
+$("#cok").addEventListener("click", () => { const q = cq.map((p) => p.slice()); dlg.close(); useSource(lastSrc, lastExample, q); });
 
 async function openPhoto(file) {
   if (!file || !file.type.startsWith("image/")) return;
