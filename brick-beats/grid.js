@@ -37,6 +37,23 @@ export function splitTallest(edges) {
   return { edges: e, at };
 }
 
+/** Evenly spaced lines through the given ones (least squares): { y0, step, dev } with `dev` the worst miss, or null for fewer than 2 lines. */
+export function fitUniform(c) {
+  const n = c.length;
+  if (n < 2) return null;
+  const mk = (n - 1) / 2, mc = c.reduce((a, v) => a + v, 0) / n;
+  let num = 0, den = 0;
+  c.forEach((v, k) => { num += (k - mk) * (v - mc); den += (k - mk) ** 2; });
+  const step = num / den, y0 = mc - step * mk;
+  return { y0, step, dev: Math.max(...c.map((v, k) => Math.abs(v - (y0 + k * step)))) };
+}
+
+/** n lanes = n + 1 lines `step` apart from y0. */
+export const uniformEdges = (y0, step, n) => Array.from({ length: n + 1 }, (_, k) => y0 + k * step);
+
+/** Columns of an evenly spaced grid that fill the square from x0. */
+export const colsFill = (x0, pitch, sq = SQ) => Math.max(1, Math.floor((sq.x1 - x0) / pitch + 0.2));
+
 /** Without line k (only inner lines can go: the two lanes beside it become one), or null. */
 export function removeEdge(edges, k) {
   if (k <= 0 || k >= edges.length - 1 || edges.length <= 2) return null;

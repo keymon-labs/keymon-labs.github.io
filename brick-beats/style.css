@@ -177,3 +177,13 @@ pre { margin: 0; max-height: 240px; overflow: auto; font: 12px/1.4 var(--mono); 
 .lline.gap { margin-top: 0; background: color-mix(in srgb, var(--accent) 18%, transparent); border-top: 2px dashed rgba(255,255,255,.85); border-bottom: 2px dashed rgba(255,255,255,.85); box-sizing: border-box; }
 .lline.gap::before { display: none; }
 .lline.gap.sel { border-color: var(--accent); }
+
+/* even-spacing sliders: lanes on the left of the photo, columns below it */
+.vsl { display: flex; gap: 2px; align-self: stretch; }
+.vsl label { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; color: var(--muted, inherit); }
+.vsl input { writing-mode: vertical-lr; direction: ltr; flex: 1; width: 22px; min-height: 0; touch-action: none; }
+.hsl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hsl label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+.hsl input { width: 100%; touch-action: none; }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+.vsl[hidden], .hsl[hidden] { display: none; }

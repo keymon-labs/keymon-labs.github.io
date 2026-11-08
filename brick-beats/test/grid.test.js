@@ -43,3 +43,12 @@ test("a saved mapping comes back, and a broken one is dropped", () => {
   assert.equal(reviveMapping(JSON.stringify({ ...m, edges: ["a"] })), null);
   assert.equal(reviveMapping(JSON.stringify({ ...m, quad: [1] })).quad, null);
 });
+
+test("fitUniform finds the spacing of evenly spaced lines", async () => {
+  const { fitUniform, uniformEdges, colsFill } = await import("../grid.js");
+  const f = fitUniform([100.4, 180, 259.7, 340.2, 419.9]);
+  assert.ok(Math.abs(f.step - 79.9) < 0.5 && Math.abs(f.y0 - 100.2) < 0.7 && f.dev < 1);
+  assert.deepEqual(uniformEdges(10, 5, 3), [10, 15, 20, 25]);
+  assert.equal(fitUniform([5]), null);
+  assert.equal(colsFill(60, 40), 16);
+});

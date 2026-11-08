@@ -2,7 +2,7 @@
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
 import { detect, probe } from "./vision.js";
 import { findCorners, turnQuad, warp, distortion, snapTargets, snapPoint, plateShare } from "./correct.js";
-import { SQ, edgesFrom, gridOf, laneIdx, colOf, splitTallest, removeEdge, reviveMapping } from "./grid.js";
+import { SQ, edgesFrom, gridOf, laneIdx, colOf, splitTallest, removeEdge, reviveMapping, fitUniform, uniformEdges, colsFill } from "./grid.js";
 import { clearFor, tidy, mergeTracks } from "./merge.js";
 import { emptyProfile, learnColour, learnedClass, reviveProfile } from "./profile.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
@@ -24,6 +24,7 @@ try { profile = reviveProfile(localStorage.getItem(PROFILE_KEY) || ""); } catch 
 const saveProfile = () => { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch { /* not saved */ } };
 
 let uid = 1, res = null, tracks = [], loopLen = 20, sel = null, crop = null, objUrl = null;
+let uniform = true, sliderBase = null; // even spacing mode (sliders), and the stud size when a slider drag began
 let edges = [], laneTilt = 0, lastExample = true, dragged = false; // lane boundary lines (image y at x=0), their slope, and whether the last photo was an example
 let grid = { x0: 0, pitch: 28, cols: 0, rect: false }, gap = 0, editing = false, selEdge = -1; // gap: width of the tape or space between lanes (px, 0 = lanes touch) // the column grid (cols 0 = not a fixed matrix: the loop is as long as the bricks), grid-editing mode, selected lane line
 // What is remembered between photos of one mat: grid, lane lines and corners (grid.js). Saved in this browser only; "Reset grid" forgets it.
@@ -91,6 +92,11 @@ async function useSource(src, example, quad, reset) {
   // 1. the matrix: from this photo, or the remembered one when it agrees (same number of lines) or the player set it by hand
   const centres = r.tracks.map((t) => (r.lanes && t.mid !== undefined ? t.mid / r.lanes.cs : t.bricks.length ? t.bricks.reduce((a, b) => a + b.y + b.h / 2, 0) / t.bricks.length : 0));
   let g = rect ? { ...gridOf(r.fit.a, r.fit.b), rect } : { x0: r.fit.a, pitch: r.fit.b, cols: 0, rect }, e = edgesFrom(centres), tilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0, fromMap = false, gp = r.lanes ? Math.min(r.lanes.gap || 0.9 * r.fit.b, 1.5 * r.fit.b) : 0; // tape lanes: the gap is the tape's own width
+  const st = r.lanes?.strips?.map((x) => x.c / r.lanes.cs), nT = r.tracks.length; // the tape strips themselves: they are the lane lines, evenly spaced when the tape is
+  if (st && (st.length === nT + 1 || st.length === nT - 1)) {
+    const u = fitUniform(st), ln = st.length === nT + 1 ? st : [st[0] - (u?.step ?? 0), ...st, st[st.length - 1] + (u?.step ?? 0)];
+    e = u && u.dev < 0.2 * u.step ? uniformEdges(u.y0 - (st.length === nT + 1 ? 0 : u.step), u.step, nT) : ln;
+  }
   const m = mapping;
   if (m && !reset && rect && m.rect && Math.abs(r.fit.b / m.pitch - 1) < 0.12 && (m.edited || m.edges.length === e.length || !r.lanes)) { g = { x0: m.x0, pitch: m.pitch, cols: m.cols, rect }; e = m.edges.slice(); tilt = m.tilt; gp = m.gap; fromMap = true; }
   // 2. the bricks, snapped to the matrix: a column from their left edge, a lane from their middle
@@ -197,8 +203,8 @@ function renderBoxes() {
   const W = res.W, H = res.H, xb = crop.x0 + 6, f = res.fit;
   let h = "";
   for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % 2 ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
-  edges.forEach((_, k) => { h += `<i class="lline${editing ? "" : " thin"}${gap ? " gap" : ""}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${((ey(k, 0) - gap / 2) / H) * 100}%;${gap ? `height:${(gap / H) * 100}%;` : ""}transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
-  if (editing) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
+  edges.forEach((_, k) => { h += `<i class="lline${editing && !uniform ? "" : " thin"}${gap ? " gap" : ""}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${((ey(k, 0) - gap / 2) / H) * 100}%;${gap ? `height:${(gap / H) * 100}%;` : ""}transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
+  if (editing && !uniform) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
   for (const tr of tracks) {
     h += `<span class="rownum" style="top:${(laneY(tr, xb) / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
     for (const b of tr.bricks) {
@@ -300,6 +306,7 @@ function refresh() {
   loopLen = Math.max(1, grid.cols || 0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len)));
   annotateFruits(tracks);
   renderBoxes(); renderLanes(); renderSel(); renderLegend(); renderLearned();
+  syncSliders();
   $("#gaptoggle").textContent = gap ? "Gaps: on" : "Gaps: off"; $("#gaptoggle").setAttribute("aria-pressed", String(!!gap));
   $("#json").textContent = toJson();
   renderStatus();
@@ -449,6 +456,10 @@ document.addEventListener("click", (e) => {
   const act = t.closest("[data-act]");
   if (!act) return;
   const a = act.dataset.act;
+  if (a === "unitoggle") { uniform = !uniform; if (uniform) evenOut(); toggleGrid(true); commitGrid(grid.pitch); refresh(); return; }
+  if (a === "reread") { reread(); return; }
+  if (uniform && a === "addlane") { const u = fitUniform(edges); edges = uniformEdges(u.y0, u.step, tracks.length + 1); tracks.push(newTrack(tracks.length)); renumber(); rebuildGains(); commitGrid(grid.pitch); refresh(); return; }
+  if (uniform && a === "dellane") { const e2 = edges.slice(0, -1); if (e2.length < 2 || clashes(lanesFor(e2))) { setStatus("The last lane has notes at the same time as the one above. Move or remove some first.", true); return; } tracks.pop(); edges = e2; renumber(); rebuildGains(); commitGrid(grid.pitch); refresh(); return; }
   if (a === "addlane") { const sp = splitTallest(edges); edges = sp.edges; tracks.splice(sp.at, 0, newTrack(sp.at)); renumber(); selEdge = sp.at; rebuildGains(); commitGrid(grid.pitch); refresh(); return; }
   if (a === "dellane") { const e2 = removeEdge(edges, selEdge); if (!e2) { setStatus("Tap an inner lane line first, then Remove line.", true); return; } if (clashes(lanesFor(e2))) { setStatus("Those two lanes have notes at the same time. Move or remove some first.", true); return; } tracks.splice(selEdge, 1); edges = e2; selEdge = -1; renumber(); rebuildGains(); commitGrid(grid.pitch); refresh(); return; }
   if (a === "colsless" || a === "colsmore") {
@@ -586,10 +597,53 @@ async function openPhoto(file) {
   if (await useSource(url, false)) { if (objUrl) URL.revokeObjectURL(objUrl); objUrl = url; } else URL.revokeObjectURL(url);
 }
 
+// Even spacing: the lane lines and the columns are one start + one size each; the sliders move them.
+function evenOut() { const u = edges.length > 1 && fitUniform(edges); if (u) edges = uniformEdges(u.y0, u.step, edges.length - 1); }
+function syncSliders() {
+  const on = editing && uniform && !!res && grid.rect;
+  $("#vsl").hidden = $("#hsl").hidden = !on;
+  $("#unitoggle").textContent = uniform ? "Even spacing: on" : "Even spacing: off"; $("#unitoggle").setAttribute("aria-pressed", String(uniform));
+  if (!on) return;
+  $("#lstart").value = edges[0]; $("#lsize").value = (edges[edges.length - 1] - edges[0]) / (edges.length - 1); $("#lgap").value = gap;
+  $("#cstart").value = grid.x0; $("#csize").value = grid.pitch;
+}
+function slide(id, v) {
+  sliderBase ??= grid.pitch;
+  const n = edges.length - 1;
+  if (id === "lstart") edges = uniformEdges(v, (edges[n] - edges[0]) / n, n);
+  else if (id === "lsize") edges = uniformEdges(edges[0], v, n);
+  else if (id === "lgap") gap = v;
+  else { grid = { ...grid, [id === "cstart" ? "x0" : "pitch"]: v }; grid.cols = colsFill(grid.x0, grid.pitch); res.fit = { a: grid.x0, b: grid.pitch }; }
+  renderBoxes();
+}
+// Read the notes again from what the camera saw, into the lanes and columns as they are now (hand edits are dropped; lane sounds stay).
+function reread() {
+  if (!res?.tracks) return;
+  const lanes = Array.from({ length: edges.length - 1 }, (_, i) => ({ ...newTrack(i), ...(tracks[i] ? { instrument: tracks[i].instrument, mute: tracks[i].mute, solo: tracks[i].solo } : {}) }));
+  res.tracks.forEach((t) => t.bricks.forEach((b) => lanes[laneIdx(edges, laneTilt, b.x + b.w / 2, b.y + b.h / 2)].bricks.push({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start: Math.max(0, colOf(grid, b.x)), len: Math.max(1, Math.round(b.w / grid.pitch)), user: false, seen: 1, box: { x: b.x, y: b.y, w: b.w, h: b.h }, dirty: true })));
+  lanes.forEach((t) => { t.bricks = tidy(t.bricks); });
+  tracks = lanes; sel = null; res.fit = { a: grid.x0, b: grid.pitch };
+  clampCols(); tracks.forEach((t) => t.bricks.forEach((b) => place(t, b)));
+  mapping = { ...(mapping || {}), gap, rect: grid.rect, edges: edges.slice(), tilt: laneTilt, x0: grid.x0, pitch: grid.pitch, cols: grid.cols, edited: true }; mapping.quad ??= null; mapping.ar ??= 0;
+  saveMapping(); rebuildGains(); sliderBase = null; refresh();
+}
+for (const id of ["lstart", "lsize", "lgap", "cstart", "csize"]) {
+  $("#" + id).addEventListener("input", (e) => slide(id, +e.target.value));
+  $("#" + id).addEventListener("change", () => {
+    const base = sliderBase ?? grid.pitch; sliderBase = null;
+    if (tracks.some((t) => t.bricks.some((b) => b.user))) { tracks.forEach((t) => t.bricks.forEach((b) => { b.dirty = true; })); commitGrid(base); refresh(); } else reread(); // hand-placed notes are kept: only found ones re-snap
+  });
+}
+$("#update").addEventListener("click", async () => { // forget the offline copy and load the newest build (your saved settings stay)
+  try { for (const r of (await navigator.serviceWorker?.getRegistrations?.()) || []) await r.unregister(); for (const k of await caches.keys()) await caches.delete(k); } catch { /* reload anyway */ }
+  location.replace(`${location.pathname}?v=${Date.now()}`);
+});
+
 function toggleGrid(on) {
   editing = on; selEdge = -1;
+  if (on && uniform) evenOut();
   $("#gridbar").hidden = !on; $("#gridbtn").setAttribute("aria-pressed", String(on));
-  if (res) renderBoxes();
+  if (res) { renderBoxes(); syncSliders(); }
 }
 $("#gridbtn").addEventListener("click", () => toggleGrid(!editing));
 $("#play").addEventListener("click", () => (playing ? stopPlay() : startPlay()));

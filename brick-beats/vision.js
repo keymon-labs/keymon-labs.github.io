@@ -330,7 +330,7 @@ export function detect(data, W, H, { classify = null } = {}) {
   const slope = den ? (cnt * sxy - sx * sy) / den : p;
   const icpt = (sy - slope * sx) / cnt;
   // lanes.gap: the usual tape width in px
-  return { ok: true, W, H, plate: { x0, y0, x1, y1 }, lanes: laneLines ? { sn, cs, gap: laneLines.map((l) => l.hi - l.lo + 1).sort((x, y) => x - y)[laneLines.length >> 1] } : null, pitch: p, fit: { a: icpt, b: slope }, loopLen, tracks, brickCount: cnt };
+  return { ok: true, W, H, plate: { x0, y0, x1, y1 }, lanes: laneLines ? { sn, cs, strips: laneLines.map((l) => ({ c: l.c, lo: l.lo, hi: l.hi })), gap: laneLines.map((l) => l.hi - l.lo + 1).sort((x, y) => x - y)[laneLines.length >> 1] } : null, pitch: p, fit: { a: icpt, b: slope }, loopLen, tracks, brickCount: cnt };
 }
 
 
