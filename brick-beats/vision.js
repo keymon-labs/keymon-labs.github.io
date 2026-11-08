@@ -140,8 +140,24 @@ export function denoise(data, W, H) {
   return o;
 }
 
+/** Warm or cool light shifts red against blue. The green plate's blue-to-green ratio is known, so measure the shift on it and undo it (small shifts are left alone). */
+export function balance(data, W, H) {
+  const t = [];
+  for (let y = 0; y < H; y += 4) for (let x = 0; x < W; x += 4) {
+    const i = (y * W + x) * 4, r = data[i], g = data[i + 1], b = data[i + 2];
+    if (g > 70 && g > b * 1.05 && b > r * 2.5 && g < 200) t.push(b / g); // plate-like: strongly green, a bit of blue, hardly any red
+  }
+  if (t.length < 300) return data;
+  t.sort((p, q) => p - q);
+  const tau = Math.min(1.25, Math.max(0.8, t[t.length >> 1] / 0.78));
+  if (Math.abs(tau - 1) < 0.05) return data;
+  const o = new Uint8ClampedArray(data.length);
+  for (let i = 0; i < data.length; i += 4) { o[i] = data[i] * tau; o[i + 1] = data[i + 1]; o[i + 2] = data[i + 2] / tau; o[i + 3] = 255; }
+  return o;
+}
+
 export function detect(data, W, H, { classify = null } = {}) {
-  data = denoise(data, W, H);
+  data = balance(denoise(data, W, H), W, H);
   const N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N), cls = new Int8Array(N).fill(-1);
   let plateCount = 0;

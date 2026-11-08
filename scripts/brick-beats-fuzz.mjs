@@ -1,6 +1,7 @@
 // Brick Beats robustness sweep (not part of `npm test`): renders many random mats under varied floors, lighting, noise, blur, rotation and
 // perspective, runs corner finding + straightening + brick reading, and prints pass rates per factor so detection can be tuned.
-//   node scripts/brick-beats-fuzz.mjs [--n 40] [--seed 1] [--save dir] [--only floor=tile]
+//   node scripts/brick-beats-fuzz.mjs [--n 40] [--seed 1] [--save dir] [--only floor=tile] [--set lego|cast|clean] [--detail]
+// Sets: lego = Lego-sized studs only; cast = strong colour cast on otherwise easy photos; clean = easy photos (a regression floor).
 // Results are only as good as the generator: it is a reference for tuning, never a proof. Nothing here uses real photos.
 import fs from "node:fs";
 import path from "node:path";
@@ -9,7 +10,7 @@ import { detect, NAMES } from "../brick-beats/vision.js";
 import { renderMat, distort, distortPoint, encodePng, BRICK_RGB } from "./brick-beats-mat.mjs";
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
-const N = +arg("n", 40), SEED = +arg("seed", 1), SAVE = arg("save", ""), DETAIL = process.argv.includes("--detail"), ONLY = arg("only", "");
+const N = +arg("n", 40), SEED = +arg("seed", 1), SAVE = arg("save", ""), SET = arg("set", ""), DETAIL = process.argv.includes("--detail"), ONLY = arg("only", "");
 
 const rng = (a) => () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const pick = (r, a) => a[Math.floor(r() * a.length)], between = (r, a, b) => a + (b - a) * r(), gauss = (r) => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
@@ -54,9 +55,11 @@ function weather(r, ph, o) {
 function makeCase(i) {
   const r = rng(SEED * 100003 + i), floorName = pick(r, Object.keys(FLOORS)), [kind, colour] = FLOORS[floorName];
   const lanes = randomLanes(r), edgeTape = r() < 0.2, tape = r() < 0.7;
-  const lego = r() < 0.3, mat = { fine: lego ? 2 : 1, margin: 160, tape, overhang: tape && r() < 0.3 ? 0.6 : 0, edgeTape, floorKind: kind, floor: colour };
+  const lego = SET === "lego" ? true : SET ? false : r() < 0.3, mat = { fine: lego ? 2 : 1, margin: 160, tape, overhang: tape && r() < 0.3 ? 0.6 : 0, edgeTape, floorKind: kind, floor: colour };
   const photo = { outW: 800, outH: 1040, scale: between(r, 0.55, 1), rot: between(r, -30, 30) * (r() < 0.3 ? 0 : 1), tilt: between(r, -0.0006, 0.0006) * (r() < 0.3 ? 0 : 1), fill: colour };
   const wx = { gradient: between(r, 0, 0.6) * (r() < 0.5 ? 0 : 1), vignette: r() < 0.4 ? between(r, 0.1, 0.5) : 0, cast: r() < 0.4 ? between(r, -0.18, 0.18) : 0, glare: r() < 0.2 ? between(r, 40, 110) : 0, shadow: r() < 0.25 ? between(r, 0.2, 0.45) : 0, noise: r() < 0.5 ? between(r, 3, 14) : 0, blur: r() < 0.25 };
+  if (SET === "cast") { wx.cast = between(r, 0.1, 0.2) * (r() < 0.5 ? -1 : 1); wx.noise = 0; wx.glare = 0; wx.shadow = 0; }
+  if (SET === "clean") { Object.assign(wx, { gradient: 0, vignette: 0, cast: 0, glare: 0, shadow: 0, noise: 0, blur: false }); }
   const tags = { bricks: lego ? "lego" : "duplo", floor: floorName, tape: tape ? "tape" : "no-tape", edge: edgeTape ? "edge-tape" : "-", rot: Math.abs(photo.rot) > 20 ? "rot>20" : Math.abs(photo.rot) > 6 ? "rot6-20" : "rot<6", tilt: Math.abs(photo.tilt) > 0.0003 ? "tilt-high" : "tilt-low", size: photo.scale < 0.7 ? "small" : "large", light: wx.gradient > 0.3 || wx.shadow ? "uneven" : "even", glare: wx.glare ? "glare" : "-", noise: wx.noise > 8 ? "noisy" : "clean", blur: wx.blur ? "blur" : "-", cast: Math.abs(wx.cast) > 0.1 ? "cast" : "-" };
   return { i, lanes, mat, photo, wx, tags, r };
 }

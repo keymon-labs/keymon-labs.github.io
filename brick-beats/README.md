@@ -78,4 +78,8 @@ Tuning log (60 cases each; "corners" = all four within 2.5% of the plate side, "
 | `denoise` (3x3 average when the photo is grainy) before reading bricks | 93% / 73% | |
 | `denoise` before finding corners | 98% / 75% | 92% / 65% |
 
-Known weak spots (seed 4): a busy multi-colour rug (corners 67%), a colour cast or glare turns lime into yellow, Lego-sized studs with several stresses at once, and the right-most brick sometimes one stud short. Next ideas: a red-channel colour balance from the tape, a per-photo stud-size check for Lego, and a looser floor model for patterned floors.
+| `balance`: undo a warm/cool light shift measured on the green plate (blue-to-green ratio), before corners and bricks | 98% / 90% | 92% / 78% |
+
+Sets (`--set`): `cast` (strong colour cast, otherwise easy): exact 0% → 92%; `lego` (Lego-sized studs, normal stresses): 67% → 88%; `clean` (easy photos, regression floor): 96%.
+
+Known weak spots (seed 4, before `balance`): a busy multi-colour rug (corners 67%), glare, several stresses at once, and the right-most brick sometimes one stud short. Next ideas: a per-photo stud-size check for Lego, and a looser floor model for patterned floors.
