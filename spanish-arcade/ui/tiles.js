@@ -73,7 +73,7 @@ export function tapOrDrag(tile, { onTap, dropZone, onDrop }) {
     if (!start) return;
     const dx = e.clientX - start.x;
     const dy = e.clientY - start.y;
-    if (!dragged && Math.hypot(dx, dy) < 8) return;
+    if (!dragged && Math.hypot(dx, dy) < 18) return; // finger wobble on a phone is more than 8px: a smaller threshold swallowed taps
     dragged = true;
     tile.classList.add('ghost');
     tile.style.transform = `translate(${dx}px,${dy}px)`;

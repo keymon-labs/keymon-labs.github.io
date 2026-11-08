@@ -22,3 +22,5 @@ Ruling: each finished exercise is recorded at once (`recordExercise`); map and u
 Ruling: `Saltar` is shell-level; a skip counts like a reveal, is recorded as skipped (never as correct, never as two misses).
 Ruling: spell-fill-letters gains `focus: "any"`, foci `ll`, `bv`, `gj`, `gaps` up to 4 and `plain`; unit a1-u1-s1 is rev 3 with the same exercise ids.
 Known: per-word stats still merge only at unit end; starting another unit overwrites the single `inProgress`.
+
+Ruling: found a real bug while chasing issue 1: `tapOrDrag` treated a finger wobble of 8px or more as a drag and dropped the tap (6 of 6 jittered taps lost in a headless test with an 11px wobble); the threshold is now 18px. It does not explain "spelled right, marked wrong", so in debug mode a missed answer now shows `enviado: … · esperado: …` under the exercise to catch the real cause. Still open for the owner: which exercise and word.

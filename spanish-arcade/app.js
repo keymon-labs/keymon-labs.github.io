@@ -208,7 +208,12 @@ function playUnit(profile, unit) {
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
       if (busy) return { ...lastResult, ignored: true };
-      return settle(session.submit(answer));
+      const r = settle(session.submit(answer));
+      if (store.data.settings.debug && !r.correct && !r.skipped) { // debug mode: show what was sent, to find why a right-looking answer was judged wrong
+        const round = session.current?.round;
+        live.replaceChildren(h('p', { class: 'muted', id: 'debug-sent' }, `enviado: «${JSON.stringify(answer)}» · esperado: «${round?.answer ?? round?.word ?? ''}»`));
+      }
+      return r;
     },
   };
 
