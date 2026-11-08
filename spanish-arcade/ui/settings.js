@@ -16,6 +16,19 @@ function general(host, { store, diagnostic, applySettings, speech }) {
   sz.onchange = () => { store.setSettings({ textSize: Number(sz.value) }); applySettings(); };
   size.append(sz);
 
+  const pick = (id, label, key, options) => {
+    const row = document.createElement('label');
+    row.textContent = `${label} `;
+    const sel = document.createElement('select');
+    sel.id = id;
+    for (const [v, t] of options) sel.add(new Option(t, v, false, s[key] === v));
+    sel.onchange = () => { store.setSettings({ [key]: sel.value }); applySettings(); };
+    row.append(sel);
+    return row;
+  };
+  const theme = pick('set-theme', 'Aspecto', 'theme', [['auto', '🌗 Automático'], ['light', '☀️ Claro'], ['dark', '🌙 Oscuro']]);
+  const palette = pick('set-palette', 'Colores', 'palette', [['caramel', '🍯 Caramelo'], ['ocean', '🌊 Océano'], ['sunset', '🌇 Atardecer']]);
+
   const sound = document.createElement('label');
   const cb = document.createElement('input');
   cb.type = 'checkbox'; cb.id = 'set-sound'; cb.checked = s.sound;
@@ -59,7 +72,7 @@ function general(host, { store, diagnostic, applySettings, speech }) {
   const credits = document.createElement('p');
   credits.className = 'muted';
   credits.textContent = 'Juego no oficial inspirado en «Mis unidades de español. Primer cuatrimestre A1, Serie Luna», que sigue los temas y niveles de las clases de ALCE. Las ilustraciones, las frases, los chistes y los sonidos son originales.';
-  host.append(size, sound, voiceRow, test, voiceNote, backup, copy, out, credits);
+  host.append(theme, palette, size, sound, voiceRow, test, voiceNote, backup, copy, out, credits);
 }
 
 export function renderSettings(host, ctx) {

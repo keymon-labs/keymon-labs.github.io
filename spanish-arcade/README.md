@@ -48,3 +48,6 @@ Test hook for headless runs: `window.__spanishArcade` (`store`, `content`, `spee
 
 ## Laboratorio (debug mode)
 Tap the footer version line 10 times (each tap within 2 s of the last) to turn debug mode on or off. While it is on, the menu shows a "Laboratorio" link to `lab/`: a page that plays any archetype with editable params, any exercise of a unit (`?unit=<id>&exercise=<id>`), a seed field and a "Copiar nota" button. It saves nothing, registers no service worker, is not linked from the landing page and is marked "no es para niños". Code: `lab/`, `ui/tapcount.js`.
+
+## Look and themes (task 022)
+`style.css` is token-based: `data-theme` (light/dark, unset = follow the device) and `data-palette` (`caramel`, `ocean`, `sunset`) on `<html>`, set from the `theme` and `palette` settings (Ajustes). Archetypes only use `--accent`, `--muted` and `--tap`. Home helpers (stars, done today, which unit to continue) are pure functions in `core/home.js`. Next UI rounds are tasks 023-025.

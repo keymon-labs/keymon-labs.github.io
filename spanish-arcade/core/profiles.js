@@ -1,9 +1,10 @@
 // Profile store in localStorage["spanish-arcade:v1"] (PLAN §4.4). Storage, clock and uuid are injected; no DOM.
 import { validateStore, MAX_PROFILES } from './schema.js';
+import { THEMES, PALETTES } from './home.js';
 
 export const STORE_KEY = 'spanish-arcade:v1';
 export { MAX_PROFILES };
-const DEFAULT_SETTINGS = { lang: 'es', sound: true, textSize: 1, lastBackupAt: null, debug: false, voice: '' };
+const DEFAULT_SETTINGS = { lang: 'es', sound: true, textSize: 1, lastBackupAt: null, debug: false, voice: '', theme: 'auto', palette: 'caramel' };
 
 const empty = () => ({ schema: 1, profiles: [], settings: { ...DEFAULT_SETTINGS } });
 
@@ -23,6 +24,8 @@ export function createStore({ storage, clock = () => new Date(), uuid = () => cr
       data = { ...parsed, settings: { ...DEFAULT_SETTINGS, ...parsed.settings } };
       data.settings.debug = data.settings.debug === true; // hidden test mode: anything else is off
       if (typeof data.settings.voice !== 'string') data.settings.voice = '';
+      if (!THEMES.includes(data.settings.theme)) data.settings.theme = 'auto';
+      if (!PALETTES.includes(data.settings.palette)) data.settings.palette = 'caramel';
     } catch (e) {
       loadError = e.message;
       storage.setItem(`${STORE_KEY}:corrupt`, raw);

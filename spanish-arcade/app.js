@@ -5,6 +5,7 @@ import { loadContent } from './core/content.js';
 import { createStore } from './core/profiles.js';
 import { createUnitSession } from './core/session.js';
 import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed } from './core/progress.js';
+import { totalStars, doneToday, nextUnit, mascotLine, stoneEmoji, DAILY_GOAL } from './core/home.js';
 import { createSpeech } from './ui/speech.js';
 import { renderSettings } from './ui/settings.js';
 import { createTapCounter } from './ui/tapcount.js';
@@ -47,8 +48,11 @@ const diagnostic = () => JSON.stringify({ app: 'spanish-arcade', build: __BUILD_
 
 // Settings that change the page itself: text size (the page language is always Spanish).
 function applySettings() {
-  const { textSize } = store.data.settings;
-  document.documentElement.style.fontSize = `${(textSize || 1) * 100}%`; // archetypes size in rem, so scale the root
+  const { textSize, theme, palette } = store.data.settings;
+  const el = document.documentElement;
+  el.style.fontSize = `${(textSize || 1) * 100}%`; // archetypes size in rem, so scale the root
+  if (theme === 'auto') el.removeAttribute('data-theme'); else el.dataset.theme = theme;
+  el.dataset.palette = palette;
 }
 applySettings();
 speech.setPreferred(store.data.settings.voice);
@@ -118,13 +122,16 @@ function route() {
   root.querySelector('h1')?.focus();
 }
 
+const mascot = (extra = '') => h('div', { class: 'mascot', 'aria-hidden': 'true' }, '🦊', extra);
+const settingsLink = () => link('#/settings', '⚙️ Ajustes');
+
 function renderHome() {
   const profiles = store.data.profiles;
-  const main = screen('Arcade de español');
-  if (profiles.length) main.append(h('ul', { class: 'list' }, profiles.map((p) => h('li', {}, link(`#/profile/${p.id}`, p.firstName)))));
+  const main = screen(null, h('div', { class: 'hero' }, mascot(), h('div', {}, h('h1', { tabindex: '-1' }, 'Arcade de español'), h('p', { class: 'bubble' }, '¡Vamos a jugar con las palabras!'))));
+  if (profiles.length) main.append(h('ul', { class: 'list' }, profiles.map((p) => h('li', {}, link(`#/profile/${p.id}`, `🙂 ${p.firstName}`, 'btn primary')))));
   if (profiles.length < 1) { // MVP: one profile
     const first = h('input', { id: 'first-name', required: '', autocomplete: 'off' });
-    const form = h('form', { id: 'new-profile' }, h('label', {}, 'Nombre ', first), h('button', { type: 'submit' }, 'Empezar'));
+    const form = h('form', { id: 'new-profile', class: 'card' }, h('label', {}, '¿Cómo te llamas? ', first), h('button', { type: 'submit', class: 'reveal' }, '▶️ Empezar'));
     form.onsubmit = (e) => {
       e.preventDefault();
       if (!first.value.trim()) return;
@@ -133,7 +140,7 @@ function renderHome() {
     };
     main.append(form);
   }
-  main.append(link('#/settings', 'Ajustes'), debugTools());
+  main.append(h('div', { class: 'row' }, settingsLink()), debugTools());
 }
 
 /** "3 de 6 ejercicios · seguir" / "6 de 6 ejercicios · mejor: 4 sin ayuda" / "sin empezar" */
@@ -146,14 +153,29 @@ function statusLine(up) {
 }
 
 function renderProfile(profile) {
-  const main = screen(`¡Hola, ${profile.firstName}!`);
-  main.append(h('ul', { class: 'list' }, content.units.map((u) => {
+  const done = doneToday(profile, new Date());
+  const pct = Math.min(100, Math.round((done / DAILY_GOAL) * 100));
+  const main = screen(null,
+    h('div', { class: 'hero' }, mascot(), h('div', {}, h('h1', { tabindex: '-1' }, `¡Hola, ${profile.firstName}!`), h('p', { class: 'bubble' }, mascotLine(done)))),
+    h('div', { class: 'chips' }, h('span', { class: 'chip', id: 'total-stars' }, `⭐ ${totalStars(profile, content.units)}`)));
+  const next = nextUnit(profile, content.units);
+  if (next) {
+    const up = unitProgress(profile, next);
+    const a = link(`#/unit/${next.id}`, '', 'continue');
+    a.id = 'continue';
+    a.append(h('span', { class: 'big', 'aria-hidden': 'true' }, '▶️'), h('span', {}, h('b', {}, up.resumable ? 'Seguir jugando' : up.attempts ? 'Jugar otra vez' : 'Empezar'), h('small', {}, `${next.title.es} · ${statusLine(up)}`)));
+    main.append(a);
+  }
+  main.append(h('div', { class: 'card goal', id: 'goal' }, h('div', { class: 'ring', style: `--pct:${pct}`, role: 'img', 'aria-label': `${done} de ${DAILY_GOAL} ejercicios hoy` }, h('span', {}, `${Math.min(done, DAILY_GOAL)}/${DAILY_GOAL}`)),
+    h('div', {}, h('b', {}, 'Meta de hoy'), h('div', { class: 'muted' }, `${done} de ${DAILY_GOAL} ejercicios`))));
+  main.append(h('h2', {}, 'Mis unidades'), h('ol', { class: 'trail' }, content.units.map((u, i) => {
     const open = isUnlocked(profile, content.units, u.id);
     const up = unitProgress(profile, u);
-    return h('li', { class: open ? '' : 'locked' }, open ? link(`#/unit/${u.id}`, u.title.es, 'btn unit') : h('span', {}, `🔒 ${u.title.es}`), ' ', stars(up.stars),
-      open ? h('div', { class: 'muted unit-status' }, statusLine(up)) : null);
+    const dot = h('span', { class: 'dot', 'aria-hidden': 'true' }, open ? stoneEmoji(i) : '🔒');
+    const text = h('span', {}, h('b', {}, u.title.es), open ? [stars(up.stars), h('div', { class: 'muted unit-status' }, statusLine(up))] : null);
+    return h('li', { class: open ? '' : 'locked' }, open ? h('a', { href: `#/unit/${u.id}`, class: 'stone unit' }, dot, text) : h('div', { class: 'stone' }, dot, text));
   })));
-  main.append(link('#/', 'Volver'), link('#/settings', 'Ajustes'), debugTools());
+  main.append(h('div', { class: 'row' }, link('#/', '🏠 Inicio'), settingsLink()), debugTools());
 }
 
 function renderIntro(profile, unit) {
