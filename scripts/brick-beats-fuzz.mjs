@@ -9,7 +9,7 @@ import { detect, NAMES } from "../brick-beats/vision.js";
 import { renderMat, distort, distortPoint, encodePng, BRICK_RGB } from "./brick-beats-mat.mjs";
 
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
-const N = +arg("n", 40), SEED = +arg("seed", 1), SAVE = arg("save", ""), ONLY = arg("only", "");
+const N = +arg("n", 40), SEED = +arg("seed", 1), SAVE = arg("save", ""), DETAIL = process.argv.includes("--detail"), ONLY = arg("only", "");
 
 const rng = (a) => () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 const pick = (r, a) => a[Math.floor(r() * a.length)], between = (r, a, b) => a + (b - a) * r(), gauss = (r) => Math.sqrt(-2 * Math.log(1 - r())) * Math.cos(2 * Math.PI * r());
@@ -24,8 +24,8 @@ function randomLanes(r) {
   const names = Object.keys(BRICK_RGB);
   return Array.from({ length: 4 }, (_, k) => {
     const out = []; let x = k === 0 || r() < 0.3 ? 0 : Math.floor(between(r, 0, 4));
-    while (x < 22 && out.length < 6) {
-      const len = pick(r, [2, 2, 4, 4, 6]); if (x + len > 24) break;
+    while (x < 20 && out.length < 6) {
+      const len = pick(r, [2, 2, 4, 4, 6]); if (x + len > 22) break; // bricks sit on a grid 4.4% wider than the plate: keep them on it
       out.push([pick(r, names), x, len]); x += len + Math.floor(between(r, 1, 5));
     }
     return out.length ? out : [["red", 0, 2]];
@@ -77,6 +77,7 @@ function run(cs) {
   if (!d.ok) return res;
   const norm = (ls) => { const mn = Math.min(...ls.flat().map((b) => b[1])); return ls.flatMap((l, k) => l.map((b) => `${k}:${b[0]}:${b[1] - mn}:${b[2]}`)); };
   const want = norm(cs.lanes), got = d.tracks.length === 4 ? norm(d.tracks.map((t) => t.bricks.map((b) => [NAMES[b.cls], b.start, b.len]))) : [];
+  res.missing = want.filter((w) => !got.includes(w)); res.extra = got.filter((g) => !want.includes(g));
   res.read = want.filter((w) => got.includes(w)).length / want.length;
   res.exact = res.read === 1 && got.length === want.length;
   return res;
@@ -88,6 +89,7 @@ for (let i = 0; i < N; i++) {
   if (ONLY && !Object.values(cs.tags).includes(ONLY.split("=").pop())) continue;
   const t0 = performance.now(), r = run(cs);
   rows.push({ cs, r });
+  if (DETAIL && r.missing?.length) console.log(`\ncase ${i} [${Object.values(cs.tags).join(" ")}] missing ${r.missing.join(" ")} | extra ${r.extra.join(" ")}`);
   process.stdout.write(`${r.cornersOk ? "." : r.cornersFound ? "c" : "x"}${r.exact ? "" : "~"} `);
   if (SAVE && (!r.cornersOk || !r.exact)) { fs.mkdirSync(SAVE, { recursive: true }); fs.writeFileSync(path.join(SAVE, `case${SEED}-${i}.png`), encodePng(r.ph)); }
 }

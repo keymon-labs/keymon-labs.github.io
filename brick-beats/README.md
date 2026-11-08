@@ -69,4 +69,13 @@ In *Adjust grid*, **Even spacing** (on by default) treats the lanes and columns 
 The outline of the mat is found from its colours (green plate + blue tape). When the border of the photo shows a clear floor, a second outline is made from "everything that is not the floor" (the floor's colours come from a coarse colour histogram of the photo's border); if it contains the first one and is only a little bigger, it wins, so tape or bricks the colour reader misses along the edge stay inside the corners. The corner snap uses the same outline.
 
 ## Tuning sweep (`npm run fuzz:beats`)
-`scripts/brick-beats-fuzz.mjs` renders random mats (Duplo or Lego-sized studs; wood, tile, carpet, stripes, checkers, a busy rug, light and dark floors; gradients, vignette, colour cast, glare, shadow bands, noise, blur; rotation and perspective; tape, tape ends, edge tape) and prints how often the corners and the bricks come out right, per factor. It is not part of `npm test` and uses no real photos. `--n 40 --seed 2 --save <dir>` writes the failing photos; `--only floor=white` filters. First baseline (seed 2, 40 cases): corners within 2.5% of the plate side 78%, every brick exactly right 30%.
+`scripts/brick-beats-fuzz.mjs` renders random mats (Duplo or Lego-sized studs; wood, tile, carpet, stripes, checkers, a busy rug, light and dark floors; gradients, vignette, colour cast, glare, shadow bands, noise, blur; rotation and perspective; tape, tape ends, edge tape) and prints how often the corners and the bricks come out right, per factor. It is not part of `npm test` and uses no real photos. `--n 40 --seed 2 --save <dir>` writes the failing photos; `--only floor=white` filters.
+
+Tuning log (60 cases each; "corners" = all four within 2.5% of the plate side, "exact" = every brick right):
+| Step | seed 3 corners / exact | seed 4 (held out) |
+|---|---|---|
+| generator bricks kept on the plate (they hung past the edge) | 93% / 62% | |
+| `denoise` (3x3 average when the photo is grainy) before reading bricks | 93% / 73% | |
+| `denoise` before finding corners | 98% / 75% | 92% / 65% |
+
+Known weak spots (seed 4): a busy multi-colour rug (corners 67%), a colour cast or glare turns lime into yellow, Lego-sized studs with several stresses at once, and the right-most brick sometimes one stud short. Next ideas: a red-channel colour balance from the tape, a per-photo stud-size check for Lego, and a looser floor model for patterned floors.

@@ -128,7 +128,20 @@ function topFace(b, lab, data, W) {
   return { id: b.id, x: b.x + x0, y: b.y + y0, w: x1 - x0, h: y1 - y0 };
 }
 
+/** Grainy photos (dim light, small sensors): a 3x3 average before classifying when neighbouring pixels differ more than a clean photo's would. */
+export function denoise(data, W, H) {
+  const d = [];
+  for (let y = 0; y < H; y += 3) for (let x = 0; x < W - 1; x += 3) { const i = (y * W + x) * 4; d.push(Math.abs(data[i] - data[i + 4]) + Math.abs(data[i + 1] - data[i + 5]) + Math.abs(data[i + 2] - data[i + 6])); }
+  d.sort((p, q) => p - q);
+  if (d[d.length >> 1] < 9) return data; // median step between neighbours: about 2 per channel in a clean photo
+  const t = new Uint8ClampedArray(data.length), o = new Uint8ClampedArray(data.length);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) for (let c = 0; c < 3; c++) { const i = (y * W + x) * 4 + c; t[i] = (data[y * W * 4 + Math.max(0, x - 1) * 4 + c] + data[i] + data[y * W * 4 + Math.min(W - 1, x + 1) * 4 + c]) / 3; t[i - c + 3] = 255; }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) for (let c = 0; c < 3; c++) { const i = (y * W + x) * 4 + c; o[i] = (t[Math.max(0, y - 1) * W * 4 + x * 4 + c] + t[i] + t[Math.min(H - 1, y + 1) * W * 4 + x * 4 + c]) / 3; o[i - c + 3] = 255; }
+  return o;
+}
+
 export function detect(data, W, H, { classify = null } = {}) {
+  data = denoise(data, W, H);
   const N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N), cls = new Int8Array(N).fill(-1);
   let plateCount = 0;

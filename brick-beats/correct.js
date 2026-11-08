@@ -1,7 +1,7 @@
 // Straightens a photo of a brick mat before vision.js reads it: finds the green plate (with its tape) and rebuilds a flat top-down view
 // of it with a perspective warp, turned so the lanes run left to right. Pure, no DOM; tests in test/correct.test.js.
 // shortcut: colour balance against the plate and a lighting flat-field were tried and did not help on real photos, so they are not here; see README.
-import { rgbToHsv } from "./vision.js";
+import { rgbToHsv, denoise } from "./vision.js";
 
 
 const isPlate = (h, s, v) => h >= 135 && h < 190 && s > 0.3 && v > 0.15;
@@ -191,6 +191,7 @@ function scan(src, SW, SH) {
 }
 function scan0(src, SW, SH) {
   const k = Math.max(1, Math.floor(SW / 640)), sm = shrink(src, SW, SH, k), W = sm.W, H = sm.H, N = W * H;
+  sm.data = denoise(sm.data, W, H);
   const plate = new Uint8Array(N), tape = new Uint8Array(N);
   for (let i = 0; i < N; i++) {
     const [h, s, v] = rgbToHsv(sm.data[i * 4], sm.data[i * 4 + 1], sm.data[i * 4 + 2]);
@@ -279,7 +280,7 @@ function plateQuad({ W, H, N, plate, tape }, mask) {
 
 /** Everything that is not the floor: the floor is whatever colours fill the frame's border (a coarse colour histogram of the border, a little widened), so wood, tiles or carpet all work, and the mat, its tape and its bricks are what is left. */
 function notFloor({ W, H, N, k }, src, SW) {
-  const sm = shrink(src, SW, Math.round(src.length / 4 / SW), k), ring = Math.max(3, Math.round(0.04 * Math.min(W, H))), hist = new Float32Array(512), bin = new Int16Array(N);
+  const sm = shrink(src, SW, Math.round(src.length / 4 / SW), k); sm.data = denoise(sm.data, W, H); const ring = Math.max(3, Math.round(0.04 * Math.min(W, H))), hist = new Float32Array(512), bin = new Int16Array(N);
   let n = 0;
   for (let i = 0; i < N; i++) {
     bin[i] = (sm.data[i * 4] >> 5) * 64 + (sm.data[i * 4 + 1] >> 5) * 8 + (sm.data[i * 4 + 2] >> 5);
