@@ -50,3 +50,10 @@ test("reading a photo takes well under a second", () => {
   detect(m.data, m.width, m.height);
   assert.ok(performance.now() - t < 1000);
 });
+
+test("lime vs clear lime: vivid or bright is lime, dull and see-through is clear lime", () => {
+  const name = (r, g, b) => NAMES[classifyHSV(...rgbToHsv(r, g, b))];
+  assert.equal(name(136, 181, 53), "lime"); // vivid but darker, real photo
+  assert.equal(name(160, 197, 145), "lime"); // bright but washed out, real photo
+  assert.equal(name(138, 168, 117), "clear_lime");
+});

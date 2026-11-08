@@ -5,7 +5,7 @@ export function classifyHSV(h, s, v) {
   if ((v > 0.5 && s < 0.26 && h >= 170 && h < 225) || (v > 0.8 && s < 0.09)) return 10; // white
   if (h >= 200 && h < 235 && s > 0.5) return 8; // blue
   if (h >= 183 && h < 200 && s > 0.4) return 7; // cyan
-  if (h >= 70 && h < 135 && s > 0.12) return v > 0.75 ? 5 : 6; // lime, clear lime
+  if (h >= 70 && h < 135 && s > 0.12) return s > 0.5 || v > 0.75 ? 5 : 6; // lime (vivid or bright) vs clear lime (dull, see-through)
   if (h >= 35 && h < 70 && s > 0.5) return 3; // yellow
   if (h >= 35 && h < 70 && s > 0.2) return 4; // pale yellow
   if (h >= 280 && h < 335 && s > 0.25) return 9; // pink
@@ -179,7 +179,8 @@ export function detect(data, W, H) {
   // split each blob into 2-stud cells, colour each by median RGB, merge equal neighbours
   const bricks = [];
   for (const b of blobs) {
-    const L = Math.max(1, Math.round(b.w / p)), n = Math.max(1, L >> 1), cw = b.w / n;
+    // small bricks are 2 studs deep, so width/height beats the stud pitch there (shadows widen the blob); long or merged blobs use the pitch
+    const Lp = Math.max(1, Math.round(b.w / p)), L = Lp <= 3 && b.w >= b.h * 0.9 ? Math.max(1, Math.round((2 * b.w) / b.h)) : Lp, n = Math.max(1, L >> 1), cw = b.w / n;
     const seq = [];
     for (let k = 0; k < n; k++) {
       const cxa = Math.floor(b.x + k * cw + cw * 0.2), cxb = Math.floor(b.x + (k + 1) * cw - cw * 0.2);
