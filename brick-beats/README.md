@@ -13,13 +13,16 @@ Build music on a brick mat, take a photo, press play. The photo is read on the d
 |---|---|
 | `index.html`, `style.css` | Markup and styles (system fonts only) |
 | `app.js` | UI, playback scheduler, playhead; test hook `window.__brickBeats` |
-| `vision.js` | Photo pixels → `{ tracks, lanes, pitch, fit, loopLen }`. Pure, no DOM |
+| `vision.js` | Photo pixels → `{ tracks, lanes, pitch, fit, loopLen }` (`detect`); `probe` re-reads one brick at a tapped point. Pure, no DOM |
 | `rhythm.js` | Colour → note, instruments, scales, fruit rhythm rules. Pure |
 | `synth.js` | Web Audio voices (pad, lead, bass, pluck, strings, bell) |
 | `example-photo.jpg` | Example: a photo of a plain mat (the owner's own) |
 | `example-taped.png` | Example: generated taped mat, made by `scripts/brick-beats-mat.mjs` |
 | `test/*.test.js` | Tests on generated mats and the rhythm rules |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | Installable, works offline |
+
+## Fixing mistakes
+Tap a brick to change its colour or length, or remove it. Tap empty space on the photo to add a missed brick: `probe()` grows a region of similar colour from the tap, picks the nearest lane, and selects the new brick so it can be adjusted.
 
 ## Data format
 `detect()` returns `{ ok, plate, lanes, pitch, fit, loopLen, brickCount, tracks }` where each track is `{ row, bricks: [{ cls, start, len, x, y, w, h }] }`. `start` and `len` are in studs, relative to the leftmost brick; `cls` indexes `NAMES`/`COLOURS`.

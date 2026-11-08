@@ -1,6 +1,6 @@
 // Brick Beats: photo of a brick mat → lanes of notes → playback with a moving line over the photo.
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
-import { detect } from "./vision.js";
+import { detect, probe } from "./vision.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
 import { NOTE_NAMES } from "../shared/music.js";
 import { ensureAudio, audioNow, gainNode, masterBus, voice } from "./synth.js";
@@ -27,7 +27,8 @@ function analyse(im) {
   const c = cv.getContext("2d", { willReadFrequently: true });
   c.imageSmoothingQuality = "high";
   c.drawImage(im, 0, 0, W, H);
-  const r = detect(c.getImageData(0, 0, W, H).data, W, H);
+  const px = c.getImageData(0, 0, W, H).data, r = detect(px, W, H);
+  r.data = px; // kept so a tap can look at the photo again (addAt)
   r.ms = performance.now() - t0;
   return r;
 }
@@ -67,13 +68,16 @@ async function useSource(src, example) {
 let boxEls = new Map(), rbEls = new Map(), phEls = [];
 const labelOf = (tr, b) => (state.fruits && b.fruit ? (b.fruitLead ? fruitById(b.fruit).name : "·") : pitchLabel(noteOf(tr, b)));
 
+function laneY(tr, xb) {
+  if (res.lanes && tr.mid !== undefined) return (tr.mid + xb * res.lanes.sn) / res.lanes.cs;
+  return tr.bricks.length ? tr.bricks.reduce((a, b) => a + b.box.y + b.box.h / 2, 0) / tr.bricks.length : 0;
+}
+
 function renderBoxes() {
   const W = res.W, H = res.H, xb = crop.x0 + 6;
   let h = "";
   for (const tr of tracks) {
-    let cy;
-    if (res.lanes && tr.mid !== undefined) cy = (tr.mid + xb * res.lanes.sn) / res.lanes.cs;
-    else cy = tr.bricks.length ? tr.bricks.reduce((a, b) => a + b.box.y + b.box.h / 2, 0) / tr.bricks.length : 0;
+    const cy = laneY(tr, xb);
     if (tr.bricks.length || res.lanes) h += `<span class="rownum" style="top:${(cy / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
     for (const b of tr.bricks) {
       const fc = state.fruits && b.fruit ? `border-color:${fruitById(b.fruit).hex};` : "";
@@ -142,7 +146,7 @@ function renderStatus() {
   if (!res) return;
   const n = tracks.reduce((a, t) => a + t.bricks.length, 0), un = tracks.reduce((a, t) => a + t.bricks.filter((b) => b.sure === false).length, 0);
   let t = `Found ${n} bricks in ${tracks.length} ${res.lanes ? "lanes" : "rows"} in ${Math.max(1, Math.round(res.ms))} ms. One loop is ${(loopLen * secPerStud()).toFixed(1)} s.`;
-  t += un ? " Dashed bricks need a check: tap them." : " Tap a brick if it looks wrong.";
+  t += (un ? " Dashed bricks need a check: tap them." : " Tap a brick if it looks wrong.") + " Missed one? Tap it on the photo.";
   if (!res.lanes) t += " Tip: tape across the plate makes clear lanes.";
   if (state.fruits) {
     const c = fruitCounts(tracks), list = FRUITS.filter((f) => c[f.id]).map((f) => `${f.name} ×${c[f.id]}`);
@@ -252,10 +256,31 @@ function select(id) {
   if (f) preview(noteOf(f[0], f[1]));
 }
 
+// Tap empty space on the photo to add a brick the reader missed: it looks at that spot again, then you can fix colour and length.
+function addAt(e) {
+  const r = $("#world").getBoundingClientRect(), x = ((e.clientX - r.left) / r.width) * res.W, y = ((e.clientY - r.top) / r.height) * res.H;
+  const f = probe(res.data, res.W, res.H, res, x, y);
+  if (!f) { setStatus("That is the green plate. Tap the brick itself to add it.", true); return; }
+  const cy = f.box.y + f.box.h / 2, xm = f.box.x + f.box.w / 2;
+  let tr = null, best = Infinity;
+  for (const t of tracks) {
+    const d = Math.abs(laneY(t, xm) - cy);
+    if (t.bricks.length || res.lanes) if (d < best) { best = d; tr = t; }
+  }
+  if (!tr) return;
+  if (f.start < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= f.start; })); res.fit.a += f.start * res.fit.b; f.start = 0; }
+  const b = { id: uid++, cls: f.cls, sure: f.sure, start: f.start, len: f.len, box: f.box };
+  tr.bricks.push(b);
+  tr.bricks.sort((p, q) => p.start - q.start);
+  sel = b.id;
+  refresh(); preview(noteOf(tr, b));
+}
+
 document.addEventListener("click", (e) => {
   const t = e.target;
   const br = t.closest(".brick, .rb");
   if (br) { select(+br.dataset.id); return; }
+  if (t.closest("#world") && res) { addAt(e); return; }
   const ex = t.closest("[data-example]");
   if (ex) { useSource(EXAMPLES[ex.dataset.example], true); return; }
   const fr = t.closest("[data-fruit]");

@@ -253,3 +253,44 @@ export function detect(data, W, H) {
   return { ok: true, W, H, plate: { x0, y0, x1, y1 }, lanes: laneLines ? { sn, cs } : null, pitch: p, fit: { a: icpt, b: slope }, loopLen, tracks, brickCount: cnt };
 }
 
+
+/**
+ * Read one brick at a tapped point (x, y in the analysed image) that detect() missed or got wrong.
+ * Grows a region of similar colour from the tap, so it also finds bricks the colour rules rejected.
+ * Returns { cls, sure, start, len, box } or null when the tap is on the plate. Falls back to a 2-stud guess if no clean brick shape is found.
+ */
+export function probe(data, W, H, res, x, y) {
+  const p = res.pitch, px = Math.round(x), py = Math.round(y);
+  const at = (i) => [data[i * 4], data[i * 4 + 1], data[i * 4 + 2]];
+  const R = [], G = [], B = [];
+  for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) {
+    const xx = Math.min(W - 1, Math.max(0, px + i)), yy = Math.min(H - 1, Math.max(0, py + j)), c = at(yy * W + xx);
+    R.push(c[0]); G.push(c[1]); B.push(c[2]);
+  }
+  const seed = [median(R), median(G), median(B)], [h, s, v] = rgbToHsv(...seed);
+  if (h >= 135 && h < 183 && s > 0.3) return null; // plate
+  const near = (i) => { const c = at(i); return (c[0] - seed[0]) ** 2 + (c[1] - seed[1]) ** 2 + (c[2] - seed[2]) ** 2 < 55 * 55; };
+  const x0 = Math.max(0, Math.round(px - 8 * p)), x1 = Math.min(W - 1, Math.round(px + 8 * p));
+  const y0 = Math.max(0, Math.round(py - 3 * p)), y1 = Math.min(H - 1, Math.round(py + 3 * p));
+  let mask = new Uint8Array(W * H);
+  for (let yy = y0; yy <= y1; yy++) for (let xx = x0; xx <= x1; xx++) if (near(yy * W + xx)) mask[yy * W + xx] = 1;
+  mask = morph(morph(mask, W, H, true), W, H, false); // close the gaps between studs
+  const lab = new Uint8Array(W * H), st = [py * W + px];
+  let bx0 = px, bx1 = px, by0 = py, by1 = py, area = 0;
+  if (mask[st[0]]) lab[st[0]] = 1;
+  while (st.length && lab[st[st.length - 1]]) {
+    const i = st.pop(), xx = i % W, yy = (i / W) | 0;
+    area++;
+    bx0 = Math.min(bx0, xx); bx1 = Math.max(bx1, xx); by0 = Math.min(by0, yy); by1 = Math.max(by1, yy);
+    for (const j of [i - 1, i + 1, i - W, i + W]) if (j >= 0 && j < W * H && mask[j] && !lab[j]) { lab[j] = 1; st.push(j); }
+    while (st.length && !lab[st[st.length - 1]]) st.pop();
+  }
+  let w = bx1 - bx0 + 1, hh = by1 - by0 + 1, sure = true;
+  if (area < 0.5 * w * hh || w < p * 1.2 || hh < p * 1.2) { // no clean shape: a 2-stud guess centred on the tap
+    sure = false; bx0 = Math.round(px - p); by0 = Math.round(py - p); w = Math.round(2 * p); hh = Math.round(2 * p);
+  }
+  let cls = classifyHSV(h, s, v);
+  if (cls < 0) { sure = false; cls = h < 40 && s > 0.25 ? 1 : 10; } // brown if warm and dull, else white
+  const Lp = Math.max(1, Math.round(w / p)), len = Lp <= 3 && w >= hh * 0.9 ? Math.max(1, Math.round((2 * w) / hh)) : Lp;
+  return { cls, sure, len, start: Math.round((bx0 - res.fit.a) / res.fit.b), box: { x: bx0, y: by0, w, h: hh } };
+}

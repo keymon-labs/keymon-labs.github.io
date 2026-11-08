@@ -1,7 +1,7 @@
 // Brick Beats photo reading, checked on generated mats (scripts/brick-beats-mat.mjs): no real photos in the repo.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { detect, NAMES, rgbToHsv, classifyHSV } from "../vision.js";
+import { detect, probe, NAMES, rgbToHsv, classifyHSV } from "../vision.js";
 import { renderMat, EXAMPLE, BRICK_RGB } from "../../scripts/brick-beats-mat.mjs";
 
 const read = (lanes, opts) => {
@@ -56,4 +56,16 @@ test("lime vs clear lime: vivid or bright is lime, dull and see-through is clear
   assert.equal(name(136, 181, 53), "lime"); // vivid but darker, real photo
   assert.equal(name(160, 197, 145), "lime"); // bright but washed out, real photo
   assert.equal(name(138, 168, 117), "clear_lime");
+});
+
+test("probe finds a brick the reader missed from one tap", () => {
+  const missing = EXAMPLE.map((l, k) => (k === 1 ? l.filter((b) => b[0] !== "white") : l)); // lane 2 without its white 6-stud brick
+  const res = detect(...Object.values(renderMat(missing, { tape: true })).slice(0, 3));
+  const full = renderMat(EXAMPLE), pb = 1.044 * 24;
+  const f = probe(full.data, full.width, full.height, res, 32 + 12 + 11 * pb, 32 + 9 * 24); // middle of that brick
+  assert.equal(NAMES[f.cls], "white");
+  assert.equal(f.len, 6);
+  assert.equal(f.start, 8);
+  assert.equal(f.sure, true);
+  assert.equal(probe(full.data, full.width, full.height, res, 32 + 5, 32 + 5), null); // plate corner
 });
