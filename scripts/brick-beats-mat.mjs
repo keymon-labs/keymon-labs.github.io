@@ -51,6 +51,23 @@ export function renderMat(lanes, { scale = 1, tape = true } = {}) {
   return { data, width: W, height: W };
 }
 
+/**
+ * Photograph a rendered mat from an angle: rotates it by `rot` degrees, squeezes the far side by `tilt` (perspective, 0.001 per px at the
+ * edge of a 1000 px picture) and shrinks it by `scale`, into an outW x outH floor-coloured picture. For testing the straightening step.
+ */
+export function distort({ data, width, height }, { outW = 1000, outH = 1300, rot = 0, tilt = 0, scale = 0.8 } = {}) {
+  const out = new Uint8ClampedArray(outW * outH * 4), t = (rot * Math.PI) / 180, c = Math.cos(t), s = Math.sin(t);
+  for (let v = 0; v < outH; v++) for (let u = 0; u < outW; u++) {
+    const uu = u - outW / 2, vv = v - outH / 2, w = 1 - tilt * vv, x0 = uu / w, y0 = vv / w; // undo perspective
+    const sx = (c * x0 + s * y0) / scale + width / 2, sy = (-s * x0 + c * y0) / scale + height / 2, o = (v * outW + u) * 4;
+    if (sx < 0 || sy < 0 || sx >= width - 1 || sy >= height - 1) { out.set([FLOOR[0], FLOOR[1], FLOOR[2], 255], o); continue; }
+    const ix = sx | 0, iy = sy | 0, fx = sx - ix, fy = sy - iy, p = (iy * width + ix) * 4;
+    for (let k = 0; k < 3; k++) out[o + k] = data[p + k] * (1 - fx) * (1 - fy) + data[p + 4 + k] * fx * (1 - fy) + data[p + width * 4 + k] * (1 - fx) * fy + data[p + width * 4 + 4 + k] * fx * fy;
+    out[o + 3] = 255;
+  }
+  return { data: out, width: outW, height: outH };
+}
+
 const crcTable = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
 const crc32 = (buf) => { let c = 0xffffffff; for (const b of buf) c = crcTable[(c ^ b) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
 

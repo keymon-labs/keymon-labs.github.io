@@ -49,6 +49,45 @@ function morph(src, W, H, grow) {
   return out;
 }
 
+function closeH(src, W, H, k) {
+  // horizontal closing: bridge gaps up to 2k pixels wide (the dark stud rings of a dark brick), without joining bricks that are a stud apart
+  const dil = new Uint8Array(W * H), out = new Uint8Array(W * H);
+  for (let y = 0; y < H; y++) {
+    const o = y * W;
+    let last = -1e9;
+    for (let x = 0; x < W; x++) { if (src[o + x]) last = x; if (x - last <= k) dil[o + x] = 1; }
+    let nxt = 1e9;
+    for (let x = W - 1; x >= 0; x--) { if (src[o + x]) nxt = x; if (nxt - x <= k) dil[o + x] = 1; }
+  }
+  for (let y = 0; y < H; y++) { // erode back
+    const o = y * W;
+    let run = 0;
+    for (let x = 0; x < W; x++) { run = dil[o + x] ? run + 1 : 0; if (run >= 2 * k + 1) out[o + x - k] = 1; }
+  }
+  for (let i = 0; i < W * H; i++) if (src[i]) out[i] = 1;
+  return out;
+}
+
+function openV(src, W, H, k) {
+  // vertical opening: erase anything shorter than 2k+1 pixels tall (tape slivers), keep bricks
+  const er = new Uint8Array(W * H), out = new Uint8Array(W * H);
+  for (let x = 0; x < W; x++) {
+    let run = 0;
+    for (let y = 0; y < H; y++) {
+      run = src[y * W + x] ? run + 1 : 0;
+      if (run >= 2 * k + 1) er[(y - k) * W + x] = 1;
+    }
+  }
+  for (let x = 0; x < W; x++) {
+    let last = -1e9;
+    for (let y = 0; y < H; y++) { if (er[y * W + x]) last = y; if (y - last <= k) out[y * W + x] = 1; }
+    // a dilation must also reach back up from the run: handled by scanning upwards
+    let nxt = 1e9;
+    for (let y = H - 1; y >= 0; y--) { if (er[y * W + x]) nxt = y; if (nxt - y <= k) out[y * W + x] = 1; }
+  }
+  return out;
+}
+
 function fillHoles(fg, W, H) {
   const seen = new Uint8Array(W * H), st = new Int32Array(W * H);
   let sp = 0;
@@ -72,6 +111,23 @@ function median(arr) {
   return a[a.length >> 1];
 }
 
+/** Side faces seen from an angle make a brick look bigger. They are darker than the top, so trim blob edges that are clearly dimmer. */
+function topFace(b, lab, data, W) {
+  const v = (i) => Math.max(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
+  const cols = [], rows = [];
+  for (let x = b.x; x < b.x + b.w; x++) { const a = []; for (let y = b.y + (b.h >> 2); y < b.y + b.h - (b.h >> 2); y++) if (lab[y * W + x] === b.id) a.push(v(y * W + x)); cols.push(a.length ? median(a) : 0); }
+  for (let y = b.y; y < b.y + b.h; y++) { const a = []; for (let x = b.x + (b.w >> 2); x < b.x + b.w - (b.w >> 2); x++) if (lab[y * W + x] === b.id) a.push(v(y * W + x)); rows.push(a.length ? median(a) : 0); }
+  const trim = (arr) => {
+    const mid = arr.slice(arr.length >> 2, arr.length - (arr.length >> 2)), ref = median(mid) * 0.8, cap = arr.length >> 2;
+    let lo = 0, hi = arr.length;
+    while (lo < cap && arr[lo] < ref) lo++;
+    while (arr.length - hi < cap && arr[hi - 1] < ref) hi--;
+    return [lo, hi];
+  };
+  const [x0, x1] = trim(cols), [y0, y1] = trim(rows);
+  return { id: b.id, x: b.x + x0, y: b.y + y0, w: x1 - x0, h: y1 - y0 };
+}
+
 export function detect(data, W, H) {
   const N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N), cls = new Int8Array(N).fill(-1);
@@ -79,7 +135,7 @@ export function detect(data, W, H) {
   for (let i = 0; i < N; i++) {
     const [h, s, v] = rgbToHsv(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
     if (h >= 135 && h < 183 && s > 0.3 && v > 0.15) { plate[i] = 1; plateCount++; continue; }
-    if (v < 0.22) continue;
+    if (v < 0.22) { if (v > 0.1 && h < 40 && s > 0.3) cls[i] = 1; continue; } // very dark: only warm ones count (shaded brown), the rest is shadow or gaps
     if (h >= 12 && h < 48 && s < 0.36 && v > 0.3 && v < 0.8) continue; // wood floor
     if (h >= 196 && h < 224 && s >= 0.52 && s < 0.84 && v >= 0.5 && v < 0.97) tape[i] = 1; // candidate blue masking tape, only removed if lanes are found
     cls[i] = classifyHSV(h, s, v);
@@ -125,7 +181,15 @@ export function detect(data, W, H) {
       const good = lines.filter((l) => l.hi - l.lo >= 3).map((l) => ({ c: l.sum / l.w - W, lo: l.lo - W, hi: l.hi - W }));
       if (good.length >= 2 && good.length <= 14) laneLines = good;
     }
-    if (laneLines) for (let i = 0; i < N; i++) if (tape[i]) cls[i] = -1;
+    if (laneLines) {
+      // clear the whole tape band, not just pixels that match the tape colour: lighting changes make parts of it look like bricks
+      const m = 2;
+      for (let i = 0; i < N; i++) {
+        if (tape[i]) { cls[i] = -1; continue; }
+        const yp = ((i / W) | 0) * cs - (i % W) * sn;
+        for (const l of laneLines) if (yp >= l.lo - m && yp <= l.hi + m) { cls[i] = -1; break; }
+      }
+    }
   }
 
   let fg = new Uint8Array(N);
@@ -135,7 +199,9 @@ export function detect(data, W, H) {
   fg = morph(morph(fg, W, H, true), W, H, true);
   fg = morph(morph(fg, W, H, true), W, H, true);
   fg = morph(morph(fg, W, H, false), W, H, false);
+  fg = closeH(fg, W, H, Math.round(6 * sc));
   fg = fillHoles(fg, W, H);
+  if (laneLines) fg = openV(fg, W, H, Math.round(5 * sc)); // thin leftovers of the tape edge would join neighbouring bricks
 
   // connected components (4-neighbour)
   const lab = new Int32Array(N), st = new Int32Array(N);
@@ -156,31 +222,36 @@ export function detect(data, W, H) {
       if (y < H - 1 && fg[i + W] && !lab[i + W]) { lab[i + W] = id; st[sp++] = i + W; }
     }
     const w = bx1 - bx0 + 1, h = by1 - by0 + 1;
-    if (area >= 900 * sc * sc && Math.min(w, h) >= 24 * sc && w < pw * 0.7 && area / (w * h) >= 0.62) blobs.push({ id, x: bx0, y: by0, w, h });
+    if (area >= 900 * sc * sc && Math.min(w, h) >= 24 * sc && w < pw * 0.7 && area / (w * h) >= 0.5) blobs.push({ id, x: bx0, y: by0, w, h });
   }
   if (!blobs.length) return { ok: false, msg: 'The plate was found but no bricks were seen on it.' };
+  for (let i = 0; i < blobs.length; i++) blobs[i] = topFace(blobs[i], lab, data, W);
 
   // stud pitch: a standard 24-stud baseplate gives a strong prior (brick tops sit a little closer to the camera, so ~4% larger);
   // otherwise fall back to the brick width. Then a narrow search makes brick edges land on whole studs.
   const shorts = blobs.map((b) => Math.min(b.w, b.h)).sort((a, b) => a - b);
   const p0 = shorts[shorts.length >> 1] / 2;
   const pPlate = (pw / 24) * 1.044;
-  const usePrior = Math.abs(pPlate / p0 - 1) < 0.15;
+  const usePrior = Math.abs(pPlate / p0 - 1) < 0.07;
   const centre = usePrior ? pPlate : p0 * 0.97;
   const span = usePrior ? 5 : 16;
-  let bestErr = Infinity, p = centre;
-  for (let k = -span; k <= span; k++) {
-    const pp = centre * (1 + k * 0.0025);
-    let err = 0;
-    for (const b of blobs) for (const t of [b.x / pp, (b.x + b.w) / pp]) err += Math.abs(t - Math.round(t));
-    if (err < bestErr) { bestErr = err; p = pp; }
+  // grid pitch: the pitch that puts the blobs' left edges closest to whole studs (bricks sit on the plate's grid, a little bigger than the plate's own studs)
+  const pGrid0 = usePrior ? (pw / 24) * 1.01 : p0, xmin0 = Math.min(...blobs.map((b) => b.x));
+  let p = pGrid0, bestE = Infinity;
+  const [rLo, rHi] = usePrior ? [0.96, 1.07] : [0.88, 1.18]; // no whole plate in view: the bricks alone set the pitch, so search wider
+  for (let r = rLo; r <= rHi; r += 0.002) {
+    const pp = pGrid0 * r;
+    let e = 0.02 * Math.abs(r - 1.02);
+    for (const b of blobs) { const u = (b.x - xmin0) / pp; e += Math.abs(u - Math.round(u)) / blobs.length; }
+    if (e < bestE) { bestE = e; p = pp; }
   }
 
   // split each blob into 2-stud cells, colour each by median RGB, merge equal neighbours
   const bricks = [];
   for (const b of blobs) {
     // small bricks are 2 studs deep, so width/height beats the stud pitch there (shadows widen the blob); long or merged blobs use the pitch
-    const Lp = Math.max(1, Math.round(b.w / p)), L = Lp <= 3 && b.w >= b.h * 0.9 ? Math.max(1, Math.round((2 * b.w) / b.h)) : Lp, n = Math.max(1, L >> 1), cw = b.w / n;
+    // a brick is 2 studs deep, so its length is 2 + (width - height) / pitch: a rim, shadow or side face widens both and cancels out
+    const L = Math.max(1, Math.round(2 + (b.w - b.h) / p)), n = Math.max(1, L >> 1), cw = b.w / n;
     const seq = [];
     for (let k = 0; k < n; k++) {
       const cxa = Math.floor(b.x + k * cw + cw * 0.2), cxb = Math.floor(b.x + (k + 1) * cw - cw * 0.2);
@@ -229,7 +300,14 @@ export function detect(data, W, H) {
   }
   const kept = rowsOut.flatMap((r) => r.bricks);
   if (!kept.length) return { ok: false, msg: 'No bricks were found between the tape lines.' };
-  const xmin = Math.min(...kept.map((b) => b.x));
+  // every brick starts on a whole stud: refine the pitch and grid offset by least squares on all left edges
+  let xmin = Math.min(...kept.map((b) => b.x)), pg = p;
+  if (kept.length >= 3) {
+    const ss = kept.map((b) => Math.round((b.x - xmin) / pg)), n = kept.length, sx = ss.reduce((a, v) => a + v, 0), sy = kept.reduce((a, b) => a + b.x, 0);
+    const sxx = ss.reduce((a, v) => a + v * v, 0), sxy = ss.reduce((a, v, i) => a + v * kept[i].x, 0), den = n * sxx - sx * sx;
+    if (den) { const slope = (n * sxy - sx * sy) / den; if (Math.abs(slope / pg - 1) < 0.02) { pg = slope; xmin = (sy - slope * sx) / n; } }
+  }
+  p = pg;
   let loopLen = 1;
   const tracks = rowsOut.map((r, i) => {
     r.bricks.sort((a, b) => a.x - b.x);

@@ -1,6 +1,7 @@
 // Brick Beats: photo of a brick mat → lanes of notes → playback with a moving line over the photo.
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
 import { detect, probe } from "./vision.js";
+import { correct } from "./correct.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
 import { NOTE_NAMES } from "../shared/music.js";
 import { ensureAudio, audioNow, gainNode, masterBus, voice } from "./synth.js";
@@ -21,14 +22,27 @@ const setStatus = (t, err) => { const s = $("#status"); s.textContent = t; s.cla
 /* ---------- reading the photo ---------- */
 function analyse(im) {
   const t0 = performance.now();
-  const W = 640, H = Math.max(1, Math.round((im.naturalHeight * W) / im.naturalWidth));
-  const cv = document.createElement("canvas");
-  cv.width = W; cv.height = H;
-  const c = cv.getContext("2d", { willReadFrequently: true });
-  c.imageSmoothingQuality = "high";
-  c.drawImage(im, 0, 0, W, H);
-  const px = c.getImageData(0, 0, W, H).data, r = detect(px, W, H);
-  r.data = px; // kept so a tap can look at the photo again (addAt)
+  const canvasOf = (w, h) => { const cv = document.createElement("canvas"); cv.width = w; cv.height = h; return cv; };
+  // 1. whole plate in view: straighten it (perspective, rotation) and read the straightened view
+  const BW = Math.min(1280, im.naturalWidth), BH = Math.max(1, Math.round((im.naturalHeight * BW) / im.naturalWidth));
+  const big = canvasOf(BW, BH), bc = big.getContext("2d", { willReadFrequently: true });
+  bc.drawImage(im, 0, 0, BW, BH);
+  const fixed = correct(bc.getImageData(0, 0, BW, BH).data, BW, BH);
+  let px, W, H, view = null;
+  if (fixed) {
+    px = fixed.data; W = fixed.W; H = fixed.H;
+    const vc = canvasOf(W, H);
+    vc.getContext("2d").putImageData(new ImageData(px, W, H), 0, 0);
+    view = vc.toDataURL("image/jpeg", 0.88);
+  } else { // 2. otherwise read the photo as it is
+    W = 640; H = Math.max(1, Math.round((im.naturalHeight * W) / im.naturalWidth));
+    const cv = canvasOf(W, H), c = cv.getContext("2d", { willReadFrequently: true });
+    c.imageSmoothingQuality = "high";
+    c.drawImage(im, 0, 0, W, H);
+    px = c.getImageData(0, 0, W, H).data;
+  }
+  const r = detect(px, W, H);
+  r.data = px; r.view = view; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
   r.ms = performance.now() - t0;
   return r;
 }
@@ -58,7 +72,7 @@ async function useSource(src, example) {
   world.style.aspectRatio = `${r.W} / ${r.H}`;
   world.style.left = `${(-crop.x0 / r.W / cw) * 100}%`;
   world.style.top = `${(-crop.y0 / r.H / ch) * 100}%`;
-  $("#img").src = src;
+  $("#img").src = r.view || src;
   $("#tag").hidden = !example;
   refresh();
   return true;
@@ -148,6 +162,7 @@ function renderStatus() {
   let t = `Found ${n} bricks in ${tracks.length} ${res.lanes ? "lanes" : "rows"} in ${Math.max(1, Math.round(res.ms))} ms. One loop is ${(loopLen * secPerStud()).toFixed(1)} s.`;
   t += (un ? " Dashed bricks need a check: tap them." : " Tap a brick if it looks wrong.") + " Missed one? Tap it on the photo.";
   if (!res.lanes) t += " Tip: tape across the plate makes clear lanes.";
+  if (res.view) t += " The photo was straightened first.";
   if (state.fruits) {
     const c = fruitCounts(tracks), list = FRUITS.filter((f) => c[f.id]).map((f) => `${f.name} ×${c[f.id]}`);
     t += list.length ? ` Fruits found: ${list.join(", ")}.` : " No fruit patterns found yet.";
