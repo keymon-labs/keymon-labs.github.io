@@ -15,7 +15,7 @@
 <main class="app">
   <header class="top">
     <div>
-      <h1>Brick Beats</h1>
+      <h1>Brick Beats <button type="button" class="iconbtn" id="update" aria-label="Get the latest version" title="Get the latest version"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg></button></h1>
       <p>Build on the mat, take a photo, press play.</p>
     </div>
     <div class="get">
@@ -33,7 +33,7 @@
     <section class="stage-col" aria-label="Photo of the mat">
       <div class="stagewrap">
       <div class="vsl" id="vsl" hidden aria-label="Lane controls">
-        <label>Start<input type="range" id="lstart" min="0" max="760" step="1" aria-label="Where the first lane line starts"></label>
+        <label>Start<input type="range" id="lstart" min="-200" max="900" step="1" aria-label="Where the first lane line starts"></label>
         <label>Size<input type="range" id="lsize" min="12" max="200" step="0.5" aria-label="Lane size: distance between lane lines"></label>
         <label>Gap<input type="range" id="lgap" min="0" max="120" step="0.5" aria-label="Gap (tape) between lanes"></label>
       </div>
@@ -51,10 +51,11 @@
         <label>Columns start<input type="range" id="cstart" min="20" max="140" step="0.5" aria-label="Where the first column starts"></label>
         <label>Columns size<input type="range" id="csize" min="12" max="60" step="0.25" aria-label="Column size: one stud"></label>
       </div>
+      <div class="adjust"><button class="btn" id="gridbtn" type="button" aria-pressed="false" disabled>Adjust grid</button><button class="btn" id="fixbtn" type="button" disabled>Fix corners</button></div>
       <p class="status" id="status" aria-live="polite">Reading the mat…</p>
       <div class="examples"><span>Try an example:</span><button type="button" class="btn btn-small" data-example="photo">Plain mat</button><button type="button" class="btn btn-small" data-example="taped">Taped lanes</button><select id="testpics" aria-label="More test photos"><option value="">More test photos…</option></select></div>
       <div class="panel gridbar" id="gridbar" hidden>
-        <p><b>Edit grid.</b> <b>Even spacing</b> (default): lanes and columns are evenly spaced, so set where they start, how big they are and the gap (tape) with the sliders on the left and below the photo. Switch it off to drag single lane lines or the column edges. Letting go of a slider re-reads the notes; <b>Re-read notes</b> does it on demand and drops your hand edits.</p>
+        <p><b>Adjust grid.</b> <b>Even spacing</b> (default): lanes and columns are evenly spaced, so set where they start, how big they are and the gap (tape) with the sliders on the left and below the photo. Switch it off to drag single lane lines or the column edges. Letting go of a slider re-reads the notes; <b>Re-read notes</b> does it on demand and drops your hand edits.</p>
         <div class="sel-actions">
           <button type="button" class="btn btn-small" id="unitoggle" data-act="unitoggle" aria-pressed="true">Even spacing: on</button>
           <button type="button" class="btn btn-small" data-act="reread">Re-read notes</button>
@@ -72,8 +73,6 @@
       <div class="panel" id="selpanel" hidden></div>
       <div class="transport">
         <button class="btn btn-primary" id="play" type="button"></button>
-        <button class="btn" id="gridbtn" type="button" aria-pressed="false" disabled>Edit grid</button>
-        <button class="btn" id="fixbtn" type="button" disabled>Fix corners</button>
         <button class="btn" id="fruitsbtn" type="button" aria-pressed="false">Show fruits</button>
       </div>
     </section>
@@ -124,7 +123,7 @@
   <p id="cscore" class="status"></p>
   <div class="get"><button class="btn btn-primary" id="cok" type="button">Use these corners</button><button class="btn" id="cno" type="button">Cancel</button></div>
 </dialog>
-<footer class="foot">Brick Beats v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · Your photos stay on this device. · <button type="button" class="linkbtn" id="update">Get the latest version</button></footer>
+<footer class="foot">Brick Beats v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · Your photos stay on this device.</footer>
 </main>
 <noscript>This app needs JavaScript.</noscript>
 <script type="module" src="./app.js"></script>

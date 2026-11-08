@@ -203,8 +203,8 @@ function renderBoxes() {
   const W = res.W, H = res.H, xb = crop.x0 + 6, f = res.fit;
   let h = "";
   for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % 2 ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
-  edges.forEach((_, k) => { h += `<i class="lline${editing && !uniform ? "" : " thin"}${gap ? " gap" : ""}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${((ey(k, 0) - gap / 2) / H) * 100}%;${gap ? `height:${(gap / H) * 100}%;` : ""}transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
-  if (editing && !uniform) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
+  edges.forEach((_, k) => { h += `<i class="lline${editing ? "" : " thin"}${gap ? " gap" : ""}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${((ey(k, 0) - gap / 2) / H) * 100}%;${gap ? `height:${(gap / H) * 100}%;` : ""}transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
+  if (editing) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
   for (const tr of tracks) {
     h += `<span class="rownum" style="top:${(laneY(tr, xb) / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
     for (const b of tr.bricks) {
@@ -419,7 +419,7 @@ function addAt(e) {
   const r = $("#world").getBoundingClientRect(), x = ((e.clientX - r.left) / r.width) * res.W, y = ((e.clientY - r.top) / r.height) * res.H;
   const f = probe(res.data, res.W, res.H, res, x, y);
   if (!f) { setStatus("That is the green plate. Tap the brick itself to add it.", true); return; }
-  if (grid.cols && f.start >= grid.cols) { setStatus("That is past the last column. Drag the right edge in Edit grid to make the loop longer.", true); return; }
+  if (grid.cols && f.start >= grid.cols) { setStatus("That is past the last column. Drag the right edge in Adjust grid to make the loop longer.", true); return; }
   ensureLane(f.box.y + f.box.h / 2, f.box.x + f.box.w / 2);
   const tr = laneAt(f.box.y + f.box.h / 2, f.box.x + f.box.w / 2);
   if (f.start < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= f.start; })); res.fit.a += f.start * res.fit.b; f.start = 0; }
@@ -504,7 +504,7 @@ $("#boxes").addEventListener("pointerdown", (e) => {
   const part = e.target.closest(".hl") ? "l" : e.target.closest(".hr") ? "r" : "m";
   const [tr0, b] = kind === "brick" ? findBy(+el.dataset.id) || [] : [];
   if (kind === "brick" && !b) return;
-  const k0 = kind === "edge" ? +el.dataset.edge : 0, e0 = kind === "edge" ? edges[k0] : 0, g0 = { ...grid }, nc = g0.cols || loopLen, maxC = grid.cols || Infinity;
+  const k0 = kind === "edge" ? +el.dataset.edge : 0, e0 = kind === "edge" ? edges[k0] : 0, eAll = edges.slice(), g0 = { ...grid }, nc = g0.cols || loopLen, maxC = grid.cols || Infinity;
   const o = b && { s: b.start, l: b.len, x: fit.a + fit.b * b.start, w: fit.b * b.len, cy: laneY(tr0, fit.a + fit.b * b.start) };
   let moved = false, to = null, gnew = null;
   el.setPointerCapture(e.pointerId);
@@ -512,6 +512,7 @@ $("#boxes").addEventListener("pointerdown", (e) => {
     const dx = (ev.clientX - x0) * k, dy = (ev.clientY - y0) * k;
     if (!moved && Math.hypot(dx, dy) < 5 * k) return;
     moved = true;
+    if (kind === "edge" && uniform) { edges = eAll.map((v) => v + dy); renderBoxes(); return; } // even spacing: the whole set of lines slides
     if (kind === "edge") {
       edges[k0] = Math.min(Math.max(e0 + dy, (edges[k0 - 1] ?? -Infinity) + 12), (edges[k0 + 1] ?? Infinity) - 12);
       el.style.top = `${((edges[k0] - gap / 2) / res.H) * 100}%`;
@@ -535,8 +536,9 @@ $("#boxes").addEventListener("pointerdown", (e) => {
   };
   const up = (ev) => {
     el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);
-    if (!moved) { if (kind === "edge") { selEdge = k0; renderBoxes(); } return; }
+    if (!moved) { if (kind === "edge" && !uniform) { selEdge = k0; renderBoxes(); } return; }
     dragged = true; setTimeout(() => { dragged = false; }, 0);
+    if (uniform && (kind === "edge" || kind === "col")) { if (kind === "col" && gnew) grid = { ...gnew, cols: colsFill(gnew.x0, gnew.pitch), rect: true }; gridEdited(g0.pitch); return; }
     if (kind === "edge") {
       selEdge = k0;
       if (clashes(lanesFor(edges))) { edges[k0] = e0; setStatus("That line would put two notes at the same time in one lane, so it went back.", true); } else commitGrid(grid.pitch);
@@ -616,6 +618,10 @@ function slide(id, v) {
   else { grid = { ...grid, [id === "cstart" ? "x0" : "pitch"]: v }; grid.cols = colsFill(grid.x0, grid.pitch); res.fit = { a: grid.x0, b: grid.pitch }; }
   renderBoxes();
 }
+// After even-spacing edits: hand-placed notes are kept and only found ones re-snap; with none placed, everything is read again.
+function gridEdited(base) {
+  if (tracks.some((t) => t.bricks.some((b) => b.user))) { tracks.forEach((t) => t.bricks.forEach((b) => { b.dirty = true; })); commitGrid(base); refresh(); } else reread();
+}
 // Read the notes again from what the camera saw, into the lanes and columns as they are now (hand edits are dropped; lane sounds stay).
 function reread() {
   if (!res?.tracks) return;
@@ -631,7 +637,7 @@ for (const id of ["lstart", "lsize", "lgap", "cstart", "csize"]) {
   $("#" + id).addEventListener("input", (e) => slide(id, +e.target.value));
   $("#" + id).addEventListener("change", () => {
     const base = sliderBase ?? grid.pitch; sliderBase = null;
-    if (tracks.some((t) => t.bricks.some((b) => b.user))) { tracks.forEach((t) => t.bricks.forEach((b) => { b.dirty = true; })); commitGrid(base); refresh(); } else reread(); // hand-placed notes are kept: only found ones re-snap
+    gridEdited(base);
   });
 }
 $("#update").addEventListener("click", async () => { // forget the offline copy and load the newest build (your saved settings stay)
