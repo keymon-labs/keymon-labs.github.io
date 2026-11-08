@@ -4,6 +4,8 @@ import { detect, probe } from "./vision.js";
 import { findCorners, turnQuad, warp, distortion, snapTargets, snapPoint, plateShare } from "./correct.js";
 import { SQ, edgesFrom, gridOf, laneIdx, colOf, splitTallest, removeEdge, reviveMapping, fitUniform, uniformEdges, colsFill } from "./grid.js";
 import { clearFor, tidy, mergeTracks } from "./merge.js";
+import { measure, tips as photoTips } from "./quality.js";
+import { LIB_KEY, reviveLibrary, sorted, addEntry, toggleStar, removeEntry, exportEntry, importEntry } from "./library.js";
 import { emptyProfile, learnColour, learnedClass, reviveProfile } from "./profile.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
 import { NOTE_NAMES } from "../shared/music.js";
@@ -32,9 +34,9 @@ const MAP_KEY = "brick-beats-map-v1";
 let mapping = null;
 try { mapping = reviveMapping(localStorage.getItem(MAP_KEY) || ""); } catch { /* not remembered */ }
 const saveMapping = () => { try { if (mapping) localStorage.setItem(MAP_KEY, JSON.stringify(mapping)); else localStorage.removeItem(MAP_KEY); } catch { /* not saved */ } };
-const state = { bpm: 120, key: 0, scale: "pent", loop: true, fruits: false };
+const state = { bpm: 120, key: 0, scale: "pent", loop: true, fruits: false, studTime: 1, studTimeSet: false }; // studTime: 1 = a stud lasts half a beat (Duplo), 0.5 = a quarter (Lego studs are half the size)
 
-const secPerStud = () => (60 / state.bpm) * BEATS_PER_STUD;
+const secPerStud = () => (60 / state.bpm) * BEATS_PER_STUD * state.studTime;
 const noteOf = (tr, b) => midiOf(tr.instrument, state.key, state.scale, b.cls);
 const setStatus = (t, err) => { const s = $("#status"); s.textContent = t; s.classList.toggle("err", !!err); };
 
@@ -59,6 +61,7 @@ function analyse(im, manualQuad) {
     else if (prior) { fixed = warp(bd, BW, BH, prior); corr = { mode: "prior", quad: prior, ...distortion(prior), sure: true }; } // not sure of this photo's corners: assume the camera has not moved
   }
   const shot = { url: big.toDataURL("image/jpeg", 0.85), W: BW, H: BH, quad: corr?.quad || f?.quad || null, data: bd }; // the photo as taken, for the corner editor
+  const advice = shot.quad ? photoTips(measure(bd, BW, BH, shot.quad), BW) : [{ id: "notfound", msg: "I could not find the whole mat. Keep all four sides in view with some floor around it." }];
   let px, W, H, view = null;
   if (fixed) {
     px = fixed.data; W = fixed.W; H = fixed.H;
@@ -73,9 +76,29 @@ function analyse(im, manualQuad) {
     px = c.getImageData(0, 0, W, H).data;
   }
   const r = detect(px, W, H, { classify: (rgb) => learnedClass(profile, rgb), adapt: !!fixed });
-  r.data = px; r.view = view; r.corr = corr; r.shot = shot; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
+  r.advice = advice; r.data = px; r.view = view; r.corr = corr; r.shot = shot; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
   r.ms = performance.now() - t0;
   return r;
+}
+
+// Show the (straightened) photo cropped to the plate and the bricks, inside the stage.
+function showPhoto(r, rect, imgSrc, example) {
+  let x0 = r.plate.x0, x1 = r.plate.x1, y0 = r.plate.y0, y1 = r.plate.y1;
+  if (rect) ({ x0, x1, y0, y1 } = SQ);
+  for (const t of tracks) for (const b of t.bricks) { x0 = Math.min(x0, b.box.x); x1 = Math.max(x1, b.box.x + b.box.w); y0 = Math.min(y0, b.box.y); y1 = Math.max(y1, b.box.y + b.box.h); }
+  const mg = 12;
+  crop = { x0: Math.max(0, x0 - mg), x1: Math.min(r.W, x1 + mg), y0: Math.max(0, y0 - mg), y1: Math.min(r.H, y1 + mg) };
+  // show only the plate: the photo is a wide "world" shifted and scaled inside the stage
+  const cw = (crop.x1 - crop.x0) / r.W, ch = (crop.y1 - crop.y0) / r.H, world = $("#world");
+  $("#stage").style.aspectRatio = `${crop.x1 - crop.x0} / ${crop.y1 - crop.y0}`;
+  world.style.width = `${100 / cw}%`;
+  world.style.aspectRatio = `${r.W} / ${r.H}`;
+  world.style.left = `${(-crop.x0 / r.W / cw) * 100}%`;
+  world.style.top = `${(-crop.y0 / r.H / ch) * 100}%`;
+  $("#img").src = imgSrc;
+  $("#tag").hidden = !example;
+  const adv = $("#advice"); adv.hidden = example || !r.advice.length; adv.innerHTML = r.advice.map((t) => `<li>${t.msg}</li>`).join("");
+  $("#fixbtn").disabled = false; $("#gridbtn").disabled = false;
 }
 
 let lastSrc = null, shot = null;
@@ -113,6 +136,7 @@ async function useSource(src, example, quad, reset) {
   tracks = merged || lanesNew;
   if (!keepSel) sel = null;
   res.merged = !!merged;
+  if (rect && !state.studTimeSet) { state.studTime = g.pitch < 20 ? 0.5 : 1; $("#studtime").value = String(state.studTime); } // small studs on the straightened mat: Lego
   edges = e; laneTilt = tilt; grid = g; gap = gp; selEdge = -1; r.fit = { a: g.x0, b: g.pitch };
   if (!rect) { // free loop: nothing may start before the first stud
     const mn = Math.min(0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start)));
@@ -126,21 +150,7 @@ async function useSource(src, example, quad, reset) {
     saveMapping();
   }
   rebuildGains(); // keep playing: the new lanes take over at the next note
-  let x0 = r.plate.x0, x1 = r.plate.x1, y0 = r.plate.y0, y1 = r.plate.y1;
-  if (rect) ({ x0, x1, y0, y1 } = SQ);
-  for (const t of tracks) for (const b of t.bricks) { x0 = Math.min(x0, b.box.x); x1 = Math.max(x1, b.box.x + b.box.w); y0 = Math.min(y0, b.box.y); y1 = Math.max(y1, b.box.y + b.box.h); }
-  const mg = 12;
-  crop = { x0: Math.max(0, x0 - mg), x1: Math.min(r.W, x1 + mg), y0: Math.max(0, y0 - mg), y1: Math.min(r.H, y1 + mg) };
-  // show only the plate: the photo is a wide "world" shifted and scaled inside the stage
-  const cw = (crop.x1 - crop.x0) / r.W, ch = (crop.y1 - crop.y0) / r.H, world = $("#world");
-  $("#stage").style.aspectRatio = `${crop.x1 - crop.x0} / ${crop.y1 - crop.y0}`;
-  world.style.width = `${100 / cw}%`;
-  world.style.aspectRatio = `${r.W} / ${r.H}`;
-  world.style.left = `${(-crop.x0 / r.W / cw) * 100}%`;
-  world.style.top = `${(-crop.y0 / r.H / ch) * 100}%`;
-  $("#img").src = r.view || src;
-  $("#tag").hidden = !example;
-  $("#fixbtn").disabled = false; $("#gridbtn").disabled = false;
+  showPhoto(r, rect, r.view || src, example);
   refresh();
   if (!example && !quad && (!r.corr || !r.corr.sure)) openCorners(); // the reader is not sure where the square is: ask
   return true;
@@ -202,7 +212,7 @@ function commitGrid(oldPitch) {
 function renderBoxes() {
   const W = res.W, H = res.H, xb = crop.x0 + 6, f = res.fit;
   let h = "";
-  for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % 2 ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
+  for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % (state.studTime < 1 ? 4 : 2) ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
   edges.forEach((_, k) => { h += `<i class="lline${editing ? "" : " thin"}${gap ? " gap" : ""}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${((ey(k, 0) - gap / 2) / H) * 100}%;${gap ? `height:${(gap / H) * 100}%;` : ""}transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
   if (editing) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
   for (const tr of tracks) {
@@ -599,6 +609,54 @@ async function openPhoto(file) {
   if (await useSource(url, false)) { if (objUrl) URL.revokeObjectURL(objUrl); objUrl = url; } else URL.revokeObjectURL(url);
 }
 
+/* ---------- saved mats (library.js): kept in this browser; export gives a file the player can send ---------- */
+let library = [];
+try { library = reviveLibrary(localStorage.getItem(LIB_KEY) || ""); } catch { /* storage blocked */ }
+function saveLibrary() { try { localStorage.setItem(LIB_KEY, JSON.stringify(library)); return true; } catch { setStatus("Could not save: the browser storage is full or blocked.", true); return false; } }
+function renderLibrary() {
+  $("#liblist").innerHTML = sorted(library).map((e) => `<li><span class="libname">${esc(e.name)}<small> ${new Date(e.date).toLocaleDateString()}</small></span><span class="libbtns"><button type="button" class="btn btn-small" data-lib="star" data-id="${e.id}" aria-pressed="${e.star}" aria-label="Star ${esc(e.name)}">${e.star ? "★" : "☆"}</button><button type="button" class="btn btn-small" data-lib="open" data-id="${e.id}">Open</button><button type="button" class="btn btn-small" data-lib="export" data-id="${e.id}">Export</button><button type="button" class="btn btn-small" data-lib="del" data-id="${e.id}" aria-label="Delete ${esc(e.name)}">Delete</button></span></li>`).join("") || "<li class=\"muted\">Nothing saved yet.</li>";
+}
+async function smallPhoto(url, side = 380) { // the straightened photo, small
+  const im = new Image(); im.src = url; await im.decode();
+  const cv = document.createElement("canvas"); cv.width = cv.height = side;
+  cv.getContext("2d").drawImage(im, 0, 0, side, side);
+  return cv.toDataURL("image/jpeg", 0.7);
+}
+function openEntry(e) {
+  const r = { ok: true, W: 760, H: 760, plate: { ...SQ }, lanes: null, fit: { a: e.grid.x0, b: e.grid.pitch }, tracks: [], view: e.img, corr: null, shot: null, advice: [], ms: 0 };
+  res = r; shot = null; lastSrc = null; lastExample = true; sel = null; selEdge = -1;
+  edges = e.grid.edges.slice(); laneTilt = e.grid.tilt; gap = e.grid.gap; grid = { x0: e.grid.x0, pitch: e.grid.pitch, cols: e.grid.cols, rect: true };
+  Object.assign(state, { bpm: e.settings.bpm, key: e.settings.key, scale: e.settings.scale, studTime: e.settings.studTime, studTimeSet: true });
+  $("#bpm").value = state.bpm; $("#bpmv").textContent = `${state.bpm} beats a minute`; $("#key").value = String(state.key); $("#scale").value = state.scale; $("#studtime").value = String(state.studTime);
+  tracks = e.tracks.map((t, i) => ({ ...newTrack(i), instrument: t.instrument, mute: t.mute, solo: t.solo, bricks: t.bricks.map((b) => ({ id: uid++, cls: b.cls, sure: true, start: b.start, len: b.len, user: true, seen: 1, box: { x: 0, y: 0, w: 0, h: 0 }, dirty: true })) }));
+  clampCols(); tracks.forEach((t) => t.bricks.forEach((b) => place(t, b)));
+  mapping = { gap, rect: true, edges: edges.slice(), tilt: laneTilt, x0: grid.x0, pitch: grid.pitch, cols: grid.cols, edited: true, quad: null, ar: 0 }; saveMapping();
+  showPhoto(r, true, e.img, false); $("#fixbtn").disabled = true;
+  rebuildGains(); refresh(); setStatus(`Opened "${e.name}".`);
+}
+$("#libsave").addEventListener("click", async () => {
+  if (!res?.view || !grid.rect) { setStatus("Take or choose a photo first: only a straightened mat can be saved.", true); return; }
+  const e = { id: String(Date.now()), name: $("#libname").value.trim() || `Mat ${library.length + 1}`, star: false, date: Date.now(), img: await smallPhoto(res.view), grid: { x0: grid.x0, pitch: grid.pitch, cols: grid.cols, tilt: laneTilt, edges: edges.slice(), gap }, tracks: tracks.map((t) => ({ instrument: t.instrument, mute: t.mute, solo: t.solo, bricks: t.bricks.map((b) => ({ cls: b.cls, start: b.start, len: b.len })) })), settings: { bpm: state.bpm, key: state.key, scale: state.scale, studTime: state.studTime } };
+  const keep = library; library = addEntry(library, e);
+  if (saveLibrary()) { $("#libname").value = ""; renderLibrary(); setStatus(`Saved "${e.name}".`); } else library = keep;
+});
+$("#liblist").addEventListener("click", (ev) => {
+  const b = ev.target.closest("[data-lib]"); if (!b) return;
+  const e = library.find((x) => x.id === b.dataset.id); if (!e) return;
+  if (b.dataset.lib === "open") openEntry(e);
+  else if (b.dataset.lib === "star") { library = toggleStar(library, e.id); saveLibrary(); renderLibrary(); }
+  else if (b.dataset.lib === "del") { library = removeEntry(library, e.id); saveLibrary(); renderLibrary(); }
+  else { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([exportEntry(e)], { type: "application/json" })); a.download = `${e.name.replace(/[^\w-]+/g, "-")}.brickbeats.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+});
+$("#libimport").addEventListener("click", () => $("#libfile").click());
+$("#libfile").addEventListener("change", async (ev) => {
+  const f = ev.target.files?.[0]; ev.target.value = ""; if (!f) return;
+  const e = importEntry(await f.text());
+  if (!e) { setStatus("That file is not a Brick Beats mat.", true); return; }
+  e.id = String(Date.now()); library = addEntry(library, e); if (saveLibrary()) { renderLibrary(); setStatus(`Imported "${e.name}".`); }
+});
+renderLibrary();
+
 // Even spacing: the lane lines and the columns are one start + one size each; the sliders move them.
 function evenOut() { const u = edges.length > 1 && fitUniform(edges); if (u) edges = uniformEdges(u.y0, u.step, edges.length - 1); }
 function syncSliders() {
@@ -624,7 +682,7 @@ function gridEdited(base) {
 }
 // Read the notes again from what the camera saw, into the lanes and columns as they are now (hand edits are dropped; lane sounds stay).
 function reread() {
-  if (!res?.tracks) return;
+  if (!res?.tracks?.length) { setStatus("Re-reading needs the original photo: this mat was opened from Saved mats.", true); return; }
   const lanes = Array.from({ length: edges.length - 1 }, (_, i) => ({ ...newTrack(i), ...(tracks[i] ? { instrument: tracks[i].instrument, mute: tracks[i].mute, solo: tracks[i].solo } : {}) }));
   res.tracks.forEach((t) => t.bricks.forEach((b) => lanes[laneIdx(edges, laneTilt, b.x + b.w / 2, b.y + b.h / 2)].bricks.push({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start: Math.max(0, colOf(grid, b.x)), len: Math.max(1, Math.round(b.w / grid.pitch)), user: false, seen: 1, box: { x: b.x, y: b.y, w: b.w, h: b.h }, dirty: true })));
   lanes.forEach((t) => { t.bricks = tidy(t.bricks); });
@@ -667,6 +725,7 @@ $("#fruitsbtn").addEventListener("click", (e) => {
   e.currentTarget.textContent = state.fruits ? "Hide fruits" : "Show fruits";
   renderBoxes(); renderLanes(); renderStatus();
 });
+$("#studtime").addEventListener("change", (e) => { state.studTime = +e.target.value; state.studTimeSet = true; if (res) { renderBoxes(); renderStatus(); } });
 $("#bpm").addEventListener("input", (e) => { state.bpm = +e.target.value; $("#bpmv").textContent = `${state.bpm} beats a minute`; renderStatus(); });
 $("#loop").addEventListener("change", (e) => { state.loop = e.target.checked; });
 $("#key").innerHTML = NOTE_NAMES.map((n, i) => `<option value="${i}">${n}</option>`).join("");

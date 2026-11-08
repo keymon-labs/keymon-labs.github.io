@@ -87,3 +87,8 @@ Set `mats` (other plate colours, white / pale / green paper with drawn lines; se
 Sets (`--set`): `cast` (strong colour cast, otherwise easy): exact 0% → 92%; `lego` (Lego-sized studs, normal stresses): 67% → 88%; `clean` (easy photos, regression floor): 96%.
 
 Known weak spots (seed 4, before `balance`): a busy multi-colour rug (corners 67%), glare, several stresses at once, and the right-most brick sometimes one stud short. Next ideas: a per-photo stud-size check for Lego, and a looser floor model for patterned floors.
+
+## Photo tips, Lego time, saved mats
+- **Photo tips** (`quality.js`): after each photo (not the examples) the mat area is measured for size, sharpness, glare, uneven light and darkness, and a short tip appears under the photo ("There is glare on the mat…"). Thresholds were set on generated photos (`test/quality.test.js`); real phone photos may need them nudged.
+- **Time per stud** (Grown-up settings): Duplo = a stud lasts half a beat; Lego = a quarter (the studs are half the size). It is chosen automatically from the stud size found on a straightened mat, until you change it by hand.
+- **Saved mats** (`library.js`, localStorage `brick-beats-lib-v1`, at most 12, starred ones are kept): name, star, Open, Export (a `.brickbeats.json` file) and Import. An entry is a 380 px straightened picture, the grid, the notes and the settings. Opened mats cannot be re-read (the original photo is not kept). Nothing is sent anywhere; an exported file contains a picture of the mat, so look before sharing it. This is the base for debug feedback, test sets and preset songs in IDEAS.md.

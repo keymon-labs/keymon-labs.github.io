@@ -2,7 +2,7 @@
 
 Public file: invented examples only, nothing personal.
 
-## Song history and library
+## Song history and library (first version built: Saved mats in the app, see README)
 - **History**: the last songs played, kept on the device so a mat can be reopened without a new photo.
 - **Library**: saved songs with a small low-resolution image, the grid (corners, lanes, columns, gap), the notes, and metadata: name, date, stars (favourites), instruments, tempo.
 - Starred songs first; rename, delete.

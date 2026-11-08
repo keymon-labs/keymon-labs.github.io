@@ -51,6 +51,7 @@
         <label>Columns start<input type="range" id="cstart" min="20" max="140" step="0.5" aria-label="Where the first column starts"></label>
         <label>Columns size<input type="range" id="csize" min="12" max="60" step="0.25" aria-label="Column size: one stud"></label>
       </div>
+      <ul class="advice" id="advice" aria-live="polite" hidden></ul>
       <details class="tips">
         <summary>Tips for a good photo, and limits</summary>
         <h3>Tips</h3>
@@ -117,10 +118,18 @@
         <h2>Fruit rhythms</h2>
         <div class="fruits" id="fruits"></div>
       </div>
+      <details class="panel" id="library">
+        <summary>Saved mats</summary>
+        <div class="row"><input id="libname" type="text" maxlength="60" placeholder="Name this mat" aria-label="Name for this mat"><button class="btn btn-small btn-primary" id="libsave" type="button">Save this mat</button></div>
+        <ul class="liblist" id="liblist"></ul>
+        <div class="row"><button class="btn btn-small" id="libimport" type="button">Import a file</button><input type="file" id="libfile" accept=".json,application/json" hidden></div>
+        <p class="muted">Kept only in this browser. <b>Export</b> makes a file you can send for testing; it holds a small picture of the mat and your notes, so look before you share it.</p>
+      </details>
       <details class="panel">
         <summary>Grown-up settings</summary>
         <div class="settings">
           <label class="field">Speed <input type="range" id="bpm" min="60" max="200" value="120"><output id="bpmv">120 beats a minute</output></label>
+          <label class="field">Time per stud <select id="studtime"><option value="1">Duplo: ½ beat</option><option value="0.5">Lego: ¼ beat (small studs)</option></select></label>
           <div class="row">
             <label class="field">Key <select id="key"></select></label>
             <label class="field">Sound of the notes <select id="scale"></select></label>
