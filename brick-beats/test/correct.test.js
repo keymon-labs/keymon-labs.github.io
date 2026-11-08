@@ -72,3 +72,14 @@ test("a dot let go near a corner lands on it, far from any it stays", () => {
   assert.deepEqual(snapPoint(t, 255, 310, 100), [250, 300]); // a strong colour corner
   assert.deepEqual(snapPoint(t, 600, 600, 40), [600, 600]);
 });
+
+test("tape along the mat's edge counts as mat even when its colour is not recognised (the floor around it is what defines the outline)", async () => {
+  const { renderMat } = await import("../../scripts/brick-beats-mat.mjs");
+  const L = [[["red", 2, 2]], [["pink", 0, 2]], [["lime", 6, 6]], [["blue", 12, 2]]];
+  for (const wood of [false, true]) {
+    const p = renderMat(L, { edgeTape: true, wood }), f = findCorners(p.data, p.width, p.height);
+    assert.ok(f && f.sure);
+    const ys = f.quad.map((q) => q[1]);
+    assert.ok(Math.min(...ys) < 26 && Math.max(...ys) > 613, `top ${Math.min(...ys)}, bottom ${Math.max(...ys)}`); // plate edges are at 32 and 608; the tape reaches 20 and 619
+  }
+});

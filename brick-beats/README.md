@@ -64,3 +64,6 @@ See [IDEAS.md](IDEAS.md) for planned work (library, history, sharing).
 
 ## Even spacing, re-read and updating
 In *Adjust grid*, **Even spacing** (on by default) treats the lanes and columns as evenly spaced: sliders on the left set where the first lane line starts, the lane size and the gap (tape); sliders below the photo set where the columns start and their size. When tape lanes are found, the tape strips themselves are fitted as the evenly spaced lane lines. Letting go of a slider re-reads the notes from what the camera saw (`reread()`); if you placed notes by hand they are kept and only the found ones re-snap. **Re-read notes** always reads again from scratch (lane sounds stay). Turn Even spacing off to drag single lines. The footer's **Get the latest version** clears the offline copy and reloads the newest build; settings and the saved grid stay.
+
+## Corners and the floor
+The outline of the mat is found from its colours (green plate + blue tape). When the border of the photo shows a clear floor, a second outline is made from "everything that is not the floor" (the floor's colours come from a coarse colour histogram of the photo's border); if it contains the first one and is only a little bigger, it wins, so tape or bricks the colour reader misses along the edge stay inside the corners. The corner snap uses the same outline.

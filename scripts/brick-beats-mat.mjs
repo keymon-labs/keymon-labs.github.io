@@ -23,7 +23,7 @@ export const EXAMPLE = [
  * Render lanes (max 4) on a 24-stud plate. scale 1 gives 640x640, the size the app analyses.
  * Bricks sit on a grid 4.4% bigger than the plate's, like real bricks seen from above.
  */
-export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0 } = {}) {
+export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0, edgeTape = false } = {}) {
   if (lanes.length > 4) throw new Error("renderMat draws at most 4 lanes");
   const p = 24 * scale, m = 32 * scale, W = 24 * p + 2 * m, pb = 1.044 * p;
   const data = new Uint8ClampedArray(W * W * 4);
@@ -45,6 +45,7 @@ export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhan
   rect(m, m, 24 * p, 24 * p, PLATE);
   for (let r = 0; r < 24; r++) for (let c = 0; c < 24; c++) disc(m + (c + 0.5) * p, m + (r + 0.5) * p, 0.3 * p, PLATE_STUD);
   if (tape) for (let j = 0; j <= lanes.length; j++) rect(m - overhang * p, m + (1.5 + 5 * j) * p - 0.45 * p, (24 + 2 * overhang) * p, 0.9 * p, TAPE); // overhang: tape ends past the plate, on the floor
+  if (edgeTape) for (const y of [m - 0.5 * p, m + 23.6 * p]) rect(m - 0.2 * p, y, 24.4 * p, 0.9 * p, [90, 200, 205]); // pale cyan tape along the top and bottom edges, half outside the plate: the colour reader misses it
   lanes.forEach((bricks, k) => {
     const top = m + (4 + 5 * k) * p - pb;
     for (const [name, start, len] of bricks) {

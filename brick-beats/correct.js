@@ -111,7 +111,7 @@ function homography(from, to) {
 /** Corners of the plate's outline (green + tape against the floor): Harris on that silhouette, so studs, bricks and the tape lying on the plate give nothing, and tape along the plate's edge counts as part of it. [{x, y, s}] in photo pixels, strongest first. */
 function cornerBits(src, SW, SH) {
   const m = scan(src, SW, SH), W = m.W, H = m.H, N = m.N, k = m.k;
-  const blob = biggestBlob(closeMask(m.plate.map((v, i) => v | m.tape[i]), W, H, 3), W, H) || [];
+  const blob = outline(m, src, SW)?.blob || [];
   const inBlob = new Uint8Array(N), sil = new Float32Array(N).fill(255), stack = [];
   for (const i of blob) inBlob[i] = 1;
   const seed = (i) => { if (!inBlob[i] && sil[i]) { sil[i] = 0; stack.push(i); } };
@@ -244,8 +244,8 @@ function bestQuad(poly) {
 
 
 /** Plate outline: plate + the tape lying on it → gaps closed → hull → best four corners → sides refitted twice → corners (shrunk coordinates), or null. */
-function plateQuad({ W, H, N, plate, tape }) {
-  const both = closeMask(plate.map((v, i) => v | tape[i]), W, H, 3); // tape lanes cut the green into strips, so the plate is green + tape together
+function plateQuad({ W, H, N, plate, tape }, mask) {
+  const both = mask || closeMask(plate.map((v, i) => v | tape[i]), W, H, 3); // tape lanes cut the green into strips, so the plate is green + tape together
   const region = biggestBlob(both, W, H);
   if (!region || region.length < N * 0.04) return null;
   const pts = region.map((i) => [i % W, (i / W) | 0]);
@@ -266,7 +266,44 @@ function plateQuad({ W, H, N, plate, tape }) {
   const tol = 0.012 * Math.max(W, H), sgn = Math.sign((q[1][0] - q[0][0]) * (q[2][1] - q[1][1]) - (q[1][1] - q[0][1]) * (q[2][0] - q[1][0])) || 1;
   const away = (p) => q.some((a, i) => { const b = q[(i + 1) % 4]; return (sgn * ((p[0] - a[0]) * (b[1] - a[1]) - (p[1] - a[1]) * (b[0] - a[0]))) / Math.hypot(b[0] - a[0], b[1] - a[1]) > tol; }); // outside this side
   const out = pts.filter(away).length / pts.length;
-  return { quad: q, rms, outside: out, excess: area(q) / area(h) };
+  return { quad: q, rms, outside: out, excess: area(q) / area(h), blob: region };
+}
+
+/** Everything that is not the floor: the floor is whatever colours fill the frame's border (a coarse colour histogram of the border, a little widened), so wood, tiles or carpet all work, and the mat, its tape and its bricks are what is left. */
+function notFloor({ W, H, N, k }, src, SW) {
+  const sm = shrink(src, SW, Math.round(src.length / 4 / SW), k), ring = Math.max(3, Math.round(0.04 * Math.min(W, H))), hist = new Float32Array(512), bin = new Int16Array(N);
+  let n = 0;
+  for (let i = 0; i < N; i++) {
+    bin[i] = (sm.data[i * 4] >> 5) * 64 + (sm.data[i * 4 + 1] >> 5) * 8 + (sm.data[i * 4 + 2] >> 5);
+    const x = i % W, y = (i / W) | 0;
+    if (x < ring || y < ring || x >= W - ring || y >= H - ring) { hist[bin[i]]++; n++; }
+  }
+  const floor = new Uint8Array(512);
+  for (let b = 0; b < 512; b++) if (hist[b] >= 0.01 * n) floor[b] = 1;
+  const ok = new Uint8Array(512); // a bin next to a floor bin counts too: grain and shadows
+  for (let b = 0; b < 512; b++) for (let d = -1; d <= 1 && !ok[b]; d++) for (let e = -1; e <= 1 && !ok[b]; e++) for (let f = -1; f <= 1; f++) {
+    const r = (b >> 6) + d, g = ((b >> 3) & 7) + e, bl = (b & 7) + f;
+    if (r >= 0 && r < 8 && g >= 0 && g < 8 && bl >= 0 && bl < 8 && floor[r * 64 + g * 8 + bl]) { ok[b] = 1; break; }
+  }
+  const out = new Uint8Array(N);
+  let share = 0;
+  for (let i = 0; i < N; i++) { out[i] = ok[bin[i]] ? 0 : 1; share += 1 - out[i]; }
+  return share > 0.25 * N ? out : null; // no clear floor around the mat
+}
+
+/** The mat's outline: from its own colours (green plate + tape), or, when that agrees and also takes in more (tape or bricks the colours missed), from "not floor". */
+function outline(m, src, SW) {
+  const fc = plateQuad(m);
+  let nf = null;
+  try { nf = notFloor(m, src, SW); } catch { nf = null; }
+  if (!nf) return fc;
+  const { W, H } = m, open = (a, r) => closeMask(a.map((v) => 1 - v), W, H, r).map((v) => 1 - v), ff = plateQuad(m, closeMask(open(nf, 2), W, H, 3));
+  if (!ff || ff.rms > 0.03 || ff.outside > 0.04) return fc;
+  if (!fc) return ff;
+  const tol = 0.012 * Math.max(W, H), q = ff.quad, sgn = Math.sign((q[1][0] - q[0][0]) * (q[2][1] - q[1][1]) - (q[1][1] - q[0][1]) * (q[2][0] - q[1][0])) || 1;
+  const holds = (p) => q.every((a, i) => { const b = q[(i + 1) % 4]; return (sgn * ((p[0] - a[0]) * (b[1] - a[1]) - (p[1] - a[1]) * (b[0] - a[0]))) / Math.hypot(b[0] - a[0], b[1] - a[1]) <= tol; });
+  const area = (poly) => Math.abs(poly.reduce((a, p, i) => a + p[0] * poly[(i + 1) % 4][1] - poly[(i + 1) % 4][0] * p[1], 0)) / 2, r = area(ff.quad) / area(fc.quad);
+  return fc.quad.every(holds) && r < 1.25 ? ff : fc;
 }
 
 /** Direction the tape lanes run (radians, in (-90, 90]) from the tape mask's edges, or null without tape. */
@@ -324,7 +361,7 @@ export function distortion(q) {
  * `sure` says the four sides were straight lines (not hidden by a hand or cut by clutter) and the angle is not extreme.
  */
 export function findCorners(src, SW, SH) {
-  const m = scan(src, SW, SH), f = plateQuad(m);
+  const m = scan(src, SW, SH), f = outline(m, src, SW);
   if (!f) return null;
   const quad = orderQuad(f.quad, laneAngle(m)).map((p) => [p[0] * m.k, p[1] * m.k]);
   const dis = distortion(quad);
