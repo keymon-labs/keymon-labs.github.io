@@ -108,26 +108,34 @@ function homography(from, to) {
   return [...A.map((r, i) => r[8] / r[i]), 1];
 }
 
-/** Strong large-scale corners in colour (Harris on the colour gradients of a ~320 px copy, so single studs fade out). [{x, y, s}] in photo pixels, strongest first. */
+/** Corners of the plate's outline (green + tape against the floor): Harris on that silhouette, so studs, bricks and the tape lying on the plate give nothing, and tape along the plate's edge counts as part of it. [{x, y, s}] in photo pixels, strongest first. */
 function cornerBits(src, SW, SH) {
-  const k = Math.max(1, Math.round(SW / 320)), sm = shrink(src, SW, SH, k), W = sm.W, H = sm.H, N = W * H;
+  const m = scan(src, SW, SH), W = m.W, H = m.H, N = m.N, k = m.k;
+  const blob = biggestBlob(closeMask(m.plate.map((v, i) => v | m.tape[i]), W, H, 3), W, H) || [];
+  const inBlob = new Uint8Array(N), sil = new Float32Array(N).fill(255), stack = [];
+  for (const i of blob) inBlob[i] = 1;
+  const seed = (i) => { if (!inBlob[i] && sil[i]) { sil[i] = 0; stack.push(i); } };
+  for (let x = 0; x < W; x++) { seed(x); seed((H - 1) * W + x); }
+  for (let y = 0; y < H; y++) { seed(y * W); seed(y * W + W - 1); }
+  while (stack.length) { // floor = what the border reaches without crossing the plate; bricks and holes inside count as plate
+    const i = stack.pop(), x = i % W;
+    if (x > 0) seed(i - 1);
+    if (x < W - 1) seed(i + 1);
+    if (i >= W) seed(i - W);
+    if (i < N - W) seed(i + W);
+  }
   const box = (a, r) => { // separable box blur, radius r
     const t = new Float32Array(N), o = new Float32Array(N), n = 2 * r + 1;
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { let v = 0; for (let j = -r; j <= r; j++) v += a[y * W + Math.min(W - 1, Math.max(0, x + j))]; t[y * W + x] = v / n; }
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { let v = 0; for (let j = -r; j <= r; j++) v += t[Math.min(H - 1, Math.max(0, y + j)) * W + x]; o[y * W + x] = v / n; }
     return o;
   };
-  const xx = new Float32Array(N), yy = new Float32Array(N), xy = new Float32Array(N);
-  for (let c = 0; c < 3; c++) { // a green / blue / wood edge counts even where the brightness barely changes
-    const g = new Float32Array(N);
-    for (let i = 0; i < N; i++) g[i] = sm.data[i * 4 + c];
-    const b = box(box(g, 1), 1);
-    for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
-      const i = y * W + x, gx = b[i + 1] - b[i - 1], gy = b[i + W] - b[i - W];
-      xx[i] += gx * gx; yy[i] += gy * gy; xy[i] += gx * gy;
-    }
+  const b = box(box(sil, 2), 2), xx = new Float32Array(N), yy = new Float32Array(N), xy = new Float32Array(N);
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const i = y * W + x, gx = b[i + 1] - b[i - 1], gy = b[i + W] - b[i - W];
+    xx[i] = gx * gx; yy[i] = gy * gy; xy[i] = gx * gy;
   }
-  const A = box(box(xx, 2), 2), B = box(box(yy, 2), 2), C = box(box(xy, 2), 2), R = new Float32Array(N);
+  const A = box(box(xx, 4), 4), B = box(box(yy, 4), 4), C = box(box(xy, 4), 4), R = new Float32Array(N);
   let top = 0;
   for (let i = 0; i < N; i++) { R[i] = A[i] * B[i] - C[i] * C[i] - 0.05 * (A[i] + B[i]) ** 2; if (R[i] > top) top = R[i]; }
   const out = [];
@@ -135,7 +143,7 @@ function cornerBits(src, SW, SH) {
     const v = R[y * W + x];
     if (v < top * 0.02) continue;
     let max = true;
-    for (let j = -3; j <= 3 && max; j++) for (let i = -3; i <= 3; i++) if ((i || j) && R[(y + j) * W + x + i] > v) { max = false; break; }
+    for (let j = -6; j <= 6 && max; j++) for (let i = -6; i <= 6; i++) if ((i || j) && R[Math.min(H - 1, Math.max(0, y + j)) * W + Math.min(W - 1, Math.max(0, x + i))] > v) { max = false; break; }
     if (max) out.push({ x: (x + 0.5) * k, y: (y + 0.5) * k, s: v / top });
   }
   return out.sort((a, b) => b.s - a.s).slice(0, 300);

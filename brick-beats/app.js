@@ -90,7 +90,7 @@ async function useSource(src, example, quad, reset) {
   const rect = !!r.view; // straightened: the plate fills a known square, so lanes and columns can be a fixed matrix
   // 1. the matrix: from this photo, or the remembered one when it agrees (same number of lines) or the player set it by hand
   const centres = r.tracks.map((t) => (r.lanes && t.mid !== undefined ? t.mid / r.lanes.cs : t.bricks.length ? t.bricks.reduce((a, b) => a + b.y + b.h / 2, 0) / t.bricks.length : 0));
-  let g = rect ? { ...gridOf(r.fit.a, r.fit.b), rect } : { x0: r.fit.a, pitch: r.fit.b, cols: 0, rect }, e = edgesFrom(centres), tilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0, fromMap = false, gp = r.lanes ? 0.9 * r.fit.b : 0; // tape lanes: a gap about a stud wide
+  let g = rect ? { ...gridOf(r.fit.a, r.fit.b), rect } : { x0: r.fit.a, pitch: r.fit.b, cols: 0, rect }, e = edgesFrom(centres), tilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0, fromMap = false, gp = r.lanes ? Math.min(r.lanes.gap || 0.9 * r.fit.b, 1.5 * r.fit.b) : 0; // tape lanes: the gap is the tape's own width
   const m = mapping;
   if (m && !reset && rect && m.rect && Math.abs(r.fit.b / m.pitch - 1) < 0.12 && (m.edited || m.edges.length === e.length || !r.lanes)) { g = { x0: m.x0, pitch: m.pitch, cols: m.cols, rect }; e = m.edges.slice(); tilt = m.tilt; gp = m.gap; fromMap = true; }
   // 2. the bricks, snapped to the matrix: a column from their left edge, a lane from their middle
