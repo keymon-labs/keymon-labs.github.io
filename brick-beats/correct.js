@@ -181,7 +181,15 @@ export function plateShare(src, SW, SH, quad) {
 }
 
 /** Colour masks of a shrunk copy (the plate is found on ~640 px, the warp samples the full image). */
+const scanned = new WeakMap(); // the masks and outline of the last photo(s): finding corners, snapping and checking old corners all start from the same scan
 function scan(src, SW, SH) {
+  const hit = scanned.get(src);
+  if (hit && hit.W0 === SW && hit.H0 === SH) return hit.m;
+  const m = scan0(src, SW, SH);
+  scanned.set(src, { W0: SW, H0: SH, m });
+  return m;
+}
+function scan0(src, SW, SH) {
   const k = Math.max(1, Math.floor(SW / 640)), sm = shrink(src, SW, SH, k), W = sm.W, H = sm.H, N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N);
   for (let i = 0; i < N; i++) {
@@ -293,6 +301,10 @@ function notFloor({ W, H, N, k }, src, SW) {
 
 /** The mat's outline: from its own colours (green plate + tape), or, when that agrees and also takes in more (tape or bricks the colours missed), from "not floor". */
 function outline(m, src, SW) {
+  if (m.outlined !== undefined) return m.outlined;
+  return (m.outlined = outline0(m, src, SW));
+}
+function outline0(m, src, SW) {
   const fc = plateQuad(m);
   let nf = null;
   try { nf = notFloor(m, src, SW); } catch { nf = null; }

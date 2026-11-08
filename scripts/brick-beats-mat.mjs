@@ -23,9 +23,9 @@ export const EXAMPLE = [
  * Render lanes (max 4) on a 24-stud plate. scale 1 gives 640x640, the size the app analyses.
  * Bricks sit on a grid 4.4% bigger than the plate's, like real bricks seen from above.
  */
-export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0, edgeTape = false } = {}) {
+export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0, edgeTape = false, margin, floor = FLOOR, fine = 1, floorKind = wood ? "wood" : "flat" } = {}) {
   if (lanes.length > 4) throw new Error("renderMat draws at most 4 lanes");
-  const p = 24 * scale, m = 32 * scale, W = 24 * p + 2 * m, pb = 1.044 * p;
+  const p = 24 * scale, m = margin ?? 32 * scale, W = 24 * p + 2 * m, pb = 1.044 * p;
   const data = new Uint8ClampedArray(W * W * 4);
   const rect = (x, y, w, h, c) => {
     for (let j = Math.max(0, Math.round(y)); j < Math.min(W, Math.round(y + h)); j++)
@@ -35,15 +35,30 @@ export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhan
     for (let j = Math.floor(cy - r); j <= cy + r; j++)
       for (let i = Math.floor(cx - r); i <= cx + r; i++) if ((i - cx) ** 2 + (j - cy) ** 2 <= r * r) data.set([c[0], c[1], c[2], 255], (j * W + i) * 4);
   };
-  if (wood) { // planks with a faint grain: the floor is not one flat colour, and tape ends can lie on it
+  const hash = (x, y) => { let h = (x * 374761393 + y * 668265263) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+  const put = (x, y, f) => data.set([floor[0] * f, floor[1] * f, floor[2] * f, 255], (y * W + x) * 4);
+  if (floorKind === "wood") { // planks with a faint grain: the floor is not one flat colour, and tape ends can lie on it
     for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
       const plank = Math.floor((y + 0.25 * x) / (5 * p)), tone = 1 + (((plank * 7919) % 13) - 6) * 0.012 + Math.sin(x * 0.045 + plank * 2) * 0.025;
       const seam = Math.abs(((y + 0.25 * x) / (5 * p)) % 1) < 0.01;
-      data.set([FLOOR[0] * tone * (seam ? 0.7 : 1), FLOOR[1] * tone * (seam ? 0.7 : 1), FLOOR[2] * tone * (seam ? 0.7 : 1), 255], (y * W + x) * 4);
+      put(x, y, tone * (seam ? 0.7 : 1));
     }
-  } else rect(0, 0, W, W, FLOOR);
+  } else if (floorKind === "tile") { // square tiles, each a slightly different tone, dark grout between
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) { const t = 7 * p, tx = Math.floor(x / t), ty = Math.floor(y / t); put(x, y, (x % t < 0.15 * p || y % t < 0.15 * p ? 0.7 : 1) * (0.9 + 0.2 * hash(tx, ty))); }
+  } else if (floorKind === "stripes") { // rug or blanket stripes, high contrast
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) put(x, y, Math.floor((x + 0.4 * y) / (3 * p)) % 2 ? 0.62 : 1.05);
+  } else if (floorKind === "checker") {
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) put(x, y, (Math.floor(x / (4 * p)) + Math.floor(y / (4 * p))) % 2 ? 0.6 : 1.05);
+  } else if (floorKind === "blobs") { // a busy rug: a random coloured disc in every cell, any hue (greens and blues too)
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+      const t = 5 * p, cx = Math.floor(x / t), cy = Math.floor(y / t), hx = (cx + 0.3 + 0.4 * hash(cx, cy + 7)) * t, hy = (cy + 0.3 + 0.4 * hash(cx + 3, cy)) * t, inside = Math.hypot(x - hx, y - hy) < (1 + hash(cx, cy)) * p;
+      if (inside) { const c = [60 + 190 * hash(cx, cy + 1), 60 + 190 * hash(cx + 5, cy), 60 + 190 * hash(cx, cy + 9)]; data.set([c[0], c[1], c[2], 255], (y * W + x) * 4); } else put(x, y, 0.95);
+    }
+  } else if (floorKind === "carpet") { // fine noise
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) put(x, y, 0.88 + 0.24 * hash(x, y));
+  } else rect(0, 0, W, W, floor);
   rect(m, m, 24 * p, 24 * p, PLATE);
-  for (let r = 0; r < 24; r++) for (let c = 0; c < 24; c++) disc(m + (c + 0.5) * p, m + (r + 0.5) * p, 0.3 * p, PLATE_STUD);
+  for (let r = 0; r < 24 * fine; r++) for (let c = 0; c < 24 * fine; c++) disc(m + (c + 0.5) * (p / fine), m + (r + 0.5) * (p / fine), 0.3 * (p / fine), PLATE_STUD); // fine 2: Lego studs, half the size
   if (tape) for (let j = 0; j <= lanes.length; j++) rect(m - overhang * p, m + (1.5 + 5 * j) * p - 0.45 * p, (24 + 2 * overhang) * p, 0.9 * p, TAPE); // overhang: tape ends past the plate, on the floor
   if (edgeTape) for (const y of [m - 0.5 * p, m + 23.6 * p]) rect(m - 0.2 * p, y, 24.4 * p, 0.9 * p, [90, 200, 205]); // pale cyan tape along the top and bottom edges, half outside the plate: the colour reader misses it
   lanes.forEach((bricks, k) => {
@@ -52,7 +67,7 @@ export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhan
       const c = BRICK_RGB[name], x = m + 0.5 * p + start * pb;
       rect(x, top, len * pb, 2 * pb, c.map((v) => v * 0.7));
       rect(x + 2, top + 2, len * pb - 4, 2 * pb - 4, c);
-      for (let i = 0; i < len; i++) for (let r = 0; r < 2; r++) disc(x + (i + 0.5) * pb, top + (r + 0.5) * pb, 0.3 * pb, c.map((v) => Math.min(255, v * 1.12 + 10)));
+      for (let i = 0; i < len * fine; i++) for (let r = 0; r < 2 * fine; r++) disc(x + (i + 0.5) * (pb / fine), top + (r + 0.5) * (pb / fine), 0.3 * (pb / fine), c.map((v) => Math.min(255, v * 1.12 + 10)));
     }
   });
   return { data, width: W, height: W };
@@ -62,17 +77,24 @@ export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhan
  * Photograph a rendered mat from an angle: rotates it by `rot` degrees, squeezes the far side by `tilt` (perspective, 0.001 per px at the
  * edge of a 1000 px picture) and shrinks it by `scale`, into an outW x outH floor-coloured picture. For testing the straightening step.
  */
-export function distort({ data, width, height }, { outW = 1000, outH = 1300, rot = 0, tilt = 0, scale = 0.8 } = {}) {
+export function distort({ data, width, height }, { outW = 1000, outH = 1300, rot = 0, tilt = 0, scale = 0.8, fill = FLOOR } = {}) {
   const out = new Uint8ClampedArray(outW * outH * 4), t = (rot * Math.PI) / 180, c = Math.cos(t), s = Math.sin(t);
   for (let v = 0; v < outH; v++) for (let u = 0; u < outW; u++) {
     const uu = u - outW / 2, vv = v - outH / 2, w = 1 - tilt * vv, x0 = uu / w, y0 = vv / w; // undo perspective
     const sx = (c * x0 + s * y0) / scale + width / 2, sy = (-s * x0 + c * y0) / scale + height / 2, o = (v * outW + u) * 4;
-    if (sx < 0 || sy < 0 || sx >= width - 1 || sy >= height - 1) { out.set([FLOOR[0], FLOOR[1], FLOOR[2], 255], o); continue; }
+    if (sx < 0 || sy < 0 || sx >= width - 1 || sy >= height - 1) { out.set([fill[0], fill[1], fill[2], 255], o); continue; }
     const ix = sx | 0, iy = sy | 0, fx = sx - ix, fy = sy - iy, p = (iy * width + ix) * 4;
     for (let k = 0; k < 3; k++) out[o + k] = data[p + k] * (1 - fx) * (1 - fy) + data[p + 4 + k] * fx * (1 - fy) + data[p + width * 4 + k] * (1 - fx) * fy + data[p + width * 4 + 4 + k] * fx * fy;
     out[o + 3] = 255;
   }
   return { data: out, width: outW, height: outH };
+}
+
+/** Where a point of the rendered mat (source pixels) lands in the distorted photo: the inverse of distort. */
+export function distortPoint([sx, sy], { width, height }, { outW = 1000, outH = 1300, rot = 0, tilt = 0, scale = 0.8 } = {}) {
+  const t = (rot * Math.PI) / 180, c = Math.cos(t), s = Math.sin(t), a = (sx - width / 2) * scale, b = (sy - height / 2) * scale;
+  const x0 = c * a - s * b, y0 = s * a + c * b, vv = y0 / (1 + tilt * y0), uu = x0 * (1 - tilt * vv);
+  return [uu + outW / 2, vv + outH / 2];
 }
 
 /** A set of generated test photos (each exactly readable): the example list in the app and in test/examples.test.js. */

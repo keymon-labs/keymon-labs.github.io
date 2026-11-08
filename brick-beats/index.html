@@ -51,6 +51,26 @@
         <label>Columns start<input type="range" id="cstart" min="20" max="140" step="0.5" aria-label="Where the first column starts"></label>
         <label>Columns size<input type="range" id="csize" min="12" max="60" step="0.25" aria-label="Column size: one stud"></label>
       </div>
+      <details class="tips">
+        <summary>Tips for a good photo, and limits</summary>
+        <h3>Tips</h3>
+        <ul>
+          <li>Hold the phone straight above the mat, the whole mat in view with floor showing on all four sides.</li>
+          <li>Soft, even light: no glare spots or hard shadows (a shadow of your hand or phone counts). Avoid the flash.</li>
+          <li>A plain floor behind the mat works best; busy rugs, stripes and dark floors are harder.</li>
+          <li>Keep the tape lanes straight and about the same width and distance apart.</li>
+          <li>Hold still and let the camera focus. Blurry photos hide small bricks.</li>
+          <li>Reading is not right? Use <b>Fix corners</b>, then <b>Adjust grid</b> (sliders), then <b>Re-read notes</b>. Tap a brick to fix its colour.</li>
+        </ul>
+        <h3>Limits</h3>
+        <ul>
+          <li>The whole mat must be in the photo; a mat cut off by the frame cannot be straightened by itself.</li>
+          <li>Bricks of nearly the same colour (pale yellow, white, light lime) can be mixed up.</li>
+          <li>Colours that match the mat or the tape (green or blue bricks on a green mat, blue tape) are easy to miss.</li>
+          <li>Lego studs are half the size of Duplo ones: the app reads whatever stud size it finds, so lengths may come out double. Fix with <b>Adjust grid</b>.</li>
+          <li>Everything is read on your phone: no photo leaves it, and there is no internet or AI involved.</li>
+        </ul>
+      </details>
       <div class="adjust"><button class="btn" id="gridbtn" type="button" aria-pressed="false" disabled>Adjust grid</button><button class="btn" id="fixbtn" type="button" disabled>Fix corners</button></div>
       <p class="status" id="status" aria-live="polite">Reading the mat…</p>
       <div class="examples"><span>Try an example:</span><button type="button" class="btn btn-small" data-example="photo">Plain mat</button><button type="button" class="btn btn-small" data-example="taped">Taped lanes</button><select id="testpics" aria-label="More test photos"><option value="">More test photos…</option></select></div>
