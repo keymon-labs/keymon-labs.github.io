@@ -72,7 +72,7 @@ function analyse(im, manualQuad) {
     c.drawImage(im, 0, 0, W, H);
     px = c.getImageData(0, 0, W, H).data;
   }
-  const r = detect(px, W, H, { classify: (rgb) => learnedClass(profile, rgb) });
+  const r = detect(px, W, H, { classify: (rgb) => learnedClass(profile, rgb), adapt: !!fixed });
   r.data = px; r.view = view; r.corr = corr; r.shot = shot; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
   r.ms = performance.now() - t0;
   return r;

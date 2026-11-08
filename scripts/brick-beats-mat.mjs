@@ -23,7 +23,7 @@ export const EXAMPLE = [
  * Render lanes (max 4) on a 24-stud plate. scale 1 gives 640x640, the size the app analyses.
  * Bricks sit on a grid 4.4% bigger than the plate's, like real bricks seen from above.
  */
-export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0, edgeTape = false, margin, floor = FLOOR, fine = 1, floorKind = wood ? "wood" : "flat" } = {}) {
+export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0, edgeTape = false, margin, floor = FLOOR, fine = 1, plate = PLATE, studColour = PLATE_STUD, tapeColour = TAPE, tapeWidth = 0.9, floorKind = wood ? "wood" : "flat" } = {}) {
   if (lanes.length > 4) throw new Error("renderMat draws at most 4 lanes");
   const p = 24 * scale, m = margin ?? 32 * scale, W = 24 * p + 2 * m, pb = 1.044 * p;
   const data = new Uint8ClampedArray(W * W * 4);
@@ -57,9 +57,9 @@ export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhan
   } else if (floorKind === "carpet") { // fine noise
     for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) put(x, y, 0.88 + 0.24 * hash(x, y));
   } else rect(0, 0, W, W, floor);
-  rect(m, m, 24 * p, 24 * p, PLATE);
-  for (let r = 0; r < 24 * fine; r++) for (let c = 0; c < 24 * fine; c++) disc(m + (c + 0.5) * (p / fine), m + (r + 0.5) * (p / fine), 0.3 * (p / fine), PLATE_STUD); // fine 2: Lego studs, half the size
-  if (tape) for (let j = 0; j <= lanes.length; j++) rect(m - overhang * p, m + (1.5 + 5 * j) * p - 0.45 * p, (24 + 2 * overhang) * p, 0.9 * p, TAPE); // overhang: tape ends past the plate, on the floor
+  rect(m, m, 24 * p, 24 * p, plate);
+  if (studColour) for (let r = 0; r < 24 * fine; r++) for (let c = 0; c < 24 * fine; c++) disc(m + (c + 0.5) * (p / fine), m + (r + 0.5) * (p / fine), 0.3 * (p / fine), studColour); // fine 2: Lego studs, half the size
+  if (tape) for (let j = 0; j <= lanes.length; j++) rect(m - overhang * p, m + (1.5 + 5 * j) * p - (tapeWidth / 2) * p, (24 + 2 * overhang) * p, tapeWidth * p, tapeColour); // overhang: tape ends past the plate, on the floor
   if (edgeTape) for (const y of [m - 0.5 * p, m + 23.6 * p]) rect(m - 0.2 * p, y, 24.4 * p, 0.9 * p, [90, 200, 205]); // pale cyan tape along the top and bottom edges, half outside the plate: the colour reader misses it
   lanes.forEach((bricks, k) => {
     const top = m + (4 + 5 * k) * p - pb;

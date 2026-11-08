@@ -156,8 +156,33 @@ export function balance(data, W, H) {
   return o;
 }
 
-export function detect(data, W, H, { classify = null } = {}) {
+/** A mat that is not the green plate this reader was tuned on (a coloured baseplate, a sheet of paper): the straightened view is mostly mat, so find its commonest colour and repaint it as the known green, then the rest of the reader works as usual. */
+export function adaptMat(data, W, H) {
+  let green = 0;
+  for (let i = 0; i < W * H; i += 3) { const [h, s2, v] = rgbToHsv(data[i * 4], data[i * 4 + 1], data[i * 4 + 2]); if (h >= 135 && h < 190 && s2 > 0.3 && v > 0.15) green++; }
+  if (green > (W * H) / 3 * 0.2) return data; // a green plate is there
+  const hist = new Int32Array(4096);
+  for (let i = 0; i < W * H; i += 3) hist[(data[i * 4] >> 4) * 256 + (data[i * 4 + 1] >> 4) * 16 + (data[i * 4 + 2] >> 4)]++;
+  let pk = 0;
+  for (let b = 1; b < 4096; b++) if (hist[b] > hist[pk]) pk = b;
+  const c = [(pk >> 8) * 16 + 8, ((pk >> 4) & 15) * 16 + 8, (pk & 15) * 16 + 8];
+  if (hist[pk] < W * H / 3 * 0.12) return data; // no commonest colour: leave it
+  const [h, s] = rgbToHsv(c[0], c[1], c[2]);
+  if (h >= 135 && h < 190 && s > 0.3) return data; // already the green plate
+  let n = 0, mr = 0, mg = 0, mb = 0;
+  for (let i = 0; i < W * H; i += 3) if (Math.abs(data[i * 4] - c[0]) + Math.abs(data[i * 4 + 1] - c[1]) + Math.abs(data[i * 4 + 2] - c[2]) < 60) { n++; mr += data[i * 4]; mg += data[i * 4 + 1]; mb += data[i * 4 + 2]; }
+  mr /= n; mg /= n; mb /= n;
+  const o = new Uint8ClampedArray(data);
+  for (let i = 0; i < W * H; i++) {
+    const d = Math.abs(data[i * 4] - mr) + Math.abs(data[i * 4 + 1] - mg) + Math.abs(data[i * 4 + 2] - mb);
+    if (d < 75) { const k = Math.min(1.25, (data[i * 4] + data[i * 4 + 1] + data[i * 4 + 2]) / (mr + mg + mb + 1)); o[i * 4] = 5 * k; o[i * 4 + 1] = 122 * k; o[i * 4 + 2] = 95 * k; } // brightness (studs, shade) is kept
+  }
+  return o;
+}
+
+export function detect(data, W, H, { classify = null, adapt = false } = {}) {
   data = balance(denoise(data, W, H), W, H);
+  if (adapt) data = adaptMat(data, W, H);
   const N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N), cls = new Int8Array(N).fill(-1);
   let plateCount = 0;

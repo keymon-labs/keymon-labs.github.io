@@ -69,3 +69,13 @@ test("probe finds a brick the reader missed from one tap", () => {
   assert.equal(f.sure, true);
   assert.equal(probe(full.data, full.width, full.height, res, 32 + 5, 32 + 5), null); // plate corner
 });
+
+test("a mat that is not green (grey baseplate, a sheet of paper) is read once adapt is on", async () => {
+  const { renderMat } = await import("../../scripts/brick-beats-mat.mjs");
+  const L = [[["red", 2, 2], ["cyan", 8, 4]], [["pink", 0, 2]], [["lime", 6, 6]], [["blue", 12, 2], ["yellow", 17, 4]]];
+  for (const mat of [{ plate: [135, 135, 140], studColour: [155, 155, 160] }, { plate: [246, 246, 240], studColour: null }]) {
+    const p = renderMat(L, { tape: false, ...mat }), r = detect(p.data, p.width, p.height, { adapt: true });
+    assert.equal(r.ok, true);
+    assert.deepEqual(r.tracks.map((t) => t.bricks.map((b) => [NAMES[b.cls], b.start, b.len])), L);
+  }
+});

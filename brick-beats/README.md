@@ -80,6 +80,10 @@ Tuning log (60 cases each; "corners" = all four within 2.5% of the plate side, "
 
 | `balance`: undo a warm/cool light shift measured on the green plate (blue-to-green ratio), before corners and bricks | 98% / 90% | 92% / 78% |
 
+| `adaptMat`: a mat that is not green (grey, blue, red, white, paper) is repainted as the known green, only when the straightened view has no green plate | 98% / 90% | 92% / 78% |
+
+Set `mats` (other plate colours, white / pale / green paper with drawn lines; seed 6, 28 cases): exact 14% → 25%, bricks read 18% → 49%. What is left is mostly bricks the same colour as the mat (red on a red plate, blue on blue, pale yellow on pale paper), which cannot be told apart, and paper lines are not used as lanes yet. A unit test covers a grey plate and a plain white sheet.
+
 Sets (`--set`): `cast` (strong colour cast, otherwise easy): exact 0% → 92%; `lego` (Lego-sized studs, normal stresses): 67% → 88%; `clean` (easy photos, regression floor): 96%.
 
 Known weak spots (seed 4, before `balance`): a busy multi-colour rug (corners 67%), glare, several stresses at once, and the right-most brick sometimes one stud short. Next ideas: a per-photo stud-size check for Lego, and a looser floor model for patterned floors.
