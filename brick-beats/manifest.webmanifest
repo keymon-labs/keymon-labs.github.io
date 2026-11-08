@@ -1,0 +1,15 @@
+{
+  "id": "/brick-beats/",
+  "name": "Brick Beats",
+  "short_name": "Brick Beats",
+  "description": "Build music with bricks: take a photo of a brick mat and hear it play.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e7a56",
+  "theme_color": "#0e7a56",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

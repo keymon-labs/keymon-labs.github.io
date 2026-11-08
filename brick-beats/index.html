@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brick Beats</title>
+<meta name="description" content="Build music with bricks: take a photo of a brick mat and hear it play.">
+<meta name="theme-color" content="#0e7a56">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div>
+      <h1>Brick Beats</h1>
+      <p>Build on the mat, take a photo, press play.</p>
+    </div>
+    <button class="btn" id="choose" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      Choose photo
+    </button>
+    <input id="photo" type="file" accept="image/*" hidden>
+  </header>
+
+  <div class="cols">
+    <section class="stage-col" aria-label="Photo of the mat">
+      <div class="stage" id="stage">
+        <div class="world" id="world">
+          <img id="img" alt="Your brick mat">
+          <div id="boxes"></div>
+          <div class="playhead" id="ph"></div>
+        </div>
+        <span class="tag" id="tag">Example mat</span>
+      </div>
+      <p class="status" id="status" aria-live="polite">Reading the mat…</p>
+      <div class="examples"><span>Try an example:</span><button type="button" class="btn btn-small" data-example="photo">Plain mat</button><button type="button" class="btn btn-small" data-example="taped">Taped lanes</button></div>
+      <div class="panel" id="selpanel" hidden></div>
+      <div class="transport">
+        <button class="btn btn-primary" id="play" type="button"></button>
+        <button class="btn" id="fruitsbtn" type="button" aria-pressed="false">Show fruits</button>
+      </div>
+    </section>
+
+    <section class="side-col">
+      <div class="panel">
+        <h2>Lanes</h2>
+        <div id="lanes"></div>
+      </div>
+      <div class="panel">
+        <h2>How it works</h2>
+        <ul class="rules">
+          <li><b>Lane = a player</b>Each strip between the tape plays its own instrument.</li>
+          <li><b>Colour = the note</b>Tap a colour below to hear it.</li>
+          <li><b>Long brick = long note</b>Count the studs along the brick.</li>
+          <li><b>Left to right = time</b>The orange line shows where the music is.</li>
+        </ul>
+        <div class="sizes" id="sizes" aria-label="Brick lengths"></div>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="panel">
+        <h2>Fruit rhythms</h2>
+        <div class="fruits" id="fruits"></div>
+      </div>
+      <details class="panel">
+        <summary>Grown-up settings</summary>
+        <div class="settings">
+          <label class="field">Speed <input type="range" id="bpm" min="60" max="200" value="120"><output id="bpmv">120 beats a minute</output></label>
+          <div class="row">
+            <label class="field">Key <select id="key"></select></label>
+            <label class="field">Sound of the notes <select id="scale"></select></label>
+            <label class="check"><input type="checkbox" id="loop" checked> Repeat</label>
+          </div>
+          <div>
+            <h2>The mat as data</h2>
+            <pre id="json" tabindex="0"></pre>
+            <button class="btn btn-small" id="copy" type="button" style="margin-top:8px">Copy</button>
+          </div>
+        </div>
+      </details>
+    </section>
+  </div>
+  <footer class="foot">Brick Beats v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · Your photos stay on this device.</footer>
+</main>
+<noscript>This app needs JavaScript.</noscript>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
