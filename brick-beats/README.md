@@ -15,6 +15,7 @@ Build music on a brick mat, take a photo, press play. The photo is read on the d
 | `app.js` | UI, playback scheduler, playhead; test hook `window.__brickBeats` |
 | `vision.js` | Photo pixels → `{ tracks, lanes, pitch, fit, loopLen }` (`detect`); `probe` re-reads one brick at a tapped point. Pure, no DOM |
 | `correct.js` | Straightening before reading: finds the plate and tape, warps to a flat top-down view, turns the lanes left to right. Returns `null` if the whole plate is not in view. Pure |
+| `merge.js` | One brick at a time per lane (`clearFor`, `tidy`) and joining a retake with the earlier reading of the same mat (`mergeTracks`). Pure |
 | `profile.js` | What the app remembers between photos: colours the player taught it. Pure; saved as JSON in the browser (localStorage), never sent anywhere |
 | `rhythm.js` | Colour → note, instruments, scales, fruit rhythm rules. Pure |
 | `synth.js` | Web Audio voices (pad, lead, bass, pluck, strings, bell) |
@@ -33,6 +34,10 @@ Tapping a colour swatch on a selected brick is a correction: the app remembers h
 
 ## Fixing mistakes
 Tap a brick to change its colour or length, or remove it. Tap empty space on the photo to add a missed brick: `probe()` grows a region of similar colour from the tap, picks the nearest lane, and selects the new brick so it can be adjusted.
+
+**Drag on the photo.** Drag a brick to move it (snaps to studs, and to the lane it is dropped in); the selected brick has grips at both ends to stretch it from either side. The dashed lines are the lane boundaries: drag one and every brick re-joins the lane its centre is now in. Thin lines mark half-beats (one stud), heavy ones beats (two studs); the lane rolls below use the same two weights. The ♪ column left of the photo mutes a lane. **One brick at a time per lane:** a brick that lands on or grows over another trims it, or removes it if it is fully covered.
+
+**Retaking the photo.** *Take photo* asks the phone for the back camera (`capture="environment"`); *Choose photo* opens the gallery. If the new photo has the same number of lanes and at least half of its bricks match the earlier reading (allowing the first brick to have moved), the two are joined: bricks keep their identity and any edits, a brick seen in two photos with the same colour becomes sure, a disagreement is marked for a check, and bricks the new photo missed are kept but marked unsure. Lane settings (instrument, mute, solo) are kept; dragged lane lines are kept when both photos were straightened. A different mat (or an example) replaces the reading. A new photo while playing does not stop the music: the new lanes take over at the next note.
 
 ## Data format
 `detect()` returns `{ ok, plate, lanes, pitch, fit, loopLen, brickCount, tracks }` where each track is `{ row, bricks: [{ cls, start, len, x, y, w, h }] }`. `start` and `len` are in studs, relative to the leftmost brick; `cls` indexes `NAMES`/`COLOURS`.

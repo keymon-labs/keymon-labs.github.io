@@ -53,6 +53,20 @@ h2 { margin: 0 0 10px; font: 600 12px/1 var(--body); letter-spacing: 0.1em; text
   .cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
   .stage-col { position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); }
 }
+.stagewrap { display: flex; gap: 6px; align-items: stretch; }
+.stagewrap .stage { flex: 1; min-width: 0; width: auto; }
+.mutecol { position: relative; flex: none; width: 38px; }
+.mc { position: absolute; left: 0; width: 38px; height: 38px; transform: translateY(-50%); border-radius: 50%; border: 1px solid var(--line); background: var(--panel); font: 600 16px var(--body); padding: 0; }
+.mc.off { opacity: .5; text-decoration: line-through; }
+.get { display: flex; gap: 8px; flex-wrap: wrap; }
+.gl { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1px solid rgba(255,255,255,.3); pointer-events: none; }
+.gl.beat { border-left: 1.5px solid rgba(255,255,255,.75); box-shadow: 0 0 0 .5px rgba(0,0,0,.25); }
+.lline { position: absolute; left: 0; width: 100%; height: 22px; margin-top: -11px; transform-origin: 0 50%; cursor: ns-resize; touch-action: none; }
+.lline::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; border-top: 2px dashed rgba(255,255,255,.85); filter: drop-shadow(0 0 1px #000); }
+.brick { touch-action: none; cursor: grab; }
+.brick.muted { opacity: .45; }
+.hl, .hr { position: absolute; top: 0; bottom: 0; width: 14px; background: var(--accent); opacity: .85; cursor: ew-resize; }
+.hl { left: -7px; border-radius: 5px 0 0 5px; } .hr { right: -7px; border-radius: 0 5px 5px 0; }
 .stage { position: relative; overflow: hidden; border-radius: 16px; background: var(--stage); width: 100%; aspect-ratio: 1 / 1; border: 1px solid var(--line); }
 .stage.drag { outline: 3px dashed var(--accent); outline-offset: -6px; }
 .world { position: absolute; }
@@ -100,7 +114,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 32px
 .ms[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .roll {
   position: relative; height: 46px; border-radius: 8px; background-color: var(--roll); border: 1px solid var(--line); overflow: hidden;
-  background-image: linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: calc(100% * 4 / var(--n)) 100%;
+  background-image: linear-gradient(90deg, var(--ink) 1.5px, transparent 1.5px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: calc(100% * 2 / var(--n)) 100%, calc(100% / var(--n)) 100%;
 }
 .roll.empty::after { content: "Nothing here yet"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
 .rb {

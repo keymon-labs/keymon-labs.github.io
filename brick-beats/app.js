@@ -2,6 +2,7 @@
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
 import { detect, probe } from "./vision.js";
 import { correct } from "./correct.js";
+import { clearFor, tidy, mergeTracks } from "./merge.js";
 import { emptyProfile, learnColour, learnedClass, reviveProfile } from "./profile.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
 import { NOTE_NAMES } from "../shared/music.js";
@@ -20,6 +21,7 @@ try { profile = reviveProfile(localStorage.getItem(PROFILE_KEY) || ""); } catch 
 const saveProfile = () => { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch { /* not saved */ } };
 
 let uid = 1, res = null, tracks = [], loopLen = 20, sel = null, crop = null, objUrl = null;
+let edges = [], laneTilt = 0, edgesEdited = false, lastExample = true, lastView = false, dragged = false; // lane boundary lines (image y at x=0), their slope, and what the last photo was
 const state = { bpm: 120, key: 0, scale: "pent", loop: true, fruits: false };
 
 const secPerStud = () => (60 / state.bpm) * BEATS_PER_STUD;
@@ -55,7 +57,6 @@ function analyse(im) {
 }
 
 async function useSource(src, example) {
-  if (playing) stopPlay();
   setStatus("Reading the mat…");
   const im = new Image();
   im.src = src;
@@ -63,11 +64,24 @@ async function useSource(src, example) {
   const r = analyse(im);
   if (!r.ok) { setStatus(r.msg, true); return false; }
   res = r;
-  tracks = r.tracks.map((t, i) => ({
+  const fresh = r.tracks.map((t, i) => ({
     row: t.row, mid: t.mid, instrument: DEFAULT_INSTRUMENTS[i % DEFAULT_INSTRUMENTS.length], mute: false, solo: false,
-    bricks: t.bricks.map((b) => ({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start: b.start, len: b.len, box: { x: b.x, y: b.y, w: b.w, h: b.h } })),
+    bricks: t.bricks.map((b) => ({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start: b.start, len: b.len, user: false, seen: 1, box: { x: b.x, y: b.y, w: b.w, h: b.h } })),
   }));
-  sel = null;
+  // a retake of the same mat keeps what is known (ids, edits, lane settings, lines); a different mat starts fresh
+  const old = !example && !lastExample ? tracks : [];
+  const merged = mergeTracks(old, fresh);
+  const keepSel = merged && findBy(sel);
+  if (merged) { merged.forEach((t, i) => { t.row = fresh[i].row; t.mid = fresh[i].mid; }); tracks = merged; } else { tracks = fresh; sel = null; }
+  if (!keepSel) sel = null;
+  const mn = Math.min(0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start)));
+  if (mn < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= mn; })); r.fit.a += mn * r.fit.b; }
+  res.merged = !!merged;
+  laneTilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0;
+  if (!(merged && edgesEdited && r.view && lastView && edges.length === tracks.length + 1)) { initEdges(); edgesEdited = false; }
+  tracks.forEach((t) => t.bricks.forEach((b) => { if (b.dirty) place(t, b); }));
+  lastExample = !!example; lastView = !!r.view;
+  if (playing) { tg = tracks.map(() => gainNode(bus)); applyMix(); } // keep playing: the new lanes take over at the next note
   let x0 = r.plate.x0, x1 = r.plate.x1, y0 = r.plate.y0, y1 = r.plate.y1;
   for (const t of tracks) for (const b of t.bricks) { x0 = Math.min(x0, b.box.x); x1 = Math.max(x1, b.box.x + b.box.w); y0 = Math.min(y0, b.box.y); y1 = Math.max(y1, b.box.y + b.box.h); }
   const m = 12;
@@ -89,26 +103,55 @@ async function useSource(src, example) {
 let boxEls = new Map(), rbEls = new Map(), phEls = [];
 const labelOf = (tr, b) => (state.fruits && b.fruit ? (b.fruitLead ? fruitById(b.fruit).name : "·") : pitchLabel(noteOf(tr, b)));
 
-function laneY(tr, xb) {
-  if (res.lanes && tr.mid !== undefined) return (tr.mid + xb * res.lanes.sn) / res.lanes.cs;
-  return tr.bricks.length ? tr.bricks.reduce((a, b) => a + b.box.y + b.box.h / 2, 0) / tr.bricks.length : 0;
+// Lane boundary lines: edges[k] is the y of line k at x=0; the lines share one slope. A brick belongs to the lane its centre is in.
+const ey = (k, x) => edges[k] + x * laneTilt;
+const laneIdx = (y, x) => { let i = 0; while (i < tracks.length - 1 && y >= ey(i + 1, x)) i++; return i; };
+const laneAt = (y, x) => tracks[laneIdx(y, x)];
+const laneY = (tr, x) => { const i = tracks.indexOf(tr); return (ey(i, x) + ey(i + 1, x)) / 2; };
+
+function initEdges() {
+  const n = tracks.length;
+  const c = tracks.map((t) => (res.lanes && t.mid !== undefined ? t.mid / res.lanes.cs : t.bricks.length ? t.bricks.reduce((a, b) => a + b.box.y + b.box.h / 2, 0) / t.bricks.length : 0));
+  edges = [n > 1 ? c[0] - (c[1] - c[0]) / 2 : c[0] - 20];
+  for (let i = 1; i < n; i++) edges.push((c[i - 1] + c[i]) / 2);
+  edges.push(n > 1 ? c[n - 1] + (c[n - 1] - c[n - 2]) / 2 : c[0] + 20);
+}
+
+// A brick's photo box follows its place on the beat grid (res.fit: px = a + b * studs) and its lane.
+function place(tr, b) { b.box.x = res.fit.a + res.fit.b * b.start; b.box.w = res.fit.b * b.len; b.box.y = laneY(tr, b.box.x) - b.box.h / 2; b.dirty = false; }
+
+// After a lane line moves: every brick joins the lane its centre is now in.
+function regroup() {
+  const all = tracks.flatMap((t) => t.bricks);
+  tracks.forEach((t) => { t.bricks = []; });
+  for (const b of all) laneAt(b.box.y + b.box.h / 2, b.box.x + b.box.w / 2).bricks.push(b);
+  tracks.forEach((t) => { t.bricks = tidy(t.bricks); t.bricks.forEach((b) => b.dirty && place(t, b)); });
 }
 
 function renderBoxes() {
-  const W = res.W, H = res.H, xb = crop.x0 + 6;
+  const W = res.W, H = res.H, xb = crop.x0 + 6, f = res.fit;
   let h = "";
+  for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % 2 ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
+  edges.forEach((_, k) => { h += `<i class="lline" data-edge="${k}" style="top:${(ey(k, 0) / H) * 100}%;transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
   for (const tr of tracks) {
-    const cy = laneY(tr, xb);
-    if (tr.bricks.length || res.lanes) h += `<span class="rownum" style="top:${(cy / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
+    h += `<span class="rownum" style="top:${(laneY(tr, xb) / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
     for (const b of tr.bricks) {
       const fc = state.fruits && b.fruit ? `border-color:${fruitById(b.fruit).hex};` : "";
-      h += `<button type="button" class="brick${b.id === sel ? " sel" : ""}${b.sure === false ? " unsure" : ""}" data-id="${b.id}" style="${fc}left:${(b.box.x / W) * 100}%;top:${(b.box.y / H) * 100}%;width:${(b.box.w / W) * 100}%;height:${(b.box.h / H) * 100}%" aria-label="Lane ${tr.row}, ${COLOURS[b.cls].label}, ${pitchLabel(noteOf(tr, b))}"><span class="chip">${esc(labelOf(tr, b))}</span></button>`;
+      const grips = b.id === sel ? '<i class="hl"></i><i class="hr"></i>' : "";
+      h += `<button type="button" class="brick${b.id === sel ? " sel" : ""}${b.sure === false ? " unsure" : ""}${audible(tr) ? "" : " muted"}" data-id="${b.id}" style="${fc}left:${(b.box.x / W) * 100}%;top:${(b.box.y / H) * 100}%;width:${(b.box.w / W) * 100}%;height:${(b.box.h / H) * 100}%" aria-label="Lane ${tr.row}, ${COLOURS[b.cls].label}, ${pitchLabel(noteOf(tr, b))}"><span class="chip">${esc(labelOf(tr, b))}</span>${grips}</button>`;
     }
   }
   const el = $("#boxes");
   el.innerHTML = h;
   boxEls = new Map();
   el.querySelectorAll(".brick").forEach((e) => boxEls.set(+e.dataset.id, e));
+  renderMutes();
+}
+
+// The column left of the photo: one button per lane, level with it.
+function renderMutes() {
+  const xb = crop.x0 + 6, ch = crop.y1 - crop.y0;
+  $("#mutecol").innerHTML = tracks.map((tr, i) => `<button type="button" class="mc${audible(tr) ? "" : " off"}" data-act="mute" data-i="${i}" aria-pressed="${tr.mute}" aria-label="Mute lane ${tr.row}" style="top:${((laneY(tr, xb) - crop.y0) / ch) * 100}%">${audible(tr) ? "♪" : "✕"}</button>`).join("");
 }
 
 function renderLanes() {
@@ -133,7 +176,8 @@ function renderLanes() {
   for (const tr of tracks) for (const b of tr.bricks) b._on = false;
 }
 
-const findSel = () => { for (const tr of tracks) { const b = tr.bricks.find((x) => x.id === sel); if (b) return [tr, b]; } return null; };
+const findBy = (id) => { for (const tr of tracks) { const b = tr.bricks.find((x) => x.id === id); if (b) return [tr, b]; } return null; };
+const findSel = () => findBy(sel);
 
 function renderSel() {
   const f = findSel(), p = $("#selpanel");
@@ -170,6 +214,7 @@ function renderStatus() {
   t += (un ? " Dashed bricks need a check: tap them." : " Tap a brick if it looks wrong.") + " Missed one? Tap it on the photo.";
   if (!res.lanes) t += " Tip: tape across the plate makes clear lanes.";
   if (res.view) t += " The photo was straightened first.";
+  if (res.merged) t += " Joined with your earlier photo of this mat.";
   if (state.fruits) {
     const c = fruitCounts(tracks), list = FRUITS.filter((f) => c[f.id]).map((f) => `${f.name} ×${c[f.id]}`);
     t += list.length ? ` Fruits found: ${list.join(", ")}.` : " No fruit patterns found yet.";
@@ -285,23 +330,19 @@ function addAt(e) {
   const r = $("#world").getBoundingClientRect(), x = ((e.clientX - r.left) / r.width) * res.W, y = ((e.clientY - r.top) / r.height) * res.H;
   const f = probe(res.data, res.W, res.H, res, x, y);
   if (!f) { setStatus("That is the green plate. Tap the brick itself to add it.", true); return; }
-  const cy = f.box.y + f.box.h / 2, xm = f.box.x + f.box.w / 2;
-  let tr = null, best = Infinity;
-  for (const t of tracks) {
-    const d = Math.abs(laneY(t, xm) - cy);
-    if (t.bricks.length || res.lanes) if (d < best) { best = d; tr = t; }
-  }
-  if (!tr) return;
+  const tr = laneAt(f.box.y + f.box.h / 2, f.box.x + f.box.w / 2);
   if (f.start < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= f.start; })); res.fit.a += f.start * res.fit.b; f.start = 0; }
-  const b = { id: uid++, cls: f.cls, sure: f.sure, rgb: f.rgb, start: f.start, len: f.len, box: f.box };
+  const b = { id: uid++, cls: f.cls, sure: f.sure, rgb: f.rgb, start: f.start, len: f.len, user: true, seen: 1, box: f.box };
   tr.bricks.push(b);
-  tr.bricks.sort((p, q) => p.start - q.start);
+  tr.bricks = clearFor(tr.bricks, b);
+  tr.bricks.forEach((x) => x.dirty && place(tr, x));
   sel = b.id;
   refresh(); preview(noteOf(tr, b));
 }
 
 document.addEventListener("click", (e) => {
   const t = e.target;
+  if (dragged || t.closest(".lline")) return; // the click that ends a drag
   const br = t.closest(".brick, .rb");
   if (br) { select(+br.dataset.id); return; }
   if (t.closest("#world") && res) { addAt(e); return; }
@@ -315,7 +356,7 @@ document.addEventListener("click", (e) => {
   if (sw) {
     const f = findSel();
     if (f) {
-      f[1].cls = +sw.dataset.cls; f[1].sure = true;
+      f[1].cls = +sw.dataset.cls; f[1].sure = true; f[1].user = true;
       if (f[1].rgb) { learnColour(profile, f[1].cls, f[1].rgb); saveProfile(); } // an explicit correction: remember how this brick looked
       refresh(); preview(noteOf(f[0], f[1]));
     }
@@ -325,11 +366,14 @@ document.addEventListener("click", (e) => {
   if (!act) return;
   const a = act.dataset.act;
   if (a === "forget") { profile = emptyProfile(); saveProfile(); renderLearned(); return; }
-  if (a === "mute" || a === "solo") { const tr = tracks[+act.dataset.i]; tr[a] = !tr[a]; renderLanes(); applyMix(); return; }
+  if (a === "mute" || a === "solo") { const tr = tracks[+act.dataset.i]; tr[a] = !tr[a]; renderLanes(); renderBoxes(); applyMix(); return; }
   const f = findSel();
   if (!f) return;
-  if (a === "shorter") f[1].len = Math.max(1, f[1].len - 1);
-  if (a === "longer") f[1].len += 1;
+  if (a === "shorter" || a === "longer") {
+    f[1].len = Math.max(1, f[1].len + (a === "longer" ? 1 : -1)); f[1].user = true;
+    f[0].bricks = clearFor(f[0].bricks, f[1]); // the next brick makes way
+    f[0].bricks.forEach((x) => (x === f[1] || x.dirty) && place(f[0], x));
+  }
   if (a === "remove") { f[0].bricks = f[0].bricks.filter((x) => x !== f[1]); sel = null; }
   if (a === "close") sel = null;
   refresh();
@@ -340,6 +384,56 @@ document.addEventListener("change", (e) => {
   if (t.dataset?.instr !== undefined) { tracks[+t.dataset.instr].instrument = t.value; refresh(); }
 });
 
+/* ---------- dragging on the photo: bricks (move, stretch from either end) and lane lines ---------- */
+$("#boxes").addEventListener("pointerdown", (e) => {
+  const el = e.target.closest(".brick, .lline");
+  if (!el || !res || e.button) return;
+  const k = res.W / $("#world").getBoundingClientRect().width, fit = res.fit, x0 = e.clientX, y0 = e.clientY;
+  const edge = el.classList.contains("lline"), part = e.target.closest(".hl") ? "l" : e.target.closest(".hr") ? "r" : "m";
+  const [tr0, b] = edge ? [] : findBy(+el.dataset.id) || [];
+  if (!edge && !b) return;
+  const k0 = edge ? +el.dataset.edge : 0, e0 = edge ? edges[k0] : 0;
+  const o = b && { s: b.start, l: b.len, x: b.box.x, w: b.box.w, cy: b.box.y + b.box.h / 2 };
+  let moved = false, to = null;
+  el.setPointerCapture(e.pointerId);
+  const move = (ev) => {
+    const dx = (ev.clientX - x0) * k, dy = (ev.clientY - y0) * k;
+    if (!moved && Math.hypot(dx, dy) < 5 * k) return;
+    moved = true;
+    if (edge) {
+      edges[k0] = Math.min(Math.max(e0 + dy, (edges[k0 - 1] ?? -Infinity) + 12), (edges[k0 + 1] ?? Infinity) - 12);
+      el.style.top = `${(edges[k0] / res.H) * 100}%`;
+      return;
+    }
+    const ds = Math.round(dx / fit.b);
+    let s = o.s, l = o.l;
+    if (part === "m") s = Math.max(0, o.s + ds);
+    else if (part === "r") l = Math.max(1, o.l + ds);
+    else { s = Math.min(o.s + o.l - 1, Math.max(0, o.s + ds)); l = o.l + o.s - s; }
+    const lane = part === "m" ? laneAt(o.cy + dy, o.x + o.w / 2) : tr0;
+    to = { s, l, lane };
+    el.style.left = `${((o.x + (s - o.s) * fit.b) / res.W) * 100}%`;
+    el.style.width = `${((o.w + (l - o.l) * fit.b) / res.W) * 100}%`;
+    if (part === "m") el.style.top = `${((laneY(lane, o.x) - b.box.h / 2) / res.H) * 100}%`;
+  };
+  const up = (ev) => {
+    el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);
+    if (!moved) return;
+    dragged = true; setTimeout(() => { dragged = false; }, 0);
+    if (edge) { edgesEdited = true; regroup(); }
+    else if (to && ev.type === "pointerup") {
+      const { s, l, lane } = to;
+      if (lane !== tr0) { tr0.bricks = tr0.bricks.filter((x) => x !== b); lane.bricks.push(b); }
+      b.start = s; b.len = l; b.user = true;
+      lane.bricks = clearFor(lane.bricks, b);
+      lane.bricks.forEach((x) => (x === b || x.dirty) && place(lane, x));
+      sel = b.id;
+    }
+    refresh();
+  };
+  el.addEventListener("pointermove", move); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+});
+
 async function openPhoto(file) {
   if (!file || !file.type.startsWith("image/")) return;
   const url = URL.createObjectURL(file);
@@ -348,7 +442,8 @@ async function openPhoto(file) {
 
 $("#play").addEventListener("click", () => (playing ? stopPlay() : startPlay()));
 $("#choose").addEventListener("click", () => $("#photo").click());
-$("#photo").addEventListener("change", async (e) => { await openPhoto(e.target.files?.[0]); e.target.value = ""; });
+$("#snap").addEventListener("click", () => $("#cam").click()); // capture="environment" asks phones for the back camera
+for (const id of ["#photo", "#cam"]) $(id).addEventListener("change", async (e) => { await openPhoto(e.target.files?.[0]); e.target.value = ""; });
 const stageEl = $("#stage");
 stageEl.addEventListener("dragover", (e) => { e.preventDefault(); stageEl.classList.add("drag"); });
 stageEl.addEventListener("dragleave", () => stageEl.classList.remove("drag"));

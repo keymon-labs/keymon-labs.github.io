@@ -18,15 +18,21 @@
       <h1>Brick Beats</h1>
       <p>Build on the mat, take a photo, press play.</p>
     </div>
-    <button class="btn" id="choose" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-      Choose photo
-    </button>
+    <div class="get">
+      <button class="btn btn-primary" id="snap" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Take photo
+      </button>
+      <button class="btn" id="choose" type="button">Choose photo</button>
+    </div>
     <input id="photo" type="file" accept="image/*" hidden>
+    <input id="cam" type="file" accept="image/*" capture="environment" hidden>
   </header>
 
   <div class="cols">
     <section class="stage-col" aria-label="Photo of the mat">
+      <div class="stagewrap">
+      <div class="mutecol" id="mutecol" aria-label="Mute lanes"></div>
       <div class="stage" id="stage">
         <div class="world" id="world">
           <img id="img" alt="Your brick mat">
@@ -34,6 +40,7 @@
           <div class="playhead" id="ph"></div>
         </div>
         <span class="tag" id="tag">Example mat</span>
+      </div>
       </div>
       <p class="status" id="status" aria-live="polite">Reading the mat…</p>
       <div class="examples"><span>Try an example:</span><button type="button" class="btn btn-small" data-example="photo">Plain mat</button><button type="button" class="btn btn-small" data-example="taped">Taped lanes</button></div>
