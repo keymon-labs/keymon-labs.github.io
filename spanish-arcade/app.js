@@ -51,6 +51,7 @@ function applySettings() {
   document.documentElement.style.fontSize = `${(textSize || 1) * 100}%`; // archetypes size in rem, so scale the root
 }
 applySettings();
+speech.setPreferred(store.data.settings.voice);
 
 // Parent gate hook: task 004 replaces this with the real gate (hold 2 s or a sum).
 const gate = (run) => run();
@@ -180,7 +181,7 @@ const ctx0 = { say: (text, opts) => (store.data.settings.sound ? speech.say(text
 
 function renderSettingsScreen() {
   const main = screen(null);
-  current = renderSettings(main, { store, content, diagnostic, gate, logError, applySettings });
+  current = renderSettings(main, { store, content, diagnostic, gate, logError, applySettings, speech });
   main.append(link(activeProfile() ? `#/profile/${activeProfile().id}` : '#/', 'Volver'));
 }
 

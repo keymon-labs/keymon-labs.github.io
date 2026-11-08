@@ -1,13 +1,18 @@
 // Spanish speech for every audio archetype (PLAN §5 "Speech"): waits for voiceschanged, needs a tap first,
 // prefers on-device voices, es-ES then any es-*, else reports "no voice" so games can switch to pictures.
 
-const isEs = (v) => /^es([-_]|$)/i.test(v.lang);
-const isEsES = (v) => /^es[-_]es$/i.test(v.lang);
+const isEs = (v) => /^(es|spa)([-_]|$)/i.test(v.lang); // some Android engines say spa-ESP instead of es-ES
+const isEsES = (v) => /^(es[-_]es|spa[-_]esp)$/i.test(v.lang);
+const idOf = (v) => v.voiceURI || v.name;
 
-/** Best Spanish voice or null. */
-export function pickVoice(voices) {
-  const rank = (v) => (isEsES(v) ? 0 : 2) + (v.localService ? 0 : 1);
-  return voices.filter(isEs).sort((a, b) => rank(a) - rank(b))[0] ?? null;
+/** Spanish voices, Spain first. */
+export const spanishVoices = (voices) => voices.filter(isEs).sort((a, b) => rank(a) - rank(b));
+const rank = (v) => (isEsES(v) ? 0 : 2) + (v.localService ? 0 : 1);
+
+/** The chosen voice if installed, else the best Spanish voice (Spain first, on-device first) or null. */
+export function pickVoice(voices, preferred = '') {
+  const es = spanishVoices(voices);
+  return (preferred && es.find((v) => idOf(v) === preferred)) || es[0] || null;
 }
 
 /**
@@ -23,13 +28,14 @@ export function createSpeech({
 } = {}) {
   let voice = null;
   let waiting = null;
+  let preferred = ''; // voice id chosen in settings; '' = automatic (Spain first)
   // Voices can change later (installed, or a list that arrives in parts): pick again every time.
-  synth?.addEventListener?.('voiceschanged', () => { voice = pickVoice(synth.getVoices()); });
+  synth?.addEventListener?.('voiceschanged', () => { voice = pickVoice(synth.getVoices(), preferred); });
 
   const ready = () => {
     if (!synth || !Utterance) return Promise.resolve(null);
     waiting ??= new Promise((resolve) => {
-      const done = () => { synth.removeEventListener?.('voiceschanged', check); clearTimeout(timer); voice = pickVoice(synth.getVoices()); resolve(voice); };
+      const done = () => { synth.removeEventListener?.('voiceschanged', check); clearTimeout(timer); voice = pickVoice(synth.getVoices(), preferred); resolve(voice); };
       const check = () => { if (synth.getVoices().length) done(); };
       // Some browsers never fire voiceschanged when there are no voices: give up after timeoutMs.
       const timer = setTimeout(done, timeoutMs);
@@ -43,6 +49,8 @@ export function createSpeech({
     ready,
     get available() { return voice !== null; },
     get voice() { return voice; },
+    voices: () => spanishVoices(synth?.getVoices?.() ?? []).map((v) => ({ id: idOf(v), name: v.name, region: v.lang })),
+    setPreferred(id) { preferred = id || ''; if (synth) voice = pickVoice(synth.getVoices(), preferred); },
     async say(text, { rate = 0.9 } = {}) {
       // Browsers block speech before the first user gesture; callers speak from a tap handler.
       if (activation && !activation.hasBeenActive) return false;

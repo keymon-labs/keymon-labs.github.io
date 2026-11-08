@@ -6,7 +6,7 @@ const slotModules = import.meta.glob('./settings-slots/*.js', { eager: true, imp
 const SLOTS = [['transfer', 'Copia de seguridad'], ['reports', 'Informes e insignias']];
 const SLOT_NAMES = SLOTS.map(([name]) => name);
 
-function general(host, { store, diagnostic, applySettings }) {
+function general(host, { store, diagnostic, applySettings, speech }) {
   const s = store.data.settings;
   const size = document.createElement('label');
   size.textContent = 'Tamaño del texto ';
@@ -21,6 +21,26 @@ function general(host, { store, diagnostic, applySettings }) {
   cb.type = 'checkbox'; cb.id = 'set-sound'; cb.checked = s.sound;
   cb.onchange = () => store.setSettings({ sound: cb.checked });
   sound.append(cb, ' Sonido');
+
+  const voiceRow = document.createElement('label');
+  voiceRow.textContent = 'Voz ';
+  const vs = document.createElement('select');
+  vs.id = 'set-voice';
+  const fill = () => {
+    const list = speech?.voices() ?? [];
+    vs.replaceChildren(new Option('Automática (España primero)', '', false, !s.voice));
+    for (const v of list) vs.add(new Option(`${v.name} (${v.region})`, v.id, false, s.voice === v.id));
+  };
+  fill();
+  speech?.ready?.().then(fill);
+  vs.onchange = () => { store.setSettings({ voice: vs.value }); speech?.setPreferred(vs.value); };
+  const test = document.createElement('button');
+  test.type = 'button'; test.id = 'test-voice'; test.textContent = 'Probar voz';
+  test.onclick = () => speech?.say('Hola, me llamo Lola y tengo siete años.');
+  const voiceNote = document.createElement('p');
+  voiceNote.className = 'muted';
+  voiceNote.textContent = 'Si no hay ninguna voz de España (es-ES), el teléfono usará otra de español. Puedes instalar una en los ajustes de voz del teléfono.';
+  voiceRow.append(vs);
 
   const backup = document.createElement('p');
   backup.className = 'muted';
@@ -39,7 +59,7 @@ function general(host, { store, diagnostic, applySettings }) {
   const credits = document.createElement('p');
   credits.className = 'muted';
   credits.textContent = 'Juego no oficial inspirado en «Mis unidades de español. Primer cuatrimestre A1, Serie Luna», que sigue los temas y niveles de las clases de ALCE. Las ilustraciones, las frases, los chistes y los sonidos son originales.';
-  host.append(size, sound, backup, copy, out, credits);
+  host.append(size, sound, voiceRow, test, voiceNote, backup, copy, out, credits);
 }
 
 export function renderSettings(host, ctx) {

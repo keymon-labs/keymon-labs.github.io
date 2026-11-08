@@ -14,6 +14,13 @@ test('pickVoice: es-ES local > es-ES > es-* local > es-* > none', () => {
   assert.equal(pickVoice([]), null);
 });
 
+test('pickVoice: Spain first even for spa-ESP, a chosen voice wins when installed', () => {
+  assert.equal(pickVoice([v('es-US', true), v('spa-ESP')]).lang, 'spa-ESP');
+  const mx = { lang: 'es-MX', localService: true, name: 'Ana', voiceURI: 'ana' };
+  assert.equal(pickVoice([mx, v('es-ES')], 'ana').name, 'Ana');
+  assert.equal(pickVoice([mx, v('es-ES')], 'gone').lang, 'es-ES'); // not installed: back to automatic
+});
+
 function fakeSynth(voices, { late = false } = {}) {
   const listeners = {};
   const synth = {
