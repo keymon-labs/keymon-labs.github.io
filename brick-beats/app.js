@@ -1,7 +1,8 @@
 // Brick Beats: photo of a brick mat → lanes of notes → playback with a moving line over the photo.
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
 import { detect, probe } from "./vision.js";
-import { findCorners, turnQuad, warp, distortion } from "./correct.js";
+import { findCorners, turnQuad, warp, distortion, snapTargets, snapPoint, plateShare } from "./correct.js";
+import { SQ, edgesFrom, gridOf, laneIdx, colOf, splitTallest, removeEdge, reviveMapping } from "./grid.js";
 import { clearFor, tidy, mergeTracks } from "./merge.js";
 import { emptyProfile, learnColour, learnedClass, reviveProfile } from "./profile.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
@@ -21,7 +22,13 @@ try { profile = reviveProfile(localStorage.getItem(PROFILE_KEY) || ""); } catch 
 const saveProfile = () => { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch { /* not saved */ } };
 
 let uid = 1, res = null, tracks = [], loopLen = 20, sel = null, crop = null, objUrl = null;
-let edges = [], laneTilt = 0, edgesEdited = false, lastExample = true, lastView = false, dragged = false; // lane boundary lines (image y at x=0), their slope, and what the last photo was
+let edges = [], laneTilt = 0, lastExample = true, dragged = false; // lane boundary lines (image y at x=0), their slope, and whether the last photo was an example
+let grid = { x0: 0, pitch: 28, cols: 0, rect: false }, editing = false, selEdge = -1; // the column grid (cols 0 = not a fixed matrix: the loop is as long as the bricks), grid-editing mode, selected lane line
+// What is remembered between photos of one mat: grid, lane lines and corners (grid.js). Saved in this browser only; "Reset grid" forgets it.
+const MAP_KEY = "brick-beats-map-v1";
+let mapping = null;
+try { mapping = reviveMapping(localStorage.getItem(MAP_KEY) || ""); } catch { /* not remembered */ }
+const saveMapping = () => { try { if (mapping) localStorage.setItem(MAP_KEY, JSON.stringify(mapping)); else localStorage.removeItem(MAP_KEY); } catch { /* not saved */ } };
 const state = { bpm: 120, key: 0, scale: "pent", loop: true, fruits: false };
 
 const secPerStud = () => (60 / state.bpm) * BEATS_PER_STUD;
@@ -37,15 +44,18 @@ function analyse(im, manualQuad) {
   const big = canvasOf(BW, BH), bc = big.getContext("2d", { willReadFrequently: true });
   bc.drawImage(im, 0, 0, BW, BH);
   const bd = bc.getImageData(0, 0, BW, BH).data;
-  let fixed = null, corr = null; // corr: how the straightening went: auto (found by the reader) or manual (the player's corners)
+  let fixed = null, corr = null, f = null; // corr: how the straightening went: auto (found by the reader), prior (the last photo's corners), or manual (the player's)
+  let prior = mapping?.quad && Math.abs(mapping.ar - BW / BH) < 0.05 ? mapping.quad.map(([u, v]) => [u * BW, v * BH]) : null;
+  if (prior && !manualQuad) { const ps = plateShare(bd, BW, BH, prior); if (ps.inside < 0.45 || ps.ring > 0.3) prior = null; } // the plate is not where it was: do not trust the old corners
   if (manualQuad) {
     const quad = turnQuad(bd, BW, BH, manualQuad);
     fixed = warp(bd, BW, BH, quad); corr = { mode: "manual", quad, ...distortion(quad), sure: true };
   } else {
-    const f = findCorners(bd, BW, BH);
-    if (f) { fixed = warp(bd, BW, BH, f.quad); corr = { mode: "auto", quad: f.quad, score: f.score, level: f.level, sure: f.sure }; }
+    f = findCorners(bd, BW, BH);
+    if (f && (f.sure || !prior)) { fixed = warp(bd, BW, BH, f.quad); corr = { mode: "auto", quad: f.quad, score: f.score, level: f.level, sure: f.sure }; }
+    else if (prior) { fixed = warp(bd, BW, BH, prior); corr = { mode: "prior", quad: prior, ...distortion(prior), sure: true }; } // not sure of this photo's corners: assume the camera has not moved
   }
-  const shot = { url: big.toDataURL("image/jpeg", 0.85), W: BW, H: BH, quad: corr?.quad || null }; // the photo as taken, for the corner editor
+  const shot = { url: big.toDataURL("image/jpeg", 0.85), W: BW, H: BH, quad: corr?.quad || f?.quad || null, data: bd }; // the photo as taken, for the corner editor
   let px, W, H, view = null;
   if (fixed) {
     px = fixed.data; W = fixed.W; H = fixed.H;
@@ -66,7 +76,7 @@ function analyse(im, manualQuad) {
 }
 
 let lastSrc = null, shot = null;
-async function useSource(src, example, quad) {
+async function useSource(src, example, quad, reset) {
   setStatus("Reading the mat…");
   const im = new Image();
   im.src = src;
@@ -75,28 +85,44 @@ async function useSource(src, example, quad) {
   shot = r.shot; lastSrc = src;
   if (!r.ok) { setStatus(r.msg, true); if (!quad && !example) openCorners(); return false; }
   res = r;
-  const fresh = r.tracks.map((t, i) => ({
-    row: t.row, mid: t.mid, instrument: DEFAULT_INSTRUMENTS[i % DEFAULT_INSTRUMENTS.length], mute: false, solo: false,
-    bricks: t.bricks.map((b) => ({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start: b.start, len: b.len, user: false, seen: 1, box: { x: b.x, y: b.y, w: b.w, h: b.h } })),
+  const rect = !!r.view; // straightened: the plate fills a known square, so lanes and columns can be a fixed matrix
+  // 1. the matrix: from this photo, or the remembered one when it agrees (same number of lines) or the player set it by hand
+  const centres = r.tracks.map((t) => (r.lanes && t.mid !== undefined ? t.mid / r.lanes.cs : t.bricks.length ? t.bricks.reduce((a, b) => a + b.y + b.h / 2, 0) / t.bricks.length : 0));
+  let g = rect ? { ...gridOf(r.fit.a, r.fit.b), rect } : { x0: r.fit.a, pitch: r.fit.b, cols: 0, rect }, e = edgesFrom(centres), tilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0, fromMap = false;
+  const m = mapping;
+  if (m && !reset && rect && m.rect && Math.abs(r.fit.b / m.pitch - 1) < 0.12 && (m.edited || m.edges.length === e.length || !r.lanes)) { g = { x0: m.x0, pitch: m.pitch, cols: m.cols, rect }; e = m.edges.slice(); tilt = m.tilt; fromMap = true; }
+  // 2. the bricks, snapped to the matrix: a column from their left edge, a lane from their middle
+  const shift = rect ? Math.round((r.fit.a - g.x0) / g.pitch) : 0, lanesNew = Array.from({ length: e.length - 1 }, (_, i) => newTrack(i));
+  r.tracks.forEach((t) => t.bricks.forEach((b) => {
+    const start = fromMap ? Math.max(0, colOf(g, b.x)) : b.start + shift;
+    lanesNew[laneIdx(e, tilt, b.x + b.w / 2, b.y + b.h / 2)].bricks.push({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start, len: b.len, user: false, seen: 1, box: { x: b.x, y: b.y, w: b.w, h: b.h } });
   }));
-  // a retake of the same mat keeps what is known (ids, edits, lane settings, lines); a different mat starts fresh
-  const old = !example && !lastExample ? tracks : [];
-  const merged = mergeTracks(old, fresh);
+  lanesNew.forEach((t) => { t.bricks = tidy(t.bricks); });
+  // a retake of the same mat keeps what is known (ids, edits, lane settings); a different mat starts fresh
+  const old = !example && !lastExample && !reset ? tracks : [];
+  const merged = mergeTracks(old, lanesNew);
   const keepSel = merged && findBy(sel);
-  if (merged) { merged.forEach((t, i) => { t.row = fresh[i].row; t.mid = fresh[i].mid; }); tracks = merged; } else { tracks = fresh; sel = null; }
+  tracks = merged || lanesNew;
   if (!keepSel) sel = null;
-  const mn = Math.min(0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start)));
-  if (mn < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= mn; })); r.fit.a += mn * r.fit.b; }
   res.merged = !!merged;
-  laneTilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0;
-  if (!(merged && edgesEdited && r.view && lastView && edges.length === tracks.length + 1)) { initEdges(); edgesEdited = false; }
+  edges = e; laneTilt = tilt; grid = g; selEdge = -1; r.fit = { a: g.x0, b: g.pitch };
+  if (!rect) { // free loop: nothing may start before the first stud
+    const mn = Math.min(0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start)));
+    if (mn < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= mn; })); r.fit.a += mn * r.fit.b; grid.x0 = r.fit.a; }
+  } else clampCols();
   tracks.forEach((t) => t.bricks.forEach((b) => { if (b.dirty) place(t, b); }));
-  lastExample = !!example; lastView = !!r.view;
-  if (playing) { tg = tracks.map(() => gainNode(bus)); applyMix(); } // keep playing: the new lanes take over at the next note
+  lastExample = !!example;
+  if (rect) { // remember: the matrix, and the corners when they were found or given (the next photo is read with them as a reference)
+    const quadN = r.corr && r.corr.sure ? r.corr.quad.map(([x, y]) => [x / r.shot.W, y / r.shot.H]) : null;
+    mapping = { rect, edges: e.slice(), tilt, x0: g.x0, pitch: g.pitch, cols: g.cols, edited: fromMap ? m.edited : false, quad: quadN || (reset ? null : m?.quad) || null, ar: quadN ? r.shot.W / r.shot.H : (!reset && m?.ar) || 0 };
+    saveMapping();
+  }
+  rebuildGains(); // keep playing: the new lanes take over at the next note
   let x0 = r.plate.x0, x1 = r.plate.x1, y0 = r.plate.y0, y1 = r.plate.y1;
+  if (rect) ({ x0, x1, y0, y1 } = SQ);
   for (const t of tracks) for (const b of t.bricks) { x0 = Math.min(x0, b.box.x); x1 = Math.max(x1, b.box.x + b.box.w); y0 = Math.min(y0, b.box.y); y1 = Math.max(y1, b.box.y + b.box.h); }
-  const m = 12;
-  crop = { x0: Math.max(0, x0 - m), x1: Math.min(r.W, x1 + m), y0: Math.max(0, y0 - m), y1: Math.min(r.H, y1 + m) };
+  const mg = 12;
+  crop = { x0: Math.max(0, x0 - mg), x1: Math.min(r.W, x1 + mg), y0: Math.max(0, y0 - mg), y1: Math.min(r.H, y1 + mg) };
   // show only the plate: the photo is a wide "world" shifted and scaled inside the stage
   const cw = (crop.x1 - crop.x0) / r.W, ch = (crop.y1 - crop.y0) / r.H, world = $("#world");
   $("#stage").style.aspectRatio = `${crop.x1 - crop.x0} / ${crop.y1 - crop.y0}`;
@@ -106,7 +132,7 @@ async function useSource(src, example, quad) {
   world.style.top = `${(-crop.y0 / r.H / ch) * 100}%`;
   $("#img").src = r.view || src;
   $("#tag").hidden = !example;
-  $("#fixbtn").disabled = false;
+  $("#fixbtn").disabled = false; $("#gridbtn").disabled = false;
   refresh();
   if (!example && !quad && (!r.corr || !r.corr.sure)) openCorners(); // the reader is not sure where the square is: ask
   return true;
@@ -118,22 +144,29 @@ const labelOf = (tr, b) => (state.fruits && b.fruit ? (b.fruitLead ? fruitById(b
 
 // Lane boundary lines: edges[k] is the y of line k at x=0; the lines share one slope. A brick belongs to the lane its centre is in.
 const ey = (k, x) => edges[k] + x * laneTilt;
-const laneIdx = (y, x) => { let i = 0; while (i < tracks.length - 1 && y >= ey(i + 1, x)) i++; return i; };
-const laneAt = (y, x) => tracks[laneIdx(y, x)];
+const laneAt = (y, x) => tracks[laneIdx(edges, laneTilt, x, y)];
 const laneY = (tr, x) => { const i = tracks.indexOf(tr); return (ey(i, x) + ey(i + 1, x)) / 2; };
+const newTrack = (i) => ({ row: i + 1, instrument: DEFAULT_INSTRUMENTS[i % DEFAULT_INSTRUMENTS.length], mute: false, solo: false, bricks: [] });
+const renumber = () => tracks.forEach((t, i) => { t.row = i + 1; });
+const rebuildGains = () => { if (playing) { tg = tracks.map(() => gainNode(bus)); applyMix(); } };
 
-function initEdges() {
-  const n = tracks.length;
-  const c = tracks.map((t) => (res.lanes && t.mid !== undefined ? t.mid / res.lanes.cs : t.bricks.length ? t.bricks.reduce((a, b) => a + b.box.y + b.box.h / 2, 0) / t.bricks.length : 0));
-  edges = [n > 1 ? c[0] - (c[1] - c[0]) / 2 : c[0] - 20];
-  for (let i = 1; i < n; i++) edges.push((c[i - 1] + c[i]) / 2);
-  edges.push(n > 1 ? c[n - 1] + (c[n - 1] - c[n - 2]) / 2 : c[0] + 20);
-}
-
-// A brick's photo box follows its place on the beat grid (res.fit: px = a + b * studs) and its lane.
+// A brick's photo box follows its place on the grid (res.fit: px = a + b * studs) and its lane.
 function place(tr, b) { b.box.x = res.fit.a + res.fit.b * b.start; b.box.w = res.fit.b * b.len; b.box.y = laneY(tr, b.box.x) - b.box.h / 2; b.dirty = false; }
 
-// After a lane line moves: every brick joins the lane its centre is now in.
+// Notes stay inside the matrix: when the matrix would end before a brick does, it grows to hold it (nothing is ever dropped).
+function clampCols() {
+  if (grid.cols) grid.cols = Math.max(grid.cols, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len)));
+}
+
+// The bricks sorted into the lanes that lines `e` would make, and whether two bricks in one lane would then overlap in time.
+const lanesFor = (e) => {
+  const lists = Array.from({ length: e.length - 1 }, () => []);
+  for (const b of tracks.flatMap((t) => t.bricks)) lists[laneIdx(e, laneTilt, b.box.x + b.box.w / 2, b.box.y + b.box.h / 2)].push(b);
+  return lists;
+};
+const clashes = (lists) => lists.some((l) => { const o = [...l].sort((a, b) => a.start - b.start); return o.some((b, i) => i && o[i - 1].start + o[i - 1].len > b.start); });
+
+// After lane lines move, are added or removed: every brick joins the lane its centre is now in.
 function regroup() {
   const all = tracks.flatMap((t) => t.bricks);
   tracks.forEach((t) => { t.bricks = []; });
@@ -141,11 +174,27 @@ function regroup() {
   tracks.forEach((t) => { t.bricks = tidy(t.bricks); t.bricks.forEach((b) => b.dirty && place(t, b)); });
 }
 
+// The matrix was changed by hand: bricks the reader found stay where they are in the photo and re-snap to it; bricks the player placed move with it.
+function commitGrid(oldPitch) {
+  res.fit = { a: grid.x0, b: grid.pitch };
+  const rescale = Math.abs(grid.pitch / oldPitch - 1) > 0.06;
+  for (const t of tracks) for (const b of t.bricks) {
+    if (b.user) { b.dirty = true; continue; }
+    b.start = Math.max(0, colOf(grid, b.box.x));
+    if (rescale) b.len = Math.max(1, Math.round(b.box.w / grid.pitch));
+  }
+  clampCols(); regroup();
+  mapping = { ...(mapping || {}), rect: grid.rect, edges: edges.slice(), tilt: laneTilt, x0: grid.x0, pitch: grid.pitch, cols: grid.cols, edited: true };
+  mapping.quad ??= null; mapping.ar ??= 0;
+  saveMapping();
+}
+
 function renderBoxes() {
   const W = res.W, H = res.H, xb = crop.x0 + 6, f = res.fit;
   let h = "";
   for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % 2 ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
-  edges.forEach((_, k) => { h += `<i class="lline" data-edge="${k}" style="top:${(ey(k, 0) / H) * 100}%;transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
+  edges.forEach((_, k) => { h += `<i class="lline${editing ? "" : " thin"}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${(ey(k, 0) / H) * 100}%;transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
+  if (editing) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
   for (const tr of tracks) {
     h += `<span class="rownum" style="top:${(laneY(tr, xb) / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
     for (const b of tr.bricks) {
@@ -230,8 +279,9 @@ function renderStatus() {
   if (!c) t += " Could not find the whole green square: tap Fix corners to mark it, or retake with the whole square in view.";
   else if (!c.sure) t += " Not sure where the corners of the square are: tap Fix corners to check them.";
   else if (c.level === "high") t += " The photo is very slanted. For the best reading, hold the phone straight above the mat with the whole square in view and retake, or tap Fix corners.";
-  else t += c.mode === "manual" ? " Straightened with your corners." : " The photo was straightened first.";
+  else t += c.mode === "manual" ? " Straightened with your corners." : c.mode === "prior" ? " Used the corners from your last photo: tap Fix corners if the mat moved." : " The photo was straightened first.";
   if (res.merged) t += " Joined with your earlier photo of this mat.";
+  if (grid.cols) t += ` Grid: ${tracks.length} lanes × ${grid.cols} columns${mapping?.edited ? " (as you set it)" : ""}.`;
   if (state.fruits) {
     const c = fruitCounts(tracks), list = FRUITS.filter((f) => c[f.id]).map((f) => `${f.name} ×${c[f.id]}`);
     t += list.length ? ` Fruits found: ${list.join(", ")}.` : " No fruit patterns found yet.";
@@ -242,7 +292,7 @@ function renderStatus() {
 const renderLearned = () => { $("#learned").textContent = profile.colours.length ? `Remembers ${profile.colours.length} look${profile.colours.length === 1 ? "" : "s"} of colours you corrected.` : "Nothing learned yet: tap a brick, then a colour, to teach it."; };
 
 function refresh() {
-  loopLen = Math.max(1, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len)));
+  loopLen = Math.max(1, grid.cols || 0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len)));
   annotateFruits(tracks);
   renderBoxes(); renderLanes(); renderSel(); renderLegend(); renderLearned();
   $("#json").textContent = toJson();
@@ -342,11 +392,22 @@ function select(id) {
   if (f) preview(noteOf(f[0], f[1]));
 }
 
+// A tap above the first or below the last lane line starts a new lane there (the reader missed one).
+function ensureLane(cy, cx) {
+  const hs = edges.slice(1).map((e, i) => e - edges[i]).sort((a, b) => a - b), h = hs[hs.length >> 1] || 60;
+  let n = 0;
+  while (n < 3 && cy < ey(0, cx)) { edges.unshift(edges[0] - h); tracks.unshift(newTrack(0)); n++; }
+  while (n < 3 && cy > ey(edges.length - 1, cx)) { edges.push(edges[edges.length - 1] + h); tracks.push(newTrack(tracks.length)); n++; }
+  if (n) { renumber(); rebuildGains(); commitGrid(grid.pitch); }
+}
+
 // Tap empty space on the photo to add a brick the reader missed: it looks at that spot again, then you can fix colour and length.
 function addAt(e) {
   const r = $("#world").getBoundingClientRect(), x = ((e.clientX - r.left) / r.width) * res.W, y = ((e.clientY - r.top) / r.height) * res.H;
   const f = probe(res.data, res.W, res.H, res, x, y);
   if (!f) { setStatus("That is the green plate. Tap the brick itself to add it.", true); return; }
+  if (grid.cols && f.start >= grid.cols) { setStatus("That is past the last column. Drag the right edge in Edit grid to make the loop longer.", true); return; }
+  ensureLane(f.box.y + f.box.h / 2, f.box.x + f.box.w / 2);
   const tr = laneAt(f.box.y + f.box.h / 2, f.box.x + f.box.w / 2);
   if (f.start < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= f.start; })); res.fit.a += f.start * res.fit.b; f.start = 0; }
   const b = { id: uid++, cls: f.cls, sure: f.sure, rgb: f.rgb, start: f.start, len: f.len, user: true, seen: 1, box: f.box };
@@ -382,6 +443,14 @@ document.addEventListener("click", (e) => {
   const act = t.closest("[data-act]");
   if (!act) return;
   const a = act.dataset.act;
+  if (a === "addlane") { const sp = splitTallest(edges); edges = sp.edges; tracks.splice(sp.at, 0, newTrack(sp.at)); renumber(); selEdge = sp.at; rebuildGains(); commitGrid(grid.pitch); refresh(); return; }
+  if (a === "dellane") { const e2 = removeEdge(edges, selEdge); if (!e2) { setStatus("Tap an inner lane line first, then Remove line.", true); return; } if (clashes(lanesFor(e2))) { setStatus("Those two lanes have notes at the same time. Move or remove some first.", true); return; } tracks.splice(selEdge, 1); edges = e2; selEdge = -1; renumber(); rebuildGains(); commitGrid(grid.pitch); refresh(); return; }
+  if (a === "colsless" || a === "colsmore") {
+    const end = Math.max(1, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len))), old = grid.pitch;
+    grid = { ...grid, cols: Math.max(end, (grid.cols || loopLen) + (a === "colsmore" ? 1 : -1)), rect: true }; commitGrid(old); refresh(); return;
+  }
+  if (a === "resetgrid") { mapping = null; saveMapping(); toggleGrid(false); if (lastSrc) useSource(lastSrc, lastExample, undefined, true); return; }
+  if (a === "gridok") { toggleGrid(false); return; }
   if (a === "forget") { profile = emptyProfile(); saveProfile(); renderLearned(); return; }
   if (a === "mute" || a === "solo") { const tr = tracks[+act.dataset.i]; tr[a] = !tr[a]; renderLanes(); renderBoxes(); applyMix(); return; }
   const f = findSel();
@@ -401,31 +470,37 @@ document.addEventListener("change", (e) => {
   if (t.dataset?.instr !== undefined) { tracks[+t.dataset.instr].instrument = t.value; refresh(); }
 });
 
-/* ---------- dragging on the photo: bricks (move, stretch from either end) and lane lines ---------- */
+/* ---------- dragging on the photo: bricks (move, stretch from either end), lane lines and the column edges ---------- */
 $("#boxes").addEventListener("pointerdown", (e) => {
-  const el = e.target.closest(".brick, .lline");
+  const el = e.target.closest(".brick, .lline, .cline");
   if (!el || !res || e.button) return;
+  const kind = el.classList.contains("lline") ? "edge" : el.classList.contains("cline") ? "col" : "brick";
   const k = res.W / $("#world").getBoundingClientRect().width, fit = res.fit, x0 = e.clientX, y0 = e.clientY;
-  const edge = el.classList.contains("lline"), part = e.target.closest(".hl") ? "l" : e.target.closest(".hr") ? "r" : "m";
-  const [tr0, b] = edge ? [] : findBy(+el.dataset.id) || [];
-  if (!edge && !b) return;
-  const k0 = edge ? +el.dataset.edge : 0, e0 = edge ? edges[k0] : 0;
+  const part = e.target.closest(".hl") ? "l" : e.target.closest(".hr") ? "r" : "m";
+  const [tr0, b] = kind === "brick" ? findBy(+el.dataset.id) || [] : [];
+  if (kind === "brick" && !b) return;
+  const k0 = kind === "edge" ? +el.dataset.edge : 0, e0 = kind === "edge" ? edges[k0] : 0, g0 = { ...grid }, nc = g0.cols || loopLen, maxC = grid.cols || Infinity;
   const o = b && { s: b.start, l: b.len, x: b.box.x, w: b.box.w, cy: b.box.y + b.box.h / 2 };
-  let moved = false, to = null;
+  let moved = false, to = null, gnew = null;
   el.setPointerCapture(e.pointerId);
   const move = (ev) => {
     const dx = (ev.clientX - x0) * k, dy = (ev.clientY - y0) * k;
     if (!moved && Math.hypot(dx, dy) < 5 * k) return;
     moved = true;
-    if (edge) {
+    if (kind === "edge") {
       edges[k0] = Math.min(Math.max(e0 + dy, (edges[k0 - 1] ?? -Infinity) + 12), (edges[k0 + 1] ?? Infinity) - 12);
       el.style.top = `${(edges[k0] / res.H) * 100}%`;
       return;
     }
+    if (kind === "col") { // left edge: slide the whole grid; right edge: stretch the stud size
+      gnew = el.dataset.col === "l" ? { ...g0, x0: g0.x0 + dx } : { ...g0, pitch: Math.max(8, g0.pitch + dx / nc) };
+      el.style.left = `${((gnew.x0 + (el.dataset.col === "l" ? 0 : gnew.pitch * nc)) / res.W) * 100}%`;
+      return;
+    }
     const ds = Math.round(dx / fit.b);
     let s = o.s, l = o.l;
-    if (part === "m") s = Math.max(0, o.s + ds);
-    else if (part === "r") l = Math.max(1, o.l + ds);
+    if (part === "m") s = Math.min(maxC - o.l, Math.max(0, o.s + ds));
+    else if (part === "r") l = Math.max(1, Math.min(maxC - o.s, o.l + ds));
     else { s = Math.min(o.s + o.l - 1, Math.max(0, o.s + ds)); l = o.l + o.s - s; }
     const lane = part === "m" ? laneAt(o.cy + dy, o.x + o.w / 2) : tr0;
     to = { s, l, lane };
@@ -435,9 +510,13 @@ $("#boxes").addEventListener("pointerdown", (e) => {
   };
   const up = (ev) => {
     el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);
-    if (!moved) return;
+    if (!moved) { if (kind === "edge") { selEdge = k0; renderBoxes(); } return; }
     dragged = true; setTimeout(() => { dragged = false; }, 0);
-    if (edge) { edgesEdited = true; regroup(); }
+    if (kind === "edge") {
+      selEdge = k0;
+      if (clashes(lanesFor(edges))) { edges[k0] = e0; setStatus("That line would put two notes at the same time in one lane, so it went back.", true); } else commitGrid(grid.pitch);
+    }
+    else if (kind === "col") { if (gnew) { grid = { ...gnew, cols: nc, rect: true }; commitGrid(g0.pitch); } }
     else if (to && ev.type === "pointerup") {
       const { s, l, lane } = to;
       if (lane !== tr0) { tr0.bricks = tr0.bricks.filter((x) => x !== b); lane.bricks.push(b); }
@@ -453,7 +532,7 @@ $("#boxes").addEventListener("pointerdown", (e) => {
 
 /* ---------- fixing the corners by hand ---------- */
 const dlg = $("#corners"), cdots = [...dlg.querySelectorAll(".cdot")];
-let cq = [];
+let cq = [], snapT = null; // the dots, and what they can snap to (plate corners, strong colour corners)
 function drawCorners() {
   const w = shot.W, h = shot.H, d = distortion(cq);
   $("#cpoly").setAttribute("points", cq.map((p) => p.join(",")).join(" "));
@@ -465,6 +544,7 @@ function openCorners() {
   const w = shot.W, h = shot.H;
   cq = shot.quad ? shot.quad.map((p) => p.slice()) : [[0.2 * w, 0.2 * h], [0.8 * w, 0.2 * h], [0.8 * w, 0.8 * h], [0.2 * w, 0.8 * h]];
   $("#cimg").src = shot.url;
+  snapT = null; const sh = shot; setTimeout(() => { try { if (shot === sh) snapT = snapTargets(sh.data, sh.W, sh.H); } catch { /* no snapping */ } }, 60);
   $("#cwrap").style.width = `min(100%, ${(70 * w) / h}vh)`; // whole photo visible, dots map straight onto it
   $("#cpoly-svg").setAttribute("viewBox", `0 0 ${w} ${h}`);
   drawCorners();
@@ -477,7 +557,9 @@ cdots.forEach((e, i) => e.addEventListener("pointerdown", (ev) => {
     cq[i] = [Math.min(shot.W, Math.max(0, ((m.clientX - r.left) / r.width) * shot.W)), Math.min(shot.H, Math.max(0, ((m.clientY - r.top) / r.height) * shot.H))];
     drawCorners();
   };
-  const up = () => { e.removeEventListener("pointermove", mv); e.removeEventListener("pointerup", up); e.removeEventListener("pointercancel", up); };
+  const up = () => {
+    if ($("#snapon").checked && snapT) { cq[i] = snapPoint(snapT, cq[i][0], cq[i][1], 0.07 * shot.W); drawCorners(); } // let go near a corner: land on it
+    e.removeEventListener("pointermove", mv); e.removeEventListener("pointerup", up); e.removeEventListener("pointercancel", up); };
   e.addEventListener("pointermove", mv); e.addEventListener("pointerup", up); e.addEventListener("pointercancel", up);
 }));
 $("#fixbtn").addEventListener("click", openCorners);
@@ -490,6 +572,12 @@ async function openPhoto(file) {
   if (await useSource(url, false)) { if (objUrl) URL.revokeObjectURL(objUrl); objUrl = url; } else URL.revokeObjectURL(url);
 }
 
+function toggleGrid(on) {
+  editing = on; selEdge = -1;
+  $("#gridbar").hidden = !on; $("#gridbtn").setAttribute("aria-pressed", String(on));
+  if (res) renderBoxes();
+}
+$("#gridbtn").addEventListener("click", () => toggleGrid(!editing));
 $("#play").addEventListener("click", () => (playing ? stopPlay() : startPlay()));
 $("#choose").addEventListener("click", () => $("#photo").click());
 $("#snap").addEventListener("click", () => $("#cam").click()); // capture="environment" asks phones for the back camera
@@ -520,5 +608,5 @@ document.addEventListener("visibilitychange", () => { if (playing) keepAwake(); 
 
 $("#play").innerHTML = ICON_PLAY + "Play";
 const ready = useSource(EXAMPLES.photo, true);
-window.__brickBeats = { ready, state, get tracks() { return tracks; }, get res() { return res; }, load: useSource, play: startPlay, stop: stopPlay, get playing() { return playing; } };
+window.__brickBeats = { ready, state, get tracks() { return tracks; }, get res() { return res; }, load: useSource, play: startPlay, stop: stopPlay, get playing() { return playing; }, get grid() { return grid; }, get mapping() { return mapping; }, get edges() { return edges; } };
 registerServiceWorker("sw.js");
