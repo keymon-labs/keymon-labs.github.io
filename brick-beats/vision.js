@@ -128,7 +128,7 @@ function topFace(b, lab, data, W) {
   return { id: b.id, x: b.x + x0, y: b.y + y0, w: x1 - x0, h: y1 - y0 };
 }
 
-export function detect(data, W, H) {
+export function detect(data, W, H, { classify = null } = {}) {
   const N = W * H;
   const plate = new Uint8Array(N), tape = new Uint8Array(N), cls = new Int8Array(N).fill(-1);
   let plateCount = 0;
@@ -263,22 +263,23 @@ export function detect(data, W, H) {
         R.push(data[i * 4]); G.push(data[i * 4 + 1]); B.push(data[i * 4 + 2]);
         if (cls[i] >= 0) votes[cls[i]]++;
       }
-      let c = -1, sure = true;
+      let c = -1, sure = true, rgb = null;
       if (R.length) {
-        const [h, s, v] = rgbToHsv(median(R), median(G), median(B));
-        c = classifyHSV(h, s, v);
+        rgb = [median(R), median(G), median(B)];
+        c = classify ? classify(rgb) : -1; // learned colours first (profile.js), then the fixed rules
+        if (c < 0) { const [h, s, v] = rgbToHsv(rgb[0], rgb[1], rgb[2]); c = classifyHSV(h, s, v); }
       }
       if (c < 0) { sure = false; let m = 0; c = 10; votes.forEach((vv, j) => { if (vv > m) { m = vv; c = j; } }); }
-      seq.push({ c, sure });
+      seq.push({ c, sure, rgb });
     }
     const runs = [];
     seq.forEach((e, k) => {
       const r = runs[runs.length - 1];
       if (r && r.c === e.c) r.n++;
-      else runs.push({ c: e.c, k, n: 1, sure: e.sure });
+      else runs.push({ c: e.c, k, n: 1, sure: e.sure, rgb: e.rgb });
     });
     for (const r of runs) {
-      bricks.push({ cls: r.c, sure: r.sure, x: b.x + r.k * cw, y: b.y, w: r.n * cw, h: b.h, len: (L / n) * r.n, cy: b.y + b.h / 2 });
+      bricks.push({ cls: r.c, sure: r.sure, rgb: r.rgb, x: b.x + r.k * cw, y: b.y, w: r.n * cw, h: b.h, len: (L / n) * r.n, cy: b.y + b.h / 2 });
     }
   }
 
@@ -317,7 +318,7 @@ export function detect(data, W, H) {
       bricks: r.bricks.map((b) => {
         const start = Math.max(0, Math.round((b.x - xmin) / p)), len = Math.max(1, Math.round(b.len));
         loopLen = Math.max(loopLen, start + len);
-        return { cls: b.cls, sure: b.sure, start, len, x: b.x, y: b.y, w: b.w, h: b.h };
+        return { cls: b.cls, sure: b.sure, rgb: b.rgb, start, len, x: b.x, y: b.y, w: b.w, h: b.h };
       }),
     };
   });
@@ -370,5 +371,5 @@ export function probe(data, W, H, res, x, y) {
   let cls = classifyHSV(h, s, v);
   if (cls < 0) { sure = false; cls = h < 40 && s > 0.25 ? 1 : 10; } // brown if warm and dull, else white
   const Lp = Math.max(1, Math.round(w / p)), len = Lp <= 3 && w >= hh * 0.9 ? Math.max(1, Math.round((2 * w) / hh)) : Lp;
-  return { cls, sure, len, start: Math.round((bx0 - res.fit.a) / res.fit.b), box: { x: bx0, y: by0, w, h: hh } };
+  return { cls, sure, rgb: seed, len, start: Math.round((bx0 - res.fit.a) / res.fit.b), box: { x: bx0, y: by0, w, h: hh } };
 }

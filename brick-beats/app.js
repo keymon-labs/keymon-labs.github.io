@@ -2,6 +2,7 @@
 // UI and playback only; photo reading is vision.js, music rules rhythm.js, sound synth.js. Test hook: window.__brickBeats.
 import { detect, probe } from "./vision.js";
 import { correct } from "./correct.js";
+import { emptyProfile, learnColour, learnedClass, reviveProfile } from "./profile.js";
 import { COLOURS, INSTRUMENTS, DEFAULT_INSTRUMENTS, SCALES, FRUITS, BEATS_PER_STUD, fruitById, semitone, midiOf, pitchLabel, hz, annotateFruits, fruitCounts } from "./rhythm.js";
 import { NOTE_NAMES } from "../shared/music.js";
 import { ensureAudio, audioNow, gainNode, masterBus, voice } from "./synth.js";
@@ -11,6 +12,12 @@ const EXAMPLES = { photo: new URL("./example-photo.jpg", import.meta.url).href, 
 const $ = (s) => document.querySelector(s);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const textOn = (hex) => { const n = parseInt(hex.slice(1), 16); return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) > 150 ? "#14201a" : "#ffffff"; };
+
+// Colours the player taught it live in this browser only (localStorage), so the next photo starts out knowing them.
+const PROFILE_KEY = "brick-beats-profile-v1";
+let profile = emptyProfile();
+try { profile = reviveProfile(localStorage.getItem(PROFILE_KEY) || ""); } catch { /* storage blocked: nothing is remembered */ }
+const saveProfile = () => { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch { /* not saved */ } };
 
 let uid = 1, res = null, tracks = [], loopLen = 20, sel = null, crop = null, objUrl = null;
 const state = { bpm: 120, key: 0, scale: "pent", loop: true, fruits: false };
@@ -41,7 +48,7 @@ function analyse(im) {
     c.drawImage(im, 0, 0, W, H);
     px = c.getImageData(0, 0, W, H).data;
   }
-  const r = detect(px, W, H);
+  const r = detect(px, W, H, { classify: (rgb) => learnedClass(profile, rgb) });
   r.data = px; r.view = view; // kept so a tap can look at the photo again (addAt) and the straightened view can be shown
   r.ms = performance.now() - t0;
   return r;
@@ -58,7 +65,7 @@ async function useSource(src, example) {
   res = r;
   tracks = r.tracks.map((t, i) => ({
     row: t.row, mid: t.mid, instrument: DEFAULT_INSTRUMENTS[i % DEFAULT_INSTRUMENTS.length], mute: false, solo: false,
-    bricks: t.bricks.map((b) => ({ id: uid++, cls: b.cls, sure: b.sure, start: b.start, len: b.len, box: { x: b.x, y: b.y, w: b.w, h: b.h } })),
+    bricks: t.bricks.map((b) => ({ id: uid++, cls: b.cls, sure: b.sure, rgb: b.rgb, start: b.start, len: b.len, box: { x: b.x, y: b.y, w: b.w, h: b.h } })),
   }));
   sel = null;
   let x0 = r.plate.x0, x1 = r.plate.x1, y0 = r.plate.y0, y1 = r.plate.y1;
@@ -170,10 +177,12 @@ function renderStatus() {
   setStatus(t);
 }
 
+const renderLearned = () => { $("#learned").textContent = profile.colours.length ? `Remembers ${profile.colours.length} look${profile.colours.length === 1 ? "" : "s"} of colours you corrected.` : "Nothing learned yet: tap a brick, then a colour, to teach it."; };
+
 function refresh() {
   loopLen = Math.max(1, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len)));
   annotateFruits(tracks);
-  renderBoxes(); renderLanes(); renderSel(); renderLegend();
+  renderBoxes(); renderLanes(); renderSel(); renderLegend(); renderLearned();
   $("#json").textContent = toJson();
   renderStatus();
 }
@@ -284,7 +293,7 @@ function addAt(e) {
   }
   if (!tr) return;
   if (f.start < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= f.start; })); res.fit.a += f.start * res.fit.b; f.start = 0; }
-  const b = { id: uid++, cls: f.cls, sure: f.sure, start: f.start, len: f.len, box: f.box };
+  const b = { id: uid++, cls: f.cls, sure: f.sure, rgb: f.rgb, start: f.start, len: f.len, box: f.box };
   tr.bricks.push(b);
   tr.bricks.sort((p, q) => p.start - q.start);
   sel = b.id;
@@ -303,10 +312,19 @@ document.addEventListener("click", (e) => {
   const pl = t.closest("[data-play]");
   if (pl) { preview(midiOf("pluck", state.key, state.scale, +pl.dataset.play)); return; }
   const sw = t.closest(".sw-btn");
-  if (sw) { const f = findSel(); if (f) { f[1].cls = +sw.dataset.cls; f[1].sure = true; refresh(); preview(noteOf(f[0], f[1])); } return; }
+  if (sw) {
+    const f = findSel();
+    if (f) {
+      f[1].cls = +sw.dataset.cls; f[1].sure = true;
+      if (f[1].rgb) { learnColour(profile, f[1].cls, f[1].rgb); saveProfile(); } // an explicit correction: remember how this brick looked
+      refresh(); preview(noteOf(f[0], f[1]));
+    }
+    return;
+  }
   const act = t.closest("[data-act]");
   if (!act) return;
   const a = act.dataset.act;
+  if (a === "forget") { profile = emptyProfile(); saveProfile(); renderLearned(); return; }
   if (a === "mute" || a === "solo") { const tr = tracks[+act.dataset.i]; tr[a] = !tr[a]; renderLanes(); applyMix(); return; }
   const f = findSel();
   if (!f) return;
