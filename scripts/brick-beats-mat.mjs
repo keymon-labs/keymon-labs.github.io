@@ -1,6 +1,6 @@
 // Draws a synthetic brick mat (green plate, optional blue tape lanes, bricks) for Brick Beats tests and its taped example image.
 // `node scripts/brick-beats-mat.mjs` rewrites brick-beats/example-taped.png. Tests only use generated mats, never photos.
-import { writeFileSync } from "node:fs";
+import { writeFileSync, mkdirSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -23,7 +23,7 @@ export const EXAMPLE = [
  * Render lanes (max 4) on a 24-stud plate. scale 1 gives 640x640, the size the app analyses.
  * Bricks sit on a grid 4.4% bigger than the plate's, like real bricks seen from above.
  */
-export function renderMat(lanes, { scale = 1, tape = true } = {}) {
+export function renderMat(lanes, { scale = 1, tape = true, wood = false, overhang = 0 } = {}) {
   if (lanes.length > 4) throw new Error("renderMat draws at most 4 lanes");
   const p = 24 * scale, m = 32 * scale, W = 24 * p + 2 * m, pb = 1.044 * p;
   const data = new Uint8ClampedArray(W * W * 4);
@@ -35,10 +35,16 @@ export function renderMat(lanes, { scale = 1, tape = true } = {}) {
     for (let j = Math.floor(cy - r); j <= cy + r; j++)
       for (let i = Math.floor(cx - r); i <= cx + r; i++) if ((i - cx) ** 2 + (j - cy) ** 2 <= r * r) data.set([c[0], c[1], c[2], 255], (j * W + i) * 4);
   };
-  rect(0, 0, W, W, FLOOR);
+  if (wood) { // planks with a faint grain: the floor is not one flat colour, and tape ends can lie on it
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+      const plank = Math.floor((y + 0.25 * x) / (5 * p)), tone = 1 + (((plank * 7919) % 13) - 6) * 0.012 + Math.sin(x * 0.045 + plank * 2) * 0.025;
+      const seam = Math.abs(((y + 0.25 * x) / (5 * p)) % 1) < 0.01;
+      data.set([FLOOR[0] * tone * (seam ? 0.7 : 1), FLOOR[1] * tone * (seam ? 0.7 : 1), FLOOR[2] * tone * (seam ? 0.7 : 1), 255], (y * W + x) * 4);
+    }
+  } else rect(0, 0, W, W, FLOOR);
   rect(m, m, 24 * p, 24 * p, PLATE);
   for (let r = 0; r < 24; r++) for (let c = 0; c < 24; c++) disc(m + (c + 0.5) * p, m + (r + 0.5) * p, 0.3 * p, PLATE_STUD);
-  if (tape) for (let j = 0; j <= lanes.length; j++) rect(m, m + (1.5 + 5 * j) * p - 0.45 * p, 24 * p, 0.9 * p, TAPE);
+  if (tape) for (let j = 0; j <= lanes.length; j++) rect(m - overhang * p, m + (1.5 + 5 * j) * p - 0.45 * p, (24 + 2 * overhang) * p, 0.9 * p, TAPE); // overhang: tape ends past the plate, on the floor
   lanes.forEach((bricks, k) => {
     const top = m + (4 + 5 * k) * p - pb;
     for (const [name, start, len] of bricks) {
@@ -68,6 +74,19 @@ export function distort({ data, width, height }, { outW = 1000, outH = 1300, rot
   return { data: out, width: outW, height: outH };
 }
 
+/** A set of generated test photos (each exactly readable): the example list in the app and in test/examples.test.js. */
+const SPARSE = [[["red", 2, 2], ["cyan", 8, 4]], [["pink", 0, 2]], [["lime", 6, 6]], [["blue", 12, 2], ["yellow", 17, 4]]];
+export const SCENARIOS = [
+  { id: "straight", title: "Straight on", note: "Camera straight above, tape lanes.", lanes: EXAMPLE, mat: {}, photo: {} },
+  { id: "rotated", title: "Turned 25°", note: "The mat is turned in the picture.", lanes: EXAMPLE, mat: {}, photo: { rot: 25 } },
+  { id: "slanted", title: "Slanted", note: "Seen from a low angle: the far side looks shorter.", lanes: EXAMPLE, mat: {}, photo: { rot: 6, tilt: 0.0004 } },
+  { id: "floor-tape", title: "Wood floor, tape ends", note: "Planks on the floor and the blue tape sticking out past the plate.", lanes: EXAMPLE, mat: { wood: true, overhang: 0.9 }, photo: { rot: -8, tilt: 0.0002 } },
+  { id: "far", title: "Small in the frame", note: "Turned, slanted and far away.", lanes: EXAMPLE, mat: { wood: true }, photo: { rot: -15, tilt: 0.0003, scale: 0.6 } },
+  { id: "plain", title: "No tape, few bricks", note: "Plain plate: lanes come from the gaps between rows.", lanes: SPARSE, mat: { tape: false }, photo: { rot: 4 } },
+];
+/** The photo for a scenario: { data, width, height } (800 x 1040, the app reads it like a phone photo). */
+export const renderScenario = (sc) => distort(renderMat(sc.lanes, { scale: 1, ...sc.mat }), { outW: 800, outH: 1040, scale: 0.9, ...sc.photo });
+
 const crcTable = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
 const crc32 = (buf) => { let c = 0xffffffff; for (const b of buf) c = crcTable[(c ^ b) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
 
@@ -90,4 +109,10 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
   const out = fileURLToPath(new URL("../brick-beats/example-taped.png", import.meta.url));
   writeFileSync(out, encodePng(renderMat(EXAMPLE, { scale: 1.5 })));
   console.log("wrote", out);
+  // the test set: brick-beats/examples/<id>.png + index.json (listed in the app under "More test photos")
+  const dir = fileURLToPath(new URL("../brick-beats/examples/", import.meta.url));
+  mkdirSync(dir, { recursive: true });
+  for (const sc of SCENARIOS) writeFileSync(`${dir}${sc.id}.png`, encodePng(renderScenario(sc)));
+  writeFileSync(`${dir}index.json`, JSON.stringify(SCENARIOS.map(({ id, title, note }) => ({ id, title, note })), null, 1) + "\n");
+  console.log("wrote", SCENARIOS.length, "test photos to", dir);
 }

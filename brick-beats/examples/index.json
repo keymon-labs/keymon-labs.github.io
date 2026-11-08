@@ -1,0 +1,32 @@
+[
+ {
+  "id": "straight",
+  "title": "Straight on",
+  "note": "Camera straight above, tape lanes."
+ },
+ {
+  "id": "rotated",
+  "title": "Turned 25°",
+  "note": "The mat is turned in the picture."
+ },
+ {
+  "id": "slanted",
+  "title": "Slanted",
+  "note": "Seen from a low angle: the far side looks shorter."
+ },
+ {
+  "id": "floor-tape",
+  "title": "Wood floor, tape ends",
+  "note": "Planks on the floor and the blue tape sticking out past the plate."
+ },
+ {
+  "id": "far",
+  "title": "Small in the frame",
+  "note": "Turned, slanted and far away."
+ },
+ {
+  "id": "plain",
+  "title": "No tape, few bricks",
+  "note": "Plain plate: lanes come from the gaps between rows."
+ }
+]

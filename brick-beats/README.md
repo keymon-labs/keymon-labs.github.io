@@ -53,3 +53,11 @@ Tap a brick to change its colour or length, or remove it. Tap empty space on the
 
 ## Versions
 v1 is the latest. No frozen snapshots yet.
+
+## Gaps between lanes
+The **Gap** button in the grid editor gives each lane a margin at its top and bottom (for tape or the space between rows). Bricks and the note editor sit exactly inside the lane band; Gap − / Gap + adjust it. The gap is remembered with the mapping.
+
+## Test photos
+`scripts/brick-beats-mat.mjs` generates mats (straight, turned, slanted, wood floor with tape ends, far away, plain) into `examples/` with `index.json`. `test/examples.test.js` checks that each one is straightened and read back exactly. The app lists them under "More test photos…". Real photos are never committed.
+
+See [IDEAS.md](IDEAS.md) for planned work (library, history, sharing).

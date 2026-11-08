@@ -43,10 +43,13 @@
       </div>
       </div>
       <p class="status" id="status" aria-live="polite">Reading the mat…</p>
-      <div class="examples"><span>Try an example:</span><button type="button" class="btn btn-small" data-example="photo">Plain mat</button><button type="button" class="btn btn-small" data-example="taped">Taped lanes</button></div>
+      <div class="examples"><span>Try an example:</span><button type="button" class="btn btn-small" data-example="photo">Plain mat</button><button type="button" class="btn btn-small" data-example="taped">Taped lanes</button><select id="testpics" aria-label="More test photos"><option value="">More test photos…</option></select></div>
       <div class="panel gridbar" id="gridbar" hidden>
-        <p><b>Edit grid.</b> Drag the dashed lane lines, or the two column edges (left: slide the grid, right: stud size). Tap a line, then remove it.</p>
+        <p><b>Edit grid.</b> Gaps are the tape or space between lanes: notes sit inside each lane's own strip. Drag the dashed lane lines, or the two column edges (left: slide the grid, right: stud size). Tap a line, then remove it.</p>
         <div class="sel-actions">
+          <button type="button" class="btn btn-small" id="gaptoggle" data-act="gaptoggle" aria-pressed="false">Gaps: off</button>
+          <button type="button" class="btn btn-small" data-act="gapless">Gap −</button>
+          <button type="button" class="btn btn-small" data-act="gapmore">Gap +</button>
           <button type="button" class="btn btn-small" data-act="addlane">Add lane</button>
           <button type="button" class="btn btn-small" data-act="dellane">Remove line</button>
           <button type="button" class="btn btn-small" data-act="colsless">Fewer columns</button>

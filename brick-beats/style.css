@@ -174,3 +174,6 @@ pre { margin: 0; max-height: 240px; overflow: auto; font: 12px/1.4 var(--mono); 
 .cline::before { content: ""; position: absolute; top: 0; bottom: 0; left: 11px; border-left: 3px solid var(--accent); filter: drop-shadow(0 0 1px #000); }
 .gridbar p { margin: 0 0 8px; }
 .snaprow { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 14px; }
+.lline.gap { margin-top: 0; background: color-mix(in srgb, var(--accent) 18%, transparent); border-top: 2px dashed rgba(255,255,255,.85); border-bottom: 2px dashed rgba(255,255,255,.85); box-sizing: border-box; }
+.lline.gap::before { display: none; }
+.lline.gap.sel { border-color: var(--accent); }

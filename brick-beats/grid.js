@@ -49,6 +49,7 @@ export function reviveMapping(text) {
     const m = JSON.parse(text), nums = (a, n) => Array.isArray(a) && a.length === n && a.every(Number.isFinite);
     if (!m || !Number.isFinite(m.x0) || !(m.pitch > 4) || !Number.isFinite(m.cols) || !Number.isFinite(m.tilt) || !Array.isArray(m.edges) || m.edges.length < 2 || !m.edges.every(Number.isFinite)) return null;
     const quad = Array.isArray(m.quad) && m.quad.length === 4 && m.quad.every((p) => nums(p, 2)) && Number.isFinite(m.ar) ? m.quad : null;
-    return { rect: !!m.rect, edges: m.edges, tilt: m.tilt, x0: m.x0, pitch: m.pitch, cols: Math.max(0, m.cols | 0), edited: !!m.edited, quad, ar: quad ? m.ar : 0 };
+    const gap = Number.isFinite(m.gap) && m.gap >= 0 ? m.gap : 0;
+    return { gap, rect: !!m.rect, edges: m.edges, tilt: m.tilt, x0: m.x0, pitch: m.pitch, cols: Math.max(0, m.cols | 0), edited: !!m.edited, quad, ar: quad ? m.ar : 0 };
   } catch { return null; }
 }

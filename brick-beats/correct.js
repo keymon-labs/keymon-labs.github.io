@@ -281,7 +281,8 @@ function laneAngle({ W, H, N, tape }) {
 function orderQuad(quad, phi) {
   const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]);
   const edges = quad.map((a, i) => ({ i, a: ang(a, quad[(i + 1) % 4]) }));
-  const target = phi ?? edges.reduce((b, e) => (Math.abs(Math.sin(e.a)) < Math.abs(Math.sin(b.a)) ? e : b)).a;
+  let target = phi ?? edges.reduce((b, e) => (Math.abs(Math.sin(e.a)) < Math.abs(Math.sin(b.a)) ? e : b)).a;
+  if (target > Math.PI / 2) target -= Math.PI; else if (target <= -Math.PI / 2) target += Math.PI; // a lane has no direction: use the half-turn where "up" is up
   const dist = (e) => Math.abs(Math.sin(e.a - target));
   const cand = edges.filter((e) => dist(e) < 0.7).sort((p, q) => dist(p) - dist(q)).slice(0, 2);
   const upY = (i) => { const a = quad[i], b = quad[(i + 1) % 4]; return -((a[0] + b[0]) / 2) * Math.sin(target) + ((a[1] + b[1]) / 2) * Math.cos(target); };

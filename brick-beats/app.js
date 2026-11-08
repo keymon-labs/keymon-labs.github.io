@@ -11,6 +11,8 @@ import { ensureAudio, audioNow, gainNode, masterBus, voice } from "./synth.js";
 import { registerServiceWorker, keepAwake, releaseWake } from "../shared/pwa.js";
 
 const EXAMPLES = { photo: new URL("./example-photo.jpg", import.meta.url).href, taped: new URL("./example-taped.png", import.meta.url).href };
+import TESTLIST from "./examples/index.json";
+const TESTPICS = import.meta.glob("./examples/*.png", { query: "?url", import: "default", eager: true }); // generated test photos, see examples/index.json
 const $ = (s) => document.querySelector(s);
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const textOn = (hex) => { const n = parseInt(hex.slice(1), 16); return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) > 150 ? "#14201a" : "#ffffff"; };
@@ -23,7 +25,7 @@ const saveProfile = () => { try { localStorage.setItem(PROFILE_KEY, JSON.stringi
 
 let uid = 1, res = null, tracks = [], loopLen = 20, sel = null, crop = null, objUrl = null;
 let edges = [], laneTilt = 0, lastExample = true, dragged = false; // lane boundary lines (image y at x=0), their slope, and whether the last photo was an example
-let grid = { x0: 0, pitch: 28, cols: 0, rect: false }, editing = false, selEdge = -1; // the column grid (cols 0 = not a fixed matrix: the loop is as long as the bricks), grid-editing mode, selected lane line
+let grid = { x0: 0, pitch: 28, cols: 0, rect: false }, gap = 0, editing = false, selEdge = -1; // gap: width of the tape or space between lanes (px, 0 = lanes touch) // the column grid (cols 0 = not a fixed matrix: the loop is as long as the bricks), grid-editing mode, selected lane line
 // What is remembered between photos of one mat: grid, lane lines and corners (grid.js). Saved in this browser only; "Reset grid" forgets it.
 const MAP_KEY = "brick-beats-map-v1";
 let mapping = null;
@@ -88,9 +90,9 @@ async function useSource(src, example, quad, reset) {
   const rect = !!r.view; // straightened: the plate fills a known square, so lanes and columns can be a fixed matrix
   // 1. the matrix: from this photo, or the remembered one when it agrees (same number of lines) or the player set it by hand
   const centres = r.tracks.map((t) => (r.lanes && t.mid !== undefined ? t.mid / r.lanes.cs : t.bricks.length ? t.bricks.reduce((a, b) => a + b.y + b.h / 2, 0) / t.bricks.length : 0));
-  let g = rect ? { ...gridOf(r.fit.a, r.fit.b), rect } : { x0: r.fit.a, pitch: r.fit.b, cols: 0, rect }, e = edgesFrom(centres), tilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0, fromMap = false;
+  let g = rect ? { ...gridOf(r.fit.a, r.fit.b), rect } : { x0: r.fit.a, pitch: r.fit.b, cols: 0, rect }, e = edgesFrom(centres), tilt = r.lanes ? r.lanes.sn / r.lanes.cs : 0, fromMap = false, gp = r.lanes ? 0.9 * r.fit.b : 0; // tape lanes: a gap about a stud wide
   const m = mapping;
-  if (m && !reset && rect && m.rect && Math.abs(r.fit.b / m.pitch - 1) < 0.12 && (m.edited || m.edges.length === e.length || !r.lanes)) { g = { x0: m.x0, pitch: m.pitch, cols: m.cols, rect }; e = m.edges.slice(); tilt = m.tilt; fromMap = true; }
+  if (m && !reset && rect && m.rect && Math.abs(r.fit.b / m.pitch - 1) < 0.12 && (m.edited || m.edges.length === e.length || !r.lanes)) { g = { x0: m.x0, pitch: m.pitch, cols: m.cols, rect }; e = m.edges.slice(); tilt = m.tilt; gp = m.gap; fromMap = true; }
   // 2. the bricks, snapped to the matrix: a column from their left edge, a lane from their middle
   const shift = rect ? Math.round((r.fit.a - g.x0) / g.pitch) : 0, lanesNew = Array.from({ length: e.length - 1 }, (_, i) => newTrack(i));
   r.tracks.forEach((t) => t.bricks.forEach((b) => {
@@ -105,7 +107,7 @@ async function useSource(src, example, quad, reset) {
   tracks = merged || lanesNew;
   if (!keepSel) sel = null;
   res.merged = !!merged;
-  edges = e; laneTilt = tilt; grid = g; selEdge = -1; r.fit = { a: g.x0, b: g.pitch };
+  edges = e; laneTilt = tilt; grid = g; gap = gp; selEdge = -1; r.fit = { a: g.x0, b: g.pitch };
   if (!rect) { // free loop: nothing may start before the first stud
     const mn = Math.min(0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start)));
     if (mn < 0) { tracks.forEach((t) => t.bricks.forEach((b) => { b.start -= mn; })); r.fit.a += mn * r.fit.b; grid.x0 = r.fit.a; }
@@ -114,7 +116,7 @@ async function useSource(src, example, quad, reset) {
   lastExample = !!example;
   if (rect) { // remember: the matrix, and the corners when they were found or given (the next photo is read with them as a reference)
     const quadN = r.corr && r.corr.sure ? r.corr.quad.map(([x, y]) => [x / r.shot.W, y / r.shot.H]) : null;
-    mapping = { rect, edges: e.slice(), tilt, x0: g.x0, pitch: g.pitch, cols: g.cols, edited: fromMap ? m.edited : false, quad: quadN || (reset ? null : m?.quad) || null, ar: quadN ? r.shot.W / r.shot.H : (!reset && m?.ar) || 0 };
+    mapping = { gap, rect, edges: e.slice(), tilt, x0: g.x0, pitch: g.pitch, cols: g.cols, edited: fromMap ? m.edited : false, quad: quadN || (reset ? null : m?.quad) || null, ar: quadN ? r.shot.W / r.shot.H : (!reset && m?.ar) || 0 };
     saveMapping();
   }
   rebuildGains(); // keep playing: the new lanes take over at the next note
@@ -146,12 +148,14 @@ const labelOf = (tr, b) => (state.fruits && b.fruit ? (b.fruitLead ? fruitById(b
 const ey = (k, x) => edges[k] + x * laneTilt;
 const laneAt = (y, x) => tracks[laneIdx(edges, laneTilt, x, y)];
 const laneY = (tr, x) => { const i = tracks.indexOf(tr); return (ey(i, x) + ey(i + 1, x)) / 2; };
+// The lane's own strip (inside its lines, less half the gap on each side): where its notes sit, exactly.
+const laneBand = (tr, x) => { const i = tracks.indexOf(tr), h = (ey(i + 1, x) - ey(i, x)) / 2, m = Math.min(gap / 2, h * 0.8); return [ey(i, x) + m, ey(i + 1, x) - m]; };
 const newTrack = (i) => ({ row: i + 1, instrument: DEFAULT_INSTRUMENTS[i % DEFAULT_INSTRUMENTS.length], mute: false, solo: false, bricks: [] });
 const renumber = () => tracks.forEach((t, i) => { t.row = i + 1; });
 const rebuildGains = () => { if (playing) { tg = tracks.map(() => gainNode(bus)); applyMix(); } };
 
 // A brick's photo box follows its place on the grid (res.fit: px = a + b * studs) and its lane.
-function place(tr, b) { b.box.x = res.fit.a + res.fit.b * b.start; b.box.w = res.fit.b * b.len; b.box.y = laneY(tr, b.box.x) - b.box.h / 2; b.dirty = false; }
+function place(tr, b) { const [y0, y1] = laneBand(tr, res.fit.a + res.fit.b * b.start); b.box = { x: res.fit.a + res.fit.b * b.start, w: res.fit.b * b.len, y: y0, h: y1 - y0 }; b.dirty = false; }
 
 // Notes stay inside the matrix: when the matrix would end before a brick does, it grows to hold it (nothing is ever dropped).
 function clampCols() {
@@ -184,7 +188,7 @@ function commitGrid(oldPitch) {
     if (rescale) b.len = Math.max(1, Math.round(b.box.w / grid.pitch));
   }
   clampCols(); regroup();
-  mapping = { ...(mapping || {}), rect: grid.rect, edges: edges.slice(), tilt: laneTilt, x0: grid.x0, pitch: grid.pitch, cols: grid.cols, edited: true };
+  mapping = { ...(mapping || {}), gap, rect: grid.rect, edges: edges.slice(), tilt: laneTilt, x0: grid.x0, pitch: grid.pitch, cols: grid.cols, edited: true };
   mapping.quad ??= null; mapping.ar ??= 0;
   saveMapping();
 }
@@ -193,14 +197,15 @@ function renderBoxes() {
   const W = res.W, H = res.H, xb = crop.x0 + 6, f = res.fit;
   let h = "";
   for (let k = 0; k <= loopLen; k++) h += `<i class="gl${k % 2 ? "" : " beat"}" style="left:${((f.a + f.b * k) / W) * 100}%"></i>`; // beats (heavy) and half-beats (thin)
-  edges.forEach((_, k) => { h += `<i class="lline${editing ? "" : " thin"}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${(ey(k, 0) / H) * 100}%;transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
+  edges.forEach((_, k) => { h += `<i class="lline${editing ? "" : " thin"}${gap ? " gap" : ""}${k === selEdge ? " sel" : ""}" data-edge="${k}" style="top:${((ey(k, 0) - gap / 2) / H) * 100}%;${gap ? `height:${(gap / H) * 100}%;` : ""}transform:rotate(${Math.atan(laneTilt)}rad)" role="separator" aria-label="Lane line ${k + 1}: drag to move"></i>`; });
   if (editing) for (const [side, x] of [["l", f.a], ["r", f.a + f.b * loopLen]]) h += `<i class="cline" data-col="${side}" style="left:${(x / W) * 100}%" role="separator" aria-label="${side === "l" ? "Start" : "End"} of the columns: drag to move"></i>`;
   for (const tr of tracks) {
     h += `<span class="rownum" style="top:${(laneY(tr, xb) / H) * 100}%;left:${(xb / W) * 100}%">${tr.row}</span>`;
     for (const b of tr.bricks) {
       const fc = state.fruits && b.fruit ? `border-color:${fruitById(b.fruit).hex};` : "";
       const grips = b.id === sel ? '<i class="hl"></i><i class="hr"></i>' : "";
-      h += `<button type="button" class="brick${b.id === sel ? " sel" : ""}${b.sure === false ? " unsure" : ""}${audible(tr) ? "" : " muted"}" data-id="${b.id}" style="${fc}left:${(b.box.x / W) * 100}%;top:${(b.box.y / H) * 100}%;width:${(b.box.w / W) * 100}%;height:${(b.box.h / H) * 100}%" aria-label="Lane ${tr.row}, ${COLOURS[b.cls].label}, ${pitchLabel(noteOf(tr, b))}"><span class="chip">${esc(labelOf(tr, b))}</span>${grips}</button>`;
+      const bx = f.a + f.b * b.start, [by0, by1] = laneBand(tr, bx); // exactly on the grid and inside the lane's lines
+      h += `<button type="button" class="brick${b.id === sel ? " sel" : ""}${b.sure === false ? " unsure" : ""}${audible(tr) ? "" : " muted"}" data-id="${b.id}" style="${fc}left:${(bx / W) * 100}%;top:${(by0 / H) * 100}%;width:${((f.b * b.len) / W) * 100}%;height:${((by1 - by0) / H) * 100}%" aria-label="Lane ${tr.row}, ${COLOURS[b.cls].label}, ${pitchLabel(noteOf(tr, b))}"><span class="chip">${esc(labelOf(tr, b))}</span>${grips}</button>`;
     }
   }
   const el = $("#boxes");
@@ -295,6 +300,7 @@ function refresh() {
   loopLen = Math.max(1, grid.cols || 0, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len)));
   annotateFruits(tracks);
   renderBoxes(); renderLanes(); renderSel(); renderLegend(); renderLearned();
+  $("#gaptoggle").textContent = gap ? "Gaps: on" : "Gaps: off"; $("#gaptoggle").setAttribute("aria-pressed", String(!!gap));
   $("#json").textContent = toJson();
   renderStatus();
 }
@@ -449,6 +455,12 @@ document.addEventListener("click", (e) => {
     const end = Math.max(1, ...tracks.flatMap((t) => t.bricks.map((b) => b.start + b.len))), old = grid.pitch;
     grid = { ...grid, cols: Math.max(end, (grid.cols || loopLen) + (a === "colsmore" ? 1 : -1)), rect: true }; commitGrid(old); refresh(); return;
   }
+  if (a === "gaptoggle" || a === "gapless" || a === "gapmore") {
+    const base = Math.max(0.9 * grid.pitch, 4);
+    gap = a === "gaptoggle" ? (gap ? 0 : base) : Math.max(0, gap + (a === "gapmore" ? 1 : -1) * 0.15 * grid.pitch);
+    tracks.forEach((t) => t.bricks.forEach((b) => { b.dirty = true; })); tracks.forEach((t) => t.bricks.forEach((b) => place(t, b)));
+    commitGrid(grid.pitch); refresh(); return;
+  }
   if (a === "resetgrid") { mapping = null; saveMapping(); toggleGrid(false); if (lastSrc) useSource(lastSrc, lastExample, undefined, true); return; }
   if (a === "gridok") { toggleGrid(false); return; }
   if (a === "forget") { profile = emptyProfile(); saveProfile(); renderLearned(); return; }
@@ -468,7 +480,9 @@ document.addEventListener("click", (e) => {
 document.addEventListener("change", (e) => {
   const t = e.target;
   if (t.dataset?.instr !== undefined) { tracks[+t.dataset.instr].instrument = t.value; refresh(); }
+  if (t.id === "testpics" && t.value) { useSource(TESTPICS[`./examples/${t.value}.png`], true); t.value = ""; }
 });
+for (const x of TESTLIST) $("#testpics").add(new Option(x.title, x.id));
 
 /* ---------- dragging on the photo: bricks (move, stretch from either end), lane lines and the column edges ---------- */
 $("#boxes").addEventListener("pointerdown", (e) => {
@@ -480,7 +494,7 @@ $("#boxes").addEventListener("pointerdown", (e) => {
   const [tr0, b] = kind === "brick" ? findBy(+el.dataset.id) || [] : [];
   if (kind === "brick" && !b) return;
   const k0 = kind === "edge" ? +el.dataset.edge : 0, e0 = kind === "edge" ? edges[k0] : 0, g0 = { ...grid }, nc = g0.cols || loopLen, maxC = grid.cols || Infinity;
-  const o = b && { s: b.start, l: b.len, x: b.box.x, w: b.box.w, cy: b.box.y + b.box.h / 2 };
+  const o = b && { s: b.start, l: b.len, x: fit.a + fit.b * b.start, w: fit.b * b.len, cy: laneY(tr0, fit.a + fit.b * b.start) };
   let moved = false, to = null, gnew = null;
   el.setPointerCapture(e.pointerId);
   const move = (ev) => {
@@ -489,7 +503,7 @@ $("#boxes").addEventListener("pointerdown", (e) => {
     moved = true;
     if (kind === "edge") {
       edges[k0] = Math.min(Math.max(e0 + dy, (edges[k0 - 1] ?? -Infinity) + 12), (edges[k0 + 1] ?? Infinity) - 12);
-      el.style.top = `${(edges[k0] / res.H) * 100}%`;
+      el.style.top = `${((edges[k0] - gap / 2) / res.H) * 100}%`;
       return;
     }
     if (kind === "col") { // left edge: slide the whole grid; right edge: stretch the stud size
@@ -506,7 +520,7 @@ $("#boxes").addEventListener("pointerdown", (e) => {
     to = { s, l, lane };
     el.style.left = `${((o.x + (s - o.s) * fit.b) / res.W) * 100}%`;
     el.style.width = `${((o.w + (l - o.l) * fit.b) / res.W) * 100}%`;
-    if (part === "m") el.style.top = `${((laneY(lane, o.x) - b.box.h / 2) / res.H) * 100}%`;
+    if (part === "m") { const [y0, y1] = laneBand(lane, o.x); el.style.top = `${(y0 / res.H) * 100}%`; el.style.height = `${((y1 - y0) / res.H) * 100}%`; }
   };
   const up = (ev) => {
     el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);

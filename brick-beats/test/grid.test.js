@@ -37,7 +37,7 @@ test("lines can be added into the tallest lane and removed (inner ones only)", (
 });
 
 test("a saved mapping comes back, and a broken one is dropped", () => {
-  const m = { rect: true, edges: [1, 2, 3], tilt: 0, x0: 70, pitch: 28, cols: 22, edited: true, quad: [[0.1, 0.1], [0.9, 0.1], [0.9, 0.9], [0.1, 0.9]], ar: 0.75 };
+  const m = { gap: 25, rect: true, edges: [1, 2, 3], tilt: 0, x0: 70, pitch: 28, cols: 22, edited: true, quad: [[0.1, 0.1], [0.9, 0.1], [0.9, 0.9], [0.1, 0.9]], ar: 0.75 };
   assert.deepEqual(reviveMapping(JSON.stringify(m)), m);
   assert.equal(reviveMapping("nope"), null);
   assert.equal(reviveMapping(JSON.stringify({ ...m, edges: ["a"] })), null);
