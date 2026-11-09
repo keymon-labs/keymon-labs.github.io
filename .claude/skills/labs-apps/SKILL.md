@@ -5,7 +5,7 @@ description: Add a new app to keymon-labs, release a new version of an existing 
 
 # Adding and versioning keymon-labs apps
 
-Rules live in `CLAUDE.md` (public-data rule, ponytail, structure, copyright). This is the step list.
+Rules live in `CLAUDE.md` (public-data rule, ponytail, structure, copyright). This is the step list for **Final** mode. A new idea usually starts earlier: see `labs-modes` (Brainstorm → Prototype → Final).
 
 ## New app
 1. `git pull`; read `README.md` and `shared/README.md`. Reuse `shared/` modules before writing code.

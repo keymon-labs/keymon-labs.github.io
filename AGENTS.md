@@ -2,6 +2,15 @@
 
 Read after [CLAUDE.md](CLAUDE.md), which wins on conflicts. Goal: **prototypes fast, iterate with the owner, enough structure and tests to keep going**, no more engineering than the change needs. The pattern is inspired by [superpowers](https://github.com/obra/superpowers) (MIT), done lightly.
 
+## Modes: how much to invest in an idea
+Separate from the levels below (which size a change by risk). Steps: `labs-modes` skill.
+| Mode | For | Output | Invest in |
+|---|---|---|---|
+| **Brainstorm** | a new idea, fast back-and-forth | one private Claude artifact (single HTML), not committed | the idea only: no design, structure or tests; at most 2 quick searches for similar patterns |
+| **Prototype** | an idea worth trying for real | an artifact, or a usable app in the repo tagged Prototype | research of real implementations and architecture, reuse; basics only, shortcuts marked `// shortcut:` |
+| **Final** | everything else: today's process | the levels below | full structure, tests, versions, `shared/` |
+The owner's word sets the mode (`brainstorm:`, `prototype:`, `make it final`). No word: a loose new idea with no app yet is a Brainstorm (it replaces the quick plan below); anything on an existing app is Final. Modes relax design, structure, tests and process only; the public-data and licence rules in CLAUDE.md apply in every mode.
+
 ## Start: guess the direction, then decide build or plan
 Requests often come from a phone, short and loose. Don't stall on them:
 1. **Read the intent**: what the owner is after, using what's in the repo (the app's README, its open tasks, recent commits) and what was said earlier. Fill the gaps with the most likely reading for a kids' web app on this site.
@@ -16,7 +25,7 @@ Requests often come from a phone, short and loose. Don't stall on them:
 ## Pick the level by risk, not habit
 | Level | When | How |
 |---|---|---|
-| **Quick** (default) | tweaks, a new game/screen in an existing app, a prototype, a bug | Build it yourself straight away. Ask at most 1–2 questions, only if the answer changes what gets built; otherwise state your call and go. No plan doc, no subagents, no review. |
+| **Quick** (default) | tweaks, a new game/screen in an existing app, a bug | Build it yourself straight away. Ask at most 1–2 questions, only if the answer changes what gets built; otherwise state your call and go. No plan doc, no subagents, no review. |
 | **Feature** | a new app, a change to `shared/`, anything touching saved data (export/import, migrations, storage schema) | A ≤5-line plan in the reply, then build. One review subagent at the end (Opus) **only** for `shared/` or data-loss risk. |
 | **Board** | work spanning several chats or models | `task-board` skill. Light gates, see below. |
 

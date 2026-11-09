@@ -25,7 +25,8 @@ Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission (
 
 ## Sessions, skills and task boards
 **Read [AGENTS.md](AGENTS.md)**: build fast by default, add process only when the change is risky (levels Quick / Feature / Board), when subagents and which model. Work spanning several sessions or models: `task-board` skill, `npm run tasks` for status.
-`.claude/skills/`: `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `ponytail`. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
+**New ideas start in a mode**: Brainstorm (throwaway Claude artifact, fast), Prototype (researched, basics only) or Final (everything in this file). Modes relax design, structure, tests and process only: the public-data and licence rules apply in every mode.
+`.claude/skills/`: `labs-modes` (Brainstorm → Prototype → Final), `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `ponytail`. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
 
 ## Start of every task
 1. `git pull` (other chats push here too).
@@ -59,6 +60,7 @@ index.html                landing page: one <li class="card"> per app
 - Changing a shared export: grep every caller (`grep -rn "shared/<module>" --include=*.js .`) and fix them all in the same commit.
 - Keep READMEs current: they are how the next session finds things. A new app adds a row to the root README and a card to `index.html`.
 - One-line header comment at the top of each JS module: what it is and where its data/styles live.
+- This is the Final shape. A Prototype may be thinner (see `labs-modes`); promoting it to Final restores this structure.
 
 ## How to write code (ponytail)
 Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
