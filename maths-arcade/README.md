@@ -21,14 +21,20 @@ games/catapult/
   logic.js                      round KINDS: maths problem -> shot; judge(); no DOM, tested
   scene.js                      canvas drawing and animation only
   levels.json                   level data
+games/pop/
+  index.js                      game module: bubbles board + keypad, hint after 1 miss, answer after 2
+  logic.js                      board (stacks of bubbles), touching, removePair, gravity; no DOM, tested
+  scene.js                      DOM bubbles moved by CSS transforms; styles in ../../style.css (.pop-*)
+  levels.json                   board size, highest number and the tables to practise
 test/*.test.js                  node --test (run `npm test` from the repo root)
 ```
 
 ## Game module shape
 ```js
 export default { id, title, emoji, blurb, levels,
-  mount(host, level, { onFinish({ stars }), onExit() }) -> { destroy() } }
+  mount(host, level, { onFinish({ stars, heading? }), onExit() }) -> { destroy() } }
 ```
+`heading` (optional) replaces the default catapult wording on the result card.
 Keep rules in a DOM-free `logic.js` with tests; keep drawing in `scene.js`.
 
 ## Common edits
@@ -36,8 +42,16 @@ Keep rules in a DOM-free `logic.js` with tests; keep drawing in `scene.js`.
 - **New round kind**: add to `KINDS` in `logic.js` (`make` returns answer, positions, prompt, hint; `land` maps the typed number to a landing), then a test.
 - **New skill**: add a generator to `core/problems.js` + a range test.
 - **New game**: `games/<id>/` with the same files, register in `games/index.js`.
+- **New Pop level**: add an entry to `games/pop/levels.json` (`cols` × `rows` must be even, `max` ≤ 12, `tables` = numbers to practise, `[]` for all). About 60% of the bubbles come from `tables`.
+
+## Pop
+Bubbles numbered 1 to `max` fill a board. Touch two that are next to each other (diagonals count),
+type their product, and both pop. The rest fall and empty columns close up, so the bubbles always
+stay connected and the board can always be cleared (a test plays random games to prove it).
+Stars come from how many pairs were popped first try.
 
 UI is checked by loading pages in headless Chromium, not unit tested.
 
 Shared modules used: `shared/pwa.js` (service worker). Test hook while a level is open:
-`window.__mathsArcade.round().answer` and `window.__mathsArcade.fire(n)`.
+`window.__mathsArcade.round().answer` and `window.__mathsArcade.fire(n)`. Pop also exposes
+`board` and `tap(bubble)`; `round()` is `null` until two touching bubbles are picked.

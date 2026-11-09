@@ -67,10 +67,10 @@ function play(game, level) {
   const next = game.levels[idx + 1];
   current = game.mount(root, level, {
     onExit: () => go(`#/${game.id}`),
-    onFinish: ({ stars }) => {
+    onFinish: ({ stars, heading }) => {
       const improved = progress.record(game.id, level.id, stars);
       showResult(root, {
-        stars, improved, hasNext: !!next,
+        stars, heading, improved, hasNext: !!next,
         onAgain: () => route(),
         onNext: () => go(`#/${game.id}/${next.id}`),
         onMenu: () => go(`#/${game.id}`),
