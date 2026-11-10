@@ -16,5 +16,8 @@
   "devDependencies": {
     "vite": "^6.4.5"
   },
-  "license": "SEE LICENSE IN NOTICE.md"
+  "license": "SEE LICENSE IN NOTICE.md",
+  "dependencies": {
+    "matter-js": "^0.20.0"
+  }
 }

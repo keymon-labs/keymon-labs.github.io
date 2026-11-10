@@ -1,0 +1,7 @@
+[
+  {"id": "m-2-5-10", "title": "2s, 5s and 10s", "icon": "🎯", "balls": 20, "max": 10, "tables": [2, 5, 10], "targets": 2},
+  {"id": "m-3-4", "title": "3s and 4s", "icon": "🎯", "balls": 20, "max": 10, "tables": [3, 4], "targets": 2},
+  {"id": "m-6-7-8", "title": "6s, 7s and 8s", "icon": "🎯", "balls": 24, "max": 12, "tables": [6, 7, 8], "targets": 3},
+  {"id": "m-9-11-12", "title": "9s, 11s and 12s", "icon": "🎯", "balls": 24, "max": 12, "tables": [9, 11, 12], "targets": 3},
+  {"id": "m-all", "title": "All the tables", "icon": "🎯", "balls": 36, "max": 12, "tables": [], "targets": 3}
+]

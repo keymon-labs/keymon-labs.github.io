@@ -1,7 +1,7 @@
 [
-  {"id": "t-2-5-10", "title": "2s, 5s and 10s", "icon": "🫧", "cols": 6, "rows": 4, "max": 10, "tables": [2, 5, 10]},
-  {"id": "t-3-4", "title": "3s and 4s", "icon": "🫧", "cols": 6, "rows": 4, "max": 10, "tables": [3, 4]},
-  {"id": "t-6-7-8", "title": "6s, 7s and 8s", "icon": "🫧", "cols": 6, "rows": 4, "max": 12, "tables": [6, 7, 8]},
-  {"id": "t-9-11-12", "title": "9s, 11s and 12s", "icon": "🫧", "cols": 6, "rows": 4, "max": 12, "tables": [9, 11, 12]},
-  {"id": "t-all", "title": "All the tables", "icon": "🫧", "cols": 8, "rows": 6, "max": 12, "tables": []}
+  {"id": "t-2-5-10", "title": "2s, 5s and 10s", "icon": "🫧", "balls": 20, "max": 10, "tables": [2, 5, 10]},
+  {"id": "t-3-4", "title": "3s and 4s", "icon": "🫧", "balls": 20, "max": 10, "tables": [3, 4]},
+  {"id": "t-6-7-8", "title": "6s, 7s and 8s", "icon": "🫧", "balls": 24, "max": 12, "tables": [6, 7, 8]},
+  {"id": "t-9-11-12", "title": "9s, 11s and 12s", "icon": "🫧", "balls": 24, "max": 12, "tables": [9, 11, 12]},
+  {"id": "t-all", "title": "All the tables", "icon": "🫧", "balls": 36, "max": 12, "tables": []}
 ]

@@ -1,89 +1,66 @@
-// Pop mini game: a board of numbered bubbles. Touch two that are next to each other,
-// type their product, and they pop. Clear the board to win. Same module shape as catapult/index.js.
-// Rules in logic.js, drawing in scene.js. Test hook: window.__mathsArcade.
+// Pop mini game: numbered balls pile up in a funnel. Pick two that touch, type their product,
+// and both pop. Clear the funnel to win. Same module shape as catapult/index.js.
+// Shared funnel, scoring and selection: play.js. Test hook: window.__mathsArcade.
 
 import levels from './levels.json' with { type: 'json' };
-import { makeBoard, touching, isCorrect, removePair, remaining, hint } from './logic.js';
-import { createScene } from './scene.js';
-import { createRng } from '../../../shared/rng.js';
-import { HINT_AFTER, REVEAL_AFTER, starsFor } from '../../core/session.js';
+import { isCorrect, hint } from './logic.js';
+import { touchingPairs } from './world.js';
+import { createPlay } from './play.js';
+import { HINT_AFTER, REVEAL_AFTER } from '../../core/session.js';
 import { createKeypad } from '../../ui/keypad.js';
-import { createPlayLayout } from '../../ui/play-layout.js';
 
 export default {
   id: 'pop',
   title: 'Pop',
   emoji: '🫧',
-  blurb: 'Multiply two bubbles that touch to pop them. Clear the board!',
+  blurb: 'Balls pile up in a funnel. Multiply two that touch to pop them!',
   levels,
   mount,
 };
 
 function mount(host, level, { onFinish, onExit }) {
-  const board = makeBoard(level, createRng());
-  const totalPairs = remaining(board) / 2;
-  const layout = createPlayLayout(host, { title: level.title, onExit });
-  const scene = createScene(layout.stage, board, { onTap: tap });
+  let misses = 0;
+  const play = createPlay(host, level, { onExit, onFinish, onSelect, onReady: ask });
+  const { layout } = play;
   const keypad = createKeypad(layout.keypadHost, { onSubmit: submit, goLabel: 'Pop!' });
-  let sel = [], misses = 0, firstTry = 0, busy = false, alive = true;
 
   function ask() {
-    scene.mark(sel);
+    const s = play.sel;
     keypad.clear();
-    if (sel.length === 2) {
-      layout.setQuestion({ title: 'Multiply', text: `${remaining(board)} bubbles left`, expr: `${sel[0].n} × ${sel[1].n} = ?` });
-      keypad.setEnabled(true);
-    } else {
-      layout.setQuestion({ title: 'Pop', text: `${remaining(board)} bubbles left`, expr: sel.length ? 'Pick a bubble next to it' : 'Pick two bubbles that touch' });
-      keypad.setEnabled(false);
-    }
+    keypad.setEnabled(play.ready && s.length === 2);
+    if (!play.ready) layout.setQuestion({ title: 'Pop', text: '', expr: 'Here they come…' });
+    else if (s.length === 2) layout.setQuestion({ title: 'Multiply', text: `${play.left} balls left`, expr: `${s[0].n} × ${s[1].n} = ?` });
+    else layout.setQuestion({ title: 'Pop', text: `${play.left} balls left`, expr: s.length ? 'Pick a ball touching it' : 'Pick two balls that touch' });
   }
 
-  function tap(b) {
-    if (busy) return;
-    const i = sel.indexOf(b);
-    if (i >= 0) sel.splice(i, 1);
-    else if (sel.length === 1 && touching(sel[0], b)) sel.push(b);
-    else sel = [b];
-    misses = 0;
-    layout.setFeedback('');
-    ask();
-  }
+  function onSelect() { misses = 0; layout.setFeedback(''); ask(); }
 
-  async function submit(value) {
-    if (busy || sel.length !== 2) return;
-    const [a, b] = sel;
+  function submit(value) {
+    const [a, b] = play.sel;
+    if (!b) return;
     if (!isCorrect(a, b, value)) {
       misses++;
-      scene.shake(sel);
-      const reveal = misses >= REVEAL_AFTER;
-      layout.setFeedback(reveal ? `Not quite. The answer is ${a.n * b.n}. Type it in!` : misses >= HINT_AFTER ? `Not quite. ${hint(a, b)}` : 'Not quite, try again!', reveal || misses >= HINT_AFTER ? 'hint' : 'bad');
+      play.miss(play.sel);
+      layout.setFeedback(
+        misses >= REVEAL_AFTER ? `Not quite. The answer is ${a.n * b.n}. Type it in!` : misses >= HINT_AFTER ? `Not quite. ${hint(a, b)}` : 'Not quite, try again!',
+        misses >= HINT_AFTER ? 'hint' : 'bad');
       keypad.clear();
       return;
     }
-    busy = true;
-    if (misses === 0) firstTry++;
-    keypad.setEnabled(false);
-    layout.setFeedback('Pop!', 'good');
-    await scene.pop(a, b);
-    if (!alive) return;
-    removePair(board, a, b);
-    sel = []; misses = 0; busy = false;
-    scene.layout();
+    const pts = play.hit(a, b, misses === 0);
+    misses = 0;
+    layout.setFeedback(`+${pts}`, 'good');
     ask();
-    if (remaining(board) === 0) {
-      const stars = starsFor(firstTry, totalPairs);
-      onFinish({ stars, heading: stars === 3 ? 'Perfect!' : stars === 2 ? 'Great popping!' : 'All popped!' });
-    }
+    play.finishIfDone();
   }
 
   window.__mathsArcade = {
-    board,
-    round: () => (sel.length === 2 ? { answer: sel[0].n * sel[1].n } : null),
-    tap, fire: submit,
+    world: play.world, ready: () => play.ready, pairs: () => touchingPairs(play.world),
+    round: () => (play.sel.length === 2 ? { answer: play.sel[0].n * play.sel[1].n } : null),
+    tap: play.tap, fire: submit,
   };
   ask();
   return {
-    destroy() { alive = false; delete window.__mathsArcade; keypad.destroy(); scene.destroy(); host.innerHTML = ''; },
+    destroy() { delete window.__mathsArcade; keypad.destroy(); play.destroy(); },
   };
 }

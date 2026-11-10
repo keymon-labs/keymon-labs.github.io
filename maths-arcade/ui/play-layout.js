@@ -47,14 +47,15 @@ export function createPlayLayout(host, { title, onExit }) {
   };
 }
 
-/** Modal card at the end of a level. `heading` overrides the default (catapult) title. */
-export function showResult(host, { stars, heading, improved, hasNext, onAgain, onNext, onMenu }) {
+/** Modal card at the end of a level. `heading` overrides the default (catapult) title; `detail` is an extra line (e.g. the score). */
+export function showResult(host, { stars, heading, detail, improved, hasNext, onAgain, onNext, onMenu }) {
   const el = document.createElement('div');
   el.className = 'result';
   el.innerHTML = `
     <div class="result-card">
       <p class="result-stars" aria-label="${stars} of 3 stars">${'★'.repeat(stars)}<span>${'★'.repeat(3 - stars)}</span></p>
       <h2>${heading ?? (stars === 3 ? 'Perfect!' : stars === 2 ? 'Great shooting!' : 'Castle down!')}</h2>
+      ${detail ? `<p class="result-detail">${detail}</p>` : ''}
       ${improved ? '<p class="muted">New best!</p>' : ''}
       <div class="result-actions">
         <button type="button" data-a="menu" class="btn ghost">Levels</button>
