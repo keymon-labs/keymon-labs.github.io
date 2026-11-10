@@ -48,7 +48,7 @@ Keep rules in a DOM-free `logic.js` with tests; keep drawing in `scene.js`.
 - **New round kind**: add to `KINDS` in `logic.js` (`make` returns answer, positions, prompt, hint; `land` maps the typed number to a landing), then a test.
 - **New skill**: add a generator to `core/problems.js` + a range test.
 - **New game**: `games/<id>/` with the same files, register in `games/index.js`.
-- **New Pop or Match level**: add an entry to `games/pop/levels.json` or `games/match/levels.json` (`balls` even and at most 36, or the funnel overflows; `max` ≤ 12; `tables` = numbers to practise, `[]` for all; Match also `targets` 2 or 3). About 60% of the balls come from `tables`. `npm test` pours and plays every level.
+- **New Pop or Match level**: add an entry to `games/pop/levels.json` or `games/match/levels.json` (`balls` even and at most 24, or the funnel overflows; `max` ≤ 12; `tables` = numbers to practise, `[]` for all; Match also `targets` 2 or 3). About 60% of the balls come from `tables`. `npm test` pours and plays every level.
 
 ## Pop and Match
 Balls numbered 1 to `max` pour into a funnel (a V with a small dip at the bottom) and pile up at the bottom

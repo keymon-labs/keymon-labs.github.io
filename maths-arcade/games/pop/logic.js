@@ -1,7 +1,7 @@
 // Pop and Match rules that are not physics, no DOM: ball sizes and numbers, scoring, hints.
 // Physics lives in world.js, drawing in scene.js.
 
-export const R_MIN = 15, R_MAX = 38;
+export const R_MIN = 30, R_MAX = 46;
 
 /** Ball radius: the smallest number is the smallest ball, `max` the biggest. A soft curve, not proportional. */
 export const radiusFor = (n, max) => R_MIN + (R_MAX - R_MIN) * Math.pow((n - 1) / Math.max(1, max - 1), 0.75);
