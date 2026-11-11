@@ -10,6 +10,10 @@ const shapes = {
   trefoil: () => Array.from({length: 48}, (_, i) => { const t = i * TAU / 48, r = .8 + .2 * Math.cos(3 * t); return [r * Math.cos(t), r * Math.sin(t)]; }),
   heart: () => Array.from({length: 48}, (_, i) => { const t = i * TAU / 48; return [16 * Math.sin(t) ** 3 / 17, -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17]; }),
 };
+shapes.circle = () => Array.from({ length: 48 }, (_, i) => [Math.cos(i * TAU / 48), Math.sin(i * TAU / 48)]);
+shapes.square = () => smooth([[-.8, -.8], [.8, -.8], [.8, .8], [-.8, .8]]);
+shapes.triangle = () => smooth([[0, -1], [.9, .6], [-.9, .6]]);
+shapes.flower = () => Array.from({ length: 60 }, (_, i) => { const t = i * TAU / 60, r = .75 + .25 * Math.cos(5 * t); return [r * Math.cos(t), r * Math.sin(t)]; });
 let seed = 7; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
 const C = (g, x, y, r, f) => { g.fillStyle = f; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); };
 const R = (g, x, y, w, h, f, rad = 0) => { g.fillStyle = f; g.beginPath(); g.roundRect(x, y, w, h, rad); g.fill(); };
@@ -88,14 +92,17 @@ function trace(mask, G) {   // Moore-neighbour outer contour of a pixel mask
 }
 
 // ---- levels: bitmap + portal polygon + placement of the next level inside it
-function place(l, P) {
-  const q = pole(P), s = 2 * (.8 * q.d / Math.SQRT2) / S;   // next level's square fits inside the polygon
-  l.pts = P; l.s = s; l.rot = .2 * Math.log(1 / s);          // constant turn rate per unit of log-zoom
-  l.a = { re: s * Math.cos(l.rot), im: s * Math.sin(l.rot) };
+function refresh(l) { l.s = abs(l.a); l.rot = Math.atan2(l.a.im, l.a.re); l.p = div(l.b, sub({ re: 1, im: 0 }, l.a)); }   // after a or b changed
+function place(l, P) {   // default fit: the next picture's square sits inside the widest inner circle of the hole
+  const q = pole(P), s = 2 * (.8 * q.d / Math.SQRT2) / S, rot = .2 * Math.log(1 / s);   // constant turn rate per unit of log-zoom
+  l.pts = P; l.rin = q.d; l.edge = l.edge || 'line';
+  l.a = { re: s * Math.cos(rot), im: s * Math.sin(rot) };
   const am = mul(l.a, { re: S / 2, im: S / 2 });
   l.b = { re: q.x - am.re, im: q.y - am.im };                // child z -> parent: a*z + b
-  l.p = div(l.b, sub({ re: 1, im: 0 }, l.a));                // fixed point of that map
+  refresh(l);
 }
+const SOFT = 'filter' in CanvasRenderingContext2D.prototype, eff = l => (l.edge === 'soft' && !SOFT ? 'prop' : l.edge);   // shortcut: soft edge needs canvas filter (not older Safari), falls back to proportional
+const edgeW = l => ({ none: 0, line: 6, prop: .07 * l.rin, soft: .15 * l.rin })[eff(l)];   // how far the border reaches into the hole: level switches wait until the screen is clear of it
 LIB.forEach(l => {
   seed = 12; const c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
   g.fillStyle = l.bg; g.fillRect(0, 0, S, S); g.save(); g.beginPath(); g.arc(S / 2, S / 2, S / 2, 0, TAU); g.clip(); g.translate(S / 2 - l.c[0], S / 2 - l.c[1]); l.art(g); g.restore();
@@ -113,24 +120,38 @@ const qs = () => Math.max(W, H) / S;   // 'cover' scale: the level square always
 const home = () => { const q = qs(); A = { re: q, im: 0 }; B = { re: (W - q * S) / 2, im: (H - q * S) / 2 }; };
 const toLevel = p => div(sub({ re: p.x, im: p.y }, B), A), toScr = z => add(mul(A, z), B);
 const msg = t => { msgText = t; msgUntil = performance.now() + 2200; };
-function resize() { dpr = devicePixelRatio || 1; V = Math.max(220, Math.floor(Math.min(innerWidth - 16, innerHeight - 290, 720))); W = full ? innerWidth : V; H = full ? innerHeight : V; cv.style.width = W + 'px'; cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); catEl.style.maxWidth = V + 'px'; if (mode !== 'auto') home(); }
+function resize() { dpr = devicePixelRatio || 1; V = Math.max(220, Math.floor(Math.min(innerWidth - 16, innerHeight - 350, 720))); W = full ? innerWidth : V; H = full ? innerHeight : V; cv.style.width = W + 'px'; cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); catEl.style.maxWidth = V + 'px'; if (mode !== 'auto') home(); }
 addEventListener('resize', resize); resize();
 
 // ---- drawing the nested levels
-function drawLevel(i, depth) {
-  const l = lv(i); ctx.drawImage(l.img, 0, 0);
+const offs = {};
+function getOff(d) { let o = offs[d]; if (!o || o.c.width !== cv.width || o.c.height !== cv.height) { const mk = () => { const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height; return c; }; o = offs[d] = { c: mk(), m: mk() }; o.m.width += 2 * PAD; o.m.height += 2 * PAD; } return o; }   // mask canvas is padded so the blur has no transparent edge at the screen border
+const PAD = 100;
+function drawSoft(g, l, nl, n, depth, path) {   // next picture fades out towards the edge of the hole (mask = eroded hole, blurred)
+  const o = getOff(depth), og = o.c.getContext('2d'), mg = o.m.getContext('2d'), M = g.getTransform();
+  og.setTransform(1, 0, 0, 1, 0, 0); og.clearRect(0, 0, o.c.width, o.c.height); og.setTransform(M);
+  mg.setTransform(1, 0, 0, 1, 0, 0); mg.clearRect(0, 0, o.m.width, o.m.height); mg.setTransform(new DOMMatrix().translate(PAD, PAD).multiply(M));
+  path(og); og.fillStyle = nl.bg; og.fill(); og.save(); path(og); og.clip(); og.transform(l.a.re, l.a.im, -l.a.im, l.a.re, l.b.re, l.b.im); drawLevel(og, n, depth - 1); og.restore();
+  const fw = .15 * l.rin; path(mg); mg.fillStyle = '#000'; mg.fill(); mg.globalCompositeOperation = 'destination-out'; mg.lineWidth = fw; mg.lineJoin = 'round'; mg.stroke(); mg.globalCompositeOperation = 'source-over';
+  og.setTransform(1, 0, 0, 1, 0, 0); og.globalCompositeOperation = 'destination-in'; og.filter = `blur(${Math.min(PAD / 3, Math.max(.5, fw * Math.hypot(M.a, M.b) / 4))}px)`; og.drawImage(o.m, -PAD, -PAD); og.filter = 'none'; og.globalCompositeOperation = 'source-over';
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(o.c, 0, 0); g.restore();
+}
+function drawLevel(g, i, depth) {
+  const l = lv(i); g.drawImage(l.img, 0, 0);
   const n = i + 1; if (depth === 0 || (!loop() && n >= N)) return;
-  const nl = lv(n), path = () => { ctx.beginPath(); l.pts.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); };
-  ctx.save(); path(); ctx.clip(); ctx.fillStyle = nl.bg; ctx.fillRect(0, 0, S, S);
-  ctx.transform(l.a.re, l.a.im, -l.a.im, l.a.re, l.b.re, l.b.im);
-  drawLevel(n, depth - 1); ctx.restore();
-  path(); ctx.lineJoin = 'round'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 12; ctx.stroke(); ctx.strokeStyle = '#2b2540'; ctx.lineWidth = 6; ctx.stroke();   // layer border
+  const nl = lv(n), e = eff(l), path = c => { c.beginPath(); l.pts.forEach((p, k) => k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); };
+  if (e === 'soft') drawSoft(g, l, nl, n, depth, path);
+  else { path(g); g.fillStyle = nl.bg; g.fill(); g.save(); path(g); g.clip(); g.transform(l.a.re, l.a.im, -l.a.im, l.a.re, l.b.re, l.b.im); drawLevel(g, n, depth - 1); g.restore(); }
+  if (e === 'line' || e === 'prop') { const w = e === 'line' ? 12 : .14 * l.rin; path(g); g.lineJoin = 'round'; g.strokeStyle = '#fff'; g.lineWidth = w; g.stroke(); g.strokeStyle = '#2b2540'; g.lineWidth = w / 2; g.stroke(); }   // border: fixed, or proportional to the hole
 }
 function render() {
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = lv(K).bg; ctx.fillRect(0, 0, cv.width, cv.height);
   ctx.setTransform(dpr * A.re, dpr * A.im, -dpr * A.im, dpr * A.re, dpr * B.re, dpr * B.im);
-  drawLevel(K, mode === 'edit' ? 3 : 5);
+  drawLevel(ctx, K, mode === 'edit' ? 3 : 5);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (mode === 'edit') {   // always show where the hole is, even with no border
+    ctx.strokeStyle = '#ff5a1f'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]); ctx.beginPath(); lv(K).pts.forEach((p, k) => { const s = toScr({ re: p[0], im: p[1] }); k ? ctx.lineTo(s.re, s.im) : ctx.moveTo(s.re, s.im); }); ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+  }
   if (stroke && stroke.length > 1) {
     const s = stroke.map(toScr); ctx.lineWidth = 4; ctx.lineCap = ctx.lineJoin = 'round'; ctx.strokeStyle = '#ff5a1f';
     ctx.beginPath(); s.forEach((p, k) => k ? ctx.lineTo(p.re, p.im) : ctx.moveTo(p.re, p.im)); ctx.stroke();
@@ -149,10 +170,10 @@ function screenPts() { const o = []; for (let t = 0; t <= 4; t++) { const x = t 
 function settle() {
   for (let n = 0; n < 8; n++) {
     const l = lv(K), zs = screenPts();
-    if ((loop() || K + 1 < N) && zs.every(z => inPoly(l.pts, z.re, z.im) && edgeDist(l.pts, z.re, z.im) >= 14)) { const nA = mul(A, l.a), nB = add(mul(A, l.b), B); A = nA; B = nB; K++; continue; }
+    if ((loop() || K + 1 < N) && zs.every(z => inPoly(l.pts, z.re, z.im) && edgeDist(l.pts, z.re, z.im) >= edgeW(l) + 8)) { const nA = mul(A, l.a), nB = add(mul(A, l.b), B); A = nA; B = nB; K++; continue; }
     if (loop() || K > 0) {
       const pl = lv(K - 1);
-      if (!zs.map(z => add(mul(pl.a, z), pl.b)).every(w => inPoly(pl.pts, w.re, w.im) && edgeDist(pl.pts, w.re, w.im) >= 8)) { const nA = div(A, pl.a), nB = sub(B, div(mul(A, pl.b), pl.a)); A = nA; B = nB; K--; continue; }
+      if (!zs.map(z => add(mul(pl.a, z), pl.b)).every(w => inPoly(pl.pts, w.re, w.im) && edgeDist(pl.pts, w.re, w.im) >= edgeW(pl) + 2)) { const nA = div(A, pl.a), nB = sub(B, div(mul(A, pl.b), pl.a)); A = nA; B = nB; K--; continue; }
     }
     break;
   }
@@ -193,12 +214,27 @@ cv.addEventListener('pointermove', e => {
 });
 function gesture() {
   const L = [...ptrs.values()]; if (!L.length) return;
-  if (L.length === 1) B = add(B, { re: L[0].x - L[0].px, im: L[0].y - L[0].py });
-  else {
-    const [a, b] = L, d0 = { re: b.px - a.px, im: b.py - a.py }, d1 = { re: b.x - a.x, im: b.y - a.y };
-    if (abs(d0) > 8 && abs(d1) > 8) { const lam = div(d1, d0); B = add(mul(lam, sub(B, { re: a.px, im: a.py })), { re: a.x, im: a.y }); A = mul(lam, A); }
+  let lam = { re: 1, im: 0 }, mu = { re: 0, im: 0 };   // screen similarity: w -> lam*w + mu
+  if (L.length === 1) mu = { re: L[0].x - L[0].px, im: L[0].y - L[0].py };
+  else { const [a, b] = L, d0 = { re: b.px - a.px, im: b.py - a.py }, d1 = { re: b.x - a.x, im: b.y - a.y }; if (abs(d0) > 8 && abs(d1) > 8) { lam = div(d1, d0); mu = sub({ re: a.x, im: a.y }, mul(lam, { re: a.px, im: a.py })); } }
+  if (mode === 'edit' && (tool === 'hole' || tool === 'fit')) objGesture(lam, mu); else { A = mul(lam, A); B = add(mul(lam, B), mu); finish(); }
+  L.forEach(q => { q.px = q.x; q.py = q.y; });
+}
+const dirty = l => { clearTimeout(l.sv); l.sv = setTimeout(() => saveFrame(l), 400); };
+function cornerMargin(l, a, b) {   // distance from the next picture's corners to the hole's edge (negative = outside)
+  return Math.min(...[[0, 0], [S, 0], [S, S], [0, S]].map(([x, y]) => { const w = add(mul(a, { re: x, im: y }), b); return inPoly(l.pts, w.re, w.im) ? edgeDist(l.pts, w.re, w.im) : -1; }));
+}
+const needMargin = l => .15 * l.rin + 2;   // enough for every border style (soft feather is the widest)
+const fitOk = (l, a, b) => { const m = cornerMargin(l, a, b); return m >= needMargin(l) || m >= cornerMargin(l, l.a, l.b); };   // valid, or at least not worse (so it can always shrink back)
+function objGesture(lam, mu) {   // same gesture, applied to the level's contents: G(z) = lam*z + tau in level coordinates
+  const l = lv(K), tau = div(sub(add(mul(lam, B), mu), B), A), a = mul(lam, l.a), b = add(mul(lam, l.b), tau);
+  if (tool === 'fit') { if (abs(a) < .02 || !fitOk(l, a, b)) return; }   // move / zoom / turn the picture inside the hole
+  else {   // move / resize / turn the hole, the picture inside it comes along
+    const P = l.pts.map(p => { const z = add(mul(lam, { re: p[0], im: p[1] }), tau); return [z.re, z.im]; });
+    if (abs(lam) * l.rin < 12 || P.some(p => p[0] < -.3 * S || p[0] > 1.3 * S || p[1] < -.3 * S || p[1] > 1.3 * S)) return;
+    l.pts = P; l.rin *= abs(lam);
   }
-  L.forEach(q => { q.px = q.x; q.py = q.y; }); finish();
+  l.a = a; l.b = b; refresh(l); thumb(l); dirty(l);
 }
 const up = e => {
   const q = ptrs.get(e.pointerId); if (!q) return; ptrs.delete(e.pointerId);
@@ -252,6 +288,13 @@ function doFill(z) {
   if (P.length < 3) return msg('Area too small');
   setPortal(smooth(P));
 }
+function applyShape(key) {   // a ready-made hole in the middle of the view, then adjust it with the Hole tool
+  const raw = shapes[key](), mx = raw.reduce((s, p) => s + p[0], 0) / raw.length, my = raw.reduce((s, p) => s + p[1], 0) / raw.length, Pn = raw.map(p => [p[0] - mx, p[1] - my]);
+  const c = toLevel({ x: W / 2, y: H / 2 }), R = .22 * Math.min(W, H) / abs(A) / edgeDist(Pn, 0, 0);
+  setPortal(Pn.map(p => [c.re + p[0] * R, c.im + p[1] * R])); tool = 'hole'; ui();
+}
+function cycleEdge() { const l = lv(K), o = ['line', 'prop', 'soft', 'none']; l.edge = o[(o.indexOf(l.edge) + 1) % 4]; if (l.edge === 'soft' && !SOFT) msg('Soft edge needs a newer browser: showing proportional'); if (cornerMargin(l, l.a, l.b) < edgeW(l) + 2) { place(l, l.pts); msg('Picture re-fitted for this border'); } thumb(l); saveFrame(l); ui(); }
+function resetFit() { const l = lv(K); place(l, l.pts); thumb(l); saveFrame(l); msg('Picture fitted to the hole'); }
 function undo() { const l = lv(K); if (l.prev) { place(l, l.prev); l.prev = null; thumb(l); saveFrame(l); msg('Undone'); } else msg('Nothing to undo'); }
 
 // ---- UI: modes, controls, frames catalog
@@ -273,21 +316,22 @@ function pick(i) { K = mod(i); home(); if (mode === 'auto') { u = K; playing = t
 function pickFrame(l) { const i = LV.indexOf(l); if (i < 0) return msg('Hidden: tap 👁 to put it back in the sequence'); pick(i); }
 function toggle(l) { if (l.on && LV.length === 1) return msg('Keep at least one frame'); l.on = !l.on; rebuildKeep(); saveMeta(); }
 function removeFrame(l) {
-  if (!(l.armed > performance.now())) { l.armed = performance.now() + 3000; return msg('Tap 🗑 again to delete this photo'); }
-  LIB.splice(LIB.indexOf(l), 1); kvDel('f:' + l.id); rebuildKeep(); saveMeta();
+  if (LIB.length === 1) return msg('Keep at least one frame');
+  if (!(l.armed > performance.now())) { l.armed = performance.now() + 3000; return msg('Tap 🗑 again to delete this frame'); }
+  LIB.splice(LIB.indexOf(l), 1); if (l.kind === 'gen') gone.add(l.id); kvDel('f:' + l.id); rebuildKeep(); saveMeta();
 }
 function renderCat() {
   catEl.innerHTML = '';
   LIB.forEach((l, idx) => {
     const d = document.createElement('div'); d.className = 'th' + (l.on ? '' : ' off'); l.thd = d; d.append(l.th);
     const n = document.createElement('span'); n.textContent = l.on ? LV.indexOf(l) + 1 : '–'; d.append(n);
-    const r = document.createElement('div'); r.className = 'ctl'; d.append(r);
-    const mk = (txt, f) => { const b = document.createElement('button'); b.textContent = txt; b.onclick = e => { e.stopPropagation(); f(); }; r.append(b); };
-    mk(l.on ? '👁' : '🚫', () => toggle(l)); if (l.kind === 'photo') mk('🗑', () => removeFrame(l));
-    const gr = document.createElement('b'); gr.className = 'grip'; gr.textContent = '⠿'; r.append(gr);
+    const mk = (txt, top, f) => { const b = document.createElement('button'); b.className = 'ov'; b.style.top = top + 'px'; b.textContent = txt; b.onclick = e => { e.stopPropagation(); f(); }; d.append(b); };
+    mk(l.on ? '👁' : '🚫', 3, () => toggle(l)); mk('🗑', 43, () => removeFrame(l));
+    const gr = document.createElement('b'); gr.className = 'grip'; gr.textContent = '⠿ drag'; d.append(gr);
     gr.onpointerdown = e => { e.preventDefault(); gr.setPointerCapture(e.pointerId); drag = { from: idx, gap: idx }; d.classList.add('drag'); };
     gr.onpointermove = e => {
       if (!drag || drag.from !== idx) return;
+      const r = catEl.getBoundingClientRect(); if (e.clientX < r.left + 40) catEl.scrollLeft -= 14; else if (e.clientX > r.right - 40) catEl.scrollLeft += 14;
       const kids = [...catEl.querySelectorAll('.th')]; drag.gap = kids.filter(k => { const q = k.getBoundingClientRect(); return e.clientX > q.left + q.width / 2; }).length;
       kids.forEach((k, i) => { k.classList.toggle('over', i === drag.gap); k.classList.toggle('overEnd', drag.gap === kids.length && i === kids.length - 1); });
     };
@@ -300,6 +344,7 @@ function renderCat() {
   const pl = document.createElement('div'); pl.className = 'plus'; pl.textContent = '+'; pl.onclick = () => { addMenu.hidden = !addMenu.hidden; storInfo(); }; catEl.append(pl);
 }
 let drag = null;
+const gone = new Set();   // starter frames the user deleted
 const addMenu = document.getElementById('addmenu'), fileCam = document.getElementById('fcam'), fileGal = document.getElementById('fgal');
 document.getElementById('cam').onclick = () => fileCam.click(); document.getElementById('gal').onclick = () => fileGal.click();
 [fileCam, fileGal].forEach(f => f.onchange = async () => { const file = f.files[0]; f.value = ''; if (!file) return; try { await addPhoto(file); } catch (e) { msg('Could not read that image'); } addMenu.hidden = true; });
@@ -308,7 +353,8 @@ function storInfo() { const s = document.getElementById('stor'); s.textContent =
 // ---- photos: centre-crop to a square, downscale to 1024px, save as JPEG (~100-250 KB)
 const edgeColour = c => { const t = document.createElement('canvas'); t.width = t.height = 16; const g = t.getContext('2d'); g.drawImage(c, 0, 0, 16, 16); const d = g.getImageData(0, 0, 16, 16).data; let r = 0, gg = 0, b = 0, n = 0; for (let i = 0; i < 256; i++) { const x = i % 16, y = i >> 4; if (x && y && x < 15 && y < 15) continue; r += d[i * 4]; gg += d[i * 4 + 1]; b += d[i * 4 + 2]; n++; } return `rgb(${r / n | 0},${gg / n | 0},${b / n | 0})`; };
 const defaultPortal = () => shapes.blob().map(p => [S / 2 + p[0] * 170, S / 2 + p[1] * 170]);
-function photoFrame(rec, img) { const l = { id: rec.id, name: rec.name, bg: rec.bg, img, blob: rec.blob, kind: 'photo', on: true }; place(l, rec.pts || defaultPortal()); mkTh(l); return l; }
+function restore(l, r) { l.edge = r.edge || 'line'; place(l, r.pts || defaultPortal()); if (r.a && r.b) { l.a = r.a; l.b = r.b; refresh(l); } }   // saved before edge/fit existed: defaults
+function photoFrame(rec, img) { const l = { id: rec.id, name: rec.name, bg: rec.bg, img, blob: rec.blob, kind: 'photo', on: true }; restore(l, rec); mkTh(l); return l; }
 async function addPhoto(file) {
   let bm; try { bm = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) { bm = await createImageBitmap(file); }
   const c = document.createElement('canvas'); c.width = c.height = S; const m = Math.min(bm.width, bm.height);
@@ -327,18 +373,19 @@ const openDB = () => new Promise((res, rej) => { const r = indexedDB.open('zoomt
 const kvPut = (k, v) => new Promise(res => { if (!db) return res(false); try { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(true); tx.onerror = tx.onabort = () => res(false); } catch (e) { res(false); } });
 const kvDel = k => new Promise(res => { if (!db) return res(); try { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').delete(k); tx.oncomplete = tx.onerror = tx.onabort = () => res(); } catch (e) { res(); } });
 const kvAll = () => new Promise((res, rej) => { const st = db.transaction('kv').objectStore('kv'), ks = st.getAllKeys(), vs = st.getAll(); vs.onsuccess = () => { const o = {}; ks.result.forEach((k, i) => o[k] = vs.result[i]); res(o); }; vs.onerror = () => rej(vs.error); });
-const saveFrame = l => kvPut('f:' + l.id, l.kind === 'photo' ? { id: l.id, name: l.name, bg: l.bg, pts: l.pts, blob: l.blob } : { id: l.id, pts: l.pts });
-const saveMeta = () => kvPut('meta', { order: LIB.map(l => l.id), off: LIB.filter(l => !l.on).map(l => l.id) });
+const saveFrame = l => kvPut('f:' + l.id, { id: l.id, pts: l.pts, edge: l.edge, a: l.a, b: l.b, ...(l.kind === 'photo' ? { name: l.name, bg: l.bg, blob: l.blob } : {}) });
+const saveMeta = () => kvPut('meta', { order: LIB.map(l => l.id), off: LIB.filter(l => !l.on).map(l => l.id), gone: [...gone] });
 (async () => {
   try { db = await openDB(); } catch (e) { db = null; msg('Storage unavailable here: changes last until you close the page'); return; }
   try {
     const all = await kvAll();
     for (const k of Object.keys(all)) if (k.startsWith('f:')) {
       const r = all[k], g = LIB.find(l => l.id === r.id);
-      if (g) { if (r.pts) { place(g, r.pts); thumb(g); } } else if (r.blob) { const bm = await createImageBitmap(r.blob), c = document.createElement('canvas'); c.width = c.height = S; c.getContext('2d').drawImage(bm, 0, 0, S, S); LIB.push(photoFrame(r, c)); }
+      if (g) { if (r.pts) { restore(g, r); thumb(g); } } else if (r.blob) { const bm = await createImageBitmap(r.blob), c = document.createElement('canvas'); c.width = c.height = S; c.getContext('2d').drawImage(bm, 0, 0, S, S); LIB.push(photoFrame(r, c)); }
     }
     const meta = all.meta;
-    if (meta) { const ix = l => { const i = meta.order.indexOf(l.id); return i < 0 ? 1e9 : i; }; LIB.sort((a, b) => ix(a) - ix(b)); LIB.forEach(l => { l.on = !meta.off.includes(l.id); }); }
+    if (meta) { (meta.gone || []).forEach(id => gone.add(id)); for (let i = LIB.length - 1; i > 0; i--) if (gone.has(LIB[i].id)) LIB.splice(i, 1);
+      const ix = l => { const i = meta.order.indexOf(l.id); return i < 0 ? 1e9 : i; }; LIB.sort((a, b) => ix(a) - ix(b)); LIB.forEach(l => { l.on = !meta.off.includes(l.id); }); }
     rebuildKeep(); window.__ztLoaded = true;
   } catch (e) { msg('Could not load saved frames'); }
 })();
@@ -375,9 +422,14 @@ function ui() {
     const fb = (t, f) => { const b = document.createElement('button'); b.textContent = t; b.onclick = f; bar.append(b); };
     fb(mode === 'auto' ? 'Manual' : 'Auto', () => setMode(mode === 'auto' ? 'manual' : 'auto')); if (mode === 'auto') fb(playing ? '⏸' : '▶', togglePlay); fb('✕', exitFull);
   }
-  if (mode === 'edit') { btn('✏️ Draw', () => { tool = 'draw'; ui(); }, tool === 'draw'); btn('🪣 Fill', () => { tool = 'fill'; ui(); }, tool === 'fill'); btn('↶ Undo', undo); }
+  const row2 = document.getElementById('row2'); row2.hidden = !(mode === 'edit' && tool === 'shape'); row2.innerHTML = '';
+  if (mode === 'edit') {
+    [['✏️ Draw', 'draw'], ['🪣 Fill', 'fill'], ['⬟ Shape', 'shape'], ['✥ Hole', 'hole'], ['🖼 Fit', 'fit']].forEach(([t, k]) => btn(t, () => { tool = k; ui(); }, tool === k));
+    btn('Border: ' + lv(K).edge, cycleEdge); btn('↶ Undo', undo); if (tool === 'fit') btn('Reset fit', resetFit);
+    if (tool === 'shape') ['circle', 'square', 'triangle', 'hex', 'star', 'heart', 'flower'].forEach((k, i) => { const b = document.createElement('button'); b.className = 'shp'; b.textContent = '●■▲⬢★♥✿'[i]; b.onclick = () => applyShape(k); row2.append(b); });
+  }
 }
-const hint = () => mode === 'auto' ? 'automatic zoom' : mode === 'manual' ? 'pinch = zoom · twist = rotate · drag = move' : tool === 'draw' ? 'draw a loop for the next layer · 2 fingers move the view' : 'tap an enclosed area · 2 fingers move the view';
+const hint = () => mode === 'auto' ? 'automatic zoom' : mode === 'manual' ? 'pinch = zoom · twist = rotate · drag = move' : ({ draw: 'draw a loop for the hole · 2 fingers move the view', fill: 'tap an enclosed area · 2 fingers move the view', shape: 'pick a shape: it appears in the middle of the view', hole: 'drag = move the hole · pinch = resize · twist = turn', fit: 'drag = move the picture in the hole · pinch = zoom (padding) · twist = turn' })[tool];
 
 let last = performance.now();
 function frame(now) {
@@ -392,5 +444,5 @@ function frame(now) {
   LIB.forEach(l => l.thd && l.thd.classList.toggle('sel', l === lv(K)));
   requestAnimationFrame(frame);
 }
-window.__zt = { LIB, get LV() { return LV; }, setMode, pick, enterFull, exitFull, setU: v => { u = v; playing = false; }, state: () => ({ mode, K, A, B, N, V, W, H, full }) };
+window.__zt = { LIB, setTool: k => { tool = k; ui(); }, applyShape, objGesture, edgeW, cycleEdge, cornerMargin, get LV() { return LV; }, setMode, pick, enterFull, exitFull, setU: v => { u = v; playing = false; }, state: () => ({ mode, K, A, B, N, V, W, H, full }) };
 renderCat(); ui(); requestAnimationFrame(frame);

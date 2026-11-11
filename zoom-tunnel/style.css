@@ -13,17 +13,17 @@ body.full .row,body.full #info,body.full #cat{display:none}
 #fsbar button{padding:6px 12px;background:#14121fcc}
 #info{opacity:.85;text-align:center;min-height:1.3em;max-width:94vw}
 #cat{display:flex;gap:6px;overflow-x:auto;padding:2px;align-items:flex-start}
-.th.off canvas{opacity:.3}
-.th .ctl{display:flex;justify-content:space-between;align-items:center;margin-top:3px;line-height:1}
-.th .ctl button{padding:2px 4px;font-size:12px;background:none;border-radius:6px}
-.grip{touch-action:none;cursor:grab;padding:2px 5px;font-size:15px;opacity:.85}
-.th.drag{opacity:.55}.th.over{border-left-color:#fff}.th.overEnd{border-right-color:#fff}
-.plus{flex:none;width:60px;height:60px;border-radius:8px;border:2px dashed #6b6490;display:flex;align-items:center;justify-content:center;font-size:30px;margin:3px}
-#stor{opacity:.7}
-.th{position:relative;flex:none;border:3px solid transparent;border-radius:8px;line-height:0}
+.th{position:relative;flex:none;width:80px;border:3px solid transparent;border-radius:10px}
 .th.sel{border-color:#ffd23f}
-.th canvas{width:60px;height:60px;border-radius:5px}
-.th span{position:absolute;left:3px;top:2px;font-size:11px;line-height:1;background:#000a;border-radius:6px;padding:2px 5px}
+.th canvas{display:block;width:80px;height:80px;border-radius:7px}
+.th.off canvas{opacity:.3}
+.th span{position:absolute;left:3px;top:3px;font-size:11px;line-height:1;background:#000a;border-radius:6px;padding:2px 5px}
+.th .ov{position:absolute;right:3px;width:34px;height:34px;padding:0;border-radius:17px;background:#000b;font-size:16px;line-height:34px}
+.th .grip{display:block;margin-top:4px;height:38px;line-height:38px;text-align:center;border-radius:8px;background:#3a3552;touch-action:none;cursor:grab;font-size:14px}
+.th.drag{opacity:.55}.th.over{border-left-color:#fff}.th.overEnd{border-right-color:#fff}
+.plus{flex:none;width:80px;height:80px;border-radius:10px;border:2px dashed #6b6490;display:flex;align-items:center;justify-content:center;font-size:34px;margin:3px}
+.shp{font-size:20px;padding:4px 12px}
+#stor{opacity:.7}
 .foot{position:fixed;bottom:4px;left:0;right:0;text-align:center;font-size:11px;opacity:.5}
 .foot a{color:inherit}
 body.full .foot{display:none}
