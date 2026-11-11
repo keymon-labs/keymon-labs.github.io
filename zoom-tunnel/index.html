@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Zoom Tunnel</title>
+<link rel="stylesheet" href="./style.css">
+</head><body>
+<canvas id="c"></canvas>
+<div id="fsbar" hidden></div>
+<div id="info"></div>
+<div class="row"><button data-m="auto">Auto</button><button data-m="manual">Manual</button><button data-m="edit">Edit</button><label><input type="checkbox" id="loop" checked>Loop</label><button id="fr">Frames</button></div>
+<div class="row" id="ctl"></div>
+<div id="cat"></div>
+<div class="row" id="addmenu" hidden><button id="cam">📷 Camera</button><button id="gal">🖼 Gallery</button><small id="stor"></small></div>
+<input type="file" id="fcam" accept="image/*" capture="environment" hidden><input type="file" id="fgal" accept="image/*" hidden>
+<footer class="foot">Zoom Tunnel v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · Photos stay on this device.</footer>
+<script type="module" src="./zoom-tunnel.js"></script>
+</body></html>

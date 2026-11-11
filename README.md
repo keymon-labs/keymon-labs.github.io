@@ -12,6 +12,7 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 | Word Quest | Story game for writing practice: write a sentence on paper, photo → Claude reads and corrects it → the episode plays out (English and Spanish). Episodes are JSON data ([guide](word-quest/EPISODES.md)) | [word-quest/](word-quest/README.md) |
 | Piano Jump | Platform game played on a real piano over MIDI/Bluetooth | [piano-jump/](piano-jump/README.md) |
 | Brick Beats | Photo of a brick mat → read on the device into lanes and bricks → played as music, with fruit rhythms. Works offline | [brick-beats/](brick-beats/README.md) |
+| Zoom Tunnel | Infinite zoom through nested pictures: draw or photograph each frame, draw or tap-fill the doorway to the next one, then fly through (auto, or manual with pinch/twist). Photos stay on the device (prototype) | [zoom-tunnel/](zoom-tunnel/README.md) |
 | Spanish Arcade | Mini games to practise written Spanish (listening, reading, spelling, puzzles) for kids, one unit so far; inspired by «Mis unidades de español» (A1) | [spanish-arcade/](spanish-arcade/README.md) |
 
 ## Inside Claude
