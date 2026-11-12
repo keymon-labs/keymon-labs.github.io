@@ -6,8 +6,8 @@ Mini games to practise written Spanish, for kids at A1 level. Pick a unit, play 
 
 Live: https://keymon-labs.github.io/spanish-arcade/
 
-## In this release (MVP)
-One unit, `a1-u1-s1`. Profiles, home, help, settings, stars and unlocking.
+## In this release
+Four units: `a1-u1-s1`, `a1-u1-s3`, `a1-u1-s5`, `a1-u1-s7`. Game types include `order-words` (sentence tiles with ¿ ¡), `fix-the-mistake` and `letter-lock` (Wordle-like). Sessions shuffle exercises inside each difficulty band and play in legs of three with a short break; there is a progress trail, sound effects and a celebration result screen. The research behind this round is in [docs/research/](docs/research/) (open questions: [QUESTIONS.md](docs/research/QUESTIONS.md)). Earlier MVP: profiles, home, help, settings, stars and unlocking. Profiles, home, help, settings, stars and unlocking.
 
 **Not in this release**: export/import of progress, reports and badges, jokes, and further units. They are planned in [docs/PLAN.md](docs/PLAN.md) and tracked in [tasks/](tasks/README.md).
 
@@ -17,11 +17,12 @@ One unit, `a1-u1-s1`. Profiles, home, help, settings, stars and unlocking.
 | `index.html`, `style.css`, `app.js` | Shell, styles, router and screens (footer with build stamp is in `app.js`) |
 | `core/` | Pure logic: content loading and checking (`content.js`, `schema.js`), round generation, sessions, progress and stars, profiles and the store, spelling helpers. Unit-tested |
 | `archetypes/<id>/` | The game types (`index.js`, `logic.js`, `README.md`); found automatically |
-| `ui/` | Settings, speech, tile widgets |
+| `ui/` | Settings, speech, tile widgets, sound effects (`sfx.js`), celebrations (`celebrate.js`) |
+| `ui/art/` | Visual kit: mascot moods, stickers, backgrounds, icons, confetti, fonts (see its README) |
 | `units/<unitId>.json` | Unit data: exercises that pick an archetype and its params |
 | `data/vocab/<unitId>.json` | Words taught by a unit |
 | `scripts/check-units.mjs` | Validator for units and vocab |
-| `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA (service worker cache `spanish-arcade-v3`) |
+| `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA (service worker cache `spanish-arcade-v4`) |
 | `docs/`, `tasks/` | Plan, authoring guide, archetype list, task board |
 
 Shared code from [`shared/`](../shared/README.md): `rng.js` (seeded random), `pwa.js` (service worker registration).

@@ -3,7 +3,7 @@ id: "035"
 title: Quality gate: smoke audit, docs, landing card, ship
 model: Sonnet 5.5
 why_model: Final checks across the round.
-status: todo
+status: done
 depends_on: ["026", "027", "028", "029", "030", "031", "032", "033"]
 touches: [spanish-arcade/README.md, spanish-arcade/docs/**, index.html, spanish-arcade/sw.js, spanish-arcade/test/**]
 ---
@@ -16,3 +16,5 @@ Context: the research behind this round is in `spanish-arcade/docs/research/` (G
 - Everything in the Check-before-pushing list passes; live URL loads the new units.
 
 ## Notes
+
+Ruling: done as part of the 026-035 round; the quality gate was run by the coordinator (tests, build, headless smoke, public-data scan, deploy check).

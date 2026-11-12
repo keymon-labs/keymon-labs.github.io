@@ -3,7 +3,7 @@ id: "030"
 title: Visual kit: fonts, icons, mascot, backgrounds, celebration art
 model: Sonnet 5.5
 why_model: Follows the decisions in docs/research/VISUALS.md; spend few tokens on art.
-status: review
+status: done
 depends_on: []
 touches: [spanish-arcade/ui/art/**, spanish-arcade/style.css, spanish-arcade/index.html, package.json, package-lock.json, CREDITS.md, README.md]
 ---

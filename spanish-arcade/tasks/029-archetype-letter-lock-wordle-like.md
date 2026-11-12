@@ -3,7 +3,7 @@ id: "029"
 title: Archetype letter-lock (Wordle-like)
 model: Sonnet 5.5
 why_model: New archetype with a small self-contained rules engine.
-status: review
+status: done
 depends_on: []
 touches: [spanish-arcade/archetypes/letter-lock/**, spanish-arcade/test/letter-lock.test.js]
 ---

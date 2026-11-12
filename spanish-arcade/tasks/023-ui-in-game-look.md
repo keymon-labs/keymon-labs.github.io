@@ -3,7 +3,7 @@ id: "023"
 title: UI round 2: in-game look (progress dots, feedback faces, bigger tiles, hint/skip buttons)
 model: Sonnet 5.5
 why_model: Restyles shell and archetype UI against the tokens from 022.
-status: todo
+status: done
 depends_on: ["022"]
 touches: [spanish-arcade/app.js, spanish-arcade/style.css, spanish-arcade/ui/tiles.js, spanish-arcade/archetypes/**, spanish-arcade/test/**]
 ---

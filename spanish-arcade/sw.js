@@ -3,7 +3,7 @@
 // forever is safe even though they sit outside this folder.
 // Vite's hashed bundles sit next to the app folders: /assets/ or /<repo>/assets/ on a fork.
 const ASSETS = new URL('../assets/', location).pathname;
-const CACHE = 'spanish-arcade-v3';
+const CACHE = 'spanish-arcade-v4';
 const SHELL = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 // Also cache the page's hashed /assets/ files, so the very first visit already works offline.

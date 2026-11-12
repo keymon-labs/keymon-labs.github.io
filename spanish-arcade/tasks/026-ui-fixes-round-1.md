@@ -3,7 +3,7 @@ id: "026"
 title: UI fixes round 1: layout stability, exit guard, landscape, tap targets
 model: Sonnet 5.5
 why_model: Routine UI work from a written audit; no contracts change.
-status: review
+status: done
 depends_on: []
 touches: [spanish-arcade/app.js, spanish-arcade/style.css, spanish-arcade/ui/**, spanish-arcade/archetypes/*/index.js, spanish-arcade/test/**]
 ---

@@ -3,7 +3,7 @@ id: "027"
 title: Archetype order-words (with punctuation mode)
 model: Sonnet 5.5
 why_model: New archetype on existing tile widgets; spec is written.
-status: review
+status: done
 depends_on: []
 touches: [spanish-arcade/archetypes/order-words/**, spanish-arcade/test/order-words.test.js]
 ---

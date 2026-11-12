@@ -3,7 +3,7 @@ id: "028"
 title: Archetype fix-the-mistake and shared spelling traps
 model: Sonnet 5.5
 why_model: New archetype plus a small refactor of existing spelling code; tests guard it.
-status: review
+status: done
 depends_on: []
 touches: [spanish-arcade/archetypes/fix-the-mistake/**, spanish-arcade/core/spelling.js, spanish-arcade/archetypes/spell-fill-letters/logic.js, spanish-arcade/test/**]
 ---

@@ -3,7 +3,7 @@ id: "031"
 title: Session shape: legs, shuffled order, visible trail
 model: Sonnet 5.5
 why_model: Touches core/session.js and the play screen; saved-data risk (resume snapshots), so Opus reviews.
-status: review
+status: done
 depends_on: ["026", "030"]
 touches: [spanish-arcade/core/session.js, spanish-arcade/core/schema.js, spanish-arcade/docs/AUTHORING.md, spanish-arcade/app.js, spanish-arcade/style.css, spanish-arcade/test/session.test.js]
 ---

@@ -38,19 +38,19 @@ Board (source of truth is each file's front matter):
 | 020 | [Bugs from the owner's play test (spell-tiles repeats, progress, gaps)](020-bugs-spelling-progress.md) | Sonnet | 018, 019 | review |
 | 021 | [Lab page and hidden debug mode](021-lab-and-debug-mode.md) | Sonnet | 018, 019 | done |
 | 022 | [UI round 1: theme tokens, Claro/Oscuro/Automático, palettes and kid-friendly home](022-ui-theme-home.md) | Sonnet | 021 | review |
-| 023 | [UI round 2: in-game look (progress dots, feedback faces, bigger tiles, hint/skip buttons)](023-ui-in-game-look.md) | Sonnet | 022 | todo |
+| 023 | [UI round 2: in-game look (progress dots, feedback faces, bigger tiles, hint/skip buttons)](023-ui-in-game-look.md) | Sonnet | 022 | done |
 | 024 | [UI round 3: sticker album and rewards](024-ui-sticker-album.md) | Sonnet | 022, 005 | todo |
 | 025 | [UI backlog: practice by skill, streak, parent corner, mascot art](025-ui-home-extras.md) | Sonnet | 022 | todo |
-| 026 | [UI fixes round 1: layout stability, exit guard, landscape, tap targets](026-ui-fixes-round-1.md) | Sonnet | — | todo |
-| 027 | [Archetype order-words (with punctuation mode)](027-archetype-order-words-with-punctuation-m.md) | Sonnet | — | todo |
-| 028 | [Archetype fix-the-mistake and shared spelling traps](028-archetype-fix-the-mistake-and-shared-spe.md) | Sonnet | — | todo |
-| 029 | [Archetype letter-lock (Wordle-like)](029-archetype-letter-lock-wordle-like.md) | Sonnet | — | todo |
-| 030 | [Visual kit: fonts, icons, mascot, backgrounds, celebration art](030-visual-kit.md) | Sonnet | — | todo |
-| 031 | [Session shape: legs, shuffled order, visible trail](031-session-shape.md) | Sonnet | 026, 030 | todo |
-| 032 | [Celebrations, sound and result screen](032-celebrations-sound-and-result-screen.md) | Sonnet | 030, 031 | todo |
-| 033 | [New units: a1-u1-s3, a1-u1-s5, a1-u1-s7](033-new-units.md) | Haiku | 027, 028, 029, 031 | todo |
+| 026 | [UI fixes round 1: layout stability, exit guard, landscape, tap targets](026-ui-fixes-round-1.md) | Sonnet | — | done |
+| 027 | [Archetype order-words (with punctuation mode)](027-archetype-order-words-with-punctuation-m.md) | Sonnet | — | done |
+| 028 | [Archetype fix-the-mistake and shared spelling traps](028-archetype-fix-the-mistake-and-shared-spe.md) | Sonnet | — | done |
+| 029 | [Archetype letter-lock (Wordle-like)](029-archetype-letter-lock-wordle-like.md) | Sonnet | — | done |
+| 030 | [Visual kit: fonts, icons, mascot, backgrounds, celebration art](030-visual-kit.md) | Sonnet | — | done |
+| 031 | [Session shape: legs, shuffled order, visible trail](031-session-shape.md) | Sonnet | 026, 030 | done |
+| 032 | [Celebrations, sound and result screen](032-celebrations-sound-and-result-screen.md) | Sonnet | 030, 031 | review |
+| 033 | [New units: a1-u1-s3, a1-u1-s5, a1-u1-s7](033-new-units.md) | Haiku | 027, 028, 029, 031 | review |
 | 034 | [Backlog: word memory, echo rounds, daily review, limits, album 2.0](034-backlog.md) | Sonnet | 031, 032 | todo |
-| 035 | [Quality gate: smoke audit, docs, landing card, ship](035-quality-gate.md) | Sonnet | 026, 027, 028, 029, 030, 031, 032, 033 | todo |
+| 035 | [Quality gate: smoke audit, docs, landing card, ship](035-quality-gate.md) | Sonnet | 026, 027, 028, 029, 030, 031, 032, 033 | done |
 <!-- board:end -->
 
 Parallelism: 002 can run beside 001. After 001: 001b, 006–010 and 014 are independent; 003 needs 001b. Archetype tasks (006–010) may be restyled once 002's tokens exist. 011 needs the archetypes it uses (it may start with the ones that exist and leave others for a follow-up). Later units (u1-s5 onwards) become new Haiku/Sonnet data tasks cloned from 011.
