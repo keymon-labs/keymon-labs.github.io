@@ -252,3 +252,13 @@ test('a new snapshot resumes in the same order even for another seed argument; a
   const bad = createUnitSession({ unit, content, seed: 0, resume: { ...a.snapshot(), order: ['nope'] } });
   assert.deepEqual(bad.order, unit.exercises.map((e) => e.id));
 });
+
+test('resolveOrder keeps a saved attempt consistent when the unit changed without a rev bump', async () => {
+  const { resolveOrder } = await import('../core/session.js');
+  const unit = { exercises: [{ id: 'a' }, { id: 'b' }, { id: 'd' }, { id: 'e' }] }; // c was removed, e was added
+  const r = resolveOrder(unit, { order: ['b', 'c', 'a', 'd'], exerciseIndex: 2 });
+  assert.deepEqual(r.order, ['b', 'a', 'd', 'e']);
+  assert.equal(r.exerciseIndex, 1); // b done, c vanished
+  assert.deepEqual(resolveOrder(unit, { exerciseIndex: 2 }).order, ['a', 'b', 'd', 'e']); // old snapshot: unit order
+  assert.deepEqual(resolveOrder(unit, { order: 'junk', exerciseIndex: 99 }).order, ['a', 'b', 'd', 'e']);
+});

@@ -1,5 +1,6 @@
 // Progress rules on one profile (PLAN §4.4, §5). Pure: each function returns a new profile, never writes storage.
 import { seedFor } from './generate.js';
+import { resolveOrder } from './session.js';
 
 export const HISTORY_MAX = 200;
 
@@ -85,7 +86,7 @@ export function unitProgress(profile, unit) {
   const u = profile.units?.[unit.id];
   const ip = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev ? profile.inProgress : null;
   const attempts = u?.attempts ?? 0;
-  const finished = ip ? (ip.order ?? unit.exercises.map((e) => e.id)).slice(0, ip.exerciseIndex) : [];
+  const finished = ip ? (({ order, exerciseIndex }) => order.slice(0, exerciseIndex))(resolveOrder(unit, ip)) : [];
   const rows = unit.exercises.map((e) => {
     const st = (ip ? ip.results?.[e.id] : u?.exercises?.[e.id]) ?? null;
     const done = ip ? finished.includes(e.id) : attempts > 0 || Boolean(u?.exercises?.[e.id]?.done);

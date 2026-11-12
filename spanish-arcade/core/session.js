@@ -39,6 +39,20 @@ export function starsFor({ hints, reveals, correct, minCorrect }) {
   return 1;
 }
 
+/**
+ * Play order and position of a saved attempt after the unit may have changed without a `rev` bump: keep the saved ids that
+ * still exist, put new ids at the end, and count only the finished ids that survive. No `order` (saved before task 031) = unit order.
+ */
+export function resolveOrder(unit, snap) {
+  const ids = unit.exercises.map((e) => e.id);
+  const saved = Array.isArray(snap.order) ? snap.order : ids;
+  const kept = saved.filter((id, i) => ids.includes(id) && saved.indexOf(id) === i);
+  const order = [...kept, ...ids.filter((id) => !kept.includes(id))];
+  const pos = Math.max(0, Math.min(snap.exerciseIndex ?? 0, saved.length));
+  const exerciseIndex = saved.slice(0, pos).filter((id) => kept.includes(id)).length;
+  return { order, exerciseIndex };
+}
+
 const blank = () => ({ correct: 0, total: 0, tries: 0, hints: 0, reveals: 0 });
 
 /**
@@ -52,7 +66,8 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
   const s = ok ? structuredClone(resume)
     : { unitId: unit.id, rev: unit.rev, seed, exerciseIndex: 0, roundIndex: 0, misses: 0, results: {}, words: {} };
   const ids = unit.exercises.map((e) => e.id);
-  if (!(Array.isArray(s.order) && s.order.length === ids.length && ids.every((id) => s.order.includes(id)))) s.order = ok ? ids : orderExercises(unit, s.seed);
+  if (ok) Object.assign(s, resolveOrder(unit, s));
+  else s.order = orderExercises(unit, s.seed);
   let ex = null;
   // An exercise that makes 0 rounds (words missing from the content) is skipped, never shown: mount always gets a round.
   const load = () => {
