@@ -93,6 +93,10 @@ export function validateVocab(file, unitId) {
       if (!isObj(w.forms)) err(`${p}.forms`, 'must be an object');
       else for (const [k, v] of Object.entries(w.forms)) if (!['m', 'f', 'pl', 'fpl'].includes(k) || !isText(v)) err(`${p}.forms.${k}`, 'keys m, f, pl, fpl with text');
     }
+    if (w.clues !== undefined) { // riddle lines for letter-lock: 2-3 sentences that never contain the word
+      if (!Array.isArray(w.clues) || w.clues.length < 2 || w.clues.length > 4 || !w.clues.every(isText)) err(`${p}.clues`, 'must be a list of 2 to 4 riddle lines');
+      else if (isText(w.es) && w.clues.some((c) => c.toLowerCase().includes(w.es.toLowerCase()))) err(`${p}.clues`, 'a clue must not contain the word itself');
+    }
     if (w.spell !== undefined) {
       if (!Array.isArray(w.spell)) err(`${p}.spell`, 'must be a list');
       else w.spell.forEach((s, j) => SPELL.includes(s) || err(`${p}.spell[${j}]`, `must be one of ${SPELL.join(' ')}`));

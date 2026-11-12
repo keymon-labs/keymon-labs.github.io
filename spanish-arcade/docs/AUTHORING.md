@@ -17,6 +17,7 @@ One file per unit, named like the unit (`a1-u9-s1.json`).
 - `id`: the word, lowercase, no spaces (`-2` on a clash). **Never changed or reused**: progress refers to it, and ids must be unique across all vocab files.
 - `unit` must equal the file name. Nouns need `gender` and `article`; the article must match (`el`/`la`/`los`/`las`). Feminine nouns taking `el` (agua, hada) need `"elException": true`.
 - `emoji` is required for any word a picture game can pick (listening games drop or reject words without one). Use an emoji; never copy images.
+- `clues` (optional list of 2 to 4 riddle lines, Spanish) are used by `letter-lock`: they must not contain the word. Every word a letter-lock draws needs them.
 - `tags` are topics (`animals`, `family`, `colours`...). `spell` lists tricky spellings: `ñ rr r x s h accent qu gu ü ¿¡`.
 
 ## 2. Add a unit: `units/<unitId>.json`

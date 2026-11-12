@@ -1,4 +1,4 @@
-{ "schema": 1, "id": "a1-u1-s5", "rev": 1, "order": 5,
+{ "schema": 1, "id": "a1-u1-s5", "rev": 2, "order": 5,
   "title": {"es": "Mi familia", "en": "My family"},
   "bookRef": {"unit": 1, "session": 5},
   "theme": "sunny",
@@ -7,7 +7,7 @@
   "pass": {"minCorrect": 3},
   "exercises": [
     {"id": "pets-listen", "archetype": "listen-pick-word", "difficulty": 1, "params": {"from": {"tag": "pets", "n": 6}, "distractorFrom": {"tag": "pets", "n": 1}, "options": 4, "answerAs": "word", "similar": true}, "prompt": {"es": "Escucha y toca la palabra escrita.", "en": "Listen and tap the written word."}},
-    {"id": "pets-lock", "archetype": "letter-lock", "difficulty": 1, "params": {"from": {"tag": "pets", "n": 4}, "clue": "picture"}, "prompt": {"es": "Adivina la mascota.", "en": "Guess the pet."}},
+    {"id": "pets-lock", "archetype": "letter-lock", "difficulty": 1, "params": {"from": {"tag": "pets", "n": 4}, "clue": "riddle"}, "prompt": {"es": "Adivina la mascota.", "en": "Guess the pet."}},
     {"id": "verbs-gaps", "archetype": "fill-gap-choice", "difficulty": 2, "params": {"items": [{"text": "Mi abuela ___ muy simpática.", "options": ["es", "está", "tiene", "son"], "answer": "es"}, {"text": "Hoy mi hermano ___ cansado.", "options": ["está", "es", "tiene", "están"], "answer": "está"}, {"text": "Mis primos ___ un perro negro.", "options": ["tienen", "tiene", "son", "están"], "answer": "tienen"}, {"text": "Yo ___ contento porque es sábado.", "options": ["estoy", "soy", "tengo", "estás"], "answer": "estoy"}, {"text": "¿Cuántos años ___ tu tío?", "options": ["tiene", "es", "está", "tienes"], "answer": "tiene"}, {"text": "Mamá y papá ___ en la cocina.", "options": ["están", "son", "tienen", "está"], "answer": "están"}]}, "prompt": {"es": "Completa la frase.", "en": "Fill the gap."}},
     {"id": "family-fix", "archetype": "fix-the-mistake", "difficulty": 2, "params": {"items": [{"text": "Mi hermana tiene un hámster.", "at": 4, "as": "hamster"}, {"text": "Mi abuelo es muy simpático.", "at": 4, "as": "simpatico"}, {"text": "Hoy mi hermano está contento.", "at": 2, "as": "ermano"}, {"text": "Mi tía tiene un perro.", "at": 4, "as": "pero"}]}, "prompt": {"es": "Toca la palabra mal escrita y corrígela.", "en": "Tap the misspelt word and fix it."}},
     {"id": "punct-order", "archetype": "order-words", "difficulty": 2, "params": {"items": [{"es": "¿Cómo se llama tu perro?", "emoji": "🐶"}, {"es": "¡Qué contenta está mi abuela!", "emoji": "👵"}, {"es": "¿Tienes una hermana pequeña?", "emoji": "👧"}, {"es": "Mi tío tiene un loro verde.", "emoji": "🦜"}, {"es": "¡Qué grande es mi familia!", "emoji": "👪"}, {"es": "¿Dónde está el conejo?", "emoji": "🐰"}], "n": 5, "punctuation": true}, "prompt": {"es": "Ordena la frase con ¿ ? ¡ !.", "en": "Order the sentence with ¿ ? ¡ !."}},

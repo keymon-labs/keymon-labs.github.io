@@ -1,7 +1,6 @@
-// letter-lock rules: Wordle-style marking of a guess, make/judge/hint. Pure, no DOM. Contract in ../README.md.
+// letter-lock rules: Wordle-style marking of a guess, the riddle clue ladder, make/judge/hint. Pure, no DOM. Contract in ../README.md.
 import { key, sameWord } from '../../core/spelling.js';
 
-export const STATES = ['ok', 'near', 'tilde', 'no'];
 export const SYMBOL = { ok: '✔', near: '↔', tilde: '´', no: '·' };
 const chars = (s) => [...String(s).normalize('NFC').toLowerCase()];
 const base = (c) => key(c, 'lenient'); // drops accents and ü's dots; ñ stays ñ
@@ -32,22 +31,38 @@ export function score(guess, answer) {
   return out;
 }
 
-/** Best state seen per letter: ok > tilde > near > no. -> { letter: state } */
-export function keyStates(guesses, answer) {
-  const rank = (s) => STATES.length - STATES.indexOf(s);
-  const best = {};
-  for (const guess of guesses) {
-    const marks = score(guess, answer);
-    chars(guess).slice(0, marks.length).forEach((c, i) => { if (!best[c] || rank(marks[i]) > rank(best[c])) best[c] = marks[i]; });
-  }
-  return best;
+/** Auto-generated hints, in order: first letter, length, and the special letter if the word has one. -> string[] (Spanish) */
+export function autoHints(answer) {
+  const a = chars(answer);
+  const out = [`Empieza por ${a[0].toUpperCase()}`, `Tiene ${a.length} letras`];
+  if (a.includes('ñ')) out.push('Lleva ñ');
+  else if (a.some((c) => 'áéíóú'.includes(c))) out.push('Lleva tilde');
+  else if (a.includes('ü')) out.push('Lleva ü');
+  return out;
+}
+
+/**
+ * Clues in the order they appear: authored riddle lines, then auto hints. With firstLetter, "Empieza por" is the second line from the
+ * start. `riddle` false (audio-only) leaves out the authored lines. -> { lines: string[], start: how many show before any wrong try }
+ */
+export function clueLadder(round, riddle = true) {
+  const [first, count, ...more] = autoHints(round.answer);
+  const own = riddle ? round.clues ?? [] : [];
+  if (round.firstLetter) return { lines: [own[0], first, ...own.slice(1), count, ...more].filter(Boolean), start: own.length ? 2 : 1 };
+  return { lines: own.length ? [...own, first, count, ...more] : [count, first, ...more], start: riddle ? 1 : 0 };
+}
+
+/** The clue lines to show after `wrong` wrong guesses (never more than exist). */
+export function cluesShown(round, wrong, riddle = true) {
+  const { lines, start } = clueLadder(round, riddle);
+  return lines.slice(0, Math.min(lines.length, start + wrong));
 }
 
 export function make(params, { targets }, rng) {
   void rng; // no randomness: the order of targets is already shuffled
   const rounds = targets.filter((w) => /^\p{L}+$/u.test(w.es) && chars(w.es).length >= 3 && chars(w.es).length <= 8).map((w) => ({
     word: w.es, answer: chars(w.es).join(''), tries: params.tries, clue: params.clue, firstLetter: params.firstLetter,
-    prompt: { es: w.emoji || '', en: w.en }, emoji: w.emoji ?? '', wordIds: [w.id],
+    clues: w.clues ?? [], prompt: { es: w.emoji || '', en: w.en }, emoji: w.emoji ?? '', wordIds: [w.id],
   }));
   return { rounds };
 }
@@ -57,7 +72,7 @@ export function judge(round, answer) {
   return { correct: false, feedback: { es: 'Casi. Mira las pistas otra vez.', en: 'Nearly. Look at the clues again.' } };
 }
 
-/** Level 1: the first letter and every tilde position (the right letter with its accent) to pre-fill. Level 2: the word. */
+/** Level 1: the first letter and every tilde position (the right letter with its accent) to show in the word pattern. Level 2: the word. */
 export function hint(round, level, lastAnswer) {
   if (level >= 2) return { level: 2, answer: round.answer };
   const a = chars(round.answer);
