@@ -11,7 +11,7 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `spell-fill-letters` | Word with missing letters (ñ, r/rr, s/x, accents, h) | spelling rules | `from`/`items`, `focus` | more gaps; two-way choice → free typing | done |
 | `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | done |
 | `match-pairs` | Join word ↔ picture/emoji, article ↔ noun, question ↔ answer | vocab, grammar | `pairs[]` or `from`, `mode` | more pairs; text-only | done |
-| `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | idea |
+| `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | done |
 | `word-search` | Find the words in a grid | spelling, vocab | `from`, `size`, `directions` | bigger grid, diagonals | idea |
 | `sort-into-bins` | Drag words into el/la, un/una, singular/plural, masculine/feminine | grammar | `bins[]`, `from` | more bins; irregulars | idea |
 | `true-false-listen` | Listen to a sentence; true or false against a picture | listening | `scene`, `statements[]` | longer statements | idea |
@@ -36,8 +36,8 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `survey-tally` | Fixed question frame; ask the characters, tally answers in a table | question forms | `questions[]`, `characters[]` | more questions | idea |
 | `whisper-chain` | Hear a whispered phrase, repeat it to pass it on | listening memory | `phrases[]`, `chain` | longer phrases | idea |
 | `free-list` | Learner builds their own word list on a topic; saved for review | vocab recall | `topic`, `min` | timed; fewer hints | idea |
-| `fix-the-mistake` | The mascot "wrote" a text with one spelling mistake: tap the wrong word, then fix it | error detection, spelling rules | `items[]` {text, wrong}, `from` + `focus`, `mode`, `fix`, `allowPerfect` | free typing of the fix; "it's perfect" option; subtler traps | idea |
-| `letter-lock` | Wordle-like: picture clue, guess the word in N tries; letters show right / elsewhere / missing tilde / absent | spelling recall, deduction | `from`, `tries`, `clue`, `firstLetter` | fewer tries; no first letter; audio-only clue | idea |
+| `fix-the-mistake` | The mascot "wrote" a text with one spelling mistake: tap the wrong word, then fix it | error detection, spelling rules | `items[]` {text, wrong}, `from` + `focus`, `mode`, `fix`, `allowPerfect` | free typing of the fix; "it's perfect" option; subtler traps | done |
+| `letter-lock` | Wordle-like: picture clue, guess the word in N tries; letters show right / elsewhere / missing tilde / absent | spelling recall, deduction | `from`, `tries`, `clue`, `firstLetter` | fewer tries; no first letter; audio-only clue | done |
 | `bubble-pop` | Bubbles drift up with spellings of the pictured word; pop the right one (missed bubbles come back; speed is a bonus only) | spelling recognition | `from`, `options`, `speed`, `misspell` | faster; closer misspellings | idea |
 | `dictado` | Hear a short sentence, type it; per-word marks | dictation, punctuation, accents | `items[]`, `replay`, `accents`, `punctuation` | longer; one listen; strict ¿¡ | idea |
 | `story-gaps` | Mad Libs: pick words of a kind for gaps, the silly story is read aloud; agreement is checked | word classes, agreement | `story`, `choose`, `agree` | typed words; more agreement slots | idea |
