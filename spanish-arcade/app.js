@@ -4,17 +4,22 @@
 import { loadContent } from './core/content.js';
 import { createStore } from './core/profiles.js';
 import { createUnitSession, LEG_SIZE } from './core/session.js';
-import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed } from './core/progress.js';
+import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed, isPersonalBest } from './core/progress.js';
 import { totalStars, doneToday, nextUnit, mascotLine, stoneEmoji, DAILY_GOAL } from './core/home.js';
 import { createSpeech } from './ui/speech.js';
 import { renderSettings } from './ui/settings.js';
 import { createTapCounter } from './ui/tapcount.js';
+import { createSfx, unlockOnFirstTap } from './ui/sfx.js';
+import { answerMark, stepBurst, legBurst, unitBurst, legMascot, effortLine, UNIT_LINES, stickerFor, stickerHtml } from './ui/celebrate.js';
+import { mascot as mascotSvg, burst } from './ui/art/art.js';
 import { registerServiceWorker } from '../shared/pwa.js';
 
 const root = document.getElementById('app');
 const speech = createSpeech();
 speech.ready(); // start looking for voices at once, so a unit starts without waiting
 const NEXT_DELAY = 700;
+const sfx = createSfx({ enabled: () => store.data.settings.sound });
+unlockOnFirstTap(); // audio starts only after the first tap
 const SKIP_DELAY = 2000; // long enough to read the answer after "Saltar"
 
 // Local-only error ring buffer (last 20). Nothing is sent anywhere.
@@ -231,7 +236,12 @@ function playUnit(profile, unit) {
   let lastResult = null;
   let result = null;
   let marks = []; // outcome per round of the current exercise: 'star' (first try) or 'help'; rounds before a resume count as 'help'
-  const before = unitProgress(profile, unit).last; // previous attempt, for "antes" on the result screen
+  const was = unitProgress(profile, unit);
+  const before = was.last; // previous attempt, for "antes" on the result screen
+  const bestBefore = was.attempts ? { stars: was.stars, correct: was.bestCorrect } : null; // for the personal-best ribbon
+  let lastHelp = false; // the last judged answer needed a hint: picks 'ok' over 'good' for ctx.sfx('right')
+  let legs = 0;
+  const later = []; // timers of celebrations, cleared on leaving
 
   // Exit guard: ✕ and the browser's back button open a sheet; the round stays mounted until "Salir".
   let sheet = null;
@@ -249,21 +259,31 @@ function playUnit(profile, unit) {
   const onPop = () => { if (!location.hash.endsWith('/play')) return; history.pushState({ round: true }, ''); openSheet(); };
   history.pushState({ round: true }, '');
   addEventListener('popstate', onPop);
-  const self = { destroy() { clearTimeout(timer); clearTimeout(skipArm); removeEventListener('popstate', onPop); document.body.classList.remove('playing'); mounted?.destroy(); } };
+  const self = { destroy() { clearTimeout(timer); clearTimeout(skipArm); later.forEach(clearTimeout); removeEventListener('popstate', onPop); document.body.classList.remove('playing'); mounted?.destroy(); } };
   current = self;
   window.__spanishArcade.session = session;
+  window.__spanishArcade.answer = async (a) => { const r = await ctx.submit(a); if (!r.ignored) ctx.sfx(r.correct ? 'right' : 'wrong'); return r; }; // test hook: same path as an archetype's submit
 
   const ctx = {
     t: (k) => k,
     difficulty: 1, // set per exercise in show()
     say: ctx0.say,
     get canSpeak() { return speech.available && store.data.settings.sound; }, // read at mount: true once the voices are known
-    sfx: () => {}, mascot: () => {},
+    // archetypes say 'right' / 'wrong' after submit(); the shell picks the sound and mascot (never red-only: words stay in the round)
+    sfx: (name) => {
+      if (name === 'right') { if (lastResult?.exerciseDone && !lastResult.legDone && !lastResult.done) { sfx('step'); stepBurst(); } else sfx(lastHelp ? 'ok' : 'good'); }
+      else if (name === 'wrong') sfx('almost');
+    },
+    mascot: () => {},
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
       if (busy) return { ...lastResult, ignored: true };
       const c = session.current;
       const r = settle(session.submit(answer));
+      if (!r.skipped && !r.ignored) {
+        lastHelp = r.correct && c.misses > 0;
+        if (r.correct) answerMark(live, lastHelp ? 'help' : 'happy'); else if (!r.correct) answerMark(live, 'think');
+      }
       if (r.action === 'next') { marks[c.roundIndex] = c.misses === 0 ? 'star' : 'help'; drawSegs(c, c.roundIndex + 1); }
       if (store.data.settings.debug && !r.correct && !r.skipped) { // debug mode: show what was sent, to find why a right-looking answer was judged wrong
         const round = session.current?.round;
@@ -338,10 +358,13 @@ function playUnit(profile, unit) {
     drawTrail(session.current.exerciseIndex);
     main.classList.add('rest');
     const go = h('button', { type: 'button', id: 'next-leg', class: 'btn primary', onclick: () => { main.classList.remove('rest'); show(); } }, 'Seguir');
-    stage.replaceChildren(h('div', { class: 'parada' }, h('div', { class: 'mascot', 'aria-hidden': 'true' }, '🦊'), h('h2', { tabindex: '-1' }, 'Parada en el camino'),
-      h('p', {}, `¡Buen tramo! Faltan ${left} ${left === 1 ? 'ejercicio' : 'ejercicios'}.`), go,
+    const face = h('div', { class: 'parada-face', 'aria-hidden': 'true' });
+    face.innerHTML = legMascot();
+    stage.replaceChildren(h('div', { class: 'parada' }, face, h('h2', { tabindex: '-1' }, 'Parada en el camino'),
+      h('p', { id: 'leg-line' }, `${effortLine(legs++)} Faltan ${left} ${left === 1 ? 'ejercicio' : 'ejercicios'}.`), go,
       h('a', { href: `#/profile/${profile.id}`, id: 'save-leave', class: 'btn' }, 'Guardar y salir')));
     live.replaceChildren();
+    sfx('leg'); legBurst();
     stage.querySelector('h2').focus({ preventScroll: true });
     go.focus({ preventScroll: true });
   }
@@ -368,10 +391,28 @@ function playUnit(profile, unit) {
   function finish() {
     mounted?.destroy(); mounted = null;
     main.classList.add('done'); // hides the round header and action bar
-    stage.replaceChildren(link(`#/profile/${profile.id}`, 'Volver al mapa'));
-    stage.append(h('h2', {}, '¡Todo hecho!'), h('p', { id: 'result-stars' }, stars(result.stars)),
-      h('p', {}, `${result.correct} de ${unit.exercises.length} ejercicios sin ayuda.`),
-      ...(before ? [h('p', { id: 'result-before' }, 'Antes: ', stars(before.stars), before.correct != null ? ` (${before.correct} de ${unit.exercises.length} sin ayuda)` : '')] : []));
+    const n = unit.exercises.length;
+    const pb = isPersonalBest(bestBefore, result);
+    const starEls = [1, 2, 3].map((i) => h('span', { class: `big-star${i <= result.stars ? ' on' : ''}`, style: `--i:${i}`, 'aria-hidden': 'true' }, i <= result.stars ? '★' : '☆'));
+    const sky = h('div', { class: 'result-sky', 'aria-hidden': 'true' });
+    sky.innerHTML = burst({ size: 220 });
+    const face = h('div', { class: 'result-face', 'aria-hidden': 'true' });
+    face.innerHTML = mascotSvg(result.stars === 1 ? 'happy' : 'cheer', { size: 88 });
+    const badge = h('div', { class: 'result-sticker', id: 'result-sticker' });
+    badge.innerHTML = stickerHtml(stickerFor(content.units.findIndex((u) => u.id === unit.id)));
+    badge.append(h('span', {}, '¡Pegatina nueva!'));
+    const ribbon = pb ? h('p', { class: 'ribbon', id: 'result-pb' }, '🏅 ¡Tu mejor intento!') : null;
+    stage.replaceChildren(h('div', { class: 'result' }, sky, face, h('h2', { tabindex: '-1' }, '¡Todo hecho!'),
+      h('p', { id: 'result-stars', class: 'big-stars', role: 'img', 'aria-label': `${result.stars} de 3 estrellas` }, ...starEls),
+      ribbon, h('p', { id: 'result-line' }, UNIT_LINES[result.stars] ?? UNIT_LINES[1]),
+      h('p', {}, `${result.correct} de ${n} ejercicios sin ayuda.`),
+      ...(before ? [h('p', { id: 'result-before', class: 'muted' }, 'Antes: ', stars(before.stars), before.correct != null ? ` (${before.correct} de ${n} sin ayuda)` : '')] : []),
+      badge,
+      link(`#/profile/${profile.id}`, 'Volver al mapa', 'btn primary'), link(`#/unit/${unit.id}`, 'Jugar otra vez')));
+    stage.querySelector('h2').focus({ preventScroll: true });
+    sfx('unit'); unitBurst();
+    later.push(setTimeout(() => sfx('sticker'), 1200));
+    if (pb) later.push(setTimeout(() => sfx('pb'), 1900));
   }
 
   // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.

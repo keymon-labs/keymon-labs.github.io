@@ -98,3 +98,6 @@ export function unitProgress(profile, unit) {
     last: u?.last ?? (attempts > 0 ? { stars: u.stars, correct: u.bestCorrect } : null),
   };
 }
+
+/** Ribbon rule (ENGAGEMENT §3.3): better than the best result before this attempt; never on a first attempt. best/now = { stars, correct }. */
+export const isPersonalBest = (best, now) => Boolean(best) && (now.stars > best.stars || now.correct > best.correct);

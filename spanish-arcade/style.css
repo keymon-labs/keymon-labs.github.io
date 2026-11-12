@@ -150,3 +150,19 @@ main.play.done { overflow-y: auto; }
   .actions .skip { min-height: 48px; }
 }
 main.play.rest .segs { visibility: hidden; }
+
+/* Celebrations (ui/celebrate.js): feedback mascot, parada, result screen. Reduced motion: static. */
+#live { display: flex; align-items: center; gap: 8px; }
+#live .live-mascot { flex: none; line-height: 0; }
+.parada-face { display: grid; place-items: center; }
+.result { position: relative; isolation: isolate; text-align: center; padding-top: 4%; }
+.result-sky { position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: -1; opacity: .35; pointer-events: none; }
+.result-face { display: grid; place-items: center; }
+.big-stars { font-size: 3rem; line-height: 1; margin: 4px 0; letter-spacing: .1em; color: var(--accent); }
+.big-star { display: inline-block; animation: star-in .5s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(var(--i) * .35s); }
+.big-star:not(.on) { opacity: .5; }
+.ribbon { display: inline-block; margin: 4px 0; padding: 6px 16px; border-radius: 999px; background: var(--accent); color: var(--on-accent); font-weight: 800; animation: art-pop .5s 1.2s both cubic-bezier(.3, 1.6, .5, 1); }
+.result-sticker { display: grid; place-items: center; margin: 8px 0; font-weight: 700; }
+.result .btn { display: flex; width: min(320px, 100%); margin: 10px auto 0; }
+@keyframes star-in { from { transform: scale(0) rotate(-40deg); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .big-star, .ribbon { animation: none; } .result-sky .art-burst { animation: none; } }
