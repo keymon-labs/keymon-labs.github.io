@@ -38,17 +38,17 @@ export default {
 
     const root = el('div', 'sp-root');
     const prompt = el('p', 'sp-prompt', round.emoji || round.prompt.es || '');
-    const say = el('button', 'sp-key', '🔊');
+    const say = el('button', 'sp-key sp-say', '🔊');
     say.type = 'button';
     say.setAttribute('aria-label', 'Escuchar');
     say.addEventListener('click', () => ctx.say(round.word));
-    say.hidden = !ctx.canSpeak;
+    say.style.visibility = ctx.canSpeak ? '' : 'hidden'; // keeps its space
     const reveal = el('p', 'sp-reveal');
     const wordEl = el('div', 'sp-word');
     const options = el('div', 'sp-row');
     const check = el('button', 'sp-check', '✔ Comprobar');
     check.type = 'button';
-    const status = el('p');
+    const status = el('p', 'status');
     status.setAttribute('aria-live', 'polite');
     root.append(prompt, say, reveal, wordEl);
     const gapLetters = [...new Set(gapCells.flatMap((c) => c.options))].filter(Boolean);

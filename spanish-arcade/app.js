@@ -13,6 +13,7 @@ import { registerServiceWorker } from '../shared/pwa.js';
 
 const root = document.getElementById('app');
 const speech = createSpeech();
+speech.ready(); // start looking for voices at once, so a unit starts without waiting
 const NEXT_DELAY = 700;
 const SKIP_DELAY = 2000; // long enough to read the answer after "Saltar"
 
@@ -112,6 +113,7 @@ function screen(title, ...kids) {
 
 function route() {
   current?.destroy(); current = null;
+  document.body.classList.remove('playing');
   const [page, id, sub] = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   const unit = content.unitById[id];
   const profile = activeProfile();
@@ -210,15 +212,43 @@ function renderSettingsScreen() {
 function playUnit(profile, unit) {
   const session = createUnitSession({ unit, content, seed: attemptSeed(profile, unit.id), resume: profile.inProgress });
   const stage = h('div', { id: 'stage' });
-  const live = h('div', { id: 'live', 'aria-live': 'polite' });
-  const main = screen(unit.title.es, stage, live);
+  const live = h('div', { id: 'live', 'aria-live': 'polite' }); // feedback strip: its height is reserved, so nothing below it moves
+  const dots = h('div', { class: 'dots', id: 'progress', role: 'img' });
+  const bar = h('div', { class: 'roundbar', 'aria-hidden': 'true' }, h('i'));
+  const exitBtn = h('button', { type: 'button', id: 'exit', class: 'icon', 'aria-label': 'Salir' }, '✕');
+  const skipBtn = h('button', { type: 'button', id: 'skip', class: 'skip', 'aria-label': 'Saltar esta pregunta y ver la respuesta' }, '⏭️ Saltar');
+  const header = h('header', { class: 'playbar' }, exitBtn, dots, bar);
+  const actions = h('div', { class: 'actions' }, live, skipBtn);
+  const main = screen(unit.title.es, header, stage, actions);
+  main.classList.add('play');
+  main.querySelector('h1').className = 'sr-only';
+  root.querySelector('footer')?.remove(); // no licence text under a round; it stays on the home and settings screens
+  document.body.classList.add('playing');
   let mounted = null;
   let timer = null;
+  let skipArm = null; // "Toca otra vez" window after the first press on Saltar
   let busy = false; // true from a correct answer until the next round is shown: ignores double taps
   let lastResult = null;
   let result = null;
   const before = unitProgress(profile, unit).last; // previous attempt, for "antes" on the result screen
-  const self = { destroy() { clearTimeout(timer); mounted?.destroy(); } };
+
+  // Exit guard: ✕ and the browser's back button open a sheet; the round stays mounted until "Salir".
+  let sheet = null;
+  const closeSheet = () => { sheet?.remove(); sheet = null; exitBtn.focus(); };
+  function openSheet() {
+    if (sheet) return;
+    sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': '¿Salir?' },
+      h('div', { class: 'sheet-box' }, h('p', {}, h('b', {}, '¿Salir?'), ' Tu progreso se guarda.'),
+        h('button', { type: 'button', id: 'stay', class: 'btn primary', onclick: closeSheet }, 'Seguir jugando'),
+        h('a', { href: `#/profile/${profile.id}`, id: 'leave', class: 'btn' }, 'Salir')));
+    main.append(sheet);
+    sheet.querySelector('#stay').focus();
+  }
+  exitBtn.onclick = openSheet;
+  const onPop = () => { if (!location.hash.endsWith('/play')) return; history.pushState({ round: true }, ''); openSheet(); };
+  history.pushState({ round: true }, '');
+  addEventListener('popstate', onPop);
+  const self = { destroy() { clearTimeout(timer); clearTimeout(skipArm); removeEventListener('popstate', onPop); document.body.classList.remove('playing'); mounted?.destroy(); } };
   current = self;
   window.__spanishArcade.session = session;
 
@@ -226,7 +256,7 @@ function playUnit(profile, unit) {
     t: (k) => k,
     difficulty: 1, // set per exercise in show()
     say: ctx0.say,
-    canSpeak: false, // speech.available && settings.sound, set once the voices are known
+    get canSpeak() { return speech.available && store.data.settings.sound; }, // read at mount: true once the voices are known
     sfx: () => {}, mascot: () => {},
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
@@ -260,9 +290,16 @@ function playUnit(profile, unit) {
     return String(o ? (o.es ?? o.text ?? o.label ?? '') : typeof a === 'string' ? a : '');
   }
 
-  const skipBtn = h('button', { type: 'button', id: 'skip', 'aria-label': 'Saltar esta pregunta y ver la respuesta' }, 'Saltar');
+  const SKIP_LABEL = '⏭️ Saltar';
+  const disarm = () => { clearTimeout(skipArm); skipArm = null; skipBtn.textContent = SKIP_LABEL; };
   skipBtn.onclick = () => {
     if (busy || session.done) return;
+    if (!skipArm) { // first press only asks; a stray tap near the answers cannot skip
+      skipBtn.textContent = 'Toca otra vez';
+      skipArm = setTimeout(disarm, 3000);
+      return;
+    }
+    disarm();
     const round = session.current.round;
     const r = settle(session.skip(), SKIP_DELAY);
     const text = answerText(round, r.hint);
@@ -274,20 +311,26 @@ function playUnit(profile, unit) {
     const cur = session.current;
     const host = h('div', { id: 'round' });
     ctx.difficulty = cur.exercise.difficulty ?? 1;
-    stage.replaceChildren(
-      h('p', { class: 'muted', id: 'progress' }, `Ejercicio ${cur.exerciseIndex + 1}/${unit.exercises.length} · ${cur.roundIndex + 1}/${cur.rounds}`),
-      h('p', { id: 'exercise-prompt' }, cur.exercise.prompt?.es ?? ''),
-      host, skipBtn, link(`#/profile/${profile.id}`, 'Salir'));
+    const total = unit.exercises.length;
+    dots.setAttribute('aria-label', `Ejercicio ${cur.exerciseIndex + 1} de ${total}, pregunta ${cur.roundIndex + 1} de ${cur.rounds}`);
+    dots.replaceChildren(...unit.exercises.map((_, i) => h('span', { class: i < cur.exerciseIndex ? 'done' : i === cur.exerciseIndex ? 'now' : '' })));
+    bar.firstChild.style.width = `${Math.round((cur.roundIndex / cur.rounds) * 100)}%`;
+    stage.replaceChildren(h('p', { id: 'exercise-prompt', tabindex: '-1' }, cur.exercise.prompt?.es ?? ''), host);
     busy = false;
+    disarm();
     skipBtn.disabled = false;
     live.replaceChildren();
     mounted = cur.archetype.mount(host, cur.round, ctx);
+    stage.scrollTop = 0; // a new round starts at the top, whatever the last one scrolled to
+    scrollTo(0, 0);
+    stage.querySelector('#exercise-prompt').focus({ preventScroll: true });
   }
 
   function finish() {
     mounted?.destroy(); mounted = null;
+    main.classList.add('done'); // hides the round header and action bar
     stage.replaceChildren(link(`#/profile/${profile.id}`, 'Volver al mapa'));
-    live.replaceChildren(h('h2', {}, '¡Todo hecho!'), h('p', { id: 'result-stars' }, stars(result.stars)),
+    stage.append(h('h2', {}, '¡Todo hecho!'), h('p', { id: 'result-stars' }, stars(result.stars)),
       h('p', {}, `${result.correct} de ${unit.exercises.length} ejercicios sin ayuda.`),
       ...(before ? [h('p', { id: 'result-before' }, 'Antes: ', stars(before.stars), before.correct != null ? ` (${before.correct} de ${unit.exercises.length} sin ayuda)` : '')] : []));
   }
@@ -295,11 +338,17 @@ function playUnit(profile, unit) {
   // A unit whose exercises all make 0 rounds (the session already warned) has nothing to play.
   function start() {
     if (!session.done) return show();
+    main.classList.add('done');
     stage.replaceChildren(h('p', {}, 'Todavía no hay nada que jugar en esta unidad.'), link(`#/profile/${profile.id}`, 'Volver al mapa'));
   }
 
-  // Archetypes read ctx.canSpeak at mount, so wait for the voice list first.
-  speech.ready().then(() => { if (current !== self) return; ctx.canSpeak = speech.available && store.data.settings.sound; start(); });
+  // Archetypes read ctx.canSpeak at mount. Never leave a blank page: show a loader at once and start when the voices are
+  // known, or after 400 ms (later rounds pick the voice up; speech.ready() is cached for the session).
+  stage.replaceChildren(h('p', { class: 'loader' }, '🦊 Preparando…'));
+  let started = false;
+  const begin = () => { if (started || current !== self) return; started = true; start(); };
+  speech.ready().then(begin);
+  setTimeout(begin, 400);
 }
 
 window.__spanishArcade = { store, content, speech, errors, go: (hash) => { location.hash = hash; }, session: null };

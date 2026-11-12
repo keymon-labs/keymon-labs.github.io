@@ -54,7 +54,7 @@ export default {
 
     const root = el('div', 'overflow-wrap:anywhere');
     root.className = 'read-answer';
-    const status = el('p');
+    const status = el('p', 'status');
     status.setAttribute('aria-live', 'polite');
 
     const box = el('div', 'padding:12px;border:2px solid var(--accent);border-radius:12px;margin-bottom:12px');
@@ -104,14 +104,22 @@ export default {
           if (r.hint.answer) {
             const right = buttons.find((x) => x.dataset.id === r.hint.answer);
             right.classList.add('reveal');
-            if (!right.textContent.startsWith('✔ ')) right.textContent = `✔ ${right.textContent}`;
+            right.style.outline = '4px double currentColor'; // marked without changing its text (the badge is in the label)
+            right.setAttribute('aria-label', `✔ ${right.textContent}`);
             status.textContent += ` ${T.marked}`;
           }
         }
       });
       return b;
     });
+    if (!document.getElementById('ra-styles')) {
+      const st = document.createElement('style');
+      st.id = 'ra-styles';
+      st.textContent = '@media (orientation:landscape) and (max-height:520px){.ra-answers{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}.ra-answers>div,.ra-answers>.status{grid-column:1/-1}.ra-answers>.status{margin:2px 0}}';
+      document.head.append(st);
+    }
     const answers = el('div');
+    answers.className = 'ra-answers';
     answers.append(qRow, ...buttons, status);
 
     // showTextWhileAnswering false: read first, then the text hides; a hint brings it back.

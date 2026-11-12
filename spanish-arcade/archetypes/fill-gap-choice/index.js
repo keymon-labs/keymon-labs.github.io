@@ -11,7 +11,11 @@ const CSS = `
 .fg-gap.land{animation:fg-land .45s ease-out}
 @keyframes fg-land{from{transform:translateY(60px) scale(.6);opacity:.2}to{transform:none;opacity:1}}
 .fg-pic{font-size:3rem;text-align:center;margin:4px 0}
+.fg-opt{position:relative;width:auto;height:auto;min-height:64px;padding:6px 18px}
 .fg-opt.wrong{text-decoration:line-through}
+.fg-opt.wrong::after,.fg-opt.reveal::after{position:absolute;top:-8px;right:-4px;font-size:1rem;line-height:1;text-decoration:none}
+.fg-opt.wrong::after{content:'✖'}
+.fg-opt.reveal::after{content:'👉'}
 .fg-opt.reveal{outline:4px double currentColor}
 `;
 
@@ -59,7 +63,7 @@ export default {
     say.hidden = !speakerShown(ctx.canSpeak, ctx.difficulty); // it reads the answer too, so not from difficulty 2
     say.addEventListener('click', () => ctx.say(round.heard));
     const row = el('div', 'sp-row');
-    const status = el('p');
+    const status = el('p', 'status');
     status.setAttribute('aria-live', 'polite');
     const head = [];
     if (round.emoji) head.push(el('p', 'fg-pic', round.emoji));
@@ -95,8 +99,7 @@ export default {
       const enabled = () => [...buttons.values()].filter((x) => !x.disabled);
       if (enabled().length > 2) { // with 2 left the tapped one stays, so the child is never left with only the answer
         b.disabled = true;
-        b.classList.add('wrong');
-        b.textContent = `✖ ${o}`;
+        b.classList.add('wrong'); // the badge is CSS: the text never changes, so the row does not re-wrap
       }
       const h = r.hint;
       if (h?.mark) gap.classList.add('hinted');
@@ -104,7 +107,6 @@ export default {
       if (h?.answer !== undefined) { // level 2: show it and let the child pick it
         const a = buttons.get(h.answer);
         a.classList.add('reveal');
-        a.textContent = `👉 ${h.answer}`;
         gap.classList.add('hinted');
         status.textContent += ' La respuesta correcta está marcada con 👉.';
       }

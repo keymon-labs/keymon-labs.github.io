@@ -25,6 +25,7 @@ export default {
     const root = document.createElement('div');
     root.className = 'match-pairs';
     const status = document.createElement('p');
+    status.className = 'status';
     status.setAttribute('aria-live', 'polite');
     const byId = Object.fromEntries(round.pairs.map((p) => [p.id, p]));
     const join = new Map(); // leftId -> rightId
