@@ -36,6 +36,15 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `survey-tally` | Fixed question frame; ask the characters, tally answers in a table | question forms | `questions[]`, `characters[]` | more questions | idea |
 | `whisper-chain` | Hear a whispered phrase, repeat it to pass it on | listening memory | `phrases[]`, `chain` | longer phrases | idea |
 | `free-list` | Learner builds their own word list on a topic; saved for review | vocab recall | `topic`, `min` | timed; fewer hints | idea |
+| `fix-the-mistake` | The mascot "wrote" a text with one spelling mistake: tap the wrong word, then fix it | error detection, spelling rules | `items[]` {text, wrong}, `from` + `focus`, `mode`, `fix`, `allowPerfect` | free typing of the fix; "it's perfect" option; subtler traps | idea |
+| `letter-lock` | Wordle-like: picture clue, guess the word in N tries; letters show right / elsewhere / missing tilde / absent | spelling recall, deduction | `from`, `tries`, `clue`, `firstLetter` | fewer tries; no first letter; audio-only clue | idea |
+| `bubble-pop` | Bubbles drift up with spellings of the pictured word; pop the right one (missed bubbles come back; speed is a bonus only) | spelling recognition | `from`, `options`, `speed`, `misspell` | faster; closer misspellings | idea |
+| `dictado` | Hear a short sentence, type it; per-word marks | dictation, punctuation, accents | `items[]`, `replay`, `accents`, `punctuation` | longer; one listen; strict ¿¡ | idea |
+| `story-gaps` | Mad Libs: pick words of a kind for gaps, the silly story is read aloud; agreement is checked | word classes, agreement | `story`, `choose`, `agree` | typed words; more agreement slots | idea |
+| `clap-syllables` | Tap the beat of each syllable, then the loud one (leads to accent rules) | syllables, stress | `from`, `askStress`, `tempo` | stress question; faster tempo | idea |
+| `letter-wheel` | Spelling Bee-like: letters around a centre letter, find taught words; ranks, no fail | spelling, recall | `letters` or `from`, `target` | fewer listed answers; longer words | idea |
+
+**Research and next batch**: [research/GAMES.md](research/GAMES.md) compares 18 candidates and recommends `order-words`, `fix-the-mistake` and `letter-lock` next, with specs.
 
 **First batch**: listen-and-pick, read-and-answer, complete-the-sentence with options, spelling, puzzles. Tasks 006–010.
 

@@ -12,3 +12,5 @@ Round progress as dots/stars instead of "Ejercicio 2/6 Â· 1/3"; emoji faces (ðŸŽ
 
 ## Acceptance
 - Every archetype readable in both themes at text size 1.5; no logic change (tests unchanged); lab screenshots attached to the task notes.
+
+Ruling: 026 covers the in-game look of this task; take 026 and mark this done when 026 lands.
