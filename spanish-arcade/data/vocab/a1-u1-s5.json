@@ -1,0 +1,9 @@
+{ "schema": 1, "words": [
+  {"id": "familia", "es": "familia", "en": "family", "emoji": "👪", "tags": ["family"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u1-s5"},
+  {"id": "gato", "es": "gato", "en": "cat", "emoji": "🐱", "tags": ["pets"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s5"},
+  {"id": "perro", "es": "perro", "en": "dog", "emoji": "🐶", "tags": ["pets"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["rr"], "unit": "a1-u1-s5"},
+  {"id": "conejo", "es": "conejo", "en": "rabbit", "emoji": "🐰", "tags": ["pets"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s5"},
+  {"id": "tortuga", "es": "tortuga", "en": "turtle", "emoji": "🐢", "tags": ["pets"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u1-s5"},
+  {"id": "loro", "es": "loro", "en": "parrot", "emoji": "🦜", "tags": ["pets"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s5"},
+  {"id": "hamster", "es": "hámster", "en": "hamster", "emoji": "🐹", "tags": ["pets"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["accent"], "unit": "a1-u1-s5"}
+] }
