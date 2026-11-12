@@ -6,7 +6,7 @@ const slotModules = import.meta.glob('./settings-slots/*.js', { eager: true, imp
 const SLOTS = [['transfer', 'Copia de seguridad'], ['reports', 'Informes e insignias']];
 const SLOT_NAMES = SLOTS.map(([name]) => name);
 
-function general(host, { store, diagnostic, applySettings, speech }) {
+function general(host, { store, content, diagnostic, applySettings, speech }) {
   const s = store.data.settings;
   const size = document.createElement('label');
   size.textContent = 'Tamaño del texto ';
@@ -72,7 +72,26 @@ function general(host, { store, diagnostic, applySettings, speech }) {
   const credits = document.createElement('p');
   credits.className = 'muted';
   credits.textContent = 'Juego no oficial inspirado en «Mis unidades de español. Primer cuatrimestre A1, Serie Luna», que sigue los temas y niveles de las clases de ALCE. Las ilustraciones, las frases, los chistes y los sonidos son originales.';
-  host.append(theme, palette, size, sound, voiceRow, test, voiceNote, backup, copy, out, credits);
+  // Adults only (Ajustes is behind the gate): every game type opens in the lab with example data, to try it quickly.
+  const games = document.createElement('details');
+  games.id = 'try-games';
+  const sum = document.createElement('summary');
+  sum.textContent = 'Probar los juegos (para adultos)';
+  const intro = document.createElement('p');
+  intro.className = 'muted';
+  intro.textContent = 'Cada tipo de juego se abre en el laboratorio con datos de ejemplo. Para ver el menú de pruebas en todas las pantallas, toca 10 veces la línea de versión de abajo.';
+  const list = document.createElement('ul');
+  list.className = 'list';
+  for (const a of Object.values(content.archetypeById).filter((x) => x.id !== 'placeholder').sort((x, y) => x.id.localeCompare(y.id))) {
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = `./lab/?archetype=${encodeURIComponent(a.id)}`;
+    link.textContent = `${a.emoji ?? '🎮'} ${a.title?.es ?? a.id} (${a.id})`;
+    li.append(link);
+    list.append(li);
+  }
+  games.append(sum, intro, list);
+  host.append(theme, palette, size, sound, voiceRow, test, voiceNote, backup, copy, out, games, credits);
 }
 
 export function renderSettings(host, ctx) {

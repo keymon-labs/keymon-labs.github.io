@@ -2,7 +2,7 @@
 //   #/   #/profile/<id>   #/unit/<id>   #/settings
 // Data: units/vocab/archetypes are bundled (core/content.js); progress lives in localStorage (core/profiles.js).
 import { loadContent } from './core/content.js';
-import { createStore } from './core/profiles.js';
+import { createStore, MAX_PROFILES } from './core/profiles.js';
 import { createUnitSession, LEG_SIZE } from './core/session.js';
 import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed, isPersonalBest } from './core/progress.js';
 import { totalStars, doneToday, nextUnit, mascotLine, stoneEmoji, DAILY_GOAL } from './core/home.js';
@@ -98,7 +98,31 @@ function footer() {
 }
 function footerText() {
   return h('footer', {}, `Arcade de español v1 · versión ${__BUILD__} · © 2026 keymon-labs · `,
-    h('a', { href: 'https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md' }, 'CC BY-NC-SA 4.0'));
+    h('a', { href: 'https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md' }, 'CC BY-NC-SA 4.0'),
+    h('a', { href: '../', class: 'footlink' }, '← Página principal de keymon-labs'));
+}
+
+// "Install as an app": a small icon opens the steps for each browser; Chrome's own prompt is offered when the browser allows it.
+let installEvt = null;
+const installBtns = new Set();
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; installBtns.forEach((b) => { b.hidden = false; }); });
+function installWidget() {
+  if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) return null; // already an app
+  const toggle = h('button', { type: 'button', id: 'install-toggle', class: 'icon', 'aria-label': 'Instalar como aplicación', 'aria-expanded': 'false', 'aria-controls': 'install-help' }, '📲');
+  const now = h('button', { type: 'button', id: 'install-now', class: 'reveal' }, 'Instalar ahora');
+  now.hidden = !installEvt;
+  installBtns.add(now);
+  now.onclick = async () => { installEvt?.prompt(); await installEvt?.userChoice.catch(() => {}); installEvt = null; now.hidden = true; };
+  const panel = h('section', { id: 'install-help', class: 'card', hidden: '' }, h('h2', {}, 'Instalar como aplicación'),
+    h('p', {}, 'Se abre a pantalla completa, sin la barra del navegador, y funciona sin conexión.'),
+    h('ul', {},
+      h('li', {}, h('b', {}, 'Chrome (Android): '), 'toca ⋮ y elige «Instalar aplicación» o «Añadir a la pantalla de inicio».'),
+      h('li', {}, h('b', {}, 'Firefox (Android): '), 'toca ⋮ y elige «Instalar» o «Añadir a la pantalla de inicio».'),
+      h('li', {}, h('b', {}, 'Safari (iPhone y iPad): '), 'toca Compartir y elige «Añadir a pantalla de inicio».'),
+      h('li', {}, h('b', {}, 'Ordenador (Chrome, Edge): '), 'usa el icono de instalar que aparece en la barra de direcciones.')),
+    now);
+  toggle.onclick = () => { panel.hidden = !panel.hidden; toggle.setAttribute('aria-expanded', String(!panel.hidden)); };
+  return [h('div', { class: 'toprow' }, toggle), panel];
 }
 
 let current = null; // mounted screen, if any: { destroy() }
@@ -135,17 +159,19 @@ const settingsLink = () => link('#/settings', '⚙️ Ajustes');
 function renderHome() {
   const profiles = store.data.profiles;
   const main = screen(null, h('div', { class: 'hero' }, mascot(), h('div', {}, h('h1', { tabindex: '-1' }, 'Arcade de español'), h('p', { class: 'bubble' }, '¡Vamos a jugar con las palabras!'))));
+  main.prepend(...(installWidget() ?? []));
   if (profiles.length) main.append(h('ul', { class: 'list' }, profiles.map((p) => h('li', {}, link(`#/profile/${p.id}`, `🙂 ${p.firstName}`, 'btn primary')))));
-  if (profiles.length < 1) { // MVP: one profile
+  if (profiles.length < MAX_PROFILES) { // several children can share the device, up to MAX_PROFILES
     const first = h('input', { id: 'first-name', required: '', autocomplete: 'off' });
-    const form = h('form', { id: 'new-profile', class: 'card' }, h('label', {}, '¿Cómo te llamas? ', first), h('button', { type: 'submit', class: 'reveal' }, '▶️ Empezar'));
+    const form = h('form', { id: 'new-profile', class: 'card' }, h('label', {}, profiles.length ? 'Nombre del niño o de la niña ' : '¿Cómo te llamas? ', first), h('button', { type: 'submit', class: 'reveal' }, profiles.length ? '➕ Añadir' : '▶️ Empezar'));
     form.onsubmit = (e) => {
       e.preventDefault();
       if (!first.value.trim()) return;
       const p = store.addProfile({ firstName: first.value });
       location.hash = `#/profile/${p.id}`;
     };
-    main.append(form);
+    if (profiles.length) main.append(h('details', { id: 'add-profile', class: 'card' }, h('summary', {}, '➕ Añadir otro niño o niña'), form));
+    else main.append(form);
   }
   main.append(h('div', { class: 'row' }, settingsLink()), debugTools());
 }

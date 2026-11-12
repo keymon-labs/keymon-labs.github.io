@@ -166,3 +166,8 @@ main.play.rest .segs { visibility: hidden; }
 .result .btn { display: flex; width: min(320px, 100%); margin: 10px auto 0; }
 @keyframes star-in { from { transform: scale(0) rotate(-40deg); } to { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .big-star, .ribbon { animation: none; } .result-sky .art-burst { animation: none; } }
+
+/* Install-as-app icon (top right of the home screen) and the link back to the site's main page */
+.toprow { display: flex; justify-content: flex-end; }
+#install-help ul { padding-left: 18px; display: grid; gap: 6px; margin: 8px 0 12px; }
+footer .footlink { display: block; margin-top: 6px; }
