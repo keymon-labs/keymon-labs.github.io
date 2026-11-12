@@ -26,7 +26,7 @@ Our work: © keymon-labs, [CC BY-NC-SA 4.0](LICENSE) + internal-use permission (
 ## Sessions, skills and task boards
 **Read [AGENTS.md](AGENTS.md)**: build fast by default, add process only when the change is risky (levels Quick / Feature / Board), when subagents and which model. Work spanning several sessions or models: `task-board` skill, `npm run tasks` for status.
 **New ideas start in a mode**: Brainstorm (throwaway Claude artifact, fast), Prototype (researched, basics only) or Final (everything in this file). Modes relax design, structure, tests and process only: the public-data and licence rules apply in every mode.
-`.claude/skills/`: `labs-modes` (Brainstorm → Prototype → Final), `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `ponytail`. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
+`.claude/skills/`: `labs-modes` (Brainstorm → Prototype → Final), `labs-setup` (GitHub org, Pages, Claude access, troubleshooting), `labs-apps` (new app, new version, ship), `labs-claude-loader` (apps inside Claude: bundle + loader artifact release), `task-board` (task files, claiming, coordinator runs, owner tracking), `orchestrate-work` (big work: plan, parallel subagents, live progress artifact kept in Claude), `ponytail`. Public, non-engineer version of the setup: `guide/index.html`; keep it in step with `labs-setup`.
 
 ## Start of every task
 1. `git pull` (other chats push here too).

@@ -47,6 +47,7 @@ When unsure, go one level lower and ship; the owner's feedback is the review.
 ## Board runs (light)
 - "Do task <path>": take that task at its level (most are Quick or Feature), claim, build, finish in one commit. Details: `task-board` skill.
 - "Coordinate <board>": take up to 3 ready tasks with disjoint `touches`. Small ones you do yourself in sequence; bigger or parallel ones go to subagents on the task's `model` (worktrees if parallel). Review only tasks that set contracts or touch `shared/`; everything else gets one batch review at the end of the run, or none for a small run. Push after each merged task.
+- Big chunks of work (several apps or research areas, parallel agents, owner wants to follow progress): `orchestrate-work` skill. Plan first, publish the progress artifact (kept in Claude, never committed), then spawn.
 - Content tasks (Haiku drafts) end in `review` for the owner; that is their review.
 - Record decisions you made without the owner as `Ruling: <decision> — <why>` in the task's `Notes`. Stop and ask only for: irreversible actions, security or loader capabilities, personal data or licences needing consent.
 
