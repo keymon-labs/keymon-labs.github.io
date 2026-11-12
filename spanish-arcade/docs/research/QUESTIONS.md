@@ -10,6 +10,11 @@ Collected from the research round (docs in this folder). Each row has the call m
 | D3 | Is `punctuation-pick` a mode of `order-words`? | Yes | One more archetype later | assumed |
 | D4 | Does task 026 replace task 023? | Yes | None | assumed |
 
+## Mixing within a session (owner remark, 12 Nov)
+| # | Question | Recommendation | Status |
+|---|---|---|---|
+| M1 | Each exercise plays about 5 rounds of the same game in a row (about 30 rounds per unit). Mix them more? | Yes, a little: split each exercise into runs of at most 3 rounds and alternate runs of the 3 exercises in a leg (A3 B3 C3 A2 B2 C2), keeping difficulty bands. Not a full round-by-round shuffle: switching games every round costs kids a re-read of the instructions. Task 036. | open |
+
 ## UI (from UI-ADVICE.md)
 | # | Question | Assumed answer | Status |
 |---|---|---|---|
@@ -24,7 +29,7 @@ Collected from the research round (docs in this folder). Each row has the call m
 |---|---|---|---|
 | E1 | Streak chip | Dropped; week flower plus total days played | assumed |
 | E2 | Shuffle | Within a difficulty band, never the same archetype twice in a row, `pin` opts out | assumed |
-| E3 | Daily limits | Goal 12 rounds, soft "suficiente" at 24 rounds or 15 min, parent hard limit off by default | assumed |
+| E3 | Daily limits | Parked by the owner (not now); kept as an idea in UNITS.md | deferred |
 | E4 | Surprise stickers | One cosmetic surprise per leg end, finite set of ~12, no duplicates until complete | assumed |
 | E5 | Word stickers | One per mastered word (3 first-try successes on 3 days) | assumed |
 | E6 | Mascot art | Emoji and CSS first, own SVG fox after task 030 | assumed |

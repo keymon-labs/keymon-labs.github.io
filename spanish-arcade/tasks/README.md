@@ -51,6 +51,7 @@ Board (source of truth is each file's front matter):
 | 033 | [New units: a1-u1-s3, a1-u1-s5, a1-u1-s7](033-new-units.md) | Haiku | 027, 028, 029, 031 | review |
 | 034 | [Backlog: word memory, echo rounds, daily review, limits, album 2.0](034-backlog.md) | Sonnet | 031, 032 | todo |
 | 035 | [Quality gate: smoke audit, docs, landing card, ship](035-quality-gate.md) | Sonnet | 026, 027, 028, 029, 030, 031, 032, 033 | done |
+| 036 | [Mix games inside a leg (runs of at most 3 rounds)](036-mix-rounds.md) | Sonnet | 031 | todo |
 <!-- board:end -->
 
 Parallelism: 002 can run beside 001. After 001: 001b, 006–010 and 014 are independent; 003 needs 001b. Archetype tasks (006–010) may be restyled once 002's tokens exist. 011 needs the archetypes it uses (it may start with the ones that exist and leave others for a follow-up). Later units (u1-s5 onwards) become new Haiku/Sonnet data tasks cloned from 011.

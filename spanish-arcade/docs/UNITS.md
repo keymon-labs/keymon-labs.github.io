@@ -23,6 +23,7 @@ Unit 1 follows the book's order: greet and meet (S1), a comic about a party and 
 First two units to build: **`a1-u1-s1`** and **`a1-u1-s3`** (task 011). Next candidates for Haiku-sized data tasks: u1-s5, u1-s7, then Unit 2 and Unit 3 in order.
 
 ## Ideas for a later layer
+- "Enough for today" screen and daily limits (soft stop after about 24 rounds or 15 minutes, optional parent limit): parked by the owner, spec in [research/ENGAGEMENT.md §3.5](research/ENGAGEMENT.md). Not for now.
 - "Tricky words" revision unit generated from the per-word stats in the store (data already collected, PLAN §4.4); a weekly challenge unit.
 - Unit-level difficulty ladder: the same archetypes with `difficulty` 2–3 in later units.
 - Seasonal extras (our own, e.g. Christmas words) once the core works.
