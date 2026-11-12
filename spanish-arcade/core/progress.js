@@ -79,15 +79,16 @@ export const attemptSeed = (profile, unitId) => seedFor(profile.id, unitId, prof
 
 /**
  * What to show the child about a unit (map, intro): stars, "n of m", which exercises are done, the last and best result.
- * An unfinished attempt (inProgress) wins over older data: its finished exercises are the ones before exerciseIndex.
+ * An unfinished attempt (inProgress) wins over older data: its finished exercises are the ones before exerciseIndex in its play order (ip.order; none = unit order).
  */
 export function unitProgress(profile, unit) {
   const u = profile.units?.[unit.id];
   const ip = profile.inProgress?.unitId === unit.id && profile.inProgress.rev === unit.rev ? profile.inProgress : null;
   const attempts = u?.attempts ?? 0;
-  const rows = unit.exercises.map((e, i) => {
+  const finished = ip ? (ip.order ?? unit.exercises.map((e) => e.id)).slice(0, ip.exerciseIndex) : [];
+  const rows = unit.exercises.map((e) => {
     const st = (ip ? ip.results?.[e.id] : u?.exercises?.[e.id]) ?? null;
-    const done = ip ? i < ip.exerciseIndex : attempts > 0 || Boolean(u?.exercises?.[e.id]?.done);
+    const done = ip ? finished.includes(e.id) : attempts > 0 || Boolean(u?.exercises?.[e.id]?.done);
     return { id: e.id, done, ok: done && st ? st.reveals === 0 : null, bestOk: Boolean(u?.exercises?.[e.id]?.bestOk) };
   });
   return {

@@ -128,6 +128,7 @@ export function validateUnit(u, archetypes) {
     ids.add(e?.id);
     if (!Number.isInteger(e?.difficulty) || e.difficulty < 1 || e.difficulty > 3) err(`${p}.difficulty`, 'must be 1, 2 or 3');
     else { if (e.difficulty < prev) err(`${p}.difficulty`, `must not go down (previous was ${prev})`); prev = e.difficulty; }
+    if (e?.pin !== undefined && typeof e.pin !== 'boolean') err(`${p}.pin`, 'must be true or false');
     text(`${p}.prompt`, e?.prompt);
     const arch = archetypes[e?.archetype];
     if (!arch) return err(`${p}.archetype`, `unknown archetype "${e?.archetype}" (available: ${Object.keys(archetypes).join(', ')})`);

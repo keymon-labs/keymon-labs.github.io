@@ -53,6 +53,7 @@ Copy this and change it (add three more animal words so `n: 4` can be met; it is
 ## 3. Rules the checker enforces
 - **Mix**: 5-6 exercises, at least 3 different archetypes, at least one `listening` and one `spelling` exercise. An archetype's `skill` (`listening|spelling|reading|grammar|puzzle`) decides what counts; an archetype with no `skill` only gives a warning and counts for nothing.
 - **Difficulty** 1-3, never going down within a unit. Units 1-4 use 1-2 only; later units may use 3. The unit number comes from `bookRef.unit` (set it); without `bookRef` the unit's `order` is used.
+- **Order and legs**: each play shuffles the exercises inside their difficulty band (never the same archetype twice in a row when the band allows; the unit ends on `match-pairs` or `odd-one-out` if the last band has one) and shows a "parada" screen after every 3 exercises. Add `"pin": true` to an exercise that must keep its place (an intro before its traps); optional, boolean.
 - **Exercise ids**: meaningful and stable, like `animals-listen`; never `e1` or `2`. Unique in the unit, never reused. Bump `rev` when exercises change meaningfully.
 - **Enough rounds**: each exercise is generated once with a sample seed. Fewer than min(3, `n`) rounds is an error: archetypes skip words silently (no emoji, spaces, no matching focus), so widen the selector or add words.
 - **Params** are checked against the archetype (unknown or wrong params are errors); every `ids` word must exist; the selector must match at least `n` words.

@@ -3,7 +3,7 @@
 // Data: units/vocab/archetypes are bundled (core/content.js); progress lives in localStorage (core/profiles.js).
 import { loadContent } from './core/content.js';
 import { createStore } from './core/profiles.js';
-import { createUnitSession } from './core/session.js';
+import { createUnitSession, LEG_SIZE } from './core/session.js';
 import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed } from './core/progress.js';
 import { totalStars, doneToday, nextUnit, mascotLine, stoneEmoji, DAILY_GOAL } from './core/home.js';
 import { createSpeech } from './ui/speech.js';
@@ -213,11 +213,11 @@ function playUnit(profile, unit) {
   const session = createUnitSession({ unit, content, seed: attemptSeed(profile, unit.id), resume: profile.inProgress });
   const stage = h('div', { id: 'stage' });
   const live = h('div', { id: 'live', 'aria-live': 'polite' }); // feedback strip: its height is reserved, so nothing below it moves
-  const dots = h('div', { class: 'dots', id: 'progress', role: 'img' });
-  const bar = h('div', { class: 'roundbar', 'aria-hidden': 'true' }, h('i'));
+  const trail = h('ol', { class: 'trail-play', id: 'progress', role: 'progressbar', 'aria-label': 'Ejercicios', 'aria-valuemin': '0' }); // one stone per exercise, a flag after each leg
+  const segs = h('div', { class: 'segs', id: 'segs', role: 'progressbar', 'aria-label': 'Preguntas', 'aria-valuemin': '0' }); // one segment per round: ★ first try, ● with help
   const exitBtn = h('button', { type: 'button', id: 'exit', class: 'icon', 'aria-label': 'Salir' }, '✕');
   const skipBtn = h('button', { type: 'button', id: 'skip', class: 'skip', 'aria-label': 'Saltar esta pregunta y ver la respuesta' }, '⏭️ Saltar');
-  const header = h('header', { class: 'playbar' }, exitBtn, dots, bar);
+  const header = h('header', { class: 'playbar' }, exitBtn, trail, segs);
   const actions = h('div', { class: 'actions' }, live, skipBtn);
   const main = screen(unit.title.es, header, stage, actions);
   main.classList.add('play');
@@ -230,6 +230,7 @@ function playUnit(profile, unit) {
   let busy = false; // true from a correct answer until the next round is shown: ignores double taps
   let lastResult = null;
   let result = null;
+  let marks = []; // outcome per round of the current exercise: 'star' (first try) or 'help'; rounds before a resume count as 'help'
   const before = unitProgress(profile, unit).last; // previous attempt, for "antes" on the result screen
 
   // Exit guard: ✕ and the browser's back button open a sheet; the round stays mounted until "Salir".
@@ -261,7 +262,9 @@ function playUnit(profile, unit) {
     reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
     async submit(answer) {
       if (busy) return { ...lastResult, ignored: true };
+      const c = session.current;
       const r = settle(session.submit(answer));
+      if (r.action === 'next') { marks[c.roundIndex] = c.misses === 0 ? 'star' : 'help'; drawSegs(c, c.roundIndex + 1); }
       if (store.data.settings.debug && !r.correct && !r.skipped) { // debug mode: show what was sent, to find why a right-looking answer was judged wrong
         const round = session.current?.round;
         live.replaceChildren(h('p', { class: 'muted', id: 'debug-sent' }, `enviado: «${JSON.stringify(answer)}» · esperado: «${round?.answer ?? round?.word ?? ''}»`));
@@ -278,7 +281,7 @@ function playUnit(profile, unit) {
       result = session.result();
       store.update(profile.id, (p) => recordUnit(r.exerciseDone ? recordExercise(p, unit, r.exerciseDone, at) : p, unit, result, at));
     } else store.update(profile.id, (p) => saveInProgress(r.exerciseDone ? recordExercise(p, unit, r.exerciseDone, at) : p, session.snapshot()));
-    if (r.action === 'next' || r.action === 'skip') { busy = true; skipBtn.disabled = true; timer = setTimeout(r.done ? finish : show, delay); }
+    if (r.action === 'next' || r.action === 'skip') { busy = true; skipBtn.disabled = true; timer = setTimeout(r.done ? finish : r.legDone ? rest : show, delay); }
     return r;
   }
 
@@ -300,21 +303,57 @@ function playUnit(profile, unit) {
       return;
     }
     disarm();
-    const round = session.current.round;
+    const c = session.current;
+    const round = c.round;
     const r = settle(session.skip(), SKIP_DELAY);
+    marks[c.roundIndex] = 'help'; drawSegs(c, c.roundIndex + 1);
     const text = answerText(round, r.hint);
     live.replaceChildren(h('p', { id: 'skipped' }, text ? `Saltada. La respuesta era: ${text}` : 'Saltada.'));
   };
+
+  // Trail: ✓ done, 🦊 now, ○ to do (shape as well as colour); 🚩 closes each leg. Segments: ★ first try, ● with help, ▷ now.
+  function drawTrail(at) {
+    const n = session.order.length;
+    trail.setAttribute('aria-valuemax', String(n));
+    trail.setAttribute('aria-valuenow', String(at));
+    trail.setAttribute('aria-valuetext', at >= n ? `${n} de ${n} ejercicios` : `Ejercicio ${at + 1} de ${n}`);
+    trail.replaceChildren(...session.order.flatMap((_, i) => [
+      h('li', { class: i < at ? 'done' : i === at ? 'now' : '', 'aria-hidden': 'true' }, i < at ? '✓' : i === at ? '🦊' : '○'),
+      (i + 1) % LEG_SIZE === 0 && i + 1 < n ? h('li', { class: 'flag', 'aria-hidden': 'true' }, '🚩') : null].filter(Boolean)));
+  }
+  function drawSegs(cur, at) {
+    segs.setAttribute('aria-valuemax', String(cur.rounds));
+    segs.setAttribute('aria-valuenow', String(at));
+    segs.setAttribute('aria-valuetext', `Pregunta ${Math.min(at + 1, cur.rounds)} de ${cur.rounds}`);
+    segs.replaceChildren(...Array.from({ length: cur.rounds }, (_, i) => {
+      const m = i < at ? (marks[i] ?? 'help') : '';
+      return h('span', { class: m ? `seg ${m}` : i === at ? 'seg now' : 'seg', 'aria-hidden': 'true' }, m === 'star' ? '★' : m ? '●' : '');
+    }));
+  }
+
+  // Parada en el camino: after each leg that is not the last. Progress is already saved, so leaving loses nothing.
+  function rest() {
+    mounted?.destroy(); mounted = null;
+    const left = session.order.length - session.current.exerciseIndex;
+    drawTrail(session.current.exerciseIndex);
+    main.classList.add('rest');
+    const go = h('button', { type: 'button', id: 'next-leg', class: 'btn primary', onclick: () => { main.classList.remove('rest'); show(); } }, 'Seguir');
+    stage.replaceChildren(h('div', { class: 'parada' }, h('div', { class: 'mascot', 'aria-hidden': 'true' }, '🦊'), h('h2', { tabindex: '-1' }, 'Parada en el camino'),
+      h('p', {}, `¡Buen tramo! Faltan ${left} ${left === 1 ? 'ejercicio' : 'ejercicios'}.`), go,
+      h('a', { href: `#/profile/${profile.id}`, id: 'save-leave', class: 'btn' }, 'Guardar y salir')));
+    live.replaceChildren();
+    stage.querySelector('h2').focus({ preventScroll: true });
+    go.focus({ preventScroll: true });
+  }
 
   function show() {
     mounted?.destroy();
     const cur = session.current;
     const host = h('div', { id: 'round' });
     ctx.difficulty = cur.exercise.difficulty ?? 1;
-    const total = unit.exercises.length;
-    dots.setAttribute('aria-label', `Ejercicio ${cur.exerciseIndex + 1} de ${total}, pregunta ${cur.roundIndex + 1} de ${cur.rounds}`);
-    dots.replaceChildren(...unit.exercises.map((_, i) => h('span', { class: i < cur.exerciseIndex ? 'done' : i === cur.exerciseIndex ? 'now' : '' })));
-    bar.firstChild.style.width = `${Math.round((cur.roundIndex / cur.rounds) * 100)}%`;
+    if (cur.roundIndex === 0) marks = [];
+    drawTrail(cur.exerciseIndex);
+    drawSegs(cur, cur.roundIndex);
     stage.replaceChildren(h('p', { id: 'exercise-prompt', tabindex: '-1' }, cur.exercise.prompt?.es ?? ''), host);
     busy = false;
     disarm();
