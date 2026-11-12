@@ -32,6 +32,9 @@ Open-source npm packages bundled by Vite. Add a row when you add one.
 | Package | Licence | Used by | Why |
 |---|---|---|---|
 | [matter-js](https://brm.io/matter-js/) | MIT | maths-arcade (Pop, Match) | 2D physics for the funnel of numbered balls |
+| [@fontsource-variable/fredoka](https://fontsource.org/fonts/fredoka) | OFL-1.1 | spanish-arcade | Rounded display font for headings and buttons (latin subset) |
+| [@fontsource-variable/nunito](https://fontsource.org/fonts/nunito) | OFL-1.1 | spanish-arcade | Readable body font (latin subset) |
+| [@phosphor-icons/core](https://github.com/phosphor-icons/core) | MIT | spanish-arcade | 16 duotone UI icons, copied into `ui/art/icons.js` |
 
 ## Licence
 © 2026 keymon-labs. [CC BY-NC-SA 4.0](LICENSE) plus permission for internal use by any organisation, with credit: see [NOTICE.md](NOTICE.md). Third-party material keeps its own licence: [CREDITS.md](CREDITS.md).

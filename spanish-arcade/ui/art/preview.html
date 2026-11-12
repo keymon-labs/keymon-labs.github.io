@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art kit preview (dev only)</title>
+<link rel="stylesheet" href="./fonts.css"><link rel="stylesheet" href="../../style.css">
+<style>section{position:relative;padding:12px;margin:10px 0;border-radius:var(--radius);overflow:hidden;min-height:90px}h2{font:600 1rem var(--font-display);margin:0 0 6px}.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.t{display:grid;grid-template-columns:1fr 1fr;gap:8px}.t section{min-height:70px}</style></head>
+<body><main id="m" style="padding:12px 16px"></main>
+<script type="module">
+import { mascot, MOODS, bg, BACKGROUNDS, sticker, STICKER_NAMES, icon, ICON_NAMES, burst } from './art.js';
+import { confetti } from './confetti.js';
+const q = new URLSearchParams(location.search);
+if (q.get('theme')) document.documentElement.dataset.theme = q.get('theme');
+if (q.get('palette')) document.documentElement.dataset.palette = q.get('palette');
+const sec = (t, h) => `<section class="card art-host" style="background:transparent;box-shadow:none;border:1px solid var(--line)"><h2>${t}</h2>${h}</section>`;
+m.innerHTML = '<h1 class="font-display">Art kit</h1><p>Texto en Nunito: ¿Qué tal, niño? ¡Muy bien!</p>'
+ + sec('Mascot', `<div class="row">${MOODS.map((x) => mascot(x, { size: 72 })).join('')}</div>`)
+ + sec('Stickers', `<div class="row">${STICKER_NAMES.map((n) => sticker(n, { size: 64 })).join('')}${sticker('crown', { locked: true, size: 64 })}</div>`)
+ + sec('Icons', `<div class="row" style="color:var(--accent)">${ICON_NAMES.map((n) => icon(n, { size: 30 })).join('')}</div>`)
+ + sec('Burst', `<div class="row" style="justify-content:center">${burst({ size: 110 })}</div>`)
+ + `<div class="t">${BACKGROUNDS.map((n) => sec(n, bg(n))).join('')}</div>`
+ + '<button class="btn primary chunky font-display" id="c">Confetti</button>';
+c.onclick = () => confetti();
+</script></body></html>
