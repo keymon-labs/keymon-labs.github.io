@@ -2,7 +2,8 @@
 import { make, judge, hint, tilesFor, textsOf } from './logic.js';
 import { injectStyles, el, tapOrDrag } from '../../ui/tiles.js';
 
-const CSS = `.ow-tile{min-height:56px}.ow-tile.mark{min-width:48px;padding:6px 8px}.ow-root .sp-tiles{align-items:center}`;
+// word tiles size to their text (and to the text-size setting): they reuse .sp-tile, which is a fixed square made for single letters
+const CSS = `.ow-root .ow-tile{width:auto;height:auto;min-width:2.2em;min-height:2.4em;padding:.35em .8em;line-height:1.2;white-space:nowrap}.ow-root .ow-tile.mark{min-width:2.2em;padding:.35em .5em}.ow-root .sp-tiles{align-items:center}`;
 function ownStyles() {
   if (document.getElementById('ow-styles')) return;
   const s = document.createElement('style');
