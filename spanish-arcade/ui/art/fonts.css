@@ -1,4 +1,4 @@
-/* Fredoka (headings, buttons) and Nunito (body): latin subset only (Spanish/Galician need no more). SIL OFL 1.1, see LICENSE-*.txt. */
+/* Fredoka (headings, buttons) and Nunito (body): latin subset only (Spanish needs no more). SIL OFL 1.1, see LICENSE-*.txt. */
 @font-face { font-family: "Fredoka Variable"; font-style: normal; font-display: swap; font-weight: 300 700;
   src: url(../../../node_modules/@fontsource-variable/fredoka/files/fredoka-latin-wght-normal.woff2) format("woff2-variations");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122; }
