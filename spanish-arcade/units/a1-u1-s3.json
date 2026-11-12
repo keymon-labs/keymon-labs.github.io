@@ -1,0 +1,15 @@
+{ "schema": 1, "id": "a1-u1-s3", "rev": 1, "order": 3,
+  "title": {"es": "Los días y la ñ", "en": "Days and ñ"},
+  "bookRef": {"unit": 1, "session": 3},
+  "theme": "sunny",
+  "intro": {"es": "¡Hoy aprendemos los días de la semana y la letra ñ!", "en": "Today we learn the days of the week and the letter ñ!"},
+  "badge": {"name": {"es": "Rey de la semana", "en": "King of the week"}, "icon": "📅"},
+  "pass": {"minCorrect": 3},
+  "exercises": [
+    {"id": "days-listen", "archetype": "listen-pick-word", "difficulty": 1, "params": {"from": {"tag": "days", "n": 6}, "distractorFrom": {"tag": "days", "n": 1}, "options": 4, "answerAs": "word", "similar": true}, "prompt": {"es": "Escucha y toca el día escrito.", "en": "Listen and tap the written day."}},
+    {"id": "days-spell", "archetype": "spell-tiles", "difficulty": 1, "params": {"from": {"tag": "days", "n": 5}, "extraLetters": 3, "hintLetters": false}, "prompt": {"es": "Escribe el día.", "en": "Spell the day."}},
+    {"id": "enye-lock", "archetype": "letter-lock", "difficulty": 1, "params": {"from": {"tag": "enye", "n": 4}, "clue": "picture"}, "prompt": {"es": "Adivina la palabra.", "en": "Guess the word."}},
+    {"id": "articles-gaps", "archetype": "fill-gap-choice", "difficulty": 2, "params": {"items": [{"text": "El sábado vemos ___ película en casa.", "options": ["una", "un", "unas", "unos"], "answer": "una"}, {"text": "En mi mochila hay ___ cuaderno azul.", "options": ["un", "una", "unos", "unas"], "answer": "un"}, {"text": "En la cabaña hay ___ arañas.", "options": ["unas", "unos", "una", "un"], "answer": "unas"}, {"text": "Veo ___ montaña muy alta.", "options": ["una", "un", "unas", "unos"], "answer": "una"}, {"text": "Tengo ___ lápices nuevos.", "options": ["unos", "unas", "un", "una"], "answer": "unos"}, {"text": "Mi vecino tiene ___ gatos negros.", "options": ["unos", "unas", "un", "una"], "answer": "unos"}]}, "prompt": {"es": "Completa la frase.", "en": "Fill the gap."}},
+    {"id": "enye-fix", "archetype": "fix-the-mistake", "difficulty": 2, "params": {"items": [{"text": "En otoño hace mucho viento.", "at": 1, "as": "otono"}, {"text": "Mañana es domingo.", "at": 0, "as": "Manana"}, {"text": "La araña vive en la cabaña.", "at": 1, "as": "arana"}, {"text": "El lunes voy a la montaña.", "at": 5, "as": "montana"}, {"text": "El miércoles tengo sueño.", "at": 1, "as": "miercoles"}]}, "prompt": {"es": "Toca la palabra mal escrita y corrígela.", "en": "Tap the misspelt word and fix it."}},
+    {"id": "days-order", "archetype": "order-words", "difficulty": 2, "params": {"items": [{"es": "Hoy es lunes y mañana es martes.", "emoji": "📅"}, {"es": "El sábado vamos a la montaña.", "emoji": "🏔️"}, {"es": "En otoño tengo mucho sueño.", "emoji": "🍂"}, {"es": "Nora come piña el domingo.", "emoji": "🍍"}, {"es": "¿Qué día es hoy?", "emoji": "❓"}, {"es": "El viernes juego con mi primo.", "emoji": "⚽"}], "n": 5, "punctuation": false}, "prompt": {"es": "Ordena la frase.", "en": "Order the sentence."}}
+  ] }

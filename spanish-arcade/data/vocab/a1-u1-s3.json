@@ -1,0 +1,15 @@
+{ "schema": 1, "words": [
+  {"id": "lunes", "es": "lunes", "en": "Monday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s3"},
+  {"id": "martes", "es": "martes", "en": "Tuesday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s3"},
+  {"id": "miercoles", "es": "miércoles", "en": "Wednesday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["accent"], "unit": "a1-u1-s3"},
+  {"id": "jueves", "es": "jueves", "en": "Thursday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s3"},
+  {"id": "viernes", "es": "viernes", "en": "Friday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s3"},
+  {"id": "sabado", "es": "sábado", "en": "Saturday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["accent"], "unit": "a1-u1-s3"},
+  {"id": "domingo", "es": "domingo", "en": "Sunday", "emoji": "📅", "tags": ["days"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s3"},
+  {"id": "otono", "es": "otoño", "en": "autumn", "emoji": "🍂", "tags": ["enye"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["ñ"], "unit": "a1-u1-s3"},
+  {"id": "montana", "es": "montaña", "en": "mountain", "emoji": "🏔️", "tags": ["enye"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "spell": ["ñ"], "unit": "a1-u1-s3"},
+  {"id": "pina", "es": "piña", "en": "pineapple", "emoji": "🍍", "tags": ["enye"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "spell": ["ñ"], "unit": "a1-u1-s3"},
+  {"id": "arana", "es": "araña", "en": "spider", "emoji": "🕷️", "tags": ["enye"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "spell": ["ñ"], "unit": "a1-u1-s3"},
+  {"id": "cabana", "es": "cabaña", "en": "cabin", "emoji": "🛖", "tags": ["enye"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "spell": ["ñ"], "unit": "a1-u1-s3"},
+  {"id": "sueno", "es": "sueño", "en": "sleep, dream", "emoji": "💤", "tags": ["enye"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["ñ"], "unit": "a1-u1-s3"}
+] }

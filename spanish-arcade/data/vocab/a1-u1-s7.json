@@ -1,0 +1,13 @@
+{ "schema": 1, "words": [
+  {"id": "nombre", "es": "nombre", "en": "first name", "emoji": "🏷️", "tags": ["passport"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s7"},
+  {"id": "apellido", "es": "apellido", "en": "surname", "emoji": "📝", "tags": ["passport"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s7"},
+  {"id": "pais", "es": "país", "en": "country", "emoji": "🌍", "tags": ["passport"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["accent"], "unit": "a1-u1-s7"},
+  {"id": "idioma", "es": "idioma", "en": "language", "emoji": "🗣️", "tags": ["passport"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s7"},
+  {"id": "cumpleanos", "es": "cumpleaños", "en": "birthday", "emoji": "🎂", "tags": ["passport"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["ñ"], "unit": "a1-u1-s7"},
+  {"id": "edad", "es": "edad", "en": "age", "emoji": "⏳", "tags": ["passport"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u1-s7"},
+  {"id": "bombero", "es": "bombero", "en": "firefighter", "emoji": "🚒", "tags": ["jobs"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s7"},
+  {"id": "cocinero", "es": "cocinero", "en": "cook", "emoji": "🍳", "tags": ["jobs"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s7"},
+  {"id": "medico", "es": "médico", "en": "doctor", "emoji": "🩺", "tags": ["jobs"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["accent"], "unit": "a1-u1-s7"},
+  {"id": "pintor", "es": "pintor", "en": "painter", "emoji": "🎨", "tags": ["jobs"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u1-s7"},
+  {"id": "cartero", "es": "cartero", "en": "postman", "emoji": "📮", "tags": ["jobs"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["r"], "unit": "a1-u1-s7"}
+] }
