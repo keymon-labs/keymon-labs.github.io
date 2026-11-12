@@ -23,6 +23,7 @@ export default {
     const prompt = document.createElement('p');
     prompt.textContent = `${round.emoji} ${round.prompt.es}`;
     const status = document.createElement('p');
+    status.className = 'status';
     status.setAttribute('aria-live', 'polite');
     const buttons = round.options.map((o) => {
       const b = document.createElement('button');

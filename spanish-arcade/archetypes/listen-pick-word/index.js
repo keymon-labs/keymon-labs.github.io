@@ -1,7 +1,9 @@
 // listen-pick-word: speak a Spanish word, the child taps the word or picture. Rules in logic.js, params in README.md.
 import { make, judge, hint } from './logic.js';
 
-const NOTICE = 'Este aparato no tiene voz en español. Mira el dibujo y toca la palabra.';
+const NOTICE = '🔇 Sin voz: mira el dibujo';
+let noticeShown = false; // the chip appears once per session, not every round
+const CSS = '.lpw-bar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}.lpw-bar .lpw-pic{font-size:4rem;margin:0;line-height:1.1}.lpw-bar .lpw-chip{margin:0;font-size:.9rem;color:var(--muted)}@media (orientation:landscape) and (max-height:520px){.listen-pick-word{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);column-gap:16px;align-items:center}.listen-pick-word .status{grid-column:2}.lpw-bar .lpw-pic{font-size:3rem}}';
 
 export default {
   id: 'listen-pick-word',
@@ -24,9 +26,16 @@ export default {
   hint,
 
   mount(host, round, ctx) {
+    if (!document.getElementById('lpw-styles')) {
+      const st = document.createElement('style');
+      st.id = 'lpw-styles';
+      st.textContent = CSS;
+      document.head.append(st);
+    }
     const root = document.createElement('div');
     root.className = 'listen-pick-word';
     const status = document.createElement('p');
+    status.className = 'status';
     status.setAttribute('aria-live', 'polite');
     const control = (label, text, onClick) => {
       const b = document.createElement('button');
@@ -42,6 +51,7 @@ export default {
     const voice = ctx.canSpeak;
     const asPicture = voice && round.answerAs === 'picture'; // no voice: picture prompt, word options
     const bar = document.createElement('div');
+    bar.className = 'lpw-bar';
     if (voice) {
       let played = false;
       const play = async (rate, btn) => {
@@ -53,12 +63,17 @@ export default {
       if (round.replay !== false) bar.append(control('Más despacio', '🐢', () => play(0.5)));
       play(0.9, listen); // works if the child already tapped; otherwise they press the speaker
     } else {
-      const notice = document.createElement('p');
-      notice.textContent = NOTICE;
       const pic = document.createElement('p');
-      pic.style.fontSize = '4rem';
+      pic.className = 'lpw-pic';
       pic.textContent = round.emoji;
-      bar.append(notice, pic);
+      bar.append(pic);
+      if (!noticeShown) {
+        noticeShown = true;
+        const notice = document.createElement('p');
+        notice.className = 'lpw-chip';
+        notice.textContent = NOTICE;
+        bar.prepend(notice);
+      }
     }
 
     const buttons = round.options.map((o) => {

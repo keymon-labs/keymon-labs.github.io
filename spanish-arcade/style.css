@@ -104,3 +104,41 @@ a.stone:hover { border-color: var(--accent); }
 @keyframes art-hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px); } }
 @keyframes art-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .art-pop, .art-hop, .art-burst { animation: none; } }
+
+/* Round screen: header, stage, reserved feedback strip, action bar. No page scroll; the stage scrolls inside itself only as a last resort. */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+h1[tabindex="-1"]:focus { outline: none; }
+#exercise-prompt:focus { outline: none; }
+body.playing #app { height: 100dvh; max-width: 900px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+main.play { display: flex; flex-direction: column; min-height: 0; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); position: relative; }
+.playbar { display: flex; align-items: center; gap: 12px; min-height: 56px; flex: none; }
+.playbar .icon { margin: 0; width: 48px; min-width: 48px; min-height: 48px; padding: 0; font-size: 1.2rem; border-radius: 50%; }
+.dots { display: flex; gap: 6px; }
+.dots span { width: 12px; height: 12px; border-radius: 50%; background: var(--soft); border: 2px solid var(--accent); }
+.dots .done { background: var(--accent); }
+.dots .now { background: var(--card); box-shadow: 0 0 0 3px var(--accent); }
+.roundbar { flex: 1; height: 8px; border-radius: 4px; background: var(--soft); overflow: hidden; }
+.roundbar i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+#stage { flex: 1; min-height: 0; overflow-y: auto; }
+#exercise-prompt { margin: 4px 0 8px; font-weight: 700; }
+.loader { text-align: center; font-size: 1.4rem; margin-top: 30%; }
+#live { flex: 1; min-width: 0; align-self: center; font-size: .95rem; }
+#live p { margin: 0; }
+.status { min-height: 2.9em; margin: 6px 0; }
+.actions { flex: none; display: flex; justify-content: flex-end; align-items: center; gap: 16px; min-height: 64px; padding-top: 8px; margin-top: 8px; }
+.actions .skip { margin: 0; min-height: 56px; padding: 8px 24px; }
+main.play.done .playbar, main.play.done .actions { display: none; }
+main.play.done { overflow-y: auto; }
+.sheet { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; background: rgba(20, 16, 40, .55); }
+.sheet-box { background: var(--card); border-radius: var(--radius); padding: 20px; width: min(320px, 90%); box-shadow: var(--shadow); text-align: center; }
+.sheet-box .btn { display: flex; margin: 10px 0 0; width: 100%; }
+@media (orientation: landscape) and (max-height: 520px) {
+  main.play { padding: 4px 0; }
+  .playbar { min-height: 44px; }
+  .playbar .icon { min-height: 48px; width: 48px; min-width: 48px; }
+  #exercise-prompt { margin: 0 0 4px; font-size: 1rem; }
+  .status { min-height: 1.5em; margin: 2px 0; }
+  .actions { min-height: 56px; padding-top: 4px; margin-top: 0; }
+  .actions .skip { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .roundbar i { transition: none; } }

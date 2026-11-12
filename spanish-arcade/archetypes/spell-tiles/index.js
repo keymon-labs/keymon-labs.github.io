@@ -26,55 +26,89 @@ export default {
 
   mount(host, round, ctx) {
     injectStyles();
-    let placed = []; // tile ids, in answer order
-    let locked = 0; // leading tiles that stay (hint)
+    const n = [...round.answer].length;
+    const fixed = ctx.difficulty <= 2; // difficulty 1-2 show one empty slot per letter; 3 shows only the letters placed
+    const slotsIds = Array(n).fill(null); // tile id (or null = empty) per answer slot; removing a letter leaves a hole, never shifts
+    let locked = 0; // leading slots that stay (hint)
     let busy = false;
     const root = el('div', 'sp-root');
+    root.style.setProperty('--n', n); // landscape: tiles shrink so the slots stay on one row
     const prompt = el('p', 'sp-prompt', `${round.emoji || round.prompt.es || ''}`);
-    const say = el('button', 'sp-key', '🔊');
+    const say = el('button', 'sp-key sp-say', '🔊');
     say.type = 'button';
     say.setAttribute('aria-label', 'Escuchar');
     say.addEventListener('click', () => ctx.say(round.answer));
-    say.hidden = !ctx.canSpeak;
+    say.style.visibility = ctx.canSpeak ? '' : 'hidden'; // keeps its space so the layout does not change by device
     const reveal = el('p', 'sp-reveal');
     const slots = el('div', 'sp-tiles slots');
-    const tray = el('div', 'sp-tiles');
+    slots.setAttribute('role', 'list');
+    const tray = el('div', 'sp-tiles tray');
     const check = el('button', 'sp-check', '✔ Comprobar');
     check.type = 'button';
-    const status = el('p');
+    const status = el('p', 'status');
     status.setAttribute('aria-live', 'polite');
     root.append(prompt, say, reveal, slots, tray, check, status);
     host.append(root);
 
-    const tileOf = (id) => round.tiles.find((t) => t.id === id);
-    const lock = (n) => { placed = leadingTiles(round, n); locked = n; }; // the first n letters of the answer stay in place
-    const tile = (t, onTap, onDrop, isLocked) => {
-      const b = el('button', `sp-tile${isLocked ? ' locked' : ''}`, t.ch);
+    const filled = () => slotsIds.filter((id) => id !== null);
+    // Tray tiles are built once, in a fixed order; a placed tile stays as a faded socket and comes back to the same spot.
+    const trayBtns = new Map(round.tiles.map((t) => {
+      const b = el('button', 'sp-tile', t.ch);
       b.type = 'button';
-      b.disabled = isLocked;
-      if (!isLocked) tapOrDrag(b, { onTap, onDrop, dropZone: () => slots });
-      return b;
-    };
+      const put = () => place(t.id);
+      tapOrDrag(b, { onTap: put, onDrop: put, dropZone: () => slots });
+      tray.append(b);
+      return [t.id, b];
+    }));
+    const tileOf = (id) => round.tiles.find((t) => t.id === id);
+    function place(id) {
+      if (busy || slotsIds.includes(id)) return;
+      const i = slotsIds.indexOf(null);
+      if (i < 0) return;
+      slotsIds[i] = id;
+      render();
+    }
+    function take(i) {
+      if (busy || i < locked || slotsIds[i] === null) return;
+      slotsIds[i] = null;
+      render();
+    }
+    const lock = (k) => { slotsIds.fill(null); leadingTiles(round, k).forEach((id, i) => { slotsIds[i] = id; }); locked = k; }; // the first k letters of the answer stay in place
+
     function render() {
-      slots.replaceChildren(...placed.map((id, i) => tile(tileOf(id), () => { placed.splice(i, 1); render(); }, null, i < locked)));
-      tray.replaceChildren(...round.tiles.filter((t) => !placed.includes(t.id))
-        .map((t) => tile(t, () => { placed.push(t.id); render(); }, () => { placed.push(t.id); render(); })));
-      slots.setAttribute('aria-label', placed.map((id) => tileOf(id).ch).join(' '));
-      check.disabled = busy || placed.length === 0;
+      const shown = fixed ? n : Math.min(n, Math.max(locked, slotsIds.findLastIndex((x) => x !== null) + 1));
+      slots.replaceChildren(...slotsIds.map((id, i) => {
+        const b = el('button', `sp-tile slot${id === null ? ' empty' : ''}${i < locked ? ' locked' : ''}`, id === null ? '' : tileOf(id).ch);
+        b.type = 'button';
+        b.disabled = id === null || i < locked || busy;
+        b.setAttribute('role', 'listitem');
+        b.setAttribute('aria-label', id === null ? `Letra ${i + 1}: vacía` : `Letra ${i + 1}: ${tileOf(id).ch}`);
+        if (i >= shown) b.style.visibility = 'hidden';
+        b.addEventListener('click', () => take(i));
+        return b;
+      }));
+      for (const [id, b] of trayBtns) {
+        const used = slotsIds.includes(id);
+        b.disabled = used || busy;
+        b.classList.toggle('used', used);
+        b.setAttribute('aria-label', used ? `${tileOf(id).ch}, puesta` : `${tileOf(id).ch}, toca para poner`);
+      }
+      check.disabled = busy || filled().length === 0;
+      check.textContent = filled().length ? '✔ Comprobar' : 'Pon las letras';
     }
 
     async function submit() {
-      if (busy || !placed.length) return;
+      if (busy || !filled().length) return;
       busy = true;
       render();
-      const r = await ctx.submit(wordOf(round, placed));
+      const r = await ctx.submit(wordOf(round, filled()));
       status.textContent = `${r.correct ? '✔' : '✖'} ${r.feedback.es}`;
       ctx.sfx(r.correct ? 'right' : 'wrong');
       busy = false;
       if (!r.correct && r.hint?.level === 1) lock(r.hint.keep);
       if (!r.correct && r.hint?.level === 2) {
         reveal.textContent = r.hint.answer; // stays visible; the child now builds it again
-        placed = [];
+        slotsIds.fill(null);
         locked = 0;
       }
       render();
@@ -85,11 +119,11 @@ export default {
       if (e.ctrlKey || e.metaKey || e.altKey || e.target.closest?.('input,textarea')) return;
       if ((e.key === 'Enter' || e.key === ' ') && e.target.closest?.('button')) return; // the button handles its own press
       if (e.key === 'Enter') return submit();
-      if (e.key === 'Backspace') { if (placed.length > locked) { placed.pop(); render(); } return; }
+      if (e.key === 'Backspace') { const i = slotsIds.findLastIndex((x) => x !== null); if (i >= locked) take(i); return; }
       const c = e.key.length === 1 ? e.key.toLowerCase() : '';
-      const free = round.tiles.filter((t) => !placed.includes(t.id));
+      const free = round.tiles.filter((t) => !slotsIds.includes(t.id));
       const t = free.find((x) => x.ch === c) ?? (round.accents === 'lenient' ? free.find((x) => key(x.ch, 'lenient') === c) : null);
-      if (t) { placed.push(t.id); render(); }
+      if (t) place(t.id);
     };
     document.addEventListener('keydown', onKey);
 

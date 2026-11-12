@@ -21,6 +21,7 @@ export default {
     const root = document.createElement('div');
     root.className = 'odd-one-out';
     const status = document.createElement('p');
+    status.className = 'status';
     status.setAttribute('aria-live', 'polite');
     const grid = document.createElement('div');
     grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:12px;justify-content:center';
