@@ -48,6 +48,7 @@ export function parseParams(text, archetype, difficulty = 1) {
 /** A starting point for the editor: archetypes with a `from` selector get n=4; the ones that need lists get a tiny invented example. */
 const STARTERS = {
   'spell-fill-letters': { items: [{ es: 'perro' }, { es: 'cumpleaños' }, { es: 'pingüino' }] },
+  'order-words': { items: [{ es: '¿Dónde está el gato?', emoji: '🐱' }, { es: 'Hoy es lunes.', accept: ['Hoy lunes es.'], emoji: '📅' }] },
   'read-answer': { text: ['Ana tiene un gato.', 'El gato es negro.'], questions: [{ q: '¿De qué color es el gato?', options: ['negro', 'blanco', 'verde'], answer: 0, evidence: 1 }] },
 };
 export function starterParams(archetype) {
