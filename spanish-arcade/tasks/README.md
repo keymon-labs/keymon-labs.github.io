@@ -51,17 +51,17 @@ Board (source of truth is each file's front matter):
 | 033 | [New units: a1-u1-s3, a1-u1-s5, a1-u1-s7](033-new-units.md) | Haiku | 027, 028, 029, 031 | review |
 | 034 | [Backlog: word memory, echo rounds, daily review, limits, album 2.0](034-backlog.md) | Sonnet | 031, 032 | todo |
 | 035 | [Quality gate: smoke audit, docs, landing card, ship](035-quality-gate.md) | Sonnet | 026, 027, 028, 029, 030, 031, 032, 033 | done |
-| 036 | [Mix games inside a leg (runs of at most 3 rounds)](036-mix-rounds.md) | Sonnet | 031 | todo |
+| 036 | [Mix games inside a leg (runs of at most 3 rounds)](036-mix-rounds.md) | Sonnet | 031 | review |
 | 037 | [letter-lock v2: normal text field and riddle clues instead of grid, keyboard and emoji](037-letter-lock-riddle.md) | Sonnet | 029, 033 | review |
 | 038 | [Compact exercise UI (audio button beside the icon, no scroll on phones)](038-compact-ui.md) | Sonnet | 031 | review |
-| 039 | [Castilian audio: bundled clips first, browser voice as fallback](039-castilian-audio.md) | Sonnet | — | todo |
-| 040 | [Courses layout, level metadata and sticky unlocks](040-courses-layout.md) | Sonnet | — | todo |
-| 041 | [New archetype paragraph-editor (ages 10-12)](041-paragraph-editor.md) | Sonnet | — | todo |
-| 042 | [New archetype clue-detective (ages 10-12)](042-clue-detective.md) | Sonnet | — | todo |
-| 043 | [New archetype question-maker (ages 10-12)](043-question-maker.md) | Sonnet | — | todo |
-| 044 | [Contributor kit: CONTRIBUTING, scaffolds, PR checks](044-contributor-kit.md) | Sonnet | 040 | todo |
-| 045 | [Content pipeline: notes templates, prompts, overlap check](045-pipeline-tooling.md) | Sonnet | 040 | todo |
-| 046 | [Units 2 and 3 (8 sessions), drafted for review](046-units-2-3.md) | Haiku | 040, 045 | todo |
+| 039 | [Castilian audio: bundled clips first, browser voice as fallback](039-castilian-audio.md) | Sonnet | — | review |
+| 040 | [Courses layout, level metadata and sticky unlocks](040-courses-layout.md) | Sonnet | — | review |
+| 041 | [New archetype paragraph-editor (ages 10-12)](041-paragraph-editor.md) | Sonnet | — | review |
+| 042 | [New archetype clue-detective (ages 10-12)](042-clue-detective.md) | Sonnet | — | review |
+| 043 | [New archetype question-maker (ages 10-12)](043-question-maker.md) | Sonnet | — | review |
+| 044 | [Contributor kit: CONTRIBUTING, scaffolds, PR checks](044-contributor-kit.md) | Sonnet | 040 | review |
+| 045 | [Content pipeline: notes templates, prompts, overlap check](045-pipeline-tooling.md) | Sonnet | 040 | review |
+| 046 | [Units 2 and 3 (8 sessions), drafted for review](046-units-2-3.md) | Haiku | 040, 045 | review |
 <!-- board:end -->
 
 Parallelism: 002 can run beside 001. After 001: 001b, 006–010 and 014 are independent; 003 needs 001b. Archetype tasks (006–010) may be restyled once 002's tokens exist. 011 needs the archetypes it uses (it may start with the ones that exist and leave others for a follow-up). Later units (u1-s5 onwards) become new Haiku/Sonnet data tasks cloned from 011.

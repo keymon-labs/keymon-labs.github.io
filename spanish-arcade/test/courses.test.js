@@ -17,7 +17,7 @@ const courseUnits = (c, id) => c.units.filter((u) => u.course === id);
 test('the existing content is course a1s1 and keeps its ids', () => {
   assert.deepEqual(real.errors, []);
   assert.ok(real.courses.some((c) => c.id === 'a1s1')); // other courses may be added by contributors
-  const ids = courseUnits(real, 'a1s1').map((u) => u.id);
+  const ids = courseUnits(real, 'a1s1').map((u) => u.id).filter((id) => /^a1-u[01]-/.test(id)); // later units are added by contributors
   assert.deepEqual(ids, ['a1-u0-demo', 'a1-u1-s1', 'a1-u1-s3', 'a1-u1-s5', 'a1-u1-s7']);
   assert.ok(real.words.filter((w) => w.course === 'a1s1').length > 0);
   assert.deepEqual(real.unitById['a1-u1-s1'].exercises.map((e) => e.id).slice(0, 2), ['numbers-listen', 'colours-spell']);
@@ -25,7 +25,9 @@ test('the existing content is course a1s1 and keeps its ids', () => {
 });
 
 test('existing units are "approved" (live as before), the demo unit stays dev', async () => {
-  const real4 = courseUnits(real, 'a1s1').filter((u) => !u.dev);
+  const real4 = courseUnits(real, 'a1s1').filter((u) => !u.dev && u.status === 'approved'); // units 2 and 3 are drafts for review
+  assert.deepEqual(real4.map((u) => u.id), ['a1-u1-s1', 'a1-u1-s3', 'a1-u1-s5', 'a1-u1-s7']);
+  assert.ok(courseUnits(real, 'a1s1').filter((u) => !u.dev && u.status !== 'approved').every((u) => u.status === 'review'));
   assert.ok(real4.every((u) => u.status === 'approved' && u.level.cefr === 'A1'));
   assert.deepEqual(visibleUnits(real.units, false).filter((u) => u.course === 'a1s1').map((u) => u.id).filter((id) => id !== 'a1-u0-demo'), real4.map((u) => u.id));
   assert.equal(visibleUnits(real.units, true).length, real.units.length);
@@ -44,7 +46,7 @@ test('an old saved store loads with its stars, badges and unlocks', () => {
   assert.equal(p.courseId, undefined); // missing = the first course
   assert.equal(currentCourse(p, real.courses).id, 'a1s1');
   assert.equal(applyRev(p, real.units), p, 'revs match: nothing is dropped'); // same object = no change
-  const units = courseUnits(real, 'a1s1').filter((u) => !u.dev);
+  const units = courseUnits(real, 'a1s1').filter((u) => !u.dev && u.status === 'approved'); // the units the old store knew
   assert.deepEqual(units.map((u) => p.units[u.id]?.stars ?? 0), [3, 2, 0, 0]);
   assert.equal(totalStars(p, real.units), 5);
   assert.deepEqual(units.map((u) => isUnlocked(p, units, u.id)), [true, true, true, false]); // s5: s3 finished; s7: s5 has no stars
@@ -55,7 +57,7 @@ test('an old saved store loads with its stars, badges and unlocks', () => {
 
 test('sticky unlock: a unit inserted before a finished one does not re-lock it', () => {
   const p = fixture.profiles[0]; // s1 and s3 finished, s5 started
-  const units = courseUnits(real, 'a1s1').filter((u) => !u.dev);
+  const units = courseUnits(real, 'a1s1').filter((u) => !u.dev && u.status === 'approved'); // the units the old store knew
   const fresh = { id: 'a1-u1-s2', order: 2 }; // new unit between s1 and s3, nothing played
   const withNew = [units[0], fresh, ...units.slice(1)];
   assert.deepEqual(withNew.map((u) => isUnlocked(p, withNew, u.id)), [true, true, true, true, false]); // s3 stays open though s2 has no stars
