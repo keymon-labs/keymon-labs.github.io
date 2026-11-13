@@ -7,6 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test && npm run check:units",
+    "audio": "node spanish-arcade/scripts/audio-gen.mjs",
     "check:units": "node spanish-arcade/scripts/check-units.mjs",
     "build:claude": "node claude/build.js",
     "build:loader": "node claude/build-loader.js",
