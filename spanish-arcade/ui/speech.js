@@ -128,7 +128,7 @@ export function createSpeech({
       last = 'voice';
       const u = new Utterance(text);
       u.voice = v;
-      u.lang = normLang(v.lang);
+      u.lang = v.lang; // exactly the voice's own tag: Firefox drops the utterance when voice and lang differ (es_ES vs es-ES)
       u.rate = rate;
       return new Promise((resolve) => {
         // Some engines (Android) never fire onend/onerror: don't leave the caller waiting.

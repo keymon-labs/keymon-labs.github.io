@@ -113,14 +113,6 @@ test('normLang: underscores, ISO codes and case become BCP-47', () => {
   assert.equal(normText('  ¡Hola!   ¿Cómo\n te llamas? '), '¡Hola! ¿Cómo te llamas?');
 });
 
-test('utterance gets the normalised tag (es_ES -> es-ES)', async () => {
-  const synth = fakeSynth([v('es_ES', true)]);
-  const sp = createSpeech({ synth, Utterance, activation: { hasBeenActive: true } });
-  await sp.say('hola');
-  assert.equal(synth.spoken[0].lang, 'es-ES');
-  assert.equal(sp.voices()[0].region, 'es-ES');
-});
-
 test('a text with a clip plays the clip and never the browser voice', async () => {
   const synth = fakeSynth([v('es-MX')]);
   const { sp, audios } = clipSpeech({ 'hola mundo': 'abc123' }, synth);
@@ -184,4 +176,14 @@ test('no tap yet: no clip either; stop() aborts a clip without the browser voice
   slow.stop();
   assert.equal(await p, false);
   assert.equal(synth.spoken.length, 0);
+});
+
+test('the utterance keeps the voice\'s own language tag (es_ES stays es_ES): Firefox drops it when voice and lang differ', async () => {
+  for (const tag of ['es_ES', 'spa-ESP', 'es-ES']) {
+    const synth = fakeSynth([v(tag, true)]);
+    const sp = createSpeech({ synth, Utterance, activation: { hasBeenActive: true } });
+    assert.equal(await sp.say('hola'), true);
+    assert.equal(synth.spoken[0].lang, tag);
+    assert.equal(synth.spoken[0].voice.lang, tag);
+  }
 });
