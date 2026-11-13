@@ -1,4 +1,4 @@
-// Invented sample vocab for the lab (same shape as data/vocab/*.json): 15 nouns, 3 tags, with emoji, articles and spelling tags.
+// Invented sample vocab for the lab (same shape as courses/<course>/vocab/*.json): 15 nouns, 3 tags, with emoji, articles and spelling tags.
 const n = (id, es, en, emoji, tags, gender, extra = {}) => ({
   id: `ej-${id}`, es, en, emoji, tags, pos: 'noun', gender, number: 'sg', article: gender === 'm' ? 'el' : 'la', unit: 'lab-ejemplo', ...extra,
 });

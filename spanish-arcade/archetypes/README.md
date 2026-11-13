@@ -1,6 +1,6 @@
 # Archetypes
 
-An archetype is a reusable mini-game type. Units (`units/*.json`) pick one per exercise and pass `params`. The contract is [PLAN.md §4.3](../docs/PLAN.md); this page is enough to build one. Copy [`placeholder/`](placeholder/) to start.
+An archetype is a reusable mini-game type. Units (`courses/<course>/units/*.json`) pick one per exercise and pass `params`. The contract is [PLAN.md §4.3](../docs/PLAN.md); this page is enough to build one. Copy [`placeholder/`](placeholder/) to start.
 
 ## Add an archetype
 1. Make `archetypes/<id>/` with:

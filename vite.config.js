@@ -10,7 +10,7 @@ const IGNORE = /^(node_modules|dist|scripts|claude|\.git|\.github|\.claude)(\/|$
 // Every index.html in the repo is a page: the landing page, each app,
 // and each frozen version (app/v1/, app/v2/...). No manual registration.
 const pages = Object.fromEntries(
-  globSync('**/index.html', { exclude: (p) => /^(node_modules|dist|\.git)/.test(p) })
+  globSync('**/index.html', { exclude: (p) => /^(node_modules|dist|\.git)/.test(p) || /(^|\/)(content-private|book|private-assets)\//.test(p) })
     .map((p) => [p.replace(/\/?index\.html$/, '') || 'main', resolve(p)])
 );
 

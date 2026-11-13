@@ -68,7 +68,7 @@ const ID = /^[a-z0-9ñáéíóúü]+(-[a-z0-9ñáéíóúü]+)*$/;
 const COURSE_ID = /^[a-z0-9]{1,12}(-[a-z0-9]+)*$/;
 const ARTICLES = { el: ['m', 'sg'], la: ['f', 'sg'], los: ['m', 'pl'], las: ['f', 'pl'] };
 
-/** One data/vocab/<unitId>.json file. */
+/** One courses/<course>/vocab/<unitId>.json file. */
 export function validateVocab(file, unitId) {
   const { errs, err } = collector();
   if (file?.schema !== 1) err('schema', 'must be 1');

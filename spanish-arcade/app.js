@@ -151,7 +151,7 @@ function route() {
   const unit = content.unitById[id];
   const profile = activeProfile();
   if (page === 'profile' && store.profile(id)) { activeId = id; renderProfile(store.profile(id)); }
-  else if (page === 'unit' && unit && profile && unitsOfCourse(unit.course).some((u) => u.id === unit.id) && isUnlocked(profile, unitsOfCourse(unit.course), unit.id)) (sub === 'play' ? playUnit : renderIntro)(profile, unit);
+  else if (page === 'unit' && unit && profile && (!unit.course || coursesNow().some((c) => c.id === unit.course)) && unitsOfCourse(unit.course).some((u) => u.id === unit.id) && isUnlocked(profile, unitsOfCourse(unit.course), unit.id)) (sub === 'play' ? playUnit : renderIntro)(profile, unit);
   else if (page === 'settings') gate(renderSettingsScreen);
   else renderHome();
   root.querySelector('h1')?.focus();
@@ -197,7 +197,7 @@ function renderProfile(profile) {
     h('div', { class: 'chips' }, h('span', { class: 'chip', id: 'total-stars' }, `⭐ ${totalStars(profile, content.units)}`)));
   const courses = coursesNow();
   const course = currentCourse(profile, courses);
-  const units = course ? unitsOfCourse(course.id) : visibleUnits(content.units, debugOn());
+  const units = course ? unitsOfCourse(course.id) : content.units.some((u) => u.course) ? [] : visibleUnits(content.units, debugOn()); // units of hidden courses never show
   const next = nextUnit(profile, units);
   if (next) {
     const up = unitProgress(profile, next);

@@ -1,4 +1,4 @@
-// Seeded generation: exercise params + vocab (data/vocab/*.json) -> rounds. Pure, no DOM.
+// Seeded generation: exercise params + vocab (courses/<course>/vocab/*.json) -> rounds. Pure, no DOM.
 
 /** Stable 32-bit seed from any parts, e.g. seedFor(profileId, unitId, attempt). FNV-1a. */
 export function seedFor(...parts) {

@@ -89,9 +89,9 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
   ] }
 ```
 - Badge id is derived: `badge-<unitId>`.
-- Optional `"status": "draft" | "review" | "approved"` (missing = approved). `draft`: dev server only (left out of production like `dev`). `review`: bundled, shown only when debug mode (Laboratorio) is on. `approved`: shown to children.
+- Optional `"status": "draft" | "review" | "approved"` (missing = approved). `draft`: dev server only (hidden in production like `dev`; still in the JS bundle, which is public anyway). `review`: bundled, shown only when debug mode (Laboratorio) is on. `approved`: shown to children.
 - Optional `"level": { "band": "7-8" | "9-10" | "11-12", "cefr": "Pre-A1" | "A1" | "A2" | "B1" | "B2" }` (AGE-BANDS §2.1): information for parents and authors, no logic uses it yet. `byBand` exercise overrides are not built.
-- Optional `"dev": true` marks a demo/test unit: validated and loaded in tests and `vite dev`, left out of production builds (`loadContent({ includeDev: import.meta.env.DEV })`).
+- Optional `"dev": true` marks a demo/test unit: validated and loaded in tests and `vite dev`, hidden in production builds (`loadContent({ includeDev: import.meta.env.DEV })`).
 - `exercises`: 5–6 items. **Exercise ids are stable, meaningful and never reused** (progress is stored by id). Bump `rev` when exercises change meaningfully.
 - An exercise yields several **rounds** (`from.n` or `items.length`, default 4–6 questions). Unit time cap: about 8 minutes.
 - `params` are validated against the archetype's `paramsSchema`; `difficulty` (1–3) is applied via the archetype's `defaults(difficulty)` and any explicit `params` override it. Difficulty is non-decreasing within a unit; units 1–4 use 1–2, later units may use 3.

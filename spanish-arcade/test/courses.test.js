@@ -142,3 +142,12 @@ test('unit status, level and profile fields are validated and optional', () => {
   assert.equal(st.setCourse(made.id, 'zz').courseId, 'zz');
 });
 function archetypes_by_id() { return real.archetypeById; }
+
+test('a direct link or the home trail never shows units of a course that is not visible (Opus review of 040)', async () => {
+  const c = twoCourses({ includeDev: false }, (b) => { b.courses = { ...b.courses }; return b; });
+  // a course that is not approved: its units must not be listed by visibleCourses in production
+  const hidden = structuredClone(c.courses.find((x) => x.id === 'zz'));
+  hidden.status = 'review';
+  const ids = visibleCourses({ ...c, courses: c.courses.map((x) => (x.id === 'zz' ? hidden : x)) }, { debug: false }).map((x) => x.id);
+  assert.ok(!ids.includes('zz'));
+});

@@ -75,7 +75,7 @@ export const saveInProgress = (profile, snapshot) => ({ ...profile, inProgress: 
  */
 export function isUnlocked(profile, units, unitId) {
   const i = units.findIndex((u) => u.id === unitId);
-  return i === 0 || (i > 0 && (Boolean(profile.units?.[unitId]) || (profile.units?.[units[i - 1].id]?.stars ?? 0) > 0));
+  return i === 0 || (i > 0 && (Boolean(profile.units?.[unitId]) || profile.inProgress?.unitId === unitId || (profile.units?.[units[i - 1].id]?.stars ?? 0) > 0));
 }
 
 /** Seed for the next attempt: hash(profileId, unitId, attempt), so each replay differs but is reproducible. */
