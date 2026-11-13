@@ -49,6 +49,14 @@ export function parseParams(text, archetype, difficulty = 1) {
 const STARTERS = {
   'spell-fill-letters': { items: [{ es: 'perro' }, { es: 'cumpleaños' }, { es: 'pingüino' }] },
   'order-words': { items: [{ es: '¿Dónde está el gato?', emoji: '🐱' }, { es: 'Hoy es lunes.', emoji: '📅' }] },
+  // --- question-maker sample (invented) ---
+  'question-maker': { items: [
+    { answer: 'Vivo en una casa azul.', focus: 'en una casa azul', question: '¿Dónde vives?', wrong: ['¿Dónde vivo?'], emoji: '🏠' },
+    { answer: 'Llego tarde porque perdí el autobús.', focus: 'porque perdí el autobús', question: '¿Por qué llegas tarde?', emoji: '🚌' },
+    { answer: 'Mi hermano tiene tres gatos.', focus: 'tres', question: '¿Cuántos gatos tiene tu hermano?', emoji: '🐱' },
+    { answer: 'Mañana juego con Ana.', focus: 'con Ana', question: '¿Con quién juegas mañana?', emoji: '⚽' },
+  ], build: 'tiles' },
+  // --- end question-maker sample ---
   'read-answer': { text: ['Ana tiene un gato.', 'El gato es negro.'], questions: [{ q: '¿De qué color es el gato?', options: ['negro', 'blanco', 'verde'], answer: 0, evidence: 1 }] },
 };
 export function starterParams(archetype) {

@@ -12,6 +12,7 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `odd-one-out` | Tap the intruder in each cloud of words | categories | `groups[]` or `tags` | subtler intruder | done |
 | `match-pairs` | Join word ↔ picture/emoji, article ↔ noun, question ↔ answer | vocab, grammar | `pairs[]` or `from`, `mode` | more pairs; text-only | done |
 | `order-words` | Put words in order to make a sentence | syntax | `sentences[]` | longer sentences; accents/punctuation tiles | done |
+| `question-maker` | Build the question that asks for the highlighted part of an answer (choose, tiles or type) | question words, accents, ¿ ?, person change | `items[]`, `build`, `decoys` | longer answers, tense change | done |
 | `word-search` | Find the words in a grid | spelling, vocab | `from`, `size`, `directions` | bigger grid, diagonals | idea |
 | `sort-into-bins` | Drag words into el/la, un/una, singular/plural, masculine/feminine | grammar | `bins[]`, `from` | more bins; irregulars | idea |
 | `true-false-listen` | Listen to a sentence; true or false against a picture | listening | `scene`, `statements[]` | longer statements | idea |

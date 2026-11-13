@@ -3,7 +3,7 @@ id: "043"
 title: New archetype question-maker (ages 10-12)
 model: Sonnet 5.5
 why_model: Design is fixed in docs/research/AGE-BANDS.md; cheapest, built on order-words.
-status: todo
+status: review
 depends_on: []
 touches: [spanish-arcade/archetypes/question-maker/**, spanish-arcade/test/question-maker.test.js, spanish-arcade/lab/**]
 ---
