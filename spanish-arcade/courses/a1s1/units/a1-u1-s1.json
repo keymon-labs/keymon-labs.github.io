@@ -1,4 +1,4 @@
-{ "schema": 1, "id": "a1-u1-s1", "rev": 3, "order": 1, "status": "review", "level": { "band": "7-8", "cefr": "A1" },
+{ "schema": 1, "id": "a1-u1-s1", "rev": 3, "order": 1, "status": "approved", "level": { "band": "7-8", "cefr": "A1" },
   "title": { "es": "Me llamo…", "en": "My name is…" },
   "bookRef": { "unit": 1, "session": 1 },
   "theme": "sunny",

@@ -24,13 +24,13 @@ test('the existing content is course a1s1 and keeps its ids', () => {
   assert.ok(real.words.some((w) => w.id === 'gato'));
 });
 
-test('existing units are "review" (hidden outside debug mode), the demo unit stays dev', async () => {
+test('existing units are "approved" (live as before), the demo unit stays dev', async () => {
   const real4 = courseUnits(real, 'a1s1').filter((u) => !u.dev);
-  assert.ok(real4.every((u) => u.status === 'review' && u.level.cefr === 'A1'));
-  assert.deepEqual(visibleUnits(real.units, false).map((u) => u.id), ['a1-u0-demo']);
+  assert.ok(real4.every((u) => u.status === 'approved' && u.level.cefr === 'A1'));
+  assert.deepEqual(visibleUnits(real.units, false).map((u) => u.id).filter((id) => id !== 'a1-u0-demo'), real4.map((u) => u.id));
   assert.equal(visibleUnits(real.units, true).length, real.units.length);
   const prod = await loadRealContent({ includeDev: false });
-  assert.deepEqual(visibleCourses(prod, { debug: false }).map((c) => c.id), []); // production: nothing approved to show yet
+  assert.deepEqual(visibleCourses(prod, { debug: false }).map((c) => c.id), ['a1s1']);
   assert.deepEqual(visibleCourses(real, { debug: true }).map((c) => c.id), ['a1s1']);
 });
 
@@ -119,9 +119,9 @@ test('status draft stays out of production; review and approved are bundled', ()
   assert.ok('zz-u1-s1' in twoCourses({ includeDev: true }, (b) => { b.units['../courses/zz/units/zz-u1-s1.json'].status = 'draft'; return b; }).unitById);
 });
 
-test('the course picker list: more than one visible course only when approved units exist', () => {
+test('the course picker list: a course is listed once it has an approved unit', () => {
   const c = twoCourses({ includeDev: false });
-  assert.deepEqual(visibleCourses(c, { debug: false }).map((x) => x.id), ['zz']); // a1s1 is all "review"
+  assert.deepEqual(visibleCourses(c, { debug: false }).map((x) => x.id), ['a1s1', 'zz']);
   assert.deepEqual(visibleCourses(c, { debug: true }).map((x) => x.id), ['a1s1', 'zz']);
   assert.equal(currentCourse({ courseId: 'zz' }, c.courses).id, 'zz');
   assert.equal(currentCourse({ courseId: 'gone' }, c.courses).id, 'a1s1'); // unknown id falls back to the first

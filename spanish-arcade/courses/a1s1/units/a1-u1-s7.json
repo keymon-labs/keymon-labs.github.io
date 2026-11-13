@@ -1,4 +1,4 @@
-{ "schema": 1, "id": "a1-u1-s7", "rev": 2, "order": 7, "status": "review", "level": { "band": "7-8", "cefr": "A1" },
+{ "schema": 1, "id": "a1-u1-s7", "rev": 2, "order": 7, "status": "approved", "level": { "band": "7-8", "cefr": "A1" },
   "title": {"es": "Mi pasaporte", "en": "My passport"},
   "bookRef": {"unit": 1, "session": 7},
   "theme": "sunny",
