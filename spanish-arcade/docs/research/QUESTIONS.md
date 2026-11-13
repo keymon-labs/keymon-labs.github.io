@@ -6,7 +6,7 @@ Collected from the research round (docs in this folder). Each row has the call m
 | # | Question | Assumed answer | Cost if wrong | Status |
 |---|---|---|---|---|
 | D1 | Which games first? | `order-words` (with a punctuation mode), `fix-the-mistake`, `letter-lock`. `type-the-answer` follows after. | Re-pick; archetypes are independent | assumed |
-| D2 | Which units first? | `a1-u1-s3`, `a1-u1-s5`, `a1-u1-s7` (the book's order). Units 2 and 3 are digested in `docs/book/u2.md`, `u3.md` for later | Data only | assumed |
+| D2 | Which units first? | `a1-u1-s3`, `a1-u1-s5`, `a1-u1-s7` (the book's order). Units 2 and 3 are digested in `docs/courses/a1s1/u2.md`, `u3.md` for later | Data only | assumed |
 | D3 | Is `punctuation-pick` a mode of `order-words`? | Yes | One more archetype later | assumed |
 | D4 | Does task 026 replace task 023? | Yes | None | assumed |
 

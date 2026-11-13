@@ -18,7 +18,7 @@ One game unit per paper session of the book, 5–6 exercises each (see [BOOK-NOT
 | `a1-u3-s5` | Ayer en el parque / In the park | sequence words, routines, *veo veo* | `order-words` primero/luego/después/por último, `verb-conjugator`, `veo-veo`, `true-false-listen`, `read-answer` | idea |
 | `a1-u3-s7` | ¡Me siento súper! / I feel super | emotions, describing a character, body review | `match-pairs` emotion ↔ colour, `colour-by-code`, `fill-gap-choice`, `spell-fill-letters`, `bingo` body parts | idea |
 
-Unit 1 follows the book's order: greet and meet (S1), a comic about a party and days (S3, the story hook), family and the three verbs (S5), a passport and clue-based description (S7), then a recap. Difficulty rises from listen-and-match in S1 to clue reading and free writing in S7. S3's comic can feed a `read-answer` set; a scrambled-days `spell-tiles` item would match the book's rhythm better than `order-words`. Details: [book/u1.md](book/u1.md).
+Unit 1 follows the book's order: greet and meet (S1), a comic about a party and days (S3, the story hook), family and the three verbs (S5), a passport and clue-based description (S7), then a recap. Difficulty rises from listen-and-match in S1 to clue reading and free writing in S7. S3's comic can feed a `read-answer` set; a scrambled-days `spell-tiles` item would match the book's rhythm better than `order-words`. Details: [book/u1.md](courses/a1s1/u1.md).
 
 First two units to build: **`a1-u1-s1`** and **`a1-u1-s3`** (task 011). Next candidates for Haiku-sized data tasks: u1-s5, u1-s7, then Unit 2 and Unit 3 in order.
 

@@ -43,7 +43,7 @@ Make clips (after adding or editing units/vocab):
 No Python? Actions > "Generate Castilian audio" > Run workflow opens a PR with the new clips. It needs the repo setting Settings > Actions > General > Workflow permissions > "Read and write" and "Allow GitHub Actions to create and approve pull requests". Never use another voice (sherpa-onnx mirror, sharvard, mls, XTTS, MMS) without the owner's OK; see `docs/research/AUDIO.md`. Sentences generated at play time (some fill-gap frames) have no clip and use the browser voice.
 
 ## Add a unit
-Follow [docs/AUTHORING.md](docs/AUTHORING.md): add `courses/<courseId>/vocab/<unitId>.json` and `courses/<courseId>/units/<unitId>.json`, then run `npm run check:units`. No code or registry to edit. A new folder `courses/<id>/` with a `course.json` is a new course; with more than one course the profile screen shows a "Mis cursos" picker (design: [docs/research/PIPELINE.md](docs/research/PIPELINE.md)).
+Adding a course or unit from your own book (private notes, prompts, overlap check): [docs/PIPELINE.md](docs/PIPELINE.md). Follow [docs/AUTHORING.md](docs/AUTHORING.md): add `courses/<courseId>/vocab/<unitId>.json` and `courses/<courseId>/units/<unitId>.json`, then run `npm run check:units`. No code or registry to edit. A new folder `courses/<id>/` with a `course.json` is a new course; with more than one course the profile screen shows a "Mis cursos" picker (design: [docs/research/PIPELINE.md](docs/research/PIPELINE.md)).
 
 ## Add an archetype (a new game type)
 Follow [archetypes/README.md](archetypes/README.md): copy `archetypes/placeholder/`, write `index.js`, `logic.js` and a README with the params table, add `test/<id>.test.js`, and tick it in [docs/ARCHETYPES.md](docs/ARCHETYPES.md).

@@ -9,6 +9,7 @@
     "test": "node --test && npm run check:units",
     "audio": "node spanish-arcade/scripts/audio-gen.mjs",
     "check:units": "node spanish-arcade/scripts/check-units.mjs",
+    "check:overlap": "node spanish-arcade/scripts/check-overlap.mjs",
     "build:claude": "node claude/build.js",
     "build:loader": "node claude/build-loader.js",
     "tasks": "node scripts/tasks.mjs",
