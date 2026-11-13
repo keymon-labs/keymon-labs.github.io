@@ -1,0 +1,37 @@
+{ "schema": 1, "id": "a1-u2-s1", "rev": 1, "order": 11, "status": "review", "level": { "band": "7-8", "cefr": "A1" },
+  "title": { "es": "En el cole", "en": "At school" },
+  "bookRef": { "unit": 2, "session": 1 },
+  "theme": "sunny",
+  "intro": { "es": "¡Hoy hablamos del cole y de lo que nos gusta!", "en": "Today we talk about school and what we like!" },
+  "badge": { "name": { "es": "Compañero de clase", "en": "Classmate" }, "icon": "🎒" },
+  "pass": { "minCorrect": 3 },
+  "exercises": [
+    { "id": "subjects-listen", "archetype": "listen-pick-word", "difficulty": 1,
+      "params": { "from": { "tag": "subjects", "n": 5 }, "distractorFrom": { "tag": "subjects", "n": 1 }, "options": 4, "answerAs": "word" },
+      "prompt": { "es": "Escucha y toca la asignatura escrita.", "en": "Listen and tap the written school subject." } },
+    { "id": "places-spell", "archetype": "spell-tiles", "difficulty": 1,
+      "params": { "from": { "tag": "places", "n": 5 }, "extraLetters": 2, "hintLetters": false },
+      "prompt": { "es": "Escribe el lugar del cole.", "en": "Spell the school place." } },
+    { "id": "likes-gaps", "archetype": "fill-gap-choice", "difficulty": 2,
+      "params": { "items": [
+        { "text": "Me ___ las matemáticas.", "options": ["gustan", "gusta", "gustas", "gusto"], "answer": "gustan" },
+        { "text": "No me ___ la música.", "options": ["gusta", "gustan", "gustas", "gusto"], "answer": "gusta" },
+        { "text": "¿Te ___ la plástica?", "options": ["gusta", "gustas", "gustan", "gusto"], "answer": "gusta" },
+        { "text": "Me gusta ___ en el patio.", "options": ["jugar", "juego", "juegas", "juegan"], "answer": "jugar" },
+        { "text": "A mi hermana le ___ mucho el inglés.", "options": ["encanta", "encantan", "encantas", "encanto"], "answer": "encanta" },
+        { "text": "La clase de música me gusta ___.", "options": ["mucho", "muchos", "mucha", "muchas"], "answer": "mucho" } ] },
+      "prompt": { "es": "Completa la frase.", "en": "Fill the gap." } },
+    { "id": "questions-order", "archetype": "order-words", "difficulty": 2,
+      "params": { "items": [
+        { "es": "¿Cuál es tu asignatura favorita?", "emoji": "⭐" },
+        { "es": "¿Dónde está la biblioteca?", "emoji": "📚" },
+        { "es": "¿Cuándo es el recreo?", "emoji": "🔔" },
+        { "es": "¿Cuánto dura la clase de música?", "emoji": "🎵" } ], "n": 4, "punctuation": true },
+      "prompt": { "es": "Ordena la pregunta.", "en": "Put the question in order." } },
+    { "id": "school-odd", "archetype": "odd-one-out", "difficulty": 2,
+      "params": { "groups": [
+        { "words": ["matemáticas", "música", "plástica"], "odd": "comedor", "theme": "asignaturas" },
+        { "words": ["patio", "biblioteca", "gimnasio"], "odd": "profesora", "theme": "lugares del cole" },
+        { "words": ["ciencias", "inglés", "educación física"], "odd": "recreo", "theme": "asignaturas" } ], "size": 4 },
+      "prompt": { "es": "¿Cuál sobra?", "en": "Which one does not belong?" } }
+  ] }

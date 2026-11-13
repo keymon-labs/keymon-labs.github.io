@@ -1,0 +1,22 @@
+{ "schema": 1, "words": [
+  { "id": "matematicas", "es": "matemáticas", "en": "maths", "emoji": "➗", "tags": ["subjects"], "pos": "noun", "gender": "f", "number": "pl", "article": "las", "unit": "a1-u2-s1" },
+  { "id": "musica", "es": "música", "en": "music", "emoji": "🎵", "tags": ["subjects"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u2-s1" },
+  { "id": "ingles", "es": "inglés", "en": "English", "emoji": "🗣️", "tags": ["subjects"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u2-s1" },
+  { "id": "educacion-fisica", "es": "educación física", "en": "PE", "emoji": "🏃", "tags": ["subjects"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u2-s1" },
+  { "id": "plastica", "es": "plástica", "en": "art", "emoji": "🎨", "tags": ["subjects"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "spell": ["accent"], "unit": "a1-u2-s1" },
+  { "id": "ciencias", "es": "ciencias", "en": "science", "emoji": "🔬", "tags": ["subjects"], "pos": "noun", "gender": "f", "number": "pl", "article": "las", "unit": "a1-u2-s1" },
+
+  { "id": "patio", "es": "patio", "en": "playground", "emoji": "🌳", "tags": ["places"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u2-s1" },
+  { "id": "biblioteca", "es": "biblioteca", "en": "library", "emoji": "📚", "tags": ["places"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u2-s1" },
+  { "id": "comedor", "es": "comedor", "en": "dining hall", "emoji": "🍽️", "tags": ["places"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u2-s1" },
+  { "id": "gimnasio", "es": "gimnasio", "en": "gym", "emoji": "🏀", "tags": ["places"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u2-s1" },
+  { "id": "clase", "es": "clase", "en": "classroom", "emoji": "🏫", "tags": ["places"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u2-s1" },
+
+  { "id": "profesor", "es": "profesor", "en": "teacher (man)", "emoji": "👨‍🏫", "tags": ["people"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "profesora", "pl": "profesores" }, "unit": "a1-u2-s1" },
+  { "id": "profesora", "es": "profesora", "en": "teacher (woman)", "emoji": "👩‍🏫", "tags": ["people"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "profesor", "pl": "profesoras" }, "unit": "a1-u2-s1" },
+  { "id": "companero", "es": "compañero", "en": "classmate (boy)", "emoji": "🙋", "tags": ["people"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "f": "compañera", "pl": "compañeros" }, "spell": ["ñ"], "unit": "a1-u2-s1" },
+  { "id": "companera", "es": "compañera", "en": "classmate (girl)", "emoji": "🙋‍♀️", "tags": ["people"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "m": "compañero", "pl": "compañeras" }, "spell": ["ñ"], "unit": "a1-u2-s1" },
+
+  { "id": "pizarra", "es": "pizarra", "en": "board", "emoji": "📋", "tags": ["classroom"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "pizarras" }, "spell": ["rr"], "unit": "a1-u2-s1" },
+  { "id": "recreo", "es": "recreo", "en": "break time", "emoji": "🔔", "tags": ["school-day"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "recreos" }, "unit": "a1-u2-s1" }
+] }

@@ -1,0 +1,6 @@
+{ "schema": 1, "words": [
+  { "id": "desayuno", "es": "desayuno", "en": "breakfast", "emoji": "🥐", "tags": ["meals"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "desayunos" }, "unit": "a1-u2-s3" },
+  { "id": "almuerzo", "es": "almuerzo", "en": "mid-morning snack", "emoji": "🥪", "tags": ["meals"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "almuerzos" }, "unit": "a1-u2-s3" },
+  { "id": "merienda", "es": "merienda", "en": "afternoon snack", "emoji": "🍎", "tags": ["meals"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "meriendas" }, "unit": "a1-u2-s3" },
+  { "id": "comida", "es": "comida", "en": "lunch", "emoji": "🍲", "tags": ["meals"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "comidas" }, "unit": "a1-u2-s3" }
+] }

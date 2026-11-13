@@ -1,0 +1,38 @@
+{ "schema": 1, "id": "a1-u2-s7", "rev": 1, "order": 17, "status": "review", "level": { "band": "7-8", "cefr": "A1" },
+  "title": { "es": "A clase", "en": "Off to class" },
+  "bookRef": { "unit": 2, "session": 7 },
+  "theme": "sunny",
+  "intro": { "es": "¡Preguntamos, pedimos favores y leemos el horario!", "en": "We ask questions, ask for favours and read the timetable!" },
+  "badge": { "name": { "es": "Alumno educado", "en": "Polite pupil" }, "icon": "🎓" },
+  "pass": { "minCorrect": 3 },
+  "exercises": [
+    { "id": "people-listen", "archetype": "listen-pick-word", "difficulty": 1,
+      "params": { "from": { "tag": "people", "n": 4 }, "distractorFrom": { "tag": "people", "n": 1 }, "options": 3, "answerAs": "word", "similar": true },
+      "prompt": { "es": "Escucha y toca la palabra escrita.", "en": "Listen and tap the written word." } },
+    { "id": "schoolwork-spell", "archetype": "spell-tiles", "difficulty": 1,
+      "params": { "from": { "tag": "schoolwork", "n": 3 }, "extraLetters": 2, "hintLetters": false },
+      "prompt": { "es": "Escribe la palabra.", "en": "Spell the word." } },
+    { "id": "class-gaps", "archetype": "fill-gap-choice", "difficulty": 2,
+      "params": { "items": [
+        { "text": "El lunes tenemos ___ música a las diez.", "options": ["la", "el", "las", "los"], "answer": "la" },
+        { "text": "Los viernes tenemos ___ ciencias.", "options": ["las", "la", "los", "el"], "answer": "las" },
+        { "text": "¿Me ___ tu goma, por favor?", "options": ["prestas", "presto", "prestan", "prestáis"], "answer": "prestas" },
+        { "text": "Mañana tengo que ___ la tarea.", "options": ["entregar", "entrego", "entregas", "entregan"], "answer": "entregar" } ] },
+      "prompt": { "es": "Completa la frase.", "en": "Fill the gap." } },
+    { "id": "requests-match", "archetype": "match-pairs", "difficulty": 2,
+      "params": { "pairs": [
+        { "a": "¿Me prestas un lápiz?", "b": "Sí, toma." },
+        { "a": "¿Puedo ir al baño?", "b": "Sí, ve." },
+        { "a": "Gracias por tu ayuda.", "b": "De nada." },
+        { "a": "Perdón, llego tarde.", "b": "No pasa nada." },
+        { "a": "¿Cómo se dice lápiz en inglés?", "b": "Se dice pencil." } ] },
+      "prompt": { "es": "Une cada pregunta con su respuesta.", "en": "Join each question to its answer." } },
+    { "id": "timetable-read", "archetype": "read-answer", "difficulty": 2,
+      "params": { "kind": "abc", "showTextWhileAnswering": false,
+        "text": ["Este es el horario de Irene para el martes.", "A las nueve hay música y a las diez y media tiene el recreo.", "A las once menos cuarto tiene inglés en la clase.", "A las dos en punto, Irene tiene educación física en el gimnasio."],
+        "questions": [
+          { "q": "¿Qué tiene Irene a las diez y media?", "options": ["el recreo", "música", "inglés", "educación física"], "answer": 0, "evidence": 1 },
+          { "q": "¿A qué hora tiene inglés?", "options": ["a las once menos cuarto", "a las nueve", "a las dos en punto", "a las diez y media"], "answer": 0, "evidence": 2 },
+          { "q": "¿Dónde tiene educación física?", "options": ["en el gimnasio", "en la biblioteca", "en el patio", "en el comedor"], "answer": 0, "evidence": 3 } ] },
+      "prompt": { "es": "Lee el horario y contesta.", "en": "Read the timetable and answer." } }
+  ] }

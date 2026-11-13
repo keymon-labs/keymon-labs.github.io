@@ -1,0 +1,5 @@
+{ "schema": 1, "words": [
+  { "id": "horario", "es": "horario", "en": "timetable", "emoji": "🗓️", "tags": ["schoolwork"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "horarios" }, "unit": "a1-u2-s7" },
+  { "id": "tarea", "es": "tarea", "en": "homework", "emoji": "📝", "tags": ["schoolwork"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": { "pl": "tareas" }, "unit": "a1-u2-s7" },
+  { "id": "examen", "es": "examen", "en": "test", "emoji": "🧪", "tags": ["schoolwork"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": { "pl": "exámenes" }, "unit": "a1-u2-s7" }
+] }
