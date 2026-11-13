@@ -261,7 +261,8 @@ function playUnit(profile, unit) {
   let busy = false; // true from a correct answer until the next round is shown: ignores double taps
   let lastResult = null;
   let result = null;
-  let marks = []; // outcome per round of the current exercise: 'star' (first try) or 'help'; rounds before a resume count as 'help'
+  const marks = {}; // exercise id -> outcome per round: 'star' (first try) or 'help'; rounds before a resume count as 'help'. Rounds of an exercise are split over runs (task 036)
+  const marksOf = (c) => (marks[c.exercise.id] ??= []);
   const was = unitProgress(profile, unit);
   const before = was.last; // previous attempt, for "antes" on the result screen
   const bestBefore = was.attempts ? { stars: was.stars, correct: was.bestCorrect } : null; // for the personal-best ribbon
@@ -310,7 +311,7 @@ function playUnit(profile, unit) {
         lastHelp = r.correct && c.misses > 0;
         if (r.correct) answerMark(live, lastHelp ? 'help' : 'happy'); else if (!r.correct) answerMark(live, 'think');
       }
-      if (r.action === 'next') { marks[c.roundIndex] = c.misses === 0 ? 'star' : 'help'; drawSegs(c, c.roundIndex + 1); }
+      if (r.action === 'next') { marksOf(c)[c.roundIndex] = c.misses === 0 ? 'star' : 'help'; drawSegs(c, c.roundIndex + 1); }
       if (store.data.settings.debug && !r.correct && !r.skipped) { // debug mode: show what was sent, to find why a right-looking answer was judged wrong
         const round = session.current?.round;
         live.replaceChildren(h('p', { class: 'muted', id: 'debug-sent' }, `enviado: «${JSON.stringify(answer)}» · esperado: «${round?.answer ?? round?.word ?? ''}»`));
@@ -352,19 +353,20 @@ function playUnit(profile, unit) {
     const c = session.current;
     const round = c.round;
     const r = settle(session.skip(), SKIP_DELAY);
-    marks[c.roundIndex] = 'help'; drawSegs(c, c.roundIndex + 1);
+    marksOf(c)[c.roundIndex] = 'help'; drawSegs(c, c.roundIndex + 1);
     const text = answerText(round, r.hint);
     live.replaceChildren(h('p', { id: 'skipped' }, text ? `Saltada. La respuesta era: ${text}` : 'Saltada.'));
   };
 
   // Trail: ✓ done, 🦊 now, ○ to do (shape as well as colour); 🚩 closes each leg. Segments: ★ first try, ● with help, ▷ now.
-  function drawTrail(at) {
-    const n = session.order.length;
+  function drawTrail(cur) {
+    const n = session.order.length, at = cur.exerciseIndex; // exercises of a leg end in any order: done = in cur.finished, now = where the current one sits
+    const gone = new Set(cur.finished);
     trail.setAttribute('aria-valuemax', String(n));
     trail.setAttribute('aria-valuenow', String(at));
     trail.setAttribute('aria-valuetext', at >= n ? `${n} de ${n} ejercicios` : `Ejercicio ${at + 1} de ${n}`);
-    trail.replaceChildren(...session.order.flatMap((_, i) => [
-      h('li', { class: i < at ? 'done' : i === at ? 'now' : '', 'aria-hidden': 'true' }, i < at ? '✓' : i === at ? '🦊' : '○'),
+    trail.replaceChildren(...session.order.flatMap((id, i) => [
+      h('li', { class: gone.has(id) ? 'done' : i === cur.position ? 'now' : '', 'aria-hidden': 'true' }, gone.has(id) ? '✓' : i === cur.position ? '🦊' : '○'),
       (i + 1) % LEG_SIZE === 0 && i + 1 < n ? h('li', { class: 'flag', 'aria-hidden': 'true' }, '🚩') : null].filter(Boolean)));
   }
   function drawSegs(cur, at) {
@@ -372,7 +374,7 @@ function playUnit(profile, unit) {
     segs.setAttribute('aria-valuenow', String(at));
     segs.setAttribute('aria-valuetext', `Pregunta ${Math.min(at + 1, cur.rounds)} de ${cur.rounds}`);
     segs.replaceChildren(...Array.from({ length: cur.rounds }, (_, i) => {
-      const m = i < at ? (marks[i] ?? 'help') : '';
+      const m = i < at ? (marksOf(cur)[i] ?? 'help') : '';
       return h('span', { class: m ? `seg ${m}` : i === at ? 'seg now' : 'seg', 'aria-hidden': 'true' }, m === 'star' ? '★' : m ? '●' : '');
     }));
   }
@@ -381,7 +383,7 @@ function playUnit(profile, unit) {
   function rest() {
     mounted?.destroy(); mounted = null;
     const left = session.order.length - session.current.exerciseIndex;
-    drawTrail(session.current.exerciseIndex);
+    drawTrail(session.current);
     main.classList.add('rest');
     const go = h('button', { type: 'button', id: 'next-leg', class: 'btn primary', onclick: () => { main.classList.remove('rest'); show(); } }, 'Seguir');
     const face = h('div', { class: 'parada-face', 'aria-hidden': 'true' });
@@ -400,10 +402,11 @@ function playUnit(profile, unit) {
     const cur = session.current;
     const host = h('div', { id: 'round' });
     ctx.difficulty = cur.exercise.difficulty ?? 1;
-    if (cur.roundIndex === 0) marks = [];
-    drawTrail(cur.exerciseIndex);
+    drawTrail(cur);
     drawSegs(cur, cur.roundIndex);
-    stage.replaceChildren(h('p', { id: 'exercise-prompt', tabindex: '-1' }, cur.exercise.prompt?.es ?? ''), host);
+    // The game changed (runs of at most 3 rounds, task 036): say so, then the new instruction line as for every round.
+    stage.replaceChildren(...(cur.switched ? [h('p', { id: 'game-switch', class: 'game-switch', role: 'status' }, '🔀 Otro juego')] : []),
+      h('p', { id: 'exercise-prompt', tabindex: '-1' }, cur.exercise.prompt?.es ?? ''), host);
     busy = false;
     disarm();
     skipBtn.disabled = false;

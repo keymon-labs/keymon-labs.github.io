@@ -88,7 +88,7 @@ test('resume from a snapshot continues where it stopped', () => {
   while (a.current.exerciseIndex < 2) a.submit(a.current.round.answer);
   a.submit(a.current.round.answer);
   const snap = JSON.parse(JSON.stringify(a.snapshot()));
-  assert.deepEqual(Object.keys(snap).sort(), ['exerciseIndex', 'misses', 'order', 'results', 'rev', 'roundIndex', 'seed', 'unitId', 'words']);
+  assert.deepEqual(Object.keys(snap).sort(), ['exerciseIndex', 'finished', 'misses', 'order', 'played', 'results', 'rev', 'roundIndex', 'run', 'seed', 'unitId', 'words']);
   const b = createUnitSession({ unit, content, seed: 0, resume: snap });
   assert.deepEqual(b.current.round, a.current.round);
   play(a); play(b);
@@ -261,4 +261,131 @@ test('resolveOrder keeps a saved attempt consistent when the unit changed withou
   assert.equal(r.exerciseIndex, 1); // b done, c vanished
   assert.deepEqual(resolveOrder(unit, { exerciseIndex: 2 }).order, ['a', 'b', 'd', 'e']); // old snapshot: unit order
   assert.deepEqual(resolveOrder(unit, { order: 'junk', exerciseIndex: 99 }).order, ['a', 'b', 'd', 'e']);
+});
+
+// --- task 036: runs of at most RUN_MAX rounds, alternating the exercises of a leg ---
+const p2 = { ...content.archetypeById.placeholder, id: 'placeholder-b' }; // a second archetype id with the same behaviour
+const mixContent = { ...content, archetypeById: { ...content.archetypeById, 'placeholder-b': p2 } };
+const rx = (id, n, difficulty = 1, extra = {}) => ({ id, archetype: extra.archetype ?? 'placeholder', difficulty, params: { from: { n } }, prompt: { es: id, en: id }, ...extra });
+const mixUnit = (exercises) => ({ ...unit, exercises });
+// Plays a whole unit with right answers; -> [{ id, switched, roundIndex, legDone }] one row per round.
+function trace(session) {
+  const rows = [];
+  while (!session.done) {
+    const c = session.current;
+    const r = session.submit(c.round.answer);
+    rows.push({ id: c.exercise.id, switched: c.switched, roundIndex: c.roundIndex, legDone: Boolean(r.legDone), exerciseDone: r.exerciseDone?.id });
+  }
+  return rows;
+}
+const maxRun = (ids) => ids.reduce((m, id, i) => { const n = i && ids[i - 1] === id ? m.n + 1 : 1; return { n, max: Math.max(m.max, n) }; }, { n: 0, max: 0 }).max;
+
+test('a leg alternates its exercises in runs of at most 3 (A3 B3 C3 A2 B2 C2) and every round is played once', () => {
+  const u = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 5, 1, { pin: true }), rx('c', 5, 1, { pin: true })]);
+  const s = createUnitSession({ unit: u, content: mixContent, seed: 1 });
+  const rows = trace(s);
+  assert.equal(rows.map((r) => r.id).join(''), 'aaabbbcccaabbcc');
+  for (const id of 'abc') assert.deepEqual(rows.filter((r) => r.id === id).map((r) => r.roundIndex), [0, 1, 2, 3, 4]); // each round once, in order
+  assert.deepEqual(rows.filter((r) => r.switched).map((r) => r.id).join(''), 'bcabc'); // switch flag exactly when the game changes
+  assert.equal(s.result().correct, 3);
+});
+
+test('uneven exercises never run more than 3 in a row while another has rounds left; stats stay per exercise', () => {
+  const u = mixUnit([rx('a', 7, 1, { pin: true }), rx('b', 5, 1, { pin: true }), rx('c', 6, 1, { pin: true }), rx('d', 4, 2, { pin: true }), rx('e', 3, 2, { pin: true })]);
+  for (const seed of [1, 2, 3]) {
+    const s = createUnitSession({ unit: u, content: mixContent, seed });
+    const rows = trace(s);
+    const n = (id) => rows.filter((r) => r.id === id).length;
+    assert.deepEqual(['a', 'b', 'c', 'd', 'e'].map(n), [7, 5, 6, 4, 3]);
+    assert.ok(maxRun(rows.map((r) => r.id)) <= 3, rows.map((r) => r.id).join(''));
+    const leg1 = rows.slice(0, 18).map((r) => r.id).join('');
+    assert.ok(/^[abc]+$/.test(leg1), 'leg 1 finishes before leg 2 starts');
+    assert.equal(rows.filter((r) => r.legDone).length, 1);
+    assert.equal(rows.filter((r) => r.legDone)[0].id, rows[17].id);
+    const res = s.result();
+    for (const [id, total] of [['a', 7], ['b', 5], ['c', 6], ['d', 4], ['e', 3]]) assert.equal(res.exercises[id].total, total);
+    assert.equal(res.stars, 3);
+  }
+});
+
+test('exerciseDone fires once per exercise, at its last round, with that exercise only', () => {
+  const u = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 4, 1, { pin: true }), rx('c', 5, 1, { pin: true })]);
+  const rows = trace(createUnitSession({ unit: u, content: mixContent, seed: 4 }));
+  const done = rows.filter((r) => r.exerciseDone);
+  assert.deepEqual(done.map((r) => r.exerciseDone).sort(), ['a', 'b', 'c']);
+  for (const r of done) assert.equal(r.id, r.exerciseDone);
+  assert.equal(rows.at(-1).exerciseDone !== undefined, true);
+});
+
+test('when the order leaves a clash between exercises of one archetype, the switch avoids it where it can', () => {
+  const u = mixUnit([rx('a', 4, 1, { pin: true }), rx('b', 4, 1, { pin: true, archetype: 'placeholder-b' }), rx('c', 4, 1, { pin: true })]);
+  const rows = trace(createUnitSession({ unit: u, content: mixContent, seed: 2 }));
+  const arch = (id) => (id === 'b' ? 'B' : 'A');
+  const ids = rows.map((r) => r.id).join('');
+  assert.equal(ids.slice(0, 9), 'aaabbbccc'); // first runs: a b c
+  assert.equal(arch(ids[9]), 'B'); // after c (A) the cycle would give a (A): the engine takes b (B) first
+  assert.ok([...ids.slice(0, 11)].every((id, i) => !i || arch(id) !== arch(ids[i - 1]) || id === ids[i - 1]), ids); // no switch onto the same archetype while a B round is left
+});
+
+test('resume in the middle of a run and of a leg continues the same sequence, mid-run and across a leg end', () => {
+  const u = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 5, 1, { pin: true }), rx('c', 5, 1, { pin: true }), rx('d', 4, 2, { pin: true }), rx('e', 4, 2, { pin: true })]);
+  const full = trace(createUnitSession({ unit: u, content: mixContent, seed: 5 })).map((r) => r.id).join('');
+  for (const cut of [1, 2, 3, 7, 10, 14, 15, 16, 21]) {
+    const a = createUnitSession({ unit: u, content: mixContent, seed: 5 });
+    const head = [];
+    for (let i = 0; i < cut; i++) { head.push(a.current.exercise.id); a.submit(a.current.round.answer); }
+    const b = createUnitSession({ unit: u, content: mixContent, seed: 0, resume: JSON.parse(JSON.stringify(a.snapshot())) });
+    assert.deepEqual(b.current.round, a.current.round);
+    assert.equal(head.join('') + trace(b).map((r) => r.id).join(''), full, `cut ${cut}`);
+    trace(a);
+    assert.deepEqual(b.result(), a.result());
+  }
+});
+
+test('a resume after a miss keeps misses and the run', () => {
+  const u = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 5, 1, { pin: true })]);
+  const a = createUnitSession({ unit: u, content: mixContent, seed: 1 });
+  a.submit(a.current.round.answer); a.submit(wrong(a.current.round));
+  const b = createUnitSession({ unit: u, content: mixContent, seed: 1, resume: a.snapshot() });
+  assert.equal(b.current.misses, 1);
+  assert.equal(b.current.exercise.id, 'a');
+  assert.equal(b.current.roundIndex, 1);
+});
+
+test('snapshot fixture saved before task 036 (no finished, run, played) loads and plays on', async () => {
+  const { readFileSync } = await import('node:fs');
+  const fx = JSON.parse(readFileSync(new URL('./fixtures/snapshot-pre-036.json', import.meta.url), 'utf8')).snapshot;
+  const u = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 5, 1, { pin: true }), rx('c', 5, 1, { pin: true })]);
+  const sub = { $unit: u.id, $rev: u.rev, $0: 'a', $1: 'b', $2: 'c' };
+  const old = JSON.parse(JSON.stringify(fx), (k, v) => (typeof v === 'string' && v in sub ? sub[v] : v));
+  for (const key of Object.keys(old.results)) if (key in sub) { old.results[sub[key]] = old.results[key]; delete old.results[key]; }
+  assert.equal(old.finished, undefined);
+  const s = createUnitSession({ unit: u, content: mixContent, seed: 0, resume: old });
+  assert.deepEqual(s.order, ['a', 'b', 'c']);
+  assert.equal(s.current.exercise.id, 'b'); // a was finished in the old order; b was at round 3
+  assert.equal(s.current.roundIndex, 2);
+  assert.equal(s.current.exerciseIndex, 1);
+  const rows = trace(s);
+  assert.equal(rows.map((r) => r.id).join(''), 'bcccbbcc'); // b finishes its run (it had 2 of 3), then c, then the rest of b and c
+  assert.deepEqual(rows.filter((r) => r.id === 'b').map((r) => r.roundIndex), [2, 3, 4]); // b's remaining rounds once each
+  assert.equal(rows.filter((r) => r.id === 'c').length, 5);
+  assert.equal(rows.filter((r) => r.id === 'a').length, 0); // a stays finished
+  assert.ok(maxRun(rows.map((r) => r.id)) <= 3);
+  const res = s.result();
+  assert.equal(res.finished, true);
+  assert.equal(res.exercises.a.total, 3); // kept as saved
+  assert.equal(res.exercises.b.total, 5);
+  assert.deepEqual(Object.keys(s.snapshot()).sort(), ['exerciseIndex', 'finished', 'misses', 'order', 'played', 'results', 'rev', 'roundIndex', 'run', 'seed', 'unitId', 'words']);
+});
+
+test('unitProgress reads finished exercises of a mixed snapshot, and of an old one', async () => {
+  const { unitProgress } = await import('../core/progress.js');
+  const u = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 3, 1, { pin: true }), rx('c', 5, 1, { pin: true })]);
+  const s = createUnitSession({ unit: u, content: mixContent, seed: 1 });
+  while (s.current.exercise.id !== 'a' || s.current.roundIndex < 3) s.submit(s.current.round.answer); // a3 b3(done) c3 then a again
+  const prof = { id: 'p', units: {}, inProgress: s.snapshot() };
+  const rows = unitProgress(prof, u).rows;
+  assert.deepEqual(rows.map((r) => r.done), [false, true, false]); // b is done though a, before it, is not
+  const old = { ...s.snapshot() }; delete old.finished; delete old.run; delete old.played; old.exerciseIndex = 1;
+  assert.deepEqual(unitProgress({ ...prof, inProgress: old }, u).rows.map((r) => r.done), [true, false, false]);
 });

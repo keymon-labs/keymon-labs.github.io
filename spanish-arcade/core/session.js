@@ -6,6 +6,7 @@ import { makeExercise, seedFor, shuffle } from './generate.js';
 export const HINT_AFTER = 1;
 export const REVEAL_AFTER = 2;
 export const LEG_SIZE = 3; // exercises per leg (tramo); a "parada" screen follows each leg that is not the last
+export const RUN_MAX = 3; // task 036: most rounds of one exercise in a row while another exercise of the leg still has rounds left
 const COOL_DOWN = new Set(['match-pairs', 'odd-one-out']); // lightest archetypes: the unit ends on one when its last band has one
 
 /**
@@ -40,8 +41,10 @@ export function starsFor({ hints, reveals, correct, minCorrect }) {
 }
 
 /**
- * Play order and position of a saved attempt after the unit may have changed without a `rev` bump: keep the saved ids that
- * still exist, put new ids at the end, and count only the finished ids that survive. No `order` (saved before task 031) = unit order.
+ * Play order and progress of a saved attempt after the unit may have changed without a `rev` bump: keep the saved ids that
+ * still exist, put new ids at the end, and count only the finished ids that survive. Finished ids = `snap.finished` while it agrees
+ * with `exerciseIndex` (task 036, exercises of a leg are mixed, so they are not a prefix); older snapshots had the first `exerciseIndex` ids of `order`;
+ * no `order` (saved before task 031) = unit order.
  */
 export function resolveOrder(unit, snap) {
   const ids = unit.exercises.map((e) => e.id);
@@ -49,16 +52,23 @@ export function resolveOrder(unit, snap) {
   const kept = saved.filter((id, i) => ids.includes(id) && saved.indexOf(id) === i);
   const order = [...kept, ...ids.filter((id) => !kept.includes(id))];
   const pos = Math.max(0, Math.min(snap.exerciseIndex ?? 0, saved.length));
-  const exerciseIndex = saved.slice(0, pos).filter((id) => kept.includes(id)).length;
-  return { order, exerciseIndex };
+  const was = Array.isArray(snap.finished) && snap.finished.length === snap.exerciseIndex ? snap.finished : saved.slice(0, pos); // a lab bumps exerciseIndex alone
+  const finished = was.filter((id, i) => kept.includes(id) && was.indexOf(id) === i);
+  return { order, finished, exerciseIndex: finished.length };
 }
+
+/** Can these rounds still be played without RUN_MAX+1 in a row, given the run that just ended on `last`? left = [[id, rounds]]. */
+const feasible = (left, last) => {
+  const sum = left.reduce((n, [, r]) => n + r, 0);
+  return left.every(([id, r]) => r <= RUN_MAX * (sum - r) + (id === last ? 0 : RUN_MAX));
+};
 
 const blank = () => ({ correct: 0, total: 0, tries: 0, hints: 0, reveals: 0 });
 
 /**
  * resume: a snapshot() saved as profile.inProgress; ignored if it is for another unit or rev.
  * Each exercise has its own rng (seed + its index in unit.exercises), so resuming never needs to replay earlier rounds.
- * s.order = exercise ids in play order; exerciseIndex is a position in it. A snapshot without `order` (saved before
+ * s.order = exercise ids in play order; s.finished = ids of ended exercises (exerciseIndex = their count; position = where the current one sits in order). A snapshot without `order` (saved before
  * task 031) was played in unit order, so it gets the identity order.
  */
 export function createUnitSession({ unit, content, seed, resume = null }) {
@@ -67,31 +77,68 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
     : { unitId: unit.id, rev: unit.rev, seed, exerciseIndex: 0, roundIndex: 0, misses: 0, results: {}, words: {} };
   const ids = unit.exercises.map((e) => e.id);
   if (ok) Object.assign(s, resolveOrder(unit, s));
-  else s.order = orderExercises(unit, s.seed);
-  let ex = null;
+  else { s.order = orderExercises(unit, s.seed); s.finished = []; }
+  // Task 036: rounds of the exercises of a leg alternate in runs of at most RUN_MAX. s.run = { id, n } is the current run (n rounds
+  // played in it); everything else is derived from the per-exercise round counts (s.played), so nothing replays.
+  s.run ??= ok && resume.run === undefined && s.order[s.exerciseIndex] ? { id: s.order[s.exerciseIndex], n: s.roundIndex ?? 0 } : null;
+  // s.played[id] = rounds of that exercise already left behind. Snapshots without it (or with a roundIndex moved by hand, as the lab does) say it
+  // through results[id].total and, for the current run, roundIndex.
+  s.played = { ...Object.fromEntries(Object.entries(s.results).map(([id, r]) => [id, r.total])), ...(ok && resume.played) };
+  if (s.run && s.roundIndex !== (s.played[s.run.id] ?? 0)) s.played[s.run.id] = s.roundIndex;
+  const made = new Map();
+  const build = (id) => {
+    if (!made.has(id)) { const at = ids.indexOf(id); made.set(id, makeExercise(content, unit, at, createRng(seedFor(s.seed, at)))); }
+    return made.get(id);
+  };
+  const left = (id) => build(id).rounds.length - (s.played[id] ?? 0);
+  let ex = null, switched = false;
   // An exercise that makes 0 rounds (words missing from the content) is skipped, never shown: mount always gets a round.
   const load = () => {
+    const before = ex?.exercise.id ?? null;
     ex = null;
-    while (!ex && s.exerciseIndex < s.order.length) {
-      const at = ids.indexOf(s.order[s.exerciseIndex]);
-      const made = makeExercise(content, unit, at, createRng(seedFor(s.seed, at)));
-      if (made.rounds.length) ex = made;
-      else { console.warn(`unit ${unit.id}: exercise "${made.exercise.id}" makes 0 rounds, skipped`); s.exerciseIndex++; s.roundIndex = 0; s.misses = 0; }
+    while (s.finished.length < s.order.length) {
+      const todo = s.order.filter((id) => !s.finished.includes(id));
+      const start = Math.floor(s.finished.length / LEG_SIZE) * LEG_SIZE;
+      const leg = s.order.slice(start, start + LEG_SIZE).filter((id) => todo.includes(id));
+      const inLeg = leg.length ? leg : todo.slice(0, LEG_SIZE);
+      const empty = inLeg.find((id) => left(id) <= 0 && build(id).rounds.length === 0);
+      if (empty) { console.warn(`unit ${unit.id}: exercise "${empty}" makes 0 rounds, skipped`); s.finished.push(empty); s.run = null; continue; }
+      const cands = inLeg.filter((id) => left(id) > 0);
+      if (!cands.length) { s.finished.push(...inLeg); continue; }
+      const keep = s.run && cands.includes(s.run.id) && (s.run.n < RUN_MAX || cands.length === 1);
+      if (!keep) {
+        const from = inLeg.indexOf(s.run?.id); // next in the leg after the run, wrapping round (a run of an earlier leg: start of the leg)
+        const turn = [...inLeg.slice(from + 1), ...inLeg.slice(0, from + 1)].filter((id) => cands.includes(id) && (id !== s.run?.id || cands.length === 1));
+        const prev = s.run ? build(s.run.id).exercise.archetype : null;
+        const ok = (id) => feasible(cands.map((c) => [c, left(c) - (c === id ? Math.min(RUN_MAX, left(c)) : 0)]), id);
+        const id = [...turn.filter((c) => build(c).exercise.archetype !== prev), ...turn].find(ok)
+          ?? [...turn].sort((x, y) => left(y) - left(x))[0];
+        s.run = { id, n: 0 };
+      }
+      ex = build(s.run.id);
+      break;
     }
-    if (ex) s.results[ex.exercise.id] ??= blank();
+    s.exerciseIndex = s.finished.length;
+    if (ex) { s.results[ex.exercise.id] ??= blank(); s.roundIndex = s.played[ex.exercise.id] ?? 0; }
+    else s.roundIndex = 0;
+    switched = Boolean(ex && before && before !== ex.exercise.id);
   };
   load();
 
-  // After a finished round: next round, or next exercise (exerciseDone = its stats, to store at once), or the end.
+  // After a finished round: next round (same or another exercise of the leg), exerciseDone (its stats, to store at once) when an
+  // exercise has no rounds left, legDone when the leg's last exercise ended, or the end.
   function advance() {
     s.misses = 0;
-    s.roundIndex++;
+    s.run.n++;
+    const id = ex.exercise.id;
+    s.played[id] = (s.played[id] ?? 0) + 1;
     let exerciseDone, legDone = false;
-    if (s.roundIndex >= ex.rounds.length) {
-      exerciseDone = { id: ex.exercise.id, stats: structuredClone(s.results[ex.exercise.id]) };
-      legDone = (s.exerciseIndex + 1) % LEG_SIZE === 0;
-      s.exerciseIndex++; s.roundIndex = 0; load();
+    if (left(id) <= 0) {
+      exerciseDone = { id, stats: structuredClone(s.results[id]) };
+      s.finished.push(id);
+      legDone = s.finished.length % LEG_SIZE === 0;
     }
+    load();
     return { done: ex === null, ...(exerciseDone && { exerciseDone }), ...(legDone && ex && { legDone }) };
   }
 
@@ -101,8 +148,8 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
     get order() { return [...s.order]; },
     get current() {
       if (!ex) return null;
-      return { exerciseIndex: s.exerciseIndex, roundIndex: s.roundIndex, rounds: ex.rounds.length, round: ex.rounds[s.roundIndex],
-        exercise: ex.exercise, archetype: ex.archetype, params: ex.params, misses: s.misses };
+      return { exerciseIndex: s.exerciseIndex, position: s.order.indexOf(ex.exercise.id), finished: [...s.finished], switched,
+        roundIndex: s.roundIndex, rounds: ex.rounds.length, round: ex.rounds[s.roundIndex], exercise: ex.exercise, archetype: ex.archetype, params: ex.params, misses: s.misses };
     },
 
     /** -> { correct, feedback, action: "next"|"hint"|"reveal"|"retry", hint?, done } */

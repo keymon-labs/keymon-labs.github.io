@@ -1,0 +1,12 @@
+{
+  "note": "In-progress snapshot as saved before task 036 (no finished, run, played): ids are filled in by the test as $0, $1, $2.",
+  "snapshot": {
+    "unitId": "$unit", "rev": "$rev", "seed": 9, "order": ["$0", "$1", "$2"],
+    "exerciseIndex": 1, "roundIndex": 2, "misses": 0,
+    "results": {
+      "$0": { "correct": 3, "total": 3, "tries": 3, "hints": 0, "reveals": 0 },
+      "$1": { "correct": 1, "total": 2, "tries": 3, "hints": 1, "reveals": 0 }
+    },
+    "words": {}
+  }
+}
