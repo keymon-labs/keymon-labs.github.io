@@ -6,6 +6,9 @@ export const SPELL = ['ñ', 'rr', 'r', 'x', 's', 'h', 'accent', 'qu', 'gu', 'ü'
 export const POS = ['noun', 'verb', 'adj', 'adv', 'phrase'];
 export const SKILLS = ['listening', 'spelling', 'reading', 'grammar', 'puzzle'];
 export const MAX_PROFILES = 4;
+export const STATUSES = ['draft', 'review', 'approved'];
+export const BANDS = ['7-8', '9-10', '11-12'];
+export const CEFR = ['Pre-A1', 'A1', 'A2', 'B1', 'B2'];
 const SELECTOR = {
   tag: { type: 'string', optional: true }, ids: { type: 'array', items: { type: 'string' }, optional: true },
   spell: { type: 'enum', values: SPELL, optional: true, orList: true }, pos: { type: 'enum', values: POS, optional: true },
@@ -62,6 +65,7 @@ function collector() {
 }
 
 const ID = /^[a-z0-9ñáéíóúü]+(-[a-z0-9ñáéíóúü]+)*$/;
+const COURSE_ID = /^[a-z0-9]{1,12}(-[a-z0-9]+)*$/;
 const ARTICLES = { el: ['m', 'sg'], la: ['f', 'sg'], los: ['m', 'pl'], las: ['f', 'pl'] };
 
 /** One data/vocab/<unitId>.json file. */
@@ -114,6 +118,15 @@ export function validateUnit(u, archetypes) {
   if (!Number.isInteger(u?.rev) || u.rev < 1) err('rev', 'must be a whole number from 1');
   if (typeof u?.order !== 'number') err('order', 'must be a number');
   if (u?.dev !== undefined && typeof u.dev !== 'boolean') err('dev', 'must be true or false');
+  if (u?.status !== undefined && !STATUSES.includes(u.status)) err('status', `must be one of ${STATUSES.join(', ')}`);
+  if (u?.level !== undefined) { // optional (AGE-BANDS §2.1): information for parents and authors, no logic depends on it
+    if (!isObj(u.level)) err('level', 'must be { "band": …, "cefr": … }');
+    else {
+      if (u.level.band !== undefined && !BANDS.includes(u.level.band)) err('level.band', `must be one of ${BANDS.join(', ')}`);
+      if (u.level.cefr !== undefined && !CEFR.includes(u.level.cefr)) err('level.cefr', `must be one of ${CEFR.join(', ')}`);
+      for (const k of Object.keys(u.level)) if (!['band', 'cefr'].includes(k)) err(`level.${k}`, 'unknown field');
+    }
+  }
   text('title', u?.title);
   text('intro', u?.intro);
   if (!isObj(u?.badge) || !isText(u.badge.icon)) err('badge.icon', 'must be text (an emoji)');
@@ -141,6 +154,28 @@ export function validateUnit(u, archetypes) {
   return errs;
 }
 
+/** One courses/<id>/course.json (PIPELINE §1); id = the folder name. */
+export function validateCourse(c, id) {
+  const { errs, err, text } = collector();
+  if (c?.schema !== 1) err('schema', 'must be 1');
+  if (c?.id !== id || !COURSE_ID.test(id ?? '')) err('id', `must be "${id}" (the folder name; lowercase letters, numbers and dashes, 2-12 characters)`);
+  if (typeof c?.unitPrefix !== 'string') err('unitPrefix', 'must be text (e.g. "a1s2-")');
+  if (typeof c?.order !== 'number') err('order', 'must be a number');
+  text('title', c?.title);
+  if (!CEFR.includes(c?.level)) err('level', `must be one of ${CEFR.join(', ')}`);
+  if (c?.semester !== undefined && ![1, 2].includes(c.semester)) err('semester', 'must be 1 or 2');
+  if (c?.status !== undefined && !STATUSES.includes(c.status)) err('status', `must be one of ${STATUSES.join(', ')}`);
+  if (c?.difficultyCap !== undefined) {
+    if (!Array.isArray(c.difficultyCap)) err('difficultyCap', 'must be a list of { "upToBookUnit", "max" }');
+    else c.difficultyCap.forEach((r, i) => {
+      if (!Number.isInteger(r?.upToBookUnit)) err(`difficultyCap[${i}].upToBookUnit`, 'must be a whole number');
+      if (![1, 2, 3].includes(r?.max)) err(`difficultyCap[${i}].max`, 'must be 1, 2 or 3');
+    });
+  }
+  for (const k of ['names', 'maintainers']) if (c?.[k] !== undefined && !(Array.isArray(c[k]) && c[k].every(isText))) err(k, 'must be a list of text');
+  return errs;
+}
+
 /** One archetype module (PLAN §4.3). */
 export function validateArchetype(m) {
   const { errs, err, text } = collector();
@@ -155,25 +190,42 @@ export function validateArchetype(m) {
   return errs;
 }
 
-/** Everything together: per-file checks prefixed with the file, plus cross-file checks (PLAN §4.1). */
-export function validateContent({ archetypes, units, vocab }) {
+/**
+ * Everything together: per-file checks prefixed with the file, plus cross-file checks (PLAN §4.1).
+ * courses = { courseId: course.json } and courseOf = { unitId: courseId } (both optional: without them every unit is in one
+ * anonymous course, as in the old flat layout). Word ids are unique per course; a unit only sees words of its own course.
+ */
+export function validateContent({ archetypes, units, vocab, courses = {}, courseOf = {} }) {
   const out = [];
   const add = (file, list) => out.push(...list.map((e) => `${file} ${e}`));
-  const owner = {};
+  const dir = (id) => (courseOf[id] ? `courses/${courseOf[id]}/` : '');
+  const vocabFile = (uid) => (courseOf[uid] ? `${dir(uid)}vocab/${uid}.json` : `data/vocab/${uid}.json`);
+  const unitFile = (id) => `${dir(id)}units/${id}.json`;
+  for (const [cid, c] of Object.entries(courses)) add(`courses/${cid}/course.json`, validateCourse(c, cid));
+  const prefixes = Object.entries(courses).map(([cid, c]) => [cid, c?.unitPrefix]).filter(([, p]) => typeof p === 'string');
+  for (const [a, pa] of prefixes) for (const [b, pb] of prefixes) {
+    if (a < b && (pa.startsWith(pb) || pb.startsWith(pa))) add(`courses/${a}/course.json`, [`unitPrefix: "${pa}" and course "${b}" prefix "${pb}" overlap (one starts with the other)`]);
+  }
+  const owner = {}; // "course|wordId" -> unit id
+  const key = (uid, wid) => `${courseOf[uid] ?? ''}|${wid}`;
   for (const [uid, file] of Object.entries(vocab)) {
-    const f = `data/vocab/${uid}.json`;
+    const f = vocabFile(uid);
     add(f, validateVocab(file, uid));
     (file?.words || []).forEach((w, i) => {
-      if (owner[w?.id]) add(f, [`words[${i}].id: "${w.id}" is also in ${owner[w.id]}`]);
-      else owner[w?.id] = uid;
+      if (owner[key(uid, w?.id)]) add(f, [`words[${i}].id: "${w.id}" is also in ${owner[key(uid, w.id)]}`]);
+      else owner[key(uid, w?.id)] = uid;
     });
   }
-  const words = Object.values(vocab).flatMap((f) => f?.words || []);
+  const words = Object.entries(vocab).flatMap(([uid, f]) => (f?.words || []).map((w) => (courseOf[uid] ? { ...w, course: courseOf[uid] } : w)));
   const unitById = {};
-  for (const [id, u] of Object.entries(units)) { unitById[id] = u; if (u?.id !== id) add(`units/${id}.json`, [`id: must be "${id}" (the file name)`]); }
-  const content = { words, unitById };
   for (const [id, u] of Object.entries(units)) {
-    const f = `units/${id}.json`;
+    unitById[id] = u; if (u?.id !== id) add(unitFile(id), [`id: must be "${id}" (the file name)`]);
+    const prefix = courses[courseOf[id]]?.unitPrefix;
+    if (typeof prefix === 'string' && !id.startsWith(prefix)) add(unitFile(id), [`id: must start with the course prefix "${prefix}"`]);
+  }
+  const content = { words, unitById: Object.fromEntries(Object.entries(unitById).map(([id, u]) => [id, courseOf[id] ? { ...u, course: courseOf[id] } : u])) };
+  for (const [id, u] of Object.entries(units)) {
+    const f = unitFile(id);
     const own = validateUnit(u, archetypes);
     add(f, own);
     if (own.length) continue;
@@ -184,7 +236,7 @@ export function validateContent({ archetypes, units, vocab }) {
         const sel = params[k];
         if (spec.type !== 'selector' || !sel) continue;
         const p = `exercises[${i}].params.${k}`;
-        for (const wid of sel.ids || []) if (!owner[wid]) add(f, [`${p}.ids: unknown word "${wid}"`]);
+        for (const wid of sel.ids || []) if (!owner[key(id, wid)]) add(f, [`${p}.ids: unknown word "${wid}"`]);
         const pool = select(sel, content, id);
         if (pool.length < sel.n) add(f, [`${p}: only ${pool.length} words match, needs ${sel.n}`]);
         if (arch.pictures) for (const w of pool) if (w.pos === 'noun' && !w.emoji) add(f, [`${p}: "${w.id}" needs an emoji (picture game)`]);
@@ -213,6 +265,8 @@ export function validateStore(s) {
     for (const k of ['units', 'words']) if (!isObj(p[k])) err(`${at}.${k}`, 'must be an object');
     for (const k of ['history', 'badges']) if (!Array.isArray(p[k])) err(`${at}.${k}`, 'must be a list');
     if (p.inProgress !== null && !isObj(p.inProgress)) err(`${at}.inProgress`, 'must be null or an object');
+    if (p.courseId !== undefined && !isText(p.courseId)) err(`${at}.courseId`, 'must be text'); // optional: missing = the first course
+    if (p.band !== undefined && !BANDS.includes(p.band)) err(`${at}.band`, `must be one of ${BANDS.join(', ')}`);
   });
   return errs;
 }

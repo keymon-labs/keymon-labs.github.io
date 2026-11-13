@@ -19,18 +19,19 @@ Four units: `a1-u1-s1`, `a1-u1-s3`, `a1-u1-s5`, `a1-u1-s7`. Game types include `
 | `archetypes/<id>/` | The game types (`index.js`, `logic.js`, `README.md`); found automatically |
 | `ui/` | Settings, speech, tile widgets, sound effects (`sfx.js`), celebrations (`celebrate.js`) |
 | `ui/art/` | Visual kit: mascot moods, stickers, backgrounds, icons, confetti, fonts (see its README) |
-| `units/<unitId>.json` | Unit data: exercises that pick an archetype and its params |
-| `data/vocab/<unitId>.json` | Words taught by a unit |
+| `courses/<courseId>/course.json` | Course manifest (id, unit prefix, level, order, difficulty cap, status). The existing content is course `a1s1` |
+| `courses/<courseId>/units/<unitId>.json` | Unit data: exercises that pick an archetype and its params |
+| `courses/<courseId>/vocab/<unitId>.json` | Words taught by a unit (ids unique per course) |
 | `scripts/check-units.mjs` | Validator for units and vocab |
 | `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA (service worker cache `spanish-arcade-v4`) |
 | `docs/`, `tasks/` | Plan, authoring guide, archetype list, task board |
 
 Shared code from [`shared/`](../shared/README.md): `rng.js` (seeded random), `pwa.js` (service worker registration).
 
-Data formats: unit and vocab contracts are in [docs/PLAN.md §4](docs/PLAN.md); progress is saved in `localStorage` under `spanish-arcade:v1`. Units whose JSON has `"dev": true` are test units: they load in `npm run dev` and are left out of production builds.
+Data formats: unit and vocab contracts are in [docs/PLAN.md §4](docs/PLAN.md); progress is saved in `localStorage` under `spanish-arcade:v1`. Units whose JSON has `"dev": true` are test units: they load in `npm run dev` and are left out of production builds. Units have an optional `"status"`: `draft` (dev server only), `review` (bundled, shown only in debug mode) or `approved`/unset (always); the four `a1-u1-*` units are `review` until the owner approves them. `content-private/` (a contributor's book material) is git-ignored and never copied to `dist/`.
 
 ## Add a unit
-Follow [docs/AUTHORING.md](docs/AUTHORING.md): add `data/vocab/<unitId>.json` and `units/<unitId>.json`, then run `npm run check:units`. No code or registry to edit.
+Follow [docs/AUTHORING.md](docs/AUTHORING.md): add `courses/<courseId>/vocab/<unitId>.json` and `courses/<courseId>/units/<unitId>.json`, then run `npm run check:units`. No code or registry to edit. A new folder `courses/<id>/` with a `course.json` is a new course; with more than one course the profile screen shows a "Mis cursos" picker (design: [docs/research/PIPELINE.md](docs/research/PIPELINE.md)).
 
 ## Add an archetype (a new game type)
 Follow [archetypes/README.md](archetypes/README.md): copy `archetypes/placeholder/`, write `index.js`, `logic.js` and a README with the params table, add `test/<id>.test.js`, and tick it in [docs/ARCHETYPES.md](docs/ARCHETYPES.md).

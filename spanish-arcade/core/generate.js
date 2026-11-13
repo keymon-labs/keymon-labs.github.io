@@ -20,15 +20,21 @@ export const schemaDefaults = (schema = {}) =>
 export const resolveParams = (arch, ex) =>
   ({ ...schemaDefaults(arch.paramsSchema), ...arch.defaults?.(ex.difficulty ?? 1), ...ex.params });
 
-/** Words taught in this unit or an earlier one (by unit "order"). */
+/** Every word of the unit's own course (words of other courses never leak in). A unit or word without a course (lab samples, test fixtures) matches all. */
+export function courseWords(content, unitId) {
+  const c = content.unitById[unitId]?.course;
+  return c ? content.words.filter((w) => !w.course || w.course === c) : content.words;
+}
+
+/** Words taught in this unit or an earlier one of the same course (by unit "order"). */
 export function allowedWords(content, unitId) {
   const order = content.unitById[unitId]?.order ?? Infinity;
-  return content.words.filter((w) => (content.unitById[w.unit]?.order ?? Infinity) <= order);
+  return courseWords(content, unitId).filter((w) => (content.unitById[w.unit]?.order ?? Infinity) <= order);
 }
 
 /** Every word a selector allows (not sampled): { tag?, ids?, spell?, pos?, upToUnit = true, exclude? }. */
 export function select(sel, content, unitId) {
-  let list = sel.upToUnit === false ? content.words : allowedWords(content, unitId);
+  let list = sel.upToUnit === false ? courseWords(content, unitId) : allowedWords(content, unitId);
   if (sel.ids) list = sel.ids.map((id) => list.find((w) => w.id === id)).filter(Boolean);
   if (sel.tag) list = list.filter((w) => w.tags?.includes(sel.tag));
   if (sel.spell) { const s = [].concat(sel.spell); list = list.filter((w) => w.spell?.some((x) => s.includes(x))); }
@@ -47,7 +53,7 @@ export function makeExercise(content, unit, index, rng) {
   const key = selectorKey(archetype);
   const sel = key && params[key]; // unset optional selector (exercise uses items): targets = []
   const targets = sel ? shuffle(select(sel, content, unit.id), rng).slice(0, sel.n) : [];
-  const pool = sel && sel.upToUnit === false ? content.words : allowedWords(content, unit.id);
+  const pool = sel && sel.upToUnit === false ? courseWords(content, unit.id) : allowedWords(content, unit.id);
   // pools: every other selector param resolved to its words (e.g. distractorFrom), by param name
   const pools = Object.fromEntries(Object.entries(archetype.paramsSchema || {})
     .filter(([k, s]) => s.type === 'selector' && k !== key && params[k]).map(([k]) => [k, select(params[k], content, unit.id)]));

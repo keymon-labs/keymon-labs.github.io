@@ -57,6 +57,8 @@ export function createStore({ storage, clock = () => new Date(), uuid = () => cr
       return this.profile(id);
     },
 
+    setCourse(id, courseId) { return this.update(id, (p) => ({ ...p, courseId })); },
+
     setSettings(patch) { data = { ...data, settings: { ...data.settings, ...patch } }; save(); },
     now: () => clock().toISOString(),
   };

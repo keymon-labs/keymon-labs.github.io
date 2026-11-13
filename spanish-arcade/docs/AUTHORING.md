@@ -1,10 +1,10 @@
 # Authoring units
 
-Everything a unit needs is data: a vocab file and a unit file. Contracts: [PLAN.md §4.1–4.2](PLAN.md). Games available: [archetypes/](../archetypes/) (each has a params table and a copy-paste exercise, e.g. [listen-pick-word](../archetypes/listen-pick-word/README.md)).
+Everything a unit needs is data: a vocab file and a unit file, inside a course folder `courses/<courseId>/` (the first course is `a1s1`, unit prefix `a1-`; a new course adds a `course.json`, see [PLAN.md §4.0](PLAN.md)). Contracts: [PLAN.md §4.1–4.2](PLAN.md). Games available: [archetypes/](../archetypes/) (each has a params table and a copy-paste exercise, e.g. [listen-pick-word](../archetypes/listen-pick-word/README.md)).
 
 Check your work with `npm run check:units` (also part of `npm test`). It prints `error: <file> <path>: <problem> [exercise "<id>"]`; fix them all, run again.
 
-## 1. Add words: `data/vocab/<unitId>.json`
+## 1. Add words: `courses/<courseId>/vocab/<unitId>.json`
 One file per unit, named like the unit (`a1-u9-s1.json`).
 ```json
 { "schema": 1, "words": [
@@ -14,14 +14,14 @@ One file per unit, named like the unit (`a1-u9-s1.json`).
     "gender": "f", "number": "sg", "article": "el", "elException": true, "unit": "a1-u9-s1" }
 ] }
 ```
-- `id`: the word, lowercase, no spaces (`-2` on a clash). **Never changed or reused**: progress refers to it, and ids must be unique across all vocab files.
+- `id`: the word, lowercase, no spaces (`-2` on a clash). **Never changed or reused**: progress refers to it, and ids must be unique within the course (another course may use the same id; the checker warns if the Spanish differs). A unit only sees the words of its own course.
 - `unit` must equal the file name. Nouns need `gender` and `article`; the article must match (`el`/`la`/`los`/`las`). Feminine nouns taking `el` (agua, hada) need `"elException": true`.
 - `emoji` is required for any word a picture game can pick (listening games drop or reject words without one). Use an emoji; never copy images.
 - `clues` (optional list of 2 to 4 riddle lines, Spanish) are used by `letter-lock`: they must not contain the word. Every word a letter-lock draws needs them.
 - `tags` are topics (`animals`, `family`, `colours`...). `spell` lists tricky spellings: `ñ rr r x s h accent qu gu ü ¿¡`.
 
-## 2. Add a unit: `units/<unitId>.json`
-Ids look like `a1-u<unit>-s<session>`. 5 or 6 exercises (dev units are exempt from the mix rules, not from this count).
+## 2. Add a unit: `courses/<courseId>/units/<unitId>.json`
+Ids start with the course's `unitPrefix` and look like `a1-u<unit>-s<session>`. Optional fields: `"status": "draft" | "review" | "approved"` (a new unit: `review`, so it only shows in debug mode until the owner approves it) and `"level": { "band", "cefr" }`. Difficulty limits per book unit come from the course's `difficultyCap`. 5 or 6 exercises (dev units are exempt from the mix rules, not from this count).
 
 **Archetypes that exist now**: `listen-pick-word` (listening), `spell-tiles` and `spell-fill-letters` (spelling), `read-answer` (reading) and `placeholder` (a simple tap-the-word game, skill puzzle). `odd-one-out` (puzzle) and `match-pairs` (puzzle). `fill-gap-choice` (grammar). `order-words` and `word-search` are later. Use only archetypes that exist in `archetypes/`; the `params` come from that archetype's README. Until the spelling games land, a new unit cannot satisfy the mix rule below; the checker will say so, and that is expected.
 

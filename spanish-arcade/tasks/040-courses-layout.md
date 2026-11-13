@@ -3,7 +3,7 @@ id: "040"
 title: Courses layout, level metadata and sticky unlocks
 model: Sonnet 5.5
 why_model: Moves content and touches saved-data rules; an Opus review of the diff before merge.
-status: todo
+status: review
 depends_on: []
 touches: [spanish-arcade/courses/**, spanish-arcade/units/**, spanish-arcade/data/vocab/**, spanish-arcade/core/content.js, spanish-arcade/core/generate.js, spanish-arcade/core/progress.js, spanish-arcade/core/schema.js, spanish-arcade/core/home.js, spanish-arcade/core/profiles.js, spanish-arcade/app.js, spanish-arcade/ui/settings.js, spanish-arcade/test/**, spanish-arcade/scripts/check-units.mjs, vite.config.js, spanish-arcade/docs/PLAN.md, spanish-arcade/docs/AUTHORING.md, spanish-arcade/README.md]
 ---

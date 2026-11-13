@@ -1,11 +1,11 @@
 // App shell: hash routes, screen frame + footer, unit play through the session engine, diagnostics.
 //   #/   #/profile/<id>   #/unit/<id>   #/settings
-// Data: units/vocab/archetypes are bundled (core/content.js); progress lives in localStorage (core/profiles.js).
+// Data: courses (units + vocab) and archetypes are bundled (core/content.js); progress lives in localStorage (core/profiles.js).
 import { loadContent } from './core/content.js';
 import { createStore, MAX_PROFILES } from './core/profiles.js';
 import { createUnitSession, LEG_SIZE } from './core/session.js';
 import { recordUnit, recordExercise, unitProgress, applyRev, saveInProgress, isUnlocked, attemptSeed, isPersonalBest } from './core/progress.js';
-import { totalStars, doneToday, nextUnit, mascotLine, stoneEmoji, DAILY_GOAL } from './core/home.js';
+import { totalStars, doneToday, nextUnit, mascotLine, stoneEmoji, visibleUnits, visibleCourses, currentCourse, DAILY_GOAL } from './core/home.js';
 import { createSpeech } from './ui/speech.js';
 import { renderSettings } from './ui/settings.js';
 import { createTapCounter } from './ui/tapcount.js';
@@ -50,6 +50,10 @@ const store = createStore({ storage: safeStorage() });
 const content = loadContent({ includeDev: import.meta.env.DEV });
 for (const e of [...content.errors, ...(store.loadError ? [`store: ${store.loadError}`] : [])]) logError(e);
 for (const p of store.data.profiles) { const next = applyRev(p, content.units); if (next !== p) store.update(p.id, () => next); }
+const debugOn = () => store.data.settings.debug;
+/** Units of one course a child may see now (review units only in debug mode), in order. These are the unlock chain. */
+const unitsOfCourse = (courseId) => visibleUnits(content.units.filter((u) => u.course === courseId), debugOn());
+const coursesNow = () => visibleCourses(content, { debug: debugOn(), dev: import.meta.env.DEV });
 const diagnostic = () => JSON.stringify({ app: 'spanish-arcade', build: __BUILD__, ua: navigator.userAgent, errors }, null, 2);
 
 // Settings that change the page itself: text size (the page language is always Spanish).
@@ -147,7 +151,7 @@ function route() {
   const unit = content.unitById[id];
   const profile = activeProfile();
   if (page === 'profile' && store.profile(id)) { activeId = id; renderProfile(store.profile(id)); }
-  else if (page === 'unit' && unit && profile && isUnlocked(profile, content.units, unit.id)) (sub === 'play' ? playUnit : renderIntro)(profile, unit);
+  else if (page === 'unit' && unit && profile && unitsOfCourse(unit.course).some((u) => u.id === unit.id) && isUnlocked(profile, unitsOfCourse(unit.course), unit.id)) (sub === 'play' ? playUnit : renderIntro)(profile, unit);
   else if (page === 'settings') gate(renderSettingsScreen);
   else renderHome();
   root.querySelector('h1')?.focus();
@@ -191,7 +195,10 @@ function renderProfile(profile) {
   const main = screen(null,
     h('div', { class: 'hero' }, mascot(), h('div', {}, h('h1', { tabindex: '-1' }, `¡Hola, ${profile.firstName}!`), h('p', { class: 'bubble' }, mascotLine(done)))),
     h('div', { class: 'chips' }, h('span', { class: 'chip', id: 'total-stars' }, `⭐ ${totalStars(profile, content.units)}`)));
-  const next = nextUnit(profile, content.units);
+  const courses = coursesNow();
+  const course = currentCourse(profile, courses);
+  const units = course ? unitsOfCourse(course.id) : visibleUnits(content.units, debugOn());
+  const next = nextUnit(profile, units);
   if (next) {
     const up = unitProgress(profile, next);
     const a = link(`#/unit/${next.id}`, '', 'continue');
@@ -201,14 +208,29 @@ function renderProfile(profile) {
   }
   main.append(h('div', { class: 'card goal', id: 'goal' }, h('div', { class: 'ring', style: `--pct:${pct}`, role: 'img', 'aria-label': `${done} de ${DAILY_GOAL} ejercicios hoy` }, h('span', {}, `${Math.min(done, DAILY_GOAL)}/${DAILY_GOAL}`)),
     h('div', {}, h('b', {}, 'Meta de hoy'), h('div', { class: 'muted' }, `${done} de ${DAILY_GOAL} ejercicios`))));
-  main.append(h('h2', {}, 'Mis unidades'), h('ol', { class: 'trail' }, content.units.map((u, i) => {
-    const open = isUnlocked(profile, content.units, u.id);
+  if (courses.length > 1) main.append(coursePicker(profile, courses, course));
+  if (!units.length) main.append(h('p', { id: 'no-units', class: 'muted' }, 'Todavía no hay unidades para jugar.'));
+  main.append(h('h2', {}, 'Mis unidades'), h('ol', { class: 'trail' }, units.map((u, i) => {
+    const open = isUnlocked(profile, units, u.id);
     const up = unitProgress(profile, u);
     const dot = h('span', { class: 'dot', 'aria-hidden': 'true' }, open ? stoneEmoji(i) : '🔒');
     const text = h('span', {}, h('b', {}, u.title.es), open ? [stars(up.stars), h('div', { class: 'muted unit-status' }, statusLine(up))] : null);
     return h('li', { class: open ? '' : 'locked' }, open ? h('a', { href: `#/unit/${u.id}`, class: 'stone unit' }, dot, text) : h('div', { class: 'stone' }, dot, text));
   })));
   main.append(h('div', { class: 'row' }, link('#/', '🏠 Inicio'), settingsLink()), debugTools());
+}
+
+/** "Mis cursos": only when there is more than one course. Picking one is remembered on the profile (profile.courseId). */
+function coursePicker(profile, courses, current) {
+  const cards = courses.map((c) => {
+    const us = unitsOfCourse(c.id);
+    const on = c.id === current?.id;
+    const b = h('button', { type: 'button', class: `btn course${on ? ' primary' : ''}`, 'data-course': c.id, 'aria-pressed': String(on),
+      onclick: () => { store.setCourse(profile.id, c.id); route(); } },
+      h('b', {}, c.title.es), h('div', { class: 'muted' }, `${c.level}${c.semester ? ` · ${c.semester}.º cuatrimestre` : ''} · ⭐ ${totalStars(profile, us)}/${us.length * 3}`));
+    return h('li', {}, b);
+  });
+  return h('section', { id: 'courses' }, h('h2', {}, 'Mis cursos'), h('ul', { class: 'list' }, cards));
 }
 
 function renderIntro(profile, unit) {
@@ -428,7 +450,7 @@ function playUnit(profile, unit) {
     const face = h('div', { class: 'result-face', 'aria-hidden': 'true' });
     face.innerHTML = mascotSvg(result.stars === 1 ? 'happy' : 'cheer', { size: 88 });
     const badge = h('div', { class: 'result-sticker', id: 'result-sticker' });
-    badge.innerHTML = stickerHtml(stickerFor(content.units.findIndex((u) => u.id === unit.id)));
+    badge.innerHTML = stickerHtml(stickerFor(content.units.filter((u) => u.course === unit.course).findIndex((u) => u.id === unit.id))); // position inside its course
     badge.append(h('span', {}, '¡Pegatina nueva!'));
     const ribbon = pb ? h('p', { class: 'ribbon', id: 'result-pb' }, '🏅 ¡Tu mejor intento!') : null;
     stage.replaceChildren(h('div', { class: 'result' }, sky, face, h('h2', { tabindex: '-1' }, '¡Todo hecho!'),
