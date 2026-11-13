@@ -22,7 +22,8 @@ Four units: `a1-u1-s1`, `a1-u1-s3`, `a1-u1-s5`, `a1-u1-s7`. Game types include `
 | `courses/<courseId>/course.json` | Course manifest (id, unit prefix, level, order, difficulty cap, status). The existing content is course `a1s1` |
 | `courses/<courseId>/units/<unitId>.json` | Unit data: exercises that pick an archetype and its params |
 | `courses/<courseId>/vocab/<unitId>.json` | Words taught by a unit (ids unique per course) |
-| `scripts/check-units.mjs` | Validator for units and vocab |
+| `scripts/check-units.mjs`, `scripts/check-content.mjs` | `npm run check:content` (alias `check:units`): schema, authoring rules, Spanish-only text, ¿ ¡, personal data, stable ids |
+| `scripts/new-*.mjs`, `archetypes/_template/` | Scaffolds: `npm run new:archetype <id>`, `new:course`, `new:unit` |
 | `scripts/audio-*.mjs`, `audio/` | `npm run audio`: lists spoken texts, makes the missing Castilian clips, writes `audio/manifest.json` (see Audio) |
 | `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA (service worker cache `spanish-arcade-v5`) |
 | `docs/`, `tasks/` | Plan, authoring guide, archetype list, task board |
@@ -42,6 +43,9 @@ Make clips (after adding or editing units/vocab):
 
 No Python? Actions > "Generate Castilian audio" > Run workflow opens a PR with the new clips. It needs the repo setting Settings > Actions > General > Workflow permissions > "Read and write" and "Allow GitHub Actions to create and approve pull requests". Never use another voice (sherpa-onnx mirror, sharvard, mls, XTTS, MMS) without the owner's OK; see `docs/research/AUDIO.md`. Sentences generated at play time (some fill-gap frames) have no clip and use the browser voice.
 
+## Contribute
+Want to add a course, a unit or a game type? See [CONTRIBUTING.md](../CONTRIBUTING.md): `npm run new:course`, `npm run new:unit`, `npm run new:archetype <id>`, `npm run check:content`, and try an archetype in the lab before opening a PR. Contributions are CC BY-NC-SA 4.0 plus the internal-use permission in [NOTICE.md](../NOTICE.md); no book text, no personal data.
+
 ## Add a unit
 Adding a course or unit from your own book (private notes, prompts, overlap check): [docs/PIPELINE.md](docs/PIPELINE.md). Follow [docs/AUTHORING.md](docs/AUTHORING.md): add `courses/<courseId>/vocab/<unitId>.json` and `courses/<courseId>/units/<unitId>.json`, then run `npm run check:units`. No code or registry to edit. A new folder `courses/<id>/` with a `course.json` is a new course; with more than one course the profile screen shows a "Mis cursos" picker (design: [docs/research/PIPELINE.md](docs/research/PIPELINE.md)).
 
@@ -51,7 +55,7 @@ Follow [archetypes/README.md](archetypes/README.md): copy `archetypes/placeholde
 ## Test
 ```
 npm test                 # all unit tests plus the unit/vocab validator
-npm run check:units      # validator only
+npm run check:content    # validators only (check:units is an alias)
 npm run build            # output in dist/
 python3 -m http.server -d dist 8765   # then open http://localhost:8765/spanish-arcade/
 ```

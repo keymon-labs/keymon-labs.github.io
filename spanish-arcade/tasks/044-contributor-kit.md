@@ -3,7 +3,7 @@ id: "044"
 title: Contributor kit: CONTRIBUTING, scaffolds, PR checks
 model: Sonnet 5.5
 why_model: Specified in docs/research/PIPELINE.md sections on validators, scripts and CONTRIBUTING; mostly docs and scripts.
-status: todo
+status: review
 depends_on: ["040"]
 touches: [CONTRIBUTING.md, .github/PULL_REQUEST_TEMPLATE.md, .github/workflows/check.yml, spanish-arcade/scripts/new-*.mjs, spanish-arcade/scripts/check-content.mjs, spanish-arcade/docs/CONTRIBUTING-*.md, spanish-arcade/archetypes/_template/**, spanish-arcade/test/scaffold.test.js, package.json]
 ---

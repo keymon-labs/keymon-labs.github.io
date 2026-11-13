@@ -16,10 +16,10 @@ const courseUnits = (c, id) => c.units.filter((u) => u.course === id);
 
 test('the existing content is course a1s1 and keeps its ids', () => {
   assert.deepEqual(real.errors, []);
-  assert.deepEqual(real.courses.map((c) => c.id), ['a1s1']);
+  assert.ok(real.courses.some((c) => c.id === 'a1s1')); // other courses may be added by contributors
   const ids = courseUnits(real, 'a1s1').map((u) => u.id);
   assert.deepEqual(ids, ['a1-u0-demo', 'a1-u1-s1', 'a1-u1-s3', 'a1-u1-s5', 'a1-u1-s7']);
-  assert.ok(real.words.every((w) => w.course === 'a1s1'));
+  assert.ok(real.words.filter((w) => w.course === 'a1s1').length > 0);
   assert.deepEqual(real.unitById['a1-u1-s1'].exercises.map((e) => e.id).slice(0, 2), ['numbers-listen', 'colours-spell']);
   assert.ok(real.words.some((w) => w.id === 'gato'));
 });
@@ -27,7 +27,7 @@ test('the existing content is course a1s1 and keeps its ids', () => {
 test('existing units are "approved" (live as before), the demo unit stays dev', async () => {
   const real4 = courseUnits(real, 'a1s1').filter((u) => !u.dev);
   assert.ok(real4.every((u) => u.status === 'approved' && u.level.cefr === 'A1'));
-  assert.deepEqual(visibleUnits(real.units, false).map((u) => u.id).filter((id) => id !== 'a1-u0-demo'), real4.map((u) => u.id));
+  assert.deepEqual(visibleUnits(real.units, false).filter((u) => u.course === 'a1s1').map((u) => u.id).filter((id) => id !== 'a1-u0-demo'), real4.map((u) => u.id));
   assert.equal(visibleUnits(real.units, true).length, real.units.length);
   const prod = await loadRealContent({ includeDev: false });
   assert.deepEqual(visibleCourses(prod, { debug: false }).map((c) => c.id), ['a1s1']);
@@ -84,7 +84,7 @@ test('two courses: words and unlocks stay inside their course', () => {
   const c = twoCourses();
   assert.ok(c.errors.some((e) => /^courses\/zz\/units\/zz-u1-s1\.json .*unknown word "hermana"/.test(e)), 'words of course a1s1 do not exist for zz'); // the copied unit selects a1s1 words
   assert.deepEqual(c.errors.filter((e) => !e.startsWith('courses/zz/')), []);
-  assert.deepEqual(c.courses.map((x) => x.id), ['a1s1', 'zz']);
+  assert.deepEqual(c.courses.map((x) => x.id).filter((id) => id === 'a1s1' || id === 'zz'), ['a1s1', 'zz']);
   const zzWords = allowedWords(c, 'zz-u1-s1').map((w) => w.id).sort();
   assert.deepEqual(zzWords, ['gato', 'perro', 'zzword']);
   assert.ok(allowedWords(c, 'a1-u1-s7').every((w) => w.course === 'a1s1'));

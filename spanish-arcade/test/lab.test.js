@@ -1,6 +1,7 @@
 // Lab logic: deep links, params validation, sample vocab, and that the real session rules apply to every archetype.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { validateVocab } from '../core/schema.js';
 import { SAMPLE_WORDS } from '../lab/sample.js';
 import { parseQuery, parseParams, starterParams, makeNote, buildLabUnit, createLabSession, skipRound, createLog } from '../lab/logic.js';
@@ -8,6 +9,9 @@ import { loadRealContent } from './helpers.js';
 
 const real = await loadRealContent({ includeDev: true });
 const content = { ...real, words: SAMPLE_WORDS };
+// what lab.js gets from import.meta.glob: a new archetype starts from its example.json
+const arcDir = new URL('../archetypes/', import.meta.url);
+const examples = Object.fromEntries(readdirSync(arcDir).filter((d) => existsSync(new URL(`${d}/example.json`, arcDir))).map((d) => [`../archetypes/${d}/example.json`, JSON.parse(readFileSync(new URL(`${d}/example.json`, arcDir), 'utf8'))]));
 
 test('sample vocab is valid', () => {
   assert.deepEqual(validateVocab({ schema: 1, words: SAMPLE_WORDS }, 'lab-ejemplo'), []);
@@ -40,7 +44,7 @@ test('note format', () => {
 
 test('every archetype plays with its starter params and sample vocab; session rules hold', () => {
   for (const a of Object.values(real.archetypeById)) {
-    const own = starterParams(a);
+    const own = starterParams(a, examples);
     const { params, errors } = parseParams(JSON.stringify(own), a, 2);
     assert.deepEqual(errors, [], a.id);
     const unit = buildLabUnit({ archetype: a.id, difficulty: 2, params });

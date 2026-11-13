@@ -46,3 +46,4 @@ Open-source npm packages bundled by Vite. Add a row when you add one.
 - `npm install`, then `npm run dev` (local server) or `npm run build` (output in `dist/`)
 - Every push to `main` deploys via GitHub Actions.
 - Conventions: [CLAUDE.md](CLAUDE.md)
+- Want to add Spanish Arcade courses, units or game types? [CONTRIBUTING.md](CONTRIBUTING.md) (fork, scaffold, try in the lab, test, PR).

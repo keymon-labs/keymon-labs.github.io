@@ -22,7 +22,7 @@ export function readCourses(coursesDir = join(app, 'courses')) {
 export async function loadArchetypes() {
   const archetypes = {};
   for (const d of readdirSync(join(app, 'archetypes'), { withFileTypes: true })) {
-    if (d.isDirectory()) archetypes[`../archetypes/${d.name}/index.js`] = (await import(`../archetypes/${d.name}/index.js`)).default;
+    if (d.isDirectory() && !d.name.startsWith('_')) archetypes[`../archetypes/${d.name}/index.js`] = (await import(`../archetypes/${d.name}/index.js`)).default;
   }
   return archetypes;
 }
