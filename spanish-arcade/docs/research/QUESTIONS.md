@@ -52,3 +52,23 @@ Clock style (12-hour spoken only), speaking exercises postponed, which playgroun
 ## Needs the owner (cannot be assumed)
 - Check the Spanish of every new sentence, unit and mascot line (tasks 032, 033 end in `review`).
 - Say if any assumption above is wrong.
+
+## Round 2 (13 Nov): audio, pipeline, age bands
+| # | Question | Assumed answer | Cost if wrong | Status |
+|---|---|---|---|---|
+| A1 | Commit generated MP3 clips (~2 MB now, 10-12 MB for the whole book)? | Yes | Move to a release asset | assumed |
+| A2 | Is the adult male Piper voice (davefx, CC0) good enough for children? | Try it: you listen to ~20 clips before it becomes the default; otherwise recorded clips by a non-family adult (CC0) through the same manifest | Regenerate with another voice | open |
+| A4 | Allow "ask owner" voices (sharvard, mls, XTTS, MMS, Kokoro)? | No | Different voice | assumed |
+| A5 | Who generates the clips? | A GitHub Action that opens a PR, or a local script. The sandbox cannot reach the voice host | You run it once | open |
+| A6 | Speak the prompts ("Escucha y toca...") too? | Practice text only for now | Add later | assumed |
+| P1 | Existing units' status once `status` exists | `review` until you approve | None | assumed |
+| P2 | May contributed units reuse the book's cast by name? | No: invented characters only (copyright risk grows with contributors) | Rename | assumed |
+| P3 | Who approves `review` -> `approved`? | You | None | assumed |
+| P4 | Spain Spanish only in the hints and spelling rules? | Yes | Text edits | assumed |
+| B1 | Store an optional age band per profile? | Yes, picked by the parent, no birth date | Drop the field | assumed |
+| B2 | `paragraph-editor`: its own archetype or a mode of `fix-the-mistake`? | Own archetype | Merge later | assumed |
+| B3 | May games show agreement errors on screen (for the editor games)? | Yes, corrected last | Hide in the lowest band | assumed |
+| B4 | Where do A2 and past-tense contents come from? | The next book (A1 semester 2 and A2): through the pipeline | None | open |
+| X1 | The book has units 0-3 and no unit 4. Next content = units 2 and 3, then the next book | Yes | None | assumed |
+| X2 | 036 wording "Otro juego" and a lone exercise may run past 3 rounds | Yes | Copy change | assumed |
+| X3 | listen-pick-word with a voice shows no picture; landscape overlay of feedback | Keep | CSS | open |
