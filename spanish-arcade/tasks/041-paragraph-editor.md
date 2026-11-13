@@ -3,7 +3,7 @@ id: "041"
 title: New archetype paragraph-editor (ages 10-12)
 model: Sonnet 5.5
 why_model: Design is fixed in docs/research/AGE-BANDS.md; reuses fix-the-mistake and core/spelling.js.
-status: todo
+status: review
 depends_on: []
 touches: [spanish-arcade/archetypes/paragraph-editor/**, spanish-arcade/test/paragraph-editor.test.js, spanish-arcade/lab/**]
 ---

@@ -46,7 +46,7 @@ export function parseParams(text, archetype, difficulty = 1) {
 }
 
 /** A starting point for the editor: archetypes with a `from` selector get n=4; the ones that need lists get a tiny invented example. */
-const STARTERS = {
+export const STARTERS = {
   'spell-fill-letters': { items: [{ es: 'perro' }, { es: 'cumpleaños' }, { es: 'pingüino' }] },
   'order-words': { items: [{ es: '¿Dónde está el gato?', emoji: '🐱' }, { es: 'Hoy es lunes.', emoji: '📅' }] },
   // --- question-maker sample (invented) ---
@@ -57,6 +57,11 @@ const STARTERS = {
     { answer: 'Mañana juego con Ana.', focus: 'con Ana', question: '¿Con quién juegas mañana?', emoji: '⚽' },
   ], build: 'tiles' },
   // --- end question-maker sample ---
+  // paragraph-editor
+  'paragraph-editor': { texts: [
+    { text: 'Ayer fuimos al río con mis tíos. El agua estaba muy fría y las piedras eran resbaladizas. ¿Quién quiere volver mañana?', errors: [{ at: 3, as: 'rio', kind: 'accent' }, { at: 16, as: 'resbaladizos.', kind: 'agreement' }, { at: 17, as: 'Quién', kind: 'punctuation' }] },
+    { text: 'Mi hermana tiene un perro pequeño. Cada día lo saca al parque y juega con él. Es muy simpático.', errors: [{ at: 5, as: 'pequeña.', kind: 'agreement' }, { at: 9, as: 'sacan', kind: 'verb' }, { at: 15, as: 'el.', kind: 'accent' }] }] },
+  // end paragraph-editor
   'read-answer': { text: ['Ana tiene un gato.', 'El gato es negro.'], questions: [{ q: '¿De qué color es el gato?', options: ['negro', 'blanco', 'verde'], answer: 0, evidence: 1 }] },
   // clue-detective
   'clue-detective': { cases: [{ suspects: [{ name: 'Nico', emoji: '🧑‍🍳', place: 'cocina' }, { name: 'Rita', emoji: '👩‍🔬', place: 'jardín' }, { name: 'Teo', emoji: '🧑‍🎨', place: 'cocina' }, { name: 'Lola', emoji: '👩‍🚀', place: 'salón' }], clues: ['No está en el jardín.', 'Está en la cocina, pero no pinta cuadros.'], answer: 0, rules: [[1], [2, 3]] }] },

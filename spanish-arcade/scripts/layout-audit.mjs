@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import { readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { STARTERS } from '../lab/logic.js';
 
 export const VIEWPORTS = [{ name: '390x844', width: 390, height: 844 }, { name: '360x640', width: 360, height: 640 }, { name: '844x390', width: 844, height: 390 }];
 export const DIFFICULTIES = [1, 2, 3];
@@ -18,12 +19,12 @@ export function overflowOf(m) {
 }
 
 /** Params for an archetype: the first real exercise using it, else a small generic selector. */
-export function paramsFor(archetypeId, units, fallback = { from: { n: 6 } }) {
+export function paramsFor(archetypeId, units, fallback) {
   for (const u of units) {
     const e = u.exercises?.find((x) => x.archetype === archetypeId);
     if (e) return structuredClone(e.params ?? {});
   }
-  return structuredClone(fallback);
+  return structuredClone(fallback ?? STARTERS[archetypeId] ?? { from: { n: 6 } }); // an example.json, else the lab's starter
 }
 
 /** One row per archetype x difficulty x viewport, worst seed kept. */

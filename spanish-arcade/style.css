@@ -283,3 +283,19 @@ span.cd-clue-text { min-height: 0; }
 .qm-input { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 6px 12px; font: inherit; font-size: 1.2rem; border: 2px solid var(--accent); border-radius: 14px; background: var(--card); color: var(--fg); }
 .qm-form .sp-check { width: auto; }
 .qm-root .sp-row { margin: 2px 0; gap: 6px; }
+
+
+/* paragraph-editor */
+main.play .pe-word { min-width: var(--tap-min); min-height: var(--tap-min); font-size: clamp(1rem, 2.8dvh, 1.2rem); }
+main.play .pe-text { margin: 4px 0; gap: 3px; }
+main.play .pe-head > span { font-size: 1.8rem; }
+main.play .pe-fix { margin: 2px 0; }
+main.play .pe-fix .sp-reveal { margin: 0; min-height: 1.3rem; font-size: 1.1rem; }
+main.play .pe-root.fixing .pe-head, main.play .pe-root.fixing > .sp-check { display: none; }
+main.play .pe-fix.typing { display: grid; grid-template-columns: 1fr auto; gap: 4px 6px; align-items: center; }
+main.play .pe-fix.typing > * { grid-column: 1 / -1; }
+main.play .pe-fix.typing > .sp-reveal { grid-column: 1 / -1; }
+main.play .pe-fix.typing > input { grid-column: 1; grid-row: 2; width: 100%; }
+main.play .pe-fix.typing > .sp-check { grid-column: 2; grid-row: 2; margin: 0; padding: 0 12px; }
+main.play .pe-fix.typing .sp-row { display: flex; flex-wrap: nowrap; gap: 2px; margin: 0; }
+main.play .pe-fix.typing .sp-key { flex: 1 1 0; min-width: 0; padding: 0; }
