@@ -1,0 +1,38 @@
+name: Generate Castilian audio
+
+# Manual: Actions > "Generate Castilian audio" > Run workflow. Makes the missing clips with Piper (es_ES-davefx-medium)
+# and opens a pull request. Needs the repo setting: Settings > Actions > General > Workflow permissions >
+# "Allow GitHub Actions to create and approve pull requests" (and "Read and write permissions").
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install "piper-tts>=1.5"
+      - run: npm run audio
+      - run: npm test
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: audio/update-clips
+          title: Update Castilian audio clips
+          commit-message: Update Castilian audio clips
+          body: |
+            Clips made by `npm run audio` with Piper `es_ES-davefx-medium`. Listen to a few before merging.
+            Check that CREDITS.md names the voice revision written in `spanish-arcade/audio/manifest.json` (`voiceRev`).
+          add-paths: spanish-arcade/audio

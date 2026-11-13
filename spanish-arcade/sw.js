@@ -3,7 +3,7 @@
 // forever is safe even though they sit outside this folder.
 // Vite's hashed bundles sit next to the app folders: /assets/ or /<repo>/assets/ on a fork.
 const ASSETS = new URL('../assets/', location).pathname;
-const CACHE = 'spanish-arcade-v4';
+const CACHE = 'spanish-arcade-v5';
 const SHELL = ['./', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 // Also cache the page's hashed /assets/ files, so the very first visit already works offline.
@@ -35,6 +35,12 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return;
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then((res) => put(req, res)).catch(() => caches.match(req).then((hit) => hit || caches.match('./'))));
+    return;
+  }
+  // The clip manifest keeps its name when clips change: network-first. The clips themselves (audio/<hash>.mp3) are cache-first
+  // like everything else, filled on first play (never precached: the install stays small).
+  if (url.pathname.endsWith('/audio/manifest.json')) {
+    e.respondWith(fetch(req).then((res) => (res.ok ? put(req, res) : res)).catch(() => caches.match(req).then((hit) => hit || Response.error())));
     return;
   }
   const scope = new URL('./', location).pathname;

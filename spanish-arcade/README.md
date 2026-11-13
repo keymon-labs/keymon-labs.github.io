@@ -22,12 +22,24 @@ Four units: `a1-u1-s1`, `a1-u1-s3`, `a1-u1-s5`, `a1-u1-s7`. Game types include `
 | `units/<unitId>.json` | Unit data: exercises that pick an archetype and its params |
 | `data/vocab/<unitId>.json` | Words taught by a unit |
 | `scripts/check-units.mjs` | Validator for units and vocab |
-| `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA (service worker cache `spanish-arcade-v4`) |
+| `scripts/audio-*.mjs`, `audio/` | `npm run audio`: lists spoken texts, makes the missing Castilian clips, writes `audio/manifest.json` (see Audio) |
+| `manifest.webmanifest`, `sw.js`, `icon-*.png` | PWA (service worker cache `spanish-arcade-v5`) |
 | `docs/`, `tasks/` | Plan, authoring guide, archetype list, task board |
 
 Shared code from [`shared/`](../shared/README.md): `rng.js` (seeded random), `pwa.js` (service worker registration).
 
 Data formats: unit and vocab contracts are in [docs/PLAN.md §4](docs/PLAN.md); progress is saved in `localStorage` under `spanish-arcade:v1`. Units whose JSON has `"dev": true` are test units: they load in `npm run dev` and are left out of production builds.
+
+## Audio (Castilian clips)
+The games play bundled clips from `audio/` first (`audio/manifest.json` maps each spoken text to `audio/<id>.mp3`) and use the browser voice only for text without a clip. With an empty `audio/manifest.json` the app behaves exactly as before. Settings > Probar voz tests the phone's own voice and says whether it is from Spain.
+
+Make clips (after adding or editing units/vocab):
+1. Needs Python 3.10+, `pip install "piper-tts>=1.5"`, `ffmpeg`, and internet access to huggingface.co (chat sandboxes are blocked; use your own machine or the Action).
+2. `npm run audio` generates only the missing clips with Piper `es_ES-davefx-medium` (current CC0 build; the script refuses the old lessac-based build), deletes unused ones and rewrites the manifest. `npm run audio -- --check` only lists spoken texts without a clip.
+3. First run pins the voice revision in the manifest (`voiceRev`); put that commit in the CREDITS.md row. Commit `audio/`.
+4. Listen to a few clips (numbers, `ll`, `c/z`, questions) before merging.
+
+No Python? Actions > "Generate Castilian audio" > Run workflow opens a PR with the new clips. It needs the repo setting Settings > Actions > General > Workflow permissions > "Read and write" and "Allow GitHub Actions to create and approve pull requests". Never use another voice (sherpa-onnx mirror, sharvard, mls, XTTS, MMS) without the owner's OK; see `docs/research/AUDIO.md`. Sentences generated at play time (some fill-gap frames) have no clip and use the browser voice.
 
 ## Add a unit
 Follow [docs/AUTHORING.md](docs/AUTHORING.md): add `data/vocab/<unitId>.json` and `units/<unitId>.json`, then run `npm run check:units`. No code or registry to edit.

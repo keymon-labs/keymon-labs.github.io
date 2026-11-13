@@ -49,10 +49,25 @@ function general(host, { store, content, diagnostic, applySettings, speech }) {
   vs.onchange = () => { store.setSettings({ voice: vs.value }); speech?.setPreferred(vs.value); };
   const test = document.createElement('button');
   test.type = 'button'; test.id = 'test-voice'; test.textContent = 'Probar voz';
-  test.onclick = () => speech?.say('Hola, me llamo Lola y tengo siete años.');
   const voiceNote = document.createElement('p');
-  voiceNote.className = 'muted';
-  voiceNote.textContent = 'Si no hay ninguna voz de España (es-ES), el teléfono usará otra de español. Puedes instalar una en los ajustes de voz del teléfono.';
+  voiceNote.className = 'muted'; voiceNote.id = 'voice-note'; voiceNote.setAttribute('aria-live', 'polite');
+  // Says which voice answered and whether it is from Spain; the recorded clips (Spain) are played first in the games, this tests the phone's own voice.
+  const describe = () => {
+    const i = speech?.info();
+    const parts = [];
+    if (i?.clips) parts.push(`Grabaciones de España incluidas: ${i.clips}. Se usan primero; la voz del teléfono solo cuando falta una grabación.`);
+    if (!i?.voice) parts.push((i?.clips ? 'Este teléfono no tiene voz en español: solo se oirán las grabaciones; el resto se muestra escrito.' : 'Este teléfono no tiene voz en español: los juegos mostrarán la palabra escrita.'));
+    else if (!i.voice.spain) parts.push(`Acento: no es de España (voz ${i.voice.name}, ${i.voice.region}). En Android: Ajustes > Salida de texto a voz > Google > Español > España, y descarga la voz.`);
+    else parts.push(`Voz del teléfono: ${i.voice.name} (${i.voice.region}).`);
+    voiceNote.textContent = parts.join(' ');
+  };
+  describe();
+  speech?.ready?.().then(describe);
+  test.onclick = async () => {
+    const ok = await speech?.say('zapato, cielo', { voiceOnly: true }); // z and c before e/i: the sound that tells Spain from Latin America
+    describe();
+    if (!ok) voiceNote.textContent = `No se oyó nada. ${voiceNote.textContent}`;
+  };
   voiceRow.append(vs);
 
   const backup = document.createElement('p');

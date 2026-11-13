@@ -3,7 +3,7 @@ id: "039"
 title: Castilian audio: bundled clips first, browser voice as fallback
 model: Sonnet 5.5
 why_model: Well specified by docs/research/AUDIO.md; code plus tooling, no judgement calls left.
-status: todo
+status: review
 depends_on: []
 touches: [spanish-arcade/ui/speech.js, spanish-arcade/ui/settings.js, spanish-arcade/scripts/audio-*.mjs, spanish-arcade/audio/**, .github/workflows/audio.yml, CREDITS.md, spanish-arcade/sw.js, spanish-arcade/test/speech.test.js, spanish-arcade/test/audio-manifest.test.js, spanish-arcade/README.md, package.json]
 ---
