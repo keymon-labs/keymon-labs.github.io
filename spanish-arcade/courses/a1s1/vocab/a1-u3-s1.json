@@ -1,0 +1,31 @@
+{ "schema": 1, "words": [
+  {"id": "vista", "es": "vista", "en": "sight", "emoji": "👀", "tags": ["senses"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "unit": "a1-u3-s1"},
+  {"id": "oido", "es": "oído", "en": "hearing", "emoji": "🔊", "tags": ["senses"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "spell": ["accent"], "unit": "a1-u3-s1"},
+  {"id": "olfato", "es": "olfato", "en": "sense of smell", "emoji": "🌸", "tags": ["senses"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u3-s1"},
+  {"id": "gusto", "es": "gusto", "en": "sense of taste", "emoji": "👅", "tags": ["senses"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u3-s1"},
+  {"id": "tacto", "es": "tacto", "en": "sense of touch", "emoji": "🤚", "tags": ["senses"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u3-s1"},
+
+  {"id": "ojo", "es": "ojo", "en": "eye", "emoji": "👁️", "tags": ["body"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": {"pl": "ojos"}, "unit": "a1-u3-s1"},
+  {"id": "oreja", "es": "oreja", "en": "ear", "emoji": "👂", "tags": ["body"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": {"pl": "orejas"}, "unit": "a1-u3-s1"},
+  {"id": "nariz", "es": "nariz", "en": "nose", "emoji": "👃", "tags": ["body"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": {"pl": "narices"}, "unit": "a1-u3-s1"},
+  {"id": "boca", "es": "boca", "en": "mouth", "emoji": "👄", "tags": ["body"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": {"pl": "bocas"}, "unit": "a1-u3-s1"},
+  {"id": "mano", "es": "mano", "en": "hand", "emoji": "✋", "tags": ["body"], "pos": "noun", "gender": "f", "number": "sg", "article": "la", "forms": {"pl": "manos"}, "unit": "a1-u3-s1"},
+  {"id": "pie", "es": "pie", "en": "foot", "emoji": "🦶", "tags": ["body"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "forms": {"pl": "pies"}, "unit": "a1-u3-s1"},
+  {"id": "pelo", "es": "pelo", "en": "hair", "emoji": "💇", "tags": ["body"], "pos": "noun", "gender": "m", "number": "sg", "article": "el", "unit": "a1-u3-s1"},
+
+  {"id": "contento", "es": "contento", "en": "happy", "emoji": "😊", "tags": ["feelings"], "pos": "adj", "forms": {"f": "contenta", "pl": "contentos"}, "unit": "a1-u3-s1"},
+  {"id": "triste", "es": "triste", "en": "sad", "emoji": "😢", "tags": ["feelings"], "pos": "adj", "forms": {"pl": "tristes"}, "unit": "a1-u3-s1"},
+  {"id": "aburrido", "es": "aburrido", "en": "bored", "emoji": "😑", "tags": ["feelings"], "pos": "adj", "forms": {"f": "aburrida", "pl": "aburridos"}, "unit": "a1-u3-s1"},
+  {"id": "enfadado", "es": "enfadado", "en": "angry", "emoji": "😠", "tags": ["feelings"], "pos": "adj", "forms": {"f": "enfadada", "pl": "enfadados"}, "unit": "a1-u3-s1"},
+  {"id": "nervioso", "es": "nervioso", "en": "nervous", "emoji": "😬", "tags": ["feelings"], "pos": "adj", "forms": {"f": "nerviosa", "pl": "nerviosos"}, "unit": "a1-u3-s1"},
+  {"id": "cansado", "es": "cansado", "en": "tired", "emoji": "😴", "tags": ["feelings"], "pos": "adj", "forms": {"f": "cansada", "pl": "cansados"}, "unit": "a1-u3-s1"},
+  {"id": "asustado", "es": "asustado", "en": "scared", "emoji": "😨", "tags": ["feelings"], "pos": "adj", "forms": {"f": "asustada", "pl": "asustados"}, "unit": "a1-u3-s1"},
+
+  {"id": "rubio", "es": "rubio", "en": "blond", "emoji": "👱", "tags": ["looks"], "pos": "adj", "forms": {"f": "rubia", "pl": "rubios"}, "unit": "a1-u3-s1"},
+  {"id": "moreno", "es": "moreno", "en": "dark-haired", "emoji": "🧑", "tags": ["looks"], "pos": "adj", "forms": {"f": "morena", "pl": "morenos"}, "unit": "a1-u3-s1"},
+  {"id": "rizado", "es": "rizado", "en": "curly", "emoji": "🌀", "tags": ["looks"], "pos": "adj", "forms": {"f": "rizada", "pl": "rizados"}, "unit": "a1-u3-s1"},
+  {"id": "liso", "es": "liso", "en": "straight", "emoji": "〰️", "tags": ["looks"], "pos": "adj", "forms": {"f": "lisa", "pl": "lisos"}, "unit": "a1-u3-s1"},
+  {"id": "castano", "es": "castaño", "en": "brown (hair)", "emoji": "🌰", "tags": ["looks"], "pos": "adj", "forms": {"f": "castaña", "pl": "castaños"}, "spell": ["ñ"], "unit": "a1-u3-s1"},
+  {"id": "grande", "es": "grande", "en": "big", "emoji": "🐘", "tags": ["looks"], "pos": "adj", "forms": {"pl": "grandes"}, "unit": "a1-u3-s1"},
+  {"id": "pequeno", "es": "pequeño", "en": "small", "emoji": "🐜", "tags": ["looks"], "pos": "adj", "forms": {"f": "pequeña", "pl": "pequeños"}, "spell": ["ñ"], "unit": "a1-u3-s1"}
+] }

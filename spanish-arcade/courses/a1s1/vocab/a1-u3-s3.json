@@ -1,0 +1,10 @@
+{ "schema": 1, "words": [
+  {"id": "levantarse", "es": "levantarse", "en": "to get up", "emoji": "🌅", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "despertarse", "es": "despertarse", "en": "to wake up", "emoji": "⏰", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "lavarse", "es": "lavarse", "en": "to wash (oneself)", "emoji": "🧼", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "ducharse", "es": "ducharse", "en": "to have a shower", "emoji": "🚿", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "vestirse", "es": "vestirse", "en": "to get dressed", "emoji": "👕", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "peinarse", "es": "peinarse", "en": "to comb one's hair", "emoji": "💇", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "cepillarse", "es": "cepillarse", "en": "to brush (one's teeth)", "emoji": "🪥", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"},
+  {"id": "acostarse", "es": "acostarse", "en": "to go to bed", "emoji": "🛏️", "tags": ["routine"], "pos": "verb", "unit": "a1-u3-s3"}
+] }
