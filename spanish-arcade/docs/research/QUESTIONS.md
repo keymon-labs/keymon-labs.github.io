@@ -61,7 +61,7 @@ Clock style (12-hour spoken only), speaking exercises postponed, which playgroun
 | A4 | Allow "ask owner" voices (sharvard, mls, XTTS, MMS, Kokoro)? | No | Different voice | assumed |
 | A5 | Who generates the clips? | A GitHub Action that opens a PR, or a local script. The sandbox cannot reach the voice host | You run it once | open |
 | A6 | Speak the prompts ("Escucha y toca...") too? | Practice text only for now | Add later | assumed |
-| P1 | Existing units' status once `status` exists | `review` until you approve | None | assumed |
+| P1 | Existing units' status once `status` exists | `approved` (they are live today; `review` would hide the trail from kids). Your review of the Spanish of s3, s5, s7 is still pending | Set a unit to `review` | assumed |
 | P2 | May contributed units reuse the book's cast by name? | No: invented characters only (copyright risk grows with contributors) | Rename | assumed |
 | P3 | Who approves `review` -> `approved`? | You | None | assumed |
 | P4 | Spain Spanish only in the hints and spelling rules? | Yes | Text edits | assumed |
@@ -72,3 +72,8 @@ Clock style (12-hour spoken only), speaking exercises postponed, which playgroun
 | X1 | The book has units 0-3 and no unit 4. Next content = units 2 and 3, then the next book | Yes | None | assumed |
 | X2 | 036 wording "Otro juego" and a lone exercise may run past 3 rounds | Yes | Copy change | assumed |
 | X3 | listen-pick-word with a voice shows no picture; landscape overlay of feedback | Keep | CSS | open |
+| C1 | Bundle `review` units in the production JS and show them only in debug mode? | Yes (the repo is public anyway) | Move them behind a dev flag | assumed |
+| C2 | Band 7-8 for the existing four units? | Yes | Metadata edit | assumed |
+| C3 | Course chip in Ajustes as well as the picker on the profile screen? | Not now | Small UI task | open |
+| K1 | `clue-detective`: require the optional `rules` field per case? | No, optional; hints work without it | Stricter validator | open |
+| K2 | `paragraph-editor`: keyboard keys under 44px at 360px width; keep paragraphs to ~30 words | Accept for now | Use two key rows | open |
