@@ -1,0 +1,6 @@
+{ "schema": 1, "words": [
+  { "id": "gracias", "es": "gracias", "en": "thank you", "emoji": "🙏", "tags": ["polite"], "pos": "phrase", "unit": "a1-u2-s5" },
+  { "id": "perdon", "es": "perdón", "en": "sorry", "emoji": "🙇", "tags": ["polite"], "pos": "phrase", "spell": ["accent"], "unit": "a1-u2-s5" },
+  { "id": "hola", "es": "hola", "en": "hello", "emoji": "👋", "tags": ["polite"], "pos": "phrase", "unit": "a1-u2-s5" },
+  { "id": "adios", "es": "adiós", "en": "goodbye", "emoji": "✋", "tags": ["polite"], "pos": "phrase", "spell": ["accent"], "unit": "a1-u2-s5" }
+] }
