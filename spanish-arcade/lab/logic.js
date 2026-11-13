@@ -66,8 +66,10 @@ export const STARTERS = {
   // clue-detective
   'clue-detective': { cases: [{ suspects: [{ name: 'Nico', emoji: '🧑‍🍳', place: 'cocina' }, { name: 'Rita', emoji: '👩‍🔬', place: 'jardín' }, { name: 'Teo', emoji: '🧑‍🎨', place: 'cocina' }, { name: 'Lola', emoji: '👩‍🚀', place: 'salón' }], clues: ['No está en el jardín.', 'Está en la cocina, pero no pinta cuadros.'], answer: 0, rules: [[1], [2, 3]] }] },
 };
-export function starterParams(archetype) {
-  if (STARTERS[archetype.id]) return structuredClone(STARTERS[archetype.id]);
+/** examples = { "../archetypes/<id>/example.json": params } (import.meta.glob in lab.js): a new archetype needs no STARTERS entry. */
+export function starterParams(archetype, examples = {}) {
+  const own = STARTERS[archetype.id] ?? examples[`../archetypes/${archetype.id}/example.json`];
+  if (own) return structuredClone(own);
   return 'from' in (archetype.paramsSchema || {}) ? { from: { n: 4 } } : {};
 }
 

@@ -11,6 +11,7 @@ const speech = createSpeech();
 const real = loadContent({ includeDev: import.meta.env.DEV }); // production: real units only
 const archetypes = Object.values(real.archetypeById).sort((a, b) => a.id.localeCompare(b.id));
 const query = parseQuery(location.search);
+const examples = import.meta.glob('../archetypes/*/example.json', { eager: true, import: 'default' }); // starter params for archetypes without a STARTERS entry
 
 function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
@@ -41,7 +42,7 @@ const exerciseDef = () => real.unitById[st.unit]?.exercises.find((e) => e.id ===
 
 // ---- controls
 const el = {};
-el.archetype = h('select', { id: 'archetype', onchange: () => { st.archetype = el.archetype.value; st.exercise = ''; el.exercise.value = ''; el.params.value = json(starterParams(arch())); apply(); } },
+el.archetype = h('select', { id: 'archetype', onchange: () => { st.archetype = el.archetype.value; st.exercise = ''; el.exercise.value = ''; el.params.value = json(starterParams(arch(), examples)); apply(); } },
   archetypes.map((a) => opt(a.id, `${a.emoji ?? ''} ${a.title.es} (${a.id})`, a.id === st.archetype)));
 el.unit = h('select', { id: 'unit', onchange: () => { st.unit = el.unit.value; st.exercise = ''; fillExercises(); } },
   [opt('', '(ninguna)', !st.unit), ...real.units.map((u) => opt(u.id, `${u.title.es} (${u.id})`, u.id === st.unit))]);
@@ -178,7 +179,7 @@ root.append(h('main', { class: 'lab-form' },
   h('div', { class: 'row' }, field('seed', 'Semilla', el.seed), h('button', { type: 'button', id: 'new-seed', onclick: newSeedClick }, 'Nueva semilla')),
   field('params', 'Parámetros (JSON)', el.params), el.errors,
   h('button', { type: 'button', id: 'apply', onclick: apply }, 'Aplicar y jugar'),
-  h('button', { type: 'button', id: 'reset-params', onclick: () => { el.params.value = json(exerciseDef()?.params ?? starterParams(arch())); apply(); } }, 'Restablecer parámetros'),
+  h('button', { type: 'button', id: 'reset-params', onclick: () => { el.params.value = json(exerciseDef()?.params ?? starterParams(arch(), examples)); apply(); } }, 'Restablecer parámetros'),
   el.stage, el.live,
   h('section', { class: 'panel' }, h('h2', {}, 'Ronda actual'), el.round, h('h2', {}, 'Estado'), el.state),
   h('section', { class: 'panel' }, h('h2', {}, 'Resultados'),
@@ -186,7 +187,7 @@ root.append(h('main', { class: 'lab-form' },
   h('section', { class: 'panel' }, h('h2', {}, 'Nota'), field('note-text', 'Comentario', el.noteText),
     h('button', { type: 'button', id: 'copy-note', onclick: copyNote }, 'Copiar nota'), el.copyMsg)), footer);
 
-el.params.value = json(exFromQuery?.params ?? starterParams(arch()));
+el.params.value = json(exFromQuery?.params ?? starterParams(arch(), examples));
 fillExercises();
 window.__spanishLab = { st, get session() { return session; }, apply, real, get log() { return log; } };
 apply();

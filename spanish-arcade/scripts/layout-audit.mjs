@@ -48,7 +48,7 @@ async function main() {
   const only = arg('vp', null);
   const { chromium } = createRequire(import.meta.url)('playwright');
   const units = readdirSync(path.join(root, 'courses')).flatMap((c) => { const d = path.join(root, 'courses', c, 'units'); try { return readdirSync(d).map((f) => JSON.parse(readFileSync(path.join(d, f), 'utf8'))); } catch { return []; } }).filter((u) => !u.dev);
-  const archetypes = readdirSync(path.join(root, 'archetypes'), { withFileTypes: true }).filter((d) => d.isDirectory() && d.name !== 'placeholder').map((d) => d.name).sort();
+  const archetypes = readdirSync(path.join(root, 'archetypes'), { withFileTypes: true }).filter((d) => d.isDirectory() && d.name !== 'placeholder' && !d.name.startsWith('_')).map((d) => d.name).sort();
   const example = (a) => { try { return JSON.parse(readFileSync(path.join(root, 'archetypes', a, 'example.json'), 'utf8')); } catch { return undefined; } }; // params for an archetype no unit uses yet
   if (shots) mkdirSync(shots, { recursive: true });
   const browser = await chromium.launch();
