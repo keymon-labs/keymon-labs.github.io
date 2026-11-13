@@ -81,6 +81,7 @@ export function createUnitSession({ unit, content, seed, resume = null }) {
   // Task 036: rounds of the exercises of a leg alternate in runs of at most RUN_MAX. s.run = { id, n } is the current run (n rounds
   // played in it); everything else is derived from the per-exercise round counts (s.played), so nothing replays.
   s.run ??= ok && resume.run === undefined && s.order[s.exerciseIndex] ? { id: s.order[s.exerciseIndex], n: s.roundIndex ?? 0 } : null;
+  if (s.run && !ids.includes(s.run.id)) s.run = null; // the current exercise was removed without a rev bump
   // s.played[id] = rounds of that exercise already left behind. Snapshots without it (or with a roundIndex moved by hand, as the lab does) say it
   // through results[id].total and, for the current run, roundIndex.
   s.played = { ...Object.fromEntries(Object.entries(s.results).map(([id, r]) => [id, r.total])), ...(ok && resume.played) };

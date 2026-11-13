@@ -389,3 +389,15 @@ test('unitProgress reads finished exercises of a mixed snapshot, and of an old o
   const old = { ...s.snapshot() }; delete old.finished; delete old.run; delete old.played; old.exerciseIndex = 1;
   assert.deepEqual(unitProgress({ ...prof, inProgress: old }, u).rows.map((r) => r.done), [true, false, false]);
 });
+
+test('resume when the current exercise was removed without a rev bump does not throw (Opus review of 036)', () => {
+  const full = mixUnit([rx('a', 5, 1, { pin: true }), rx('b', 5, 1, { pin: true }), rx('c', 5, 1, { pin: true })]);
+  const s = createUnitSession({ unit: full, content: mixContent, seed: 1 });
+  s.submit(s.current.round.answer); s.submit(s.current.round.answer); // two rounds into a's run
+  const snap = JSON.parse(JSON.stringify(s.snapshot()));
+  const cut = { ...full, exercises: full.exercises.filter((e) => e.id !== 'a') };
+  const b = createUnitSession({ unit: cut, content: mixContent, seed: 1, resume: snap });
+  const ids = trace(b).map((r) => r.id);
+  assert.equal(ids.length, 10);
+  assert.ok(!ids.includes('a'));
+});
