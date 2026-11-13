@@ -50,6 +50,8 @@ const STARTERS = {
   'spell-fill-letters': { items: [{ es: 'perro' }, { es: 'cumpleaños' }, { es: 'pingüino' }] },
   'order-words': { items: [{ es: '¿Dónde está el gato?', emoji: '🐱' }, { es: 'Hoy es lunes.', emoji: '📅' }] },
   'read-answer': { text: ['Ana tiene un gato.', 'El gato es negro.'], questions: [{ q: '¿De qué color es el gato?', options: ['negro', 'blanco', 'verde'], answer: 0, evidence: 1 }] },
+  // clue-detective
+  'clue-detective': { cases: [{ suspects: [{ name: 'Nico', emoji: '🧑‍🍳', place: 'cocina' }, { name: 'Rita', emoji: '👩‍🔬', place: 'jardín' }, { name: 'Teo', emoji: '🧑‍🎨', place: 'cocina' }, { name: 'Lola', emoji: '👩‍🚀', place: 'salón' }], clues: ['No está en el jardín.', 'Está en la cocina, pero no pinta cuadros.'], answer: 0, rules: [[1], [2, 3]] }] },
 };
 export function starterParams(archetype) {
   if (STARTERS[archetype.id]) return structuredClone(STARTERS[archetype.id]);

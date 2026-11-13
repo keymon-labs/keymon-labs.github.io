@@ -24,6 +24,7 @@ Reusable mini-game types. Each is parameterised (see [PLAN.md §4.3](PLAN.md)) a
 | `code-breaker` | Number→letter code reveals a word | alphabet | `words[]` | shuffled code; longer word | idea |
 | `dialogue-complete` | Chat bubbles; choose the missing reply | functional language | `dialogues[]` | more turns | idea |
 | `crossword-lite` | Small crossword from vocab with picture clues | spelling | `from`, `size` | larger grid | idea |
+| `clue-detective` | Suspect cards and clue notes; cross out who the clues rule out, then pick the culprit | reading, deduction | `cases[]` {suspects, clues, answer, rules?}, `reveal`, `crossOut` | clues one by one; negation; comparisons, ser/estar | done |
 | `who-is-who` | Ask yes/no questions to find the character (vs the computer) | questions, description | `cast[]`, `traits` | more traits | idea |
 | `syllable-order` | Put syllables in order, speaking each | syllables, spelling | `from` | more syllables | idea |
 | `veo-veo` | "Veo, veo… empieza por la letra…" guess the object | letters, vocab | `scene`, `from` | harder scenes | idea |

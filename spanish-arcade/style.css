@@ -233,3 +233,34 @@ main.play .odd-one-out > div { gap: clamp(6px, 1.4dvh, 12px) !important; }
   main.play .status { min-height: 1.4em; }
   main.play .sp-root { --tile: clamp(44px, calc(((100vw - 48px) * .6 - 6px * var(--n, 8)) / var(--n, 8)), 52px); }
 }
+/* clue-detective */
+.cd-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(6px, 1.2dvh, 10px); }
+.cd-card { display: flex; flex-direction: column; border: 2px solid var(--accent); border-radius: 14px; background: var(--card); overflow: hidden; min-width: 0; }
+.cd-face { display: flex; flex-direction: column; align-items: center; gap: 0; min-height: var(--tap-min, 48px); margin: 0; padding: 4px 4px 2px; border: 0; border-radius: 0; background: transparent; color: var(--fg); box-shadow: none; line-height: 1.1; font-size: .95rem; }
+.cd-emoji { font-size: clamp(1.6rem, 4.6dvh, 2.4rem); line-height: 1.1; }
+.cd-name { font-weight: 700; overflow-wrap: anywhere; }
+.cd-place { font-size: .8rem; color: var(--muted); }
+.cd-pick { min-height: 44px; margin: 0; padding: 2px 6px; border: 0; border-top: 2px solid var(--line); border-radius: 0; background: var(--accent); color: var(--on-accent); font-size: .95rem; font-weight: 700; box-shadow: none; }
+.cd-card.out { border-style: dashed; border-color: var(--line); }
+.cd-card.out .cd-face { opacity: .45; text-decoration: line-through; }
+.cd-card.out .cd-pick { background: transparent; color: var(--muted); }
+.cd-card.reveal { outline: 4px double currentColor; }
+.cd-card.reveal .cd-name::before { content: "✔ "; }
+.cd-clues { list-style: none; margin: clamp(6px, 1.4dvh, 12px) 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cd-clue { border-left: 4px solid var(--accent); background: var(--card); border-radius: 8px; padding: 2px 8px; min-height: 44px; display: flex; align-items: center; line-height: 1.25; }
+.cd-clue.new { outline: 2px dotted currentColor; }
+.cd-clue-text { flex: 1; min-height: 44px; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; color: var(--fg); font: inherit; text-align: left; display: flex; align-items: center; }
+span.cd-clue-text { min-height: 0; }
+.cd-more { width: 100%; min-height: 44px; margin: 6px 0 0; }
+.clue-detective.closed .cd-grid::after { content: "CASO CERRADO"; grid-column: 1 / -1; text-align: center; font-weight: 800; letter-spacing: .1em; color: var(--good); }
+@media (orientation: landscape) and (max-height: 520px) {
+  .clue-detective { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: 12px; align-items: start; }
+  .clue-detective .cd-grid { grid-column: 1; grid-row: 1 / 4; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .clue-detective .cd-clues { grid-column: 2; grid-row: 1; margin: 0; gap: 2px; }
+  .clue-detective .cd-more { grid-column: 2; grid-row: 2; margin: 2px 0 0; }
+  .clue-detective .status { grid-column: 2; grid-row: 3; }
+  .cd-face { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: 4px; padding: 2px; min-height: 44px; }
+  .cd-emoji { font-size: 1.5rem; }
+  .cd-place { display: none; }
+  .cd-clue { padding: 0 6px; font-size: .9rem; }
+}

@@ -18,12 +18,12 @@ export function overflowOf(m) {
 }
 
 /** Params for an archetype: the first real exercise using it, else a small generic selector. */
-export function paramsFor(archetypeId, units) {
+export function paramsFor(archetypeId, units, fallback = { from: { n: 6 } }) {
   for (const u of units) {
     const e = u.exercises?.find((x) => x.archetype === archetypeId);
     if (e) return structuredClone(e.params ?? {});
   }
-  return { from: { n: 6 } };
+  return structuredClone(fallback);
 }
 
 /** One row per archetype x difficulty x viewport, worst seed kept. */
@@ -48,6 +48,7 @@ async function main() {
   const { chromium } = createRequire(import.meta.url)('playwright');
   const units = readdirSync(path.join(root, 'units')).map((f) => JSON.parse(readFileSync(path.join(root, 'units', f), 'utf8'))).filter((u) => !u.dev);
   const archetypes = readdirSync(path.join(root, 'archetypes'), { withFileTypes: true }).filter((d) => d.isDirectory() && d.name !== 'placeholder').map((d) => d.name).sort();
+  const example = (a) => { try { return JSON.parse(readFileSync(path.join(root, 'archetypes', a, 'example.json'), 'utf8')); } catch { return undefined; } }; // params for an archetype no unit uses yet
   if (shots) mkdirSync(shots, { recursive: true });
   const browser = await chromium.launch();
   const results = [];
@@ -69,7 +70,7 @@ async function main() {
     const pid = await page.evaluate(() => window.__spanishArcade.store.addProfile({ firstName: 'Auditor' }).id);
     for (const a of archetypes) {
       for (const difficulty of DIFFICULTIES) {
-        const params = paramsFor(a, units);
+        const params = paramsFor(a, units, example(a));
         let worst = null;
         for (let s = 0; s < seeds; s++) {
           const uid = `audit-${a}-${difficulty}-${s}`;

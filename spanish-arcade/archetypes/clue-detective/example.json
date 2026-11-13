@@ -1,0 +1,7 @@
+{ "cases": [
+  { "suspects": [
+      { "name": "Nico", "emoji": "🧑‍🍳", "place": "cocina" }, { "name": "Rita", "emoji": "👩‍🔬", "place": "jardín" },
+      { "name": "Teo", "emoji": "🧑‍🎨", "place": "cocina" }, { "name": "Lola", "emoji": "👩‍🚀", "place": "salón" },
+      { "name": "Fran", "emoji": "🧙", "place": "jardín" }, { "name": "Eva", "emoji": "🦸", "place": "salón" } ],
+    "clues": ["La persona que buscamos no está en el jardín.", "Lleva un gorro blanco.", "Está en la cocina, pero no pinta cuadros."],
+    "answer": 0, "rules": [[1, 4], [2, 3, 5], [2]] } ] }

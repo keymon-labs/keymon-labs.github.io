@@ -3,7 +3,7 @@ id: "042"
 title: New archetype clue-detective (ages 10-12)
 model: Sonnet 5.5
 why_model: Design is fixed in docs/research/AGE-BANDS.md; it also unblocks the planned who-is-who clue game.
-status: todo
+status: review
 depends_on: []
 touches: [spanish-arcade/archetypes/clue-detective/**, spanish-arcade/test/clue-detective.test.js, spanish-arcade/lab/**]
 ---
