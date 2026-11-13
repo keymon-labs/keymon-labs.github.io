@@ -3,7 +3,7 @@ id: "045"
 title: Content pipeline: notes templates, prompts, overlap check
 model: Sonnet 5.5
 why_model: Templates and a small script; the design is in docs/research/PIPELINE.md.
-status: todo
+status: review
 depends_on: ["040"]
 touches: [spanish-arcade/docs/courses/**, spanish-arcade/docs/PIPELINE.md, spanish-arcade/scripts/check-overlap.mjs, spanish-arcade/prompts/**, spanish-arcade/test/overlap.test.js, .gitignore]
 ---

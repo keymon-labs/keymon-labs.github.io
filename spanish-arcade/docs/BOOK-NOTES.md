@@ -38,9 +38,9 @@ Culture: traditional Spanish playground games.
 Culture: a famous Spanish painter.
 
 ## Unit 1 detail (digest)
-Per-session notes in our own words: [book/u1.md](book/u1.md). What the table above leaves out:
+Per-session notes in our own words: [book/u1.md](courses/a1s1/u1.md). What the table above leaves out:
 - **S1** has no comic: a word list, a short meeting chat, a greeting song, then games (odd one out, colour-by-number, classmate survey, whisper chain). About ten family words, about five pets, colours and numbers 0-10.
-- **S3** is the unit's comic (story hooks and exercises in [book/u1.md](book/u1.md)). Alphabet letter names (with ñ) and capitals on names are taught here too.
+- **S3** is the unit's comic (story hooks and exercises in [book/u1.md](courses/a1s1/u1.md)). Alphabet letter names (with ñ) and capitals on names are taught here too.
 - **S5** is a short text, not a comic. The book has no spelling item in this session; the flags (culture) page sits here, not in S7.
 - **S7** is built on passport-style pages (personal data, languages, professions), a picture riddle, family bingo and a "what is happening" picture. Accents on question words appear.
 - **Recap** page: five self-check boxes (articles, ¿ ¡, colours, ñ, family and numbers) and one coded line.
