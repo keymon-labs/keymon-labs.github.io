@@ -28,7 +28,7 @@ const CSS = `
 .sp-word{font-size:1.8rem;letter-spacing:.05em;margin:10px 0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px}
 .sp-reveal{font-size:1.6rem;font-weight:bold;text-align:center;margin:6px 0;min-height:2.4rem}
 .sp-prompt{font-size:2.4rem;text-align:center;margin:6px 0}
-.sp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}
+.sp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0}.sp-note{flex:0 0 100%;margin:0;text-align:center;font-size:.8rem;color:var(--muted,#667)}
 @media (orientation:landscape) and (max-height:520px){
 .sp-root{--tile:clamp(44px,calc(((100vw - 48px) * .6 - 6px * var(--n,8)) / var(--n,8)),52px);display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto auto 1fr auto;grid-template-areas:'p w' 's t' 'r t' 'c x';column-gap:16px;align-items:start}
 .sp-root>.sp-prompt{grid-area:p;align-self:center}.sp-root>.sp-say{grid-area:s;justify-self:center}.sp-root>.sp-reveal{grid-area:r}
@@ -64,6 +64,7 @@ export function specialLettersRow(onPick, { letters = [], onBackspace, backLabel
   const row = el('div', 'sp-row');
   row.setAttribute('role', 'group');
   row.setAttribute('aria-label', 'ñ á é í ó ú ü ¿ ¡');
+  row.append(el('p', 'sp-note', 'Escribe con el teclado. Letras especiales, si tu teclado no las tiene:'));
   const add = (text, fn, label) => {
     const b = el('button', 'sp-key', text);
     b.type = 'button';

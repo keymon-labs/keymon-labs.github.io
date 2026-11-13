@@ -297,5 +297,5 @@ main.play .pe-fix.typing > * { grid-column: 1 / -1; }
 main.play .pe-fix.typing > .sp-reveal { grid-column: 1 / -1; }
 main.play .pe-fix.typing > input { grid-column: 1; grid-row: 2; width: 100%; }
 main.play .pe-fix.typing > .sp-check { grid-column: 2; grid-row: 2; margin: 0; padding: 0 12px; }
-main.play .pe-fix.typing .sp-row { display: flex; flex-wrap: nowrap; gap: 2px; margin: 0; }
+main.play .pe-fix.typing .sp-row { display: flex; flex-wrap: wrap; gap: 2px; margin: 0; }
 main.play .pe-fix.typing .sp-key { flex: 1 1 0; min-width: 0; padding: 0; }
