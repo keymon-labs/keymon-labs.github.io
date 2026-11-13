@@ -264,3 +264,22 @@ span.cd-clue-text { min-height: 0; }
   .cd-place { display: none; }
   .cd-clue { padding: 0 6px; font-size: .9rem; }
 }
+
+
+/* question-maker */
+.qm-root { gap: clamp(4px, 1dvh, 10px); }
+.qm-card { display: flex; align-items: center; gap: 10px; padding: clamp(6px, 1.2dvh, 12px) 12px; border: 2px solid var(--line); border-radius: 16px; background: var(--card); }
+.qm-emoji { font-size: clamp(1.8rem, 5dvh, 2.6rem); line-height: 1; }
+.qm-text { flex: 1; min-width: 0; margin: 0; font-size: clamp(1.05rem, 2.8dvh, 1.3rem); line-height: 1.35; }
+.qm-text mark { background: rgba(255, 200, 0, .55); color: inherit; font-weight: 700; border-radius: 6px; padding: 0 .2em; }
+.qm-reveal { font-size: clamp(1.05rem, 2.6dvh, 1.3rem); margin: 0; min-height: 1.6em; }
+.qm-opts { display: flex; flex-direction: column; gap: clamp(6px, 1.2dvh, 10px); }
+.qm-opt { width: 100%; font-size: clamp(1.05rem, 2.8dvh, 1.3rem); text-align: left; }
+.qm-root .qm-tile { width: auto; height: auto; min-width: 2.2em; min-height: 2.4em; padding: .35em .8em; line-height: 1.2; white-space: nowrap; font-size: 1.2rem; }
+.qm-root .qm-tile { min-height: 48px; }
+.qm-root .qm-tile.mark { min-width: 48px; padding: .35em .5em; }
+.qm-root .sp-tiles { align-items: center; margin: 4px 0; }
+.qm-form { display: flex; gap: 8px; }
+.qm-input { flex: 1 1 0; min-width: 0; min-height: 48px; padding: 6px 12px; font: inherit; font-size: 1.2rem; border: 2px solid var(--accent); border-radius: 14px; background: var(--card); color: var(--fg); }
+.qm-form .sp-check { width: auto; }
+.qm-root .sp-row { margin: 2px 0; gap: 6px; }

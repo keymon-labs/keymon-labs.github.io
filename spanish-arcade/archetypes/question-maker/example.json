@@ -1,0 +1,32 @@
+{
+ "items": [
+  {
+   "answer": "Vivo en una casa azul.",
+   "focus": "en una casa azul",
+   "question": "¿Dónde vives?",
+   "wrong": [
+    "¿Dónde vivo?"
+   ],
+   "emoji": "🏠"
+  },
+  {
+   "answer": "Llego tarde porque perdí el autobús.",
+   "focus": "porque perdí el autobús",
+   "question": "¿Por qué llegas tarde?",
+   "emoji": "🚌"
+  },
+  {
+   "answer": "Mi hermano tiene tres gatos.",
+   "focus": "tres",
+   "question": "¿Cuántos gatos tiene tu hermano?",
+   "emoji": "🐱"
+  },
+  {
+   "answer": "Mañana juego con Ana.",
+   "focus": "con Ana",
+   "question": "¿Con quién juegas mañana?",
+   "emoji": "⚽"
+  }
+ ],
+ "build": "tiles"
+}
