@@ -69,10 +69,13 @@ export function applyRev(profile, units) {
 
 export const saveInProgress = (profile, snapshot) => ({ ...profile, inProgress: snapshot });
 
-/** In order: a unit opens when the previous one has been finished (any stars). units sorted by order. */
+/**
+ * In order: a unit opens when it is first, or already has a progress entry (sticky: inserting a unit before a finished one
+ * never re-locks it), or the previous unit has been finished (any stars). units = one course, sorted by order.
+ */
 export function isUnlocked(profile, units, unitId) {
   const i = units.findIndex((u) => u.id === unitId);
-  return i === 0 || (i > 0 && (profile.units[units[i - 1].id]?.stars ?? 0) > 0);
+  return i === 0 || (i > 0 && (Boolean(profile.units?.[unitId]) || (profile.units?.[units[i - 1].id]?.stars ?? 0) > 0));
 }
 
 /** Seed for the next attempt: hash(profileId, unitId, attempt), so each replay differs but is reproducible. */

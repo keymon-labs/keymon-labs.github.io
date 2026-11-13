@@ -1,0 +1,23 @@
+{
+  "note": "A saved store as written before courses existed (task 040): no courseId, no band, units keyed by their ids. Invented child, invented times. It must keep loading with its stars and unlocks.",
+  "store": {
+    "schema": 1,
+    "settings": { "lang": "es", "sound": true, "textSize": 1, "lastBackupAt": null, "debug": false, "voice": "", "theme": "auto", "palette": "caramel" },
+    "profiles": [{
+      "id": "p-old", "firstName": "Test", "fullName": "", "class": "", "avatar": "", "created": "2026-10-01T10:00:00.000Z",
+      "units": {
+        "a1-u1-s1": { "rev": 3, "stars": 3, "bestCorrect": 6, "attempts": 2, "completedAt": "2026-10-02T10:00:00.000Z", "lastAt": "2026-10-03T10:00:00.000Z",
+          "last": { "stars": 3, "correct": 6, "at": "2026-10-03T10:00:00.000Z" },
+          "exercises": { "numbers-listen": { "correct": 6, "total": 6, "tries": 6, "hints": 0, "reveals": 0, "done": true, "ok": true, "bestOk": true, "at": "2026-10-03T10:00:00.000Z" } } },
+        "a1-u1-s3": { "rev": 2, "stars": 2, "bestCorrect": 4, "attempts": 1, "completedAt": "2026-10-04T10:00:00.000Z", "lastAt": "2026-10-04T10:00:00.000Z",
+          "last": { "stars": 2, "correct": 4, "at": "2026-10-04T10:00:00.000Z" }, "exercises": {} },
+        "a1-u1-s5": { "rev": 2, "stars": 0, "bestCorrect": 0, "attempts": 0, "completedAt": null, "lastAt": "2026-10-05T10:00:00.000Z",
+          "exercises": { "pets-listen": { "correct": 3, "total": 3, "tries": 3, "hints": 0, "reveals": 0, "done": true, "ok": true, "bestOk": true, "at": "2026-10-05T10:00:00.000Z" } } }
+      },
+      "words": { "gato": { "seen": 4, "wrong": 1, "lastAt": "2026-10-03T10:00:00.000Z" } },
+      "history": [{ "unitId": "a1-u1-s1", "at": "2026-10-02T10:00:00.000Z", "correct": 5, "stars": 2 }, { "unitId": "a1-u1-s1", "at": "2026-10-03T10:00:00.000Z", "correct": 6, "stars": 3 }],
+      "inProgress": null,
+      "badges": [{ "unitId": "a1-u1-s1", "earnedAt": "2026-10-02T10:00:00.000Z" }, { "unitId": "a1-u1-s3", "earnedAt": "2026-10-04T10:00:00.000Z" }]
+    }]
+  }
+}

@@ -1,0 +1,5 @@
+{ "schema": 1, "id": "a1s1", "unitPrefix": "a1-", "order": 10,
+  "title": { "es": "Español A1 · primer cuatrimestre", "en": "Spanish A1, part 1" },
+  "level": "A1", "semester": 1, "variety": "es-ES",
+  "difficultyCap": [ { "upToBookUnit": 4, "max": 2 } ],
+  "status": "approved" }

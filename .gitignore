@@ -7,3 +7,6 @@ claude/out/
 /private-assets/
 /book/
 *.pdf
+
+# a contributor's private course book material (Spanish Arcade pipeline); never committed, never built
+content-private/

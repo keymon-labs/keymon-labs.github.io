@@ -34,9 +34,10 @@ spanish-arcade/
   ui/                                 mascot, help overlay, tiles, speech.js, result card, settings.js (slots), report, badge card
   ui/settings-slots/<name>.js         fills a Settings slot: `export default { slot: 'transfer' | 'reports', render(host, ctx) }`; ctx = { store, content, diagnostic, gate }; found by import.meta.glob, so no edit to settings.js
   archetypes/<id>/index.js, logic.js, README.md   one folder each; found by import.meta.glob('./*/index.js')
-  data/vocab/<unitId>.json            words first taught in that unit; merged at load, ids unique across files
+  courses/<courseId>/course.json      course manifest: id, unitPrefix, order, level, difficultyCap, status (existing content = course a1s1, prefix "a1-")
+  courses/<courseId>/vocab/<unitId>.json   words first taught in that unit; merged at load, ids unique per course
   data/jokes.json, mascot-lines.json  our own
-  units/<id>.json                     one file per unit; found by import.meta.glob, ordered by "order"; bundled so they work offline
+  courses/<courseId>/units/<id>.json  one file per unit; found by import.meta.glob, ordered by "order" (per course); bundled so they work offline
   test/*.test.js, test/fixtures/      invented data only
   docs/  tasks/
 ```
@@ -44,7 +45,18 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
 
 ## 4. Data contracts (v1)
 
-### 4.1 Vocab, `data/vocab/<unitId>.json`
+### 4.0 Courses, `courses/<courseId>/course.json`
+```json
+{ "schema": 1, "id": "a1s1", "unitPrefix": "a1-", "order": 10,
+  "title": { "es": "…", "en": "…" }, "level": "A1", "semester": 1, "variety": "es-ES",
+  "difficultyCap": [ { "upToBookUnit": 4, "max": 2 } ], "status": "approved" }
+```
+- Full field table: [research/PIPELINE.md §1](research/PIPELINE.md). `id` = folder name; every unit id starts with `unitPrefix`, and no prefix starts with another. Unit ids are global (progress is keyed by them); word ids are unique **per course**; a unit only sees words of its own course (`allowedWords`, `upToUnit: false` included).
+- Units unlock in order **inside a course**, with a *sticky* rule: a unit opens if it is first, or already has a progress entry, or the previous unit has stars. Inserting a unit before a finished one never re-locks it.
+- The profile has an optional `courseId` (missing or unknown = the first course by `order`) and an optional `band` (`7-8`, `9-10`, `11-12`; stored but not yet used). The profile screen shows a "Mis cursos" picker only when more than one course has something visible. `totalStars` stays a lifetime total.
+- Unit ids, exercise ids, word ids and course ids never change: saved progress survives (fixture `test/fixtures/store-pre-courses.json`).
+
+### 4.1 Vocab, `courses/<courseId>/vocab/<unitId>.json`
 ```json
 { "schema": 1, "words": [
   { "id": "abuela", "es": "abuela", "en": "grandmother", "emoji": "👵",
@@ -58,10 +70,10 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
 - `spell` values come from a fixed list: `ñ rr r x s h accent qu gu ü ¿¡`.
 - Spain Spanish by default (ordenador, bolígrafo); `es-ES` voice. `emoji` or our own `img` only.
 - **Selector** used by `params.from`: `{ tag?, ids?, spell?, pos?, upToUnit: true, n, exclude? }`. `upToUnit` (default true) limits the pool to words taught up to the current unit so a child is never tested on unseen words.
-- The validator checks unique ids across all files, article matches gender, emoji present for nouns used in picture games.
+- The validator checks unique ids within a course, article matches gender, emoji present for nouns used in picture games.
 - `elException: true` marks a feminine noun that takes `el` (el agua, el hada); without it, `el` + `f` is an error.
 
-### 4.2 Unit, `units/<id>.json`
+### 4.2 Unit, `courses/<courseId>/units/<id>.json`
 ```json
 { "schema": 1, "id": "a1-u1-s1", "rev": 1, "order": 1,
   "title": { "es": "…", "en": "…" },
@@ -77,6 +89,8 @@ Units and vocab are bundled into the build (no runtime fetch), so the PWA works 
   ] }
 ```
 - Badge id is derived: `badge-<unitId>`.
+- Optional `"status": "draft" | "review" | "approved"` (missing = approved). `draft`: dev server only (left out of production like `dev`). `review`: bundled, shown only when debug mode (Laboratorio) is on. `approved`: shown to children.
+- Optional `"level": { "band": "7-8" | "9-10" | "11-12", "cefr": "Pre-A1" | "A1" | "A2" | "B1" | "B2" }` (AGE-BANDS §2.1): information for parents and authors, no logic uses it yet. `byBand` exercise overrides are not built.
 - Optional `"dev": true` marks a demo/test unit: validated and loaded in tests and `vite dev`, left out of production builds (`loadContent({ includeDev: import.meta.env.DEV })`).
 - `exercises`: 5–6 items. **Exercise ids are stable, meaningful and never reused** (progress is stored by id). Bump `rev` when exercises change meaningfully.
 - An exercise yields several **rounds** (`from.n` or `items.length`, default 4–6 questions). Unit time cap: about 8 minutes.
