@@ -39,7 +39,7 @@ export default {
       b.type = 'button';
       b.dataset.side = side;
       b.dataset.id = id;
-      b.style.cssText = 'min-width:64px;min-height:56px;font-size:1.4rem;display:flex;gap:8px;align-items:center;justify-content:center;width:100%';
+      b.className = 'mp-btn';
       b.textContent = text;
       b.addEventListener('click', () => tap(side, id));
       return b;
@@ -50,9 +50,9 @@ export default {
       if (round.mode === 'word-picture') b.setAttribute('aria-label', byId[id].a); // the picture's Spanish word, for screen readers
       return b;
     });
-    const col = (list) => { const d = document.createElement('div'); d.style.cssText = 'display:flex;flex-direction:column;gap:12px;flex:1'; d.append(...list); return d; };
+    const col = (list) => { const d = document.createElement('div'); d.className = 'mp-col'; d.append(...list); return d; };
     const cols = document.createElement('div');
-    cols.style.cssText = 'display:flex;gap:16px';
+    cols.className = 'mp-cols';
     cols.append(col(lefts), col(rights));
 
     const mark = (b, i, lock) => { // joined items show a colour and the same letter on both sides

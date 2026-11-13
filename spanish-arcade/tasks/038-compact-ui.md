@@ -3,7 +3,7 @@ id: "038"
 title: Compact exercise UI (audio button beside the icon, no scroll on phones)
 model: Sonnet 5.5
 why_model: CSS and layout work across several archetypes, checked with screenshots.
-status: todo
+status: review
 depends_on: ["031"]
 touches: [spanish-arcade/style.css, spanish-arcade/archetypes/*/index.js, spanish-arcade/ui/**, spanish-arcade/test/layout.test.js]
 ---

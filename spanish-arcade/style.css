@@ -171,3 +171,65 @@ main.play.rest .segs { visibility: hidden; }
 .toprow { display: flex; justify-content: flex-end; }
 #install-help ul { padding-left: 18px; display: grid; gap: 6px; margin: 8px 0 12px; }
 footer .footlink { display: block; margin-top: 6px; }
+
+/* compact: round screens fit a phone without scrolling (task 038). Sizes follow the viewport height (dvh); taps stay >= 44px. */
+:root { --tap-min: 44px; }
+main.play { padding: 4px 0 calc(4px + env(safe-area-inset-bottom)); }
+main.play .playbar { min-height: 48px; row-gap: 4px; }
+main.play .seg { height: 14px; }
+main.play #exercise-prompt { margin: 2px 0 6px; font-size: clamp(.95rem, 2.4dvh, 1.1rem); }
+main.play .actions { min-height: 52px; padding-top: 4px; margin-top: 4px; }
+main.play .actions .skip { min-height: 48px; padding: 6px 20px; }
+main.play .status { min-height: 2.2em; margin: 2px 0; }
+/* picture / prompt emoji on the left, audio button on its right */
+main.play .sp-root, main.play .fg-root { display: grid; grid-template-columns: 1fr 1fr; align-items: center; column-gap: 14px; }
+main.play .sp-root > *, main.play .fg-root > * { grid-column: 1 / -1; }
+main.play .sp-root > .sp-prompt, main.play .fg-root > .fg-pic { grid-column: 1; grid-row: 1; justify-self: end; }
+main.play .sp-root > .sp-say, main.play .fg-root > .fg-say { grid-column: 2; grid-row: 1; justify-self: start; }
+main.play .sp-root > .sp-say[style*="hidden"] { display: none; }
+main.play .fg-root:not(:has(.fg-pic)) > .fg-say { grid-column: 1 / -1; justify-self: center; }
+main.play .sp-prompt, main.play .fg-pic { font-size: clamp(2rem, 6.5dvh, 3rem); margin: 2px 0; line-height: 1.1; }
+main.play .sp-say, main.play .fg-say, main.play .ra-say { width: 48px; height: 48px; min-width: 48px; min-height: 48px; padding: 0; border-radius: 50%; margin: 0; }
+main.play .sp-root { --tile: clamp(44px, min(64px, calc((100vw - 72px) / 6), 8dvh), 64px); }
+main.play .sp-tiles { margin: clamp(4px, 1.2dvh, 10px) 0; gap: clamp(5px, 1dvh, 8px); }
+main.play .sp-check { min-height: 48px; }
+main.play .sp-reveal { min-height: 1.6rem; margin: 2px 0; font-size: 1.3rem; }
+main.play .sp-word { margin: 4px 0; font-size: clamp(1.4rem, 4.2dvh, 1.8rem); }
+main.play .sp-row { margin: 4px 0; }
+main.play .sp-key, main.play .sp-tile, main.play .sp-opt { min-height: var(--tap-min); }
+main.play .fg-sentence { font-size: clamp(1.3rem, 3.6dvh, 1.7rem); line-height: 1.5; margin: 4px 0; }
+main.play .fg-opt { min-height: 52px; }
+main.play .fm-fox { margin: 2px 0; }
+main.play .fm-fox > span { font-size: clamp(1.8rem, 5dvh, 2.6rem); }
+main.play .fm-bubble { padding: 6px 12px; font-size: 1rem; }
+main.play .fm-text { margin: 6px 0; }
+main.play .fm-word { font-size: clamp(1.15rem, 3.2dvh, 1.5rem); min-height: var(--tap-min); }
+main.play .fm-fix { margin: 4px 0; }
+/* listen-pick-word: the buttons share a row with the picture / chip */
+main.play .lpw-bar { flex-direction: row; flex-wrap: wrap; gap: 4px 12px; }
+main.play .lpw-bar .lpw-pic { font-size: clamp(2.6rem, 8dvh, 4rem); }
+main.play .listen-pick-word > div:not(.lpw-bar) { gap: clamp(6px, 1.4dvh, 12px) !important; margin-top: 6px; }
+/* match-pairs */
+.mp-cols { display: flex; gap: 12px; }
+.mp-col { display: flex; flex-direction: column; gap: clamp(6px, 1.3dvh, 12px); flex: 1; min-width: 0; }
+.mp-btn { min-width: 0; width: 100%; min-height: var(--tap-min); padding: 4px 10px; margin: 0; font-size: clamp(.95rem, 2.5dvh, 1.3rem); line-height: 1.15; display: flex; gap: 8px; align-items: center; justify-content: center; text-align: center; }
+/* read-answer */
+.ra-box { padding: clamp(6px, 1.4dvh, 12px); margin-bottom: clamp(6px, 1.4dvh, 12px); }
+.ra-box > div { font-size: clamp(2rem, 6dvh, 3rem); line-height: 1.1; }
+.ra-box > p { line-height: 1.45; font-size: clamp(.95rem, 2.4dvh, 1.1rem); }
+.ra-say { min-width: 48px; min-height: 48px; margin: 4px 0 0; }
+/* odd-one-out and other flex grids of answer buttons */
+main.play .odd-one-out > div { gap: clamp(6px, 1.4dvh, 12px) !important; }
+@media (orientation: landscape) and (max-height: 520px) {
+  /* one top row: exit + progress on the left, "Saltar" on the right; the stage gets the rest */
+  main.play { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr); column-gap: 12px; }
+  main.play > .playbar { grid-column: 1; grid-row: 1; min-height: 0; flex-wrap: nowrap; }
+  main.play .segs { flex: 1 1 0; min-width: 0; }
+  main.play .trail-play { flex: 0 0 auto; }
+  main.play > #stage { grid-column: 1 / -1; grid-row: 2; }
+  main.play > .actions { grid-column: 2; grid-row: 1; min-height: 0; margin: 0; padding: 0; }
+  main.play > .actions #live { position: absolute; left: 50%; top: 2px; transform: translateX(-50%); max-width: 40%; }
+  main.play .actions .skip { min-height: var(--tap-min); padding: 4px 16px; }
+  main.play .status { min-height: 1.4em; }
+  main.play .sp-root { --tile: clamp(44px, calc(((100vw - 48px) * .6 - 6px * var(--n, 8)) / var(--n, 8)), 52px); }
+}

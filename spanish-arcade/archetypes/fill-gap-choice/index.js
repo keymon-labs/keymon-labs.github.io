@@ -57,7 +57,7 @@ export default {
     gap.append(gapName);
     const sentence = el('p', 'fg-sentence');
     sentence.append(round.parts[0], gap, round.parts[1]);
-    const say = el('button', 'sp-key', '🔊');
+    const say = el('button', 'sp-key fg-say', '🔊');
     say.type = 'button';
     say.setAttribute('aria-label', 'Escuchar la frase');
     say.hidden = !speakerShown(ctx.canSpeak, ctx.difficulty); // it reads the answer too, so not from difficulty 2

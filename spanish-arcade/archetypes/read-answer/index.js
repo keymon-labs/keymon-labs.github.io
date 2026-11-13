@@ -45,7 +45,8 @@ export default {
       return e;
     };
     const speaker = (label, text) => {
-      const b = el('button', 'min-width:56px;min-height:56px', '🔊');
+      const b = el('button', '', '🔊');
+      b.className = 'ra-say';
       b.type = 'button';
       b.setAttribute('aria-label', label);
       b.addEventListener('click', () => ctx.say(text));
@@ -57,14 +58,15 @@ export default {
     const status = el('p', 'status');
     status.setAttribute('aria-live', 'polite');
 
-    const box = el('div', 'padding:12px;border:2px solid var(--accent);border-radius:12px;margin-bottom:12px');
-    if (round.emoji) box.append(el('div', 'font-size:3rem;text-align:center', round.emoji));
+    const box = el('div', 'border:2px solid var(--accent);border-radius:12px');
+    box.className = 'ra-box';
+    if (round.emoji) box.append(el('div', 'text-align:center', round.emoji)); // sized by .ra-box > div in style.css
     const sentences = round.text.map((s, i) => {
       const span = el('span', 'padding:2px 4px;border-radius:6px', s);
       span.dataset.i = i;
       return span;
     });
-    const body = el('p', 'margin:0;line-height:1.7');
+    const body = el('p', 'margin:0');
     sentences.forEach((s, i) => { if (i) body.append(' '); body.append(s); });
     box.append(body);
     if (ctx.canSpeak) box.append(speaker(T.listenText, round.text.join(' ')));
