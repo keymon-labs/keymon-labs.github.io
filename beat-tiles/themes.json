@@ -1,0 +1,17 @@
+{
+  "fruits": { "name": "Fruits", "words": [
+    { "id": "plum", "syl": ["plum"] },
+    { "id": "apple", "syl": ["ap", "ple"] },
+    { "id": "coconut", "syl": ["co", "co", "nut"] },
+    { "id": "watermelon", "syl": ["wa", "ter", "mel", "on"] } ] },
+  "animals": { "name": "Animals", "words": [
+    { "id": "dog", "syl": ["dog"] },
+    { "id": "tiger", "syl": ["ti", "ger"] },
+    { "id": "kangaroo", "syl": ["kan", "ga", "roo"] },
+    { "id": "caterpillar", "syl": ["cat", "er", "pil", "lar"] } ] },
+  "vehicles": { "name": "Vehicles", "words": [
+    { "id": "bus", "syl": ["bus"] },
+    { "id": "rocket", "syl": ["rock", "et"] },
+    { "id": "bicycle", "syl": ["bi", "cy", "cle"] },
+    { "id": "helicopter", "syl": ["hel", "i", "cop", "ter"] } ] }
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beat Tiles</title>
+<meta name="description" content="Learn rhythm by playing: every card is one beat, and the picture says how many sounds fit inside it.">
+<meta name="theme-color" content="#ffe08a">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="row between"><h1>🥁 Beat Tiles</h1><span id="gi"></span></header>
+<div class="row"><button id="gp" class="big">▶ Start</button><button id="gn">🎲 New groove</button><button id="ge">🔁 Change a bit</button><button id="install" hidden>⬇ Install</button></div>
+<div class="row">
+  <label>Tempo <input id="bpm" type="range" min="60" max="130" value="80"> <span id="bpmv">80</span></label>
+  <label>Theme <select id="theme"></select></label>
+  <label>Bars <select id="bars"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+  <label>Sound <select id="snd"><option value="words">Words</option><option value="clap">Clap</option><option value="stomp">Stomp</option><option value="snap">Snap</option><option value="mine">My voice</option></select></label>
+  <label><input id="sw" type="checkbox" checked> Swing</label>
+  <label id="speechL"><input id="speech" type="checkbox"> Say words</label>
+  <label><input id="names" type="checkbox"> Rhythm names</label>
+  <label><input id="auto" type="checkbox" checked> Auto-change</label>
+</div>
+<div class="row" id="rec"></div>
+<div id="msg">Each card is one beat. Its picture has 1–4 sounds, squeezed into that beat. Tap a card to change it.</div>
+<div id="seq"></div>
+<footer>Beat Tiles v1 · build __BUILD__ · © 2026 keymon-labs · <a href="../NOTICE.md">CC BY-NC-SA 4.0</a> · <a href="../">All apps</a></footer>
+<noscript>This app needs JavaScript.</noscript>
+<script type="module" src="./game.js"></script>
+</body>
+</html>

@@ -17,6 +17,7 @@ Everything not listed here is keymon-labs' own work under [NOTICE.md](NOTICE.md)
 ## Inspiration (nothing copied)
 | What | Used in | Notes |
 |---|---|---|
+| The Kodály and Orff rhythm-syllable methods and classroom "fruit rhythm" cards (ta, ti-ti, ti-ka-ti-ka) | beat-tiles | Teaching ideas only; the words, pictures, sounds and grooves are original. |
 | The Zoomquilt (zoomquilt.org) and infipix: infinite-zoom pictures | zoom-tunnel | Idea only; all pictures are drawn in code by us |
 | «Mis unidades de español. Primer cuatrimestre A1, Serie Luna» and the topics and levels of the ALCE classes | spanish-arcade | An unofficial game inspired by the book and following the topics and levels of the ALCE classes. Artwork, sentences, jokes and sounds are original. No book text, images or audio are distributed. |
 

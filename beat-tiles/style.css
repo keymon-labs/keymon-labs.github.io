@@ -1,0 +1,28 @@
+/* Beat Tiles styles. System fonts only; light and dark. */
+:root{--bg:#fff8ec;--ink:#3b2f2f;--b0:#d9dde4;--b1:#ffe08a;--b2:#b9e8a0;--b3:#a9d4ff;--b4:#ffb8d1}
+@media(prefers-color-scheme:dark){:root{--bg:#1f1a17;--ink:#f6ece0;--b0:#454a55;--b1:#7a6120;--b2:#3d6b2c;--b3:#2c5483;--b4:#7e2f55}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.3 system-ui,sans-serif;min-height:100dvh;display:flex;flex-direction:column;gap:8px;padding:8px;padding-bottom:max(8px,env(safe-area-inset-bottom));user-select:none}
+h1{font-size:20px;margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.between{justify-content:space-between}
+button,select{font:inherit;color:inherit}
+button{border:2px solid currentColor;border-radius:12px;background:transparent;padding:8px 12px;touch-action:manipulation}
+button.big{background:var(--ink);color:var(--bg);font-weight:700}
+select{background:var(--bg);border:1px solid currentColor;border-radius:8px;padding:2px 4px}
+label{display:flex;gap:5px;align-items:center;font-size:14px}
+#gi{font-size:13px}
+#rec button{font-size:14px;padding:4px 9px}
+#msg{min-height:20px;font-size:14px}
+#seq{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:560px;width:100%;margin:0 auto}
+.card{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;border:3px solid rgba(0,0,0,.2);border-radius:14px;padding:14px 2px 5px;min-height:118px;touch-action:manipulation}
+.card.b0{background:var(--b0)}.card.b1{background:var(--b1)}.card.b2{background:var(--b2)}.card.b3{background:var(--b3)}.card.b4{background:var(--b4)}
+.card.bs{border-left:7px solid var(--ink)}
+.num{position:absolute;top:2px;left:6px;font-size:12px;font-weight:700;opacity:.7}
+.art{width:52px;height:52px}.art svg{width:100%;height:100%;display:block}
+.lab{font-weight:700;font-size:13px;text-align:center;min-height:16px}
+.lab span{padding:0 1px;border-radius:4px}.lab span.lit{background:var(--ink);color:var(--bg)}
+.nm{font-size:11px;opacity:.75;min-height:13px}
+.dots{display:flex;gap:3px;min-height:10px}.dots i{width:9px;height:9px;border-radius:50%;border:2px solid var(--ink);display:block}.dots i.lit{background:var(--ink)}
+.card.now{outline:4px solid var(--ink);transform:scale(1.05);z-index:1}
+footer{font-size:12px;opacity:.7;text-align:center;margin-top:auto}
+footer a{color:inherit}
