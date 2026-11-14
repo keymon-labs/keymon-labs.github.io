@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRng } from "../../shared/rng.js";
-import { cardsFor, checkTheme, composeGroove, evolveBars, retheme, nextCard, clipRate, NEXT } from "../logic.js";
+import { cardsFor, checkTheme, composeGroove, evolveBars, retheme, nextCard, clipRate, clipKey, EFFECTS, NEXT } from "../logic.js";
 
 const themes = JSON.parse(readFileSync(new URL("../themes.json", import.meta.url)));
 
@@ -54,4 +54,12 @@ test("recorded word speed: fit to the beat, never slower, capped", () => {
   assert.ok(Math.abs(clipRate(0.8, 0.75) - 1.123) < 0.01);
   assert.equal(clipRate(0.3, 0.75), 1);
   assert.equal(clipRate(5, 0.75), 3);
+});
+
+test("effects: every effect is listed; pitch effects change speed but still fit the beat", () => {
+  assert.ok(Object.keys(EFFECTS).includes("none") && Object.values(EFFECTS).every((e) => e.label));
+  assert.equal(clipRate(0.3, 0.75, EFFECTS.monster.factor), 0.6);
+  assert.equal(clipRate(0.3, 0.75, EFFECTS.chipmunk.factor), 1.7);
+  assert.ok(0.9 / clipRate(0.9, 0.75, 0.6) <= 0.75, "a long clip is still sped up to fit");
+  assert.equal(clipKey("fruits", "plum"), "fruits:plum");
 });

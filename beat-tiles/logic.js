@@ -54,5 +54,11 @@ export function evolveBars(bars, rng, cards, pass, now = false) {
 export const retheme = (bars, cards) => bars.map((b) => b.map((c) => cards[c.n]));
 /** The card a tap turns this one into: same theme, next sound count (1, 2, 3, 4, rest). */
 export const nextCard = (c, cards) => cards[NEXT[(NEXT.indexOf(c.n) + 1) % NEXT.length]];
-/** A recorded word is played once per beat: sped up to fit the beat, never slowed (max 3x). */
-export const clipRate = (dur, beat) => Math.max(1, Math.min(3, dur / (beat * 0.95)));
+/** Funny voice effects, applied when a recorded word plays (the saved recording stays clean). factor = pitch/speed change. */
+export const EFFECTS = {
+  none: { label: "Normal" }, chipmunk: { label: "Chipmunk", factor: 1.7 }, monster: { label: "Monster", factor: 0.6 },
+  robot: { label: "Robot" }, wobble: { label: "Wobbly" }, echo: { label: "Echo" }, backwards: { label: "Backwards" }, crunchy: { label: "Crunchy" },
+};
+/** Playback speed of a recorded word in one beat: at least `factor` (1 = normal), and fast enough to fit the beat (max 3x). */
+export const clipRate = (dur, beat, factor = 1) => Math.min(3, Math.max(factor, dur / (beat * 0.95)));
+export const clipKey = (theme, id) => `${theme}:${id}`;

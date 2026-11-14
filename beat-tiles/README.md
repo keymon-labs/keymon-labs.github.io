@@ -7,7 +7,8 @@ Learn rhythm by playing. Every card is **one beat**; the picture says how many *
 - Backing: kick on beats 1 and 3, hi-hat, bass (C C A G); word tunes are C pentatonic, so everything fits. Swing delays the second sound of a 2-sound beat.
 - Tap a card: it becomes the next sound count (1, 2, 3, 4, rest). Editing by hand turns Auto-change off.
 - **Theme** keeps the rhythm and swaps the words and pictures. Sound = Words, Clap, Stomp, Snap or **My voice**.
-- **My voice**: record one clip per word (mic, or a file picker where there is no mic). The clip is trimmed and played once per beat, sped up (max 3×) if it is longer than the beat. Clips live in memory only: never saved, uploaded or committed.
+- **My voice**: record one clip per word (mic, or a file picker where there is no mic). The clip is trimmed and played once per beat, sped up (max 3×) if it is longer than the beat. Clips are saved in this browser (IndexedDB, via `store.js`) so they are still there next time. They stay on this device only: never uploaded, never committed. *Forget my sounds* deletes them all; ▶ next to a word plays it.
+- **Funny** effects change how recorded words sound when they play (the saved recording stays clean): Chipmunk and Monster (pitch/speed), Robot (ring modulation), Wobbly (vibrato), Echo, Backwards, Crunchy (clipping). A long word is still sped up to fit its beat.
 - Rhythm names toggle shows ta / ti-ti / tri-o-la / ti-ka-ti-ka. Say words uses the browser's speech voice at the start of each beat (timing is the browser's).
 
 ## Files
@@ -16,7 +17,8 @@ Learn rhythm by playing. Every card is **one beat**; the picture says how many *
 | `index.html`, `style.css` | Markup and styles (system fonts only) |
 | `game.js` | UI, playback clock, tap-to-change, themes, recording; test hook `window.__beatTiles` |
 | `logic.js` | Pure rules: cards from a theme, grooves, evolving, rhythm names, clip speed. Tests in `test/logic.test.js` |
-| `sound.js` | Web Audio: word tunes, clap/snap/stomp, backing, recorded clips (no samples) |
+| `sound.js` | Web Audio: word tunes, clap/snap/stomp, backing, recorded clips and their effects (no samples) |
+| `store.js` | Saved recordings in IndexedDB on the device (`theme:word` → trimmed mono PCM); failures never break the app |
 | `themes.json` | Themes: exactly one word per sound count (syllables listed). Add a theme = a JSON entry + 4 SVGs in `art/` named by word id |
 | `art/*.svg` | Original artwork, one icon per word plus `rest.svg` (inlined at build) |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | Installable, works offline |

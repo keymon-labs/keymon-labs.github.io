@@ -1,5 +1,5 @@
-// Web Audio for Beat Tiles: word tunes, body sounds, backing (kick, hat, bass) and recorded clips. No samples. Call ensureAudio() from a tap first.
-import { clipRate } from "./logic.js";
+// Web Audio for Beat Tiles: word tunes, body sounds, backing (kick, hat, bass), recorded clips and funny effects. No samples. Call ensureAudio() from a tap first.
+import { clipRate, EFFECTS } from "./logic.js";
 
 let ctx = null, noise = null;
 export function ensureAudio() {
@@ -29,17 +29,47 @@ const PENT = [262, 294, 330, 392, 440, 523, 587]; // C pentatonic: every word tu
 const hash = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7) >>> 0;
 
 /** The j-th of card.n sounds inside a beat of length sub*card.n. `clip` = recorded word (plays once, on j = 0). */
-export function hit(card, j, t, sub, mode, clip) {
-  if (clip) {
-    if (j === 0) { const s = ctx.createBufferSource(); s.buffer = clip; s.playbackRate.value = clipRate(clip.duration, sub * card.n); s.connect(ctx.destination); s.start(t); }
-    return; // the clip already holds all its syllables
-  }
+export function hit(card, j, t, sub, mode, clip, fx = "none") {
+  if (clip) { if (j === 0) playClip(clip, t, sub * card.n, fx); return; } // the clip already holds all its syllables
   const d = Math.max(0.07, Math.min(0.22, sub * 0.85));
   if (mode === "clap") [0, 0.014, 0.03].forEach((x) => burst(t + x, 1500, 0.045, 0.5));
   else if (mode === "snap") burst(t, 4500, 0.03, 0.6, "highpass");
   else if (mode === "stomp") tone(t, "sine", 140, 45, Math.max(0.12, d), 0.9);
   else { const f = PENT[(hash(card.id) + j * 2) % 7]; tone(t, "triangle", f, f, d * 0.9, 0.45); } // words: each word has its own little tune
 }
+// ---- recorded words and funny effects ----
+const reversed = new WeakMap();
+let crunch = null;
+/** Play a recorded word inside one beat (length `beat`) through effect `fx`. */
+export function playClip(clip, t, beat, fx = "none") {
+  let buf = clip;
+  if (fx === "backwards") {
+    if (!reversed.has(clip)) { const r = ctx.createBuffer(1, clip.length, clip.sampleRate); r.copyToChannel(clip.getChannelData(0).slice().reverse(), 0); reversed.set(clip, r); }
+    buf = reversed.get(clip);
+  }
+  const s = ctx.createBufferSource(); s.buffer = buf;
+  s.playbackRate.value = clipRate(buf.duration, beat, (EFFECTS[fx] || {}).factor || 1);
+  const end = t + beat + 0.2;
+  if (fx === "robot") { // ring modulation: the voice is multiplied by a buzzing square wave
+    const g = ctx.createGain(), o = ctx.createOscillator(); g.gain.value = 0; o.type = "square"; o.frequency.value = 35; o.connect(g.gain); o.start(t); o.stop(end);
+    s.connect(g); g.connect(ctx.destination);
+  } else if (fx === "wobble") { // vibrato: a slow wave bends the pitch
+    const lfo = ctx.createOscillator(), depth = ctx.createGain(); lfo.frequency.value = 6; depth.gain.value = 500; lfo.connect(depth); depth.connect(s.detune); lfo.start(t); lfo.stop(end);
+    s.connect(ctx.destination);
+  } else if (fx === "echo") {
+    const d = ctx.createDelay(1), fb = ctx.createGain(); d.delayTime.value = 0.2; fb.gain.value = 0.4;
+    s.connect(ctx.destination); s.connect(d); d.connect(fb); fb.connect(d); d.connect(ctx.destination);
+  } else if (fx === "crunchy") { // hard clipping, then turned down
+    if (!crunch) { crunch = new Float32Array(1024); for (let i = 0; i < 1024; i++) crunch[i] = Math.tanh(((i / 511.5) - 1) * 25); }
+    const w = ctx.createWaveShaper(), g = ctx.createGain(); w.curve = crunch; g.gain.value = 0.5; s.connect(w); w.connect(g); g.connect(ctx.destination);
+  } else s.connect(ctx.destination);
+  s.start(t);
+}
+export function previewClip(clip, fx, beat) { ensureAudio(); playClip(clip, now() + 0.02, beat, fx); }
+/** AudioBuffer <-> plain numbers, for saving on the device. */
+export const clipToPcm = (buf) => ({ rate: buf.sampleRate, data: buf.getChannelData(0).slice() });
+export function pcmToClip(rate, data) { ensureAudio(); const b = ctx.createBuffer(1, data.length, rate); b.copyToChannel(data, 0); return b; }
+
 const ROOTS = [65.4, 65.4, 55, 49]; // C C A G
 /** Kick on beats 1 and 3, hi-hat on and off the beat, bass on 1 and 3 plus a pickup on 4. i = beat in the loop. */
 export function backing(i, t, bs, swing) {
