@@ -51,5 +51,15 @@ When unsure, go one level lower and ship; the owner's feedback is the review.
 - Content tasks (Haiku drafts) end in `review` for the owner; that is their review.
 - Record decisions you made without the owner as `Ruling: <decision> — <why>` in the task's `Notes`. Stop and ask only for: irreversible actions, security or loader capabilities, personal data or licences needing consent.
 
+## Task boards in this repo
+The generic flow is the `task-board` skill. What is specific here:
+- Boards live in `tasks/` or `<area>/tasks/`. `spanish-arcade/tasks/README.md` is the example README to copy.
+- `npm run tasks` regenerates the table, validates every board and prints status. Claims older than 3 days are flagged as stale.
+- The tooling is `scripts/tasks.mjs` and `scripts/tasks.test.js` (Node 22+, no dependencies). `npm test` runs the same validation in CI.
+- The claim is pushed as the lock. If the push is rejected, run `git pull --rebase` and re-check the status before going on.
+- `kind` is `code | content | design | review`. It decides the review gate and who may set `done`: the worker for `code` once its checks pass, only the owner for `content` and `design`.
+- `plan:` is optional and points to a step plan in `<area>/docs/plans/NNN-name.md`.
+- Commands: `npm run tasks` (status), `npm test` (validation and unit tests).
+
 ## Where things go
 Specs and plans, when one is worth writing: `<area>/docs/`. Board: `<area>/tasks/`. Everything is public (CLAUDE.md).
