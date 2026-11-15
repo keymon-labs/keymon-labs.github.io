@@ -11,3 +11,6 @@ claude/out/
 # a contributor's private course book material (Spanish Arcade pipeline); never committed, never built
 content-private/
 denylist.txt
+
+# Python bytecode
+__pycache__/
