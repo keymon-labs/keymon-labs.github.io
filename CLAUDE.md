@@ -74,6 +74,7 @@ Distilled from the ponytail skill (vendored in `.claude/skills/ponytail/`, MIT).
 - End the reply with one or two lines on what was skipped or not checked, and any risk.
 
 ## How it deploys
+- Work and commit directly on `main`. No branches, worktrees or PRs unless the owner asks.
 - Push to `main` → GitHub Actions (`.github/workflows/deploy.yml`) runs `npm ci && npm run build` → `dist/` is deployed to Pages.
 - Every `index.html` is a page automatically; new apps and versions need no config.
 - Vite content-hashes JS/CSS/JSON/images reached from HTML into `/assets/` (immutable, so no stale caches).
