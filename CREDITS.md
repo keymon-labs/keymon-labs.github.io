@@ -12,6 +12,7 @@ Everything not listed here is keymon-labs' own work under [NOTICE.md](NOTICE.md)
 | Melodies: Humpty Dumpty, Hot Cross Buns, Mary Had a Little Lamb, Twinkle Twinkle Little Star | piano-jump/songs.json | Traditional | Public domain | Note sequences only |
 | Song "Bow, Wow, Wow": words are the traditional nursery rhyme; the melody is our own, written for this app | piano-jump/songs.json | Traditional rhyme (public domain) + keymon-labs | Public domain words; melody under repo licence | |
 | Melody: Ode to Joy (Beethoven, Symphony No. 9, 1824) | piano-jump/songs.json | Traditional | Public domain | Note sequence only |
+| Melodies: Hot Cross Buns, Au Clair de la Lune, Mary Had a Little Lamb, Row Row Row Your Boat, Ode to Joy (Beethoven, 1824), Jingle Bells (Pierpont, 1857) | finger-moles/tunes.json | Traditional | Public domain | Note sequences only |
 | Spoken Spanish clips generated with the Piper voice `es_ES-davefx-medium` (current build, `rdh` base) | spanish-arcade (`audio/`) | [rhasspy/piper-voices `es/es_ES/davefx/medium`](https://huggingface.co/rhasspy/piper-voices/tree/main/es/es_ES/davefx/medium) at the commit in `spanish-arcade/audio/manifest.json` (`voiceRev`) | Model card: dataset CC0, base model `rdh` CC0 | Voice dataset: [OHF-Voice/voice-datasets](https://github.com/OHF-Voice/voice-datasets) (CC0). No attribution required; credited as courtesy. Generated with Piper (GPL-3.0, dev tool, not distributed). No clips are committed yet; this row applies once `npm run audio` has run. |
 
 ## Inspiration (nothing copied)
@@ -24,7 +25,7 @@ Everything not listed here is keymon-labs' own work under [NOTICE.md](NOTICE.md)
 ## Loaded from third parties at runtime (not stored here)
 | What | Used in | Source | Licence |
 |---|---|---|---|
-| Fonts Baloo 2, Noto Music | piano-jump | [Google Fonts](https://fonts.google.com) | SIL Open Font License 1.1 |
+| Fonts Baloo 2, Noto Music | piano-jump, finger-moles | [Google Fonts](https://fonts.google.com) | SIL Open Font License 1.1 |
 
 ## Development only (not distributed)
 | What | Licence | Notes |

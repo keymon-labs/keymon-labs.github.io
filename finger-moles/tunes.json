@@ -1,0 +1,8 @@
+[
+  { "id": "buns", "title": "Hot Cross Buns", "notes": "E4 D4 C4 E4 D4 C4 C4 C4 C4 C4 D4 D4 D4 D4 E4 D4 C4" },
+  { "id": "moon", "title": "Au Clair de la Lune", "notes": "C4 C4 C4 D4 E4 D4 C4 E4 D4 D4 C4" },
+  { "id": "lamb", "title": "Mary Had a Little Lamb", "notes": "E4 D4 C4 D4 E4 E4 E4 D4 D4 D4 E4 G4 G4 E4 D4 C4 D4 E4 E4 E4 E4 D4 D4 E4 D4 C4" },
+  { "id": "boat", "title": "Row, Row, Row Your Boat", "notes": "C4 C4 C4 D4 E4 E4 D4 E4 F4 G4" },
+  { "id": "joy", "title": "Ode to Joy", "notes": "E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 E4 D4 D4 E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 D4 C4 C4" },
+  { "id": "bells", "title": "Jingle Bells", "notes": "E4 E4 E4 E4 E4 E4 E4 G4 C4 D4 E4 F4 F4 F4 F4 F4 E4 E4 E4 E4 D4 D4 E4 D4 G4" }
+]

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Finger Moles</title>
+<meta name="theme-color" content="#8fd16a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" aria-label="Finger Moles game"></canvas>
+
+  <div class="hud">
+    <span class="chip">⭐ <span id="hScore">0</span></span>
+    <span class="chip" id="hLeft">🐾 0</span>
+    <span class="chip combo" id="hCombo" hidden></span>
+    <span class="spacer"></span>
+    <span class="chip small"><span class="dot" id="hDot"></span><span id="hInput">No piano</span></span>
+    <button class="icon" id="btnMenu" aria-label="Menu">☰</button>
+  </div>
+
+  <div class="overlay" id="ovMenu">
+    <div class="panel">
+      <h1>Finger Moles</h1>
+      <p class="lead">Each finger has its own mole. When a mole pops up, bonk it with the finger of the same colour!</p>
+      <div class="hands" role="radiogroup" aria-label="Hand">
+        <button class="hand" data-hand="L">🤚 Left hand</button>
+        <button class="hand" data-hand="R">✋ Right hand</button>
+      </div>
+      <div class="modes">
+        <button class="mode" data-mode="seek"><b>🙈 Hide &amp; Seek</b><small>Moles wait for you. No hurry.</small></button>
+        <button class="mode" data-mode="song"><b>🎵 Song Moles</b><small>Bonk them in order and play a song.</small></button>
+        <button class="mode" data-mode="speedy"><b>⚡ Speedy Moles</b><small>Quick! They hide again.</small></button>
+      </div>
+      <label class="tune">Song <select id="oTune"></select></label>
+      <div class="opts">
+        <label>Voice<select id="oVoice"><option value="on">On</option><option value="off">Off</option></select></label>
+        <label>Note sound<select id="oSound"><option value="auto">When no piano</option><option value="on">Always</option><option value="off">Off</option></select></label>
+      </div>
+      <div class="row">
+        <button id="btnBle">Connect Bluetooth</button>
+        <button id="btnMidi">Connect MIDI / USB</button>
+      </div>
+      <p class="conn" id="connText">No piano yet: tap the keys on screen, or computer keys A S D F G (Shift for the left hand).</p>
+      <p class="ver">Finger Moles v1 · build __BUILD__ · Prototype · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovEnd" hidden>
+    <div class="panel end">
+      <div class="big" id="endStars"></div>
+      <p id="endText"></p>
+      <div class="row center">
+        <button class="go" id="btnAgain" aria-label="Play again">↺ Again</button>
+        <button id="btnHome" aria-label="Menu">☰ Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module" src="./game.js"></script>
+</body>
+</html>
