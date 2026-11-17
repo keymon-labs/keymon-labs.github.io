@@ -19,7 +19,7 @@ The [Song editor](editor/README.md) can also make songs by tapping or from a pho
   - `pitch`: `C4` is middle C; sharps like `F#3`; range C2 to C6. Use `C4`-`G4` (right hand) and `C3`-`G3` (left hand) for beginner songs.
   - `beats`: one of `0.5, 1, 1.5, 2, 3, 4`.
   - `lyric`: optional, up to 24 characters; use `""` to skip it when you need a finger.
-  - `finger`: optional 1-5, only to override the default C-position fingering (right hand thumb on C4, left hand pinky on C3).
+  - `finger`: optional 1-5. Hands start in C position (right thumb on C4, left pinky on C3) and stay there; a note outside the position moves the hand just enough to reach it. A finger sets a new position from that note on: use it to move the hand at a leap or a phrase break instead of mid-phrase.
 - At most 200 songs and 500 notes per song. The file is checked on load; the message says which song or note is wrong.
 
 ## Password-protected format
@@ -37,7 +37,7 @@ Write a JSON song library for the Piano Jump game. Output only valid JSON.
 Format: {"songs":[{"id","title","info","bpm","bar","notes"}]}
 - id: letters, digits, - or _, unique. title: short. info: e.g. "4/4 · C to G". bpm 30-300. bar = beats per bar (3 or 4).
 - notes: list of [pitch, beats, lyric, finger]. pitch like "C4" (middle C), "F#3", range C2-C6.
-  beats must be one of 0.5, 1, 1.5, 2, 3, 4. lyric is a short syllable ("" if none). finger (1-5) is optional; leave it out unless the default is wrong.
+  beats must be one of 0.5, 1, 1.5, 2, 3, 4. lyric is a short syllable ("" if none). finger (1-5) is optional; set it only where the hand should move to a new five-finger position (at a leap or phrase break), the game keeps that position until a note falls outside it.
 - Beginner level: right hand C4-G4 only, or left hand C3-G3 only, steps and small skips, 8-16 bars at most.
 - Beats in each bar must add up to "bar". The last note should be the home note.
 Songs I want: <list them here>

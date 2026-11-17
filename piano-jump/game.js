@@ -5,16 +5,11 @@ import { toMidi, stepOf, isSharp as sharpOf, noteName } from "../shared/music.js
 import { unlockAudio as audio, tone as playTone } from "../shared/audio.js";
 import { registerServiceWorker, setupInstallButton, keepAwake, releaseWake } from "../shared/pwa.js";
 import { connectMidi, connectBluetoothMidi, keyboardNotes } from "../shared/midi.js";
+import { assignFingers } from "./fingering.js";
 import { parseLibraryText, loadStored, saveStored, clearStored } from "./library.js";
 
 // ================= Music helpers =================
 const label=m=>noteName(m,opts.names);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function fingerFor(midi,explicit){
-  const right=midi>=60,st=stepOf(midi);
-  const f=explicit||(right?st+1:-2-st);   // RH: C4=1..G4=5 · LH: C3=5..G3=1
-  return {hand:right?"R":"L",finger:clamp(f,1,5)};
-}
 
 // ================= Settings =================
 const opts={tempo:.75,names:"letters",keys:"on",clock:"on",oct:"exact",sfx:"on",song:"humpty"};
@@ -79,8 +74,9 @@ function layout(){
 function placeOn(at){ch.x=at===startPlat?at.x+at.w*.6:landX(at);ch.y=at.top;}
 function loadSong(){
   song=ALL.find(s=>s.id===opts.song)||ALL[0];
-  plats=song.notes.map(([n,d,l,f],i)=>{const m=toMidi(n);return{midi:m,dur:d,lyric:l||"",step:stepOf(m),star:false,
-    clock:i>=2&&(i%5===3),got:false,...fingerFor(m,f)};});
+  plats=song.notes.map(([n,d,l,f],i)=>{const m=toMidi(n);return{midi:m,dur:d,lyric:l||"",step:stepOf(m),finger:f,star:false,
+    clock:i>=2&&(i%5===3),got:false};});
+  assignFingers(plats).forEach((h,i)=>Object.assign(plats[i],h));
   idx=0;stars=0;tPrev=null;retried=false;jump=null;ghost=null;floats=[];confetti=[];
   timeLeft=plats.reduce((a,p)=>a+p.dur,0)*beatSec()*2.4+15;clockRunning=false;
   layout();camX=0;updateHud();
@@ -228,10 +224,17 @@ function draw(now){
   ctx.strokeStyle=LINE;ctx.lineWidth=Math.max(1.5,S*.22);ctx.beginPath();ctx.moveTo(S*2.4,yOf(10));ctx.lineTo(S*2.4,yOf(-10));ctx.stroke();
   brace(S*1.5,yOf(10),yOf(-10));
   ctx.fillStyle=LINE;ctx.textAlign="left";ctx.textBaseline="alphabetic";
-  ctx.font=`${S*8}px "Noto Music",serif`;ctx.fillText("\u{1D11E}",S*3.4,yOf(4));ctx.fillText("\u{1D122}",S*3.4,yOf(-6));
+  clef("\u{1D11E}",12.8,-1.3);clef("\u{1D122}",-1.9,-9.1);
   // hand + keyboard guide
   handBand(now);
   for(const c of confetti){ctx.save();ctx.translate(c.x-camX,c.y);ctx.rotate(c.r);ctx.fillStyle=c.c;ctx.fillRect(-4,-2,8,4);ctx.restore();}
+}
+// Fit a clef glyph between two staff steps, so it sits right whatever music font the device has:
+// G clef curls round the G4 line (step 4), F clef dots straddle the F3 line (step -4). Extents from standard engraving.
+function clef(ch,top,bot){
+  ctx.font=`100px "Noto Music",serif`;let m=ctx.measureText(ch);
+  ctx.font=`${100*(yOf(bot)-yOf(top))/(m.actualBoundingBoxAscent+m.actualBoundingBoxDescent)}px "Noto Music",serif`;m=ctx.measureText(ch);
+  ctx.fillText(ch,S*3.4,yOf(top)+m.actualBoundingBoxAscent);
 }
 function brace(x,y0,y1){const m=(y0+y1)/2,w=S*1.1;ctx.fillStyle=LINE;ctx.beginPath();
   ctx.moveTo(x+w,y0);ctx.bezierCurveTo(x-w*.2,y0+(m-y0)*.15,x+w*.8,m-(m-y0)*.35,x-w*.4,m);
@@ -260,7 +263,7 @@ function noteBits(p,done,next){
 function noteHead(x,step,dur,color,sharp){
   const y=yOf(step),up=stemUp(step);ctx.strokeStyle=color;ctx.fillStyle=color;
   // ledger lines (middle C, and beyond each staff)
-  const led=[];if(step>=-1&&step<=1)led.push(0);
+  const led=[];if(step===0)led.push(0);   // D4 and B3 sit in the spaces next to the staves: no ledger
   for(let s=12;s<=step;s+=2)led.push(s);for(let s=-12;s>=step;s-=2)led.push(s);
   ctx.lineWidth=Math.max(1.3,S*.16);for(const s of led){ctx.beginPath();ctx.moveTo(x-S*2.1,yOf(s));ctx.lineTo(x+S*2.1,yOf(s));ctx.stroke();}
   // head: open for half/whole, filled otherwise
@@ -310,6 +313,10 @@ function handBand(now){
   const hy=top+bh*.5;
   hand(kx-S*1.5-handW*.5,hy,handW,false,t&&t.hand==="L"?t.finger:0,!t||t.hand!=="L",now);
   hand(kx+kw*KW+S*1.5+handW*.5,hy,handW,true,t&&t.hand==="R"?t.finger:0,!t||t.hand!=="R",now);
+  if(t&&t.move){   // this note needs the hand moved to a new five-finger position: arrow beside the palm
+    const d=t.move,a=handW*.1,ax=(t.hand==="R"?kx+kw*KW+S*1.5+handW*.5:kx-S*1.5-handW*.5)+d*handW*(.4+.04*Math.sin(now*6)),ay=hy+handW*.3;
+    ctx.fillStyle="#ff6b3d";ctx.beginPath();ctx.moveTo(ax+d*a*1.4,ay);ctx.lineTo(ax,ay-a);ctx.lineTo(ax,ay-a*.4);ctx.lineTo(ax-d*a*1.2,ay-a*.4);
+    ctx.lineTo(ax-d*a*1.2,ay+a*.4);ctx.lineTo(ax,ay+a*.4);ctx.lineTo(ax,ay+a);ctx.closePath();ctx.fill();}
 }
 function hand(cx,cy,sz,right,active,dim,now){
   ctx.save();ctx.translate(cx,cy);ctx.globalAlpha=dim?.35:1;
