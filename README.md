@@ -21,6 +21,7 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 [claude/](claude/README.md): a Claude artifact that runs selected apps on the viewer's own Claude account; the app code ships inside the artifact. Security notes: [claude/DISCLAIMER.md](claude/DISCLAIMER.md).
 
 ## Guides and skills
+- [research/kids-music/](research/kids-music/CLAUDE.md): research workspace on teaching music to kids 4–10 through games (pedagogy, technique, engagement, rhythm games, real-world play). Foundation for the music apps.
 - [guide/](guide/index.html): public step-by-step guide to building a site like this (also at /guide/).
 - `.claude/skills/`: how-tos for Claude: `labs-modes` (Brainstorm → Prototype → Final for new ideas), `labs-setup` (GitHub, Pages, Claude access), `labs-apps` (add apps, versions, ship), `labs-claude-loader` (bundle + loader artifact), `ponytail` (coding style), `grill-me` (clarify a vague goal), `task-board` (task files for parallel sessions and models).
 - [AGENTS.md](AGENTS.md): how sessions work (build fast, escalate by risk, subagents). `npm run tasks`: status of every task board.
