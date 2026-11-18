@@ -35,7 +35,11 @@ textarea{width:100%;font-family:ui-monospace,monospace;font-size:13px}
 #stage svg{display:block;position:absolute;inset:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .lyric{position:absolute;height:44px;min-height:44px;padding:2px 4px;text-align:center;font-weight:600;border:2px dashed #b9c3de;border-radius:10px}
 .lyric:focus{border-style:solid;border-color:var(--ink)}
+#stage .head{touch-action:none}   /* drag starts on the head; the rest of the staff still scrolls */
+.midi .hint{margin:0}
 /* staff drawing */
+.del{cursor:pointer;touch-action:none}.del rect{fill:#f3f5fa;stroke:#c9d1e6}.del text{fill:var(--muted);font-weight:700;pointer-events:none}
+.del:hover rect,.del:active rect{fill:var(--bad);stroke:var(--bad)}.del:hover text,.del:active text{fill:#fff}
 .staffline{stroke:var(--ink);stroke-width:1.6}.barline{stroke:var(--ink);stroke-width:2}
 .beat{stroke:#d7dcea;stroke-width:1}.half{stroke:#e8ebf3;stroke-width:1;stroke-dasharray:3 4}
 .slot{fill:#eef4ff;stroke:#c9daf5}.slot.low{fill:#fff1e0;stroke:#ff9b3d;stroke-width:2.5}.slot.play{fill:#fff2b8;stroke:#ffbf1f}

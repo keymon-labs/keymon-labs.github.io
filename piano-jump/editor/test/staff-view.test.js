@@ -1,7 +1,7 @@
 // Checks for tap hit-testing and layout: which beat, staff and pitch a tap means, and what a tap on an existing note does.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { layout, hit, yOf, render, BW } from "../staff-view.js";
+import { layout, hit, yOf, render, stepRange, BW } from "../staff-view.js";
 import { newSong, place, stepToPitch } from "../song-model.js";
 
 const view = { bass: true, stepH: 12 };
@@ -51,4 +51,17 @@ test("render draws every note, bar warning and the bass staff only when asked", 
   assert.match(svg, /⚠ 1\/4 · needs 3 beats more/);
   assert.match(svg, /Bass/);
   assert.doesNotMatch(render(layout(s, { ...view, bass: false }), s), /Bass/);
+});
+
+test("the × box above a note's column deletes it, the staff below still behaves as before", () => {
+  const s = song([[1, "G4", 2], [4, "C3", 1, "bass"]]), g = layout(s, view);
+  assert.deepEqual(hit(g, s, g.x0 + BW + 14, 40), { kind: "note", index: 0, zone: "delete" });
+  assert.equal(hit(g, s, g.x0 + BW + 14, 40 - 15).kind, "none");           // above the box
+  assert.equal(hit(g, s, g.x0 + BW + 60, yOf(g, "treble", 4)).zone, "head");   // beside the box: the note itself
+  assert.deepEqual(hit(g, s, g.x0 + 4 * BW + 14, g.bTop - g.stepH / 2 - 14), { kind: "note", index: 1, zone: "delete" });
+  assert.match(render(g, s), /class="del" data-i="1"/);
+});
+
+test("stepRange gives the visible steps of each staff", () => {
+  assert.deepEqual([stepRange("treble"), stepRange("bass")], [{ top: 14, bottom: -2 }, { top: 2, bottom: -14 }]);
 });

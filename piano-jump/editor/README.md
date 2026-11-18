@@ -17,9 +17,11 @@ Library storage and export helpers (`upsertStored`, `libraryObject`, `libraryJso
 
 ## Using it
 - Tap a free beat: new note (length from the toolbar, pitch from the line or space). Tap a note: quarter → half → whole → removed. Tap just above or below a note: stem up or down (drawing only). Type a syllable under a note.
+- Drag a note head up/down (pitch) or sideways (time) if there is space; a note that would overlap another stays at the last free spot. The small × box above a note's column removes it.
+- Keyboard input: **Connect MIDI / USB**, **Connect Bluetooth**, or computer keys A W S E D F T G Y H U J K (C4 to C5, Shift = octave down). Each note is added at the end with the toolbar length. Backspace removes the last note.
 - Toolbar: eighth, quarter, half, whole, dotted (quarter and half), rest, undo/redo, play, clear, bass staff, staff size, new song.
 - Bars show their beat total; a warning names what is missing. Changing "Beats per bar" moves the barlines, notes keep their beats.
-- The game has no rests, so on export a rest (or gap) is added to the note before it; if that gives a length the game does not allow, the error names the note. Errors always name the song and the note; save and export are disabled until they are fixed.
+- The game has no rests, so on export a rest (or gap) between notes is added to the note before it, and rests before the first note or after the last one are dropped; if that gives a length the game does not allow, the error names the note. Errors always name the song and the note; save and export are disabled until they are fixed.
 - **Load into Piano Jump** calls `hooks.loadIntoPianoJump({ songs: [song] })` in `editor.js` (also `window.pianoJumpEditorHooks`). The default copies the song text. Saving to the library already makes the song appear in the game menu.
 - The editor keeps a draft of the current song in this browser so a reload does not lose it.
 

@@ -2,7 +2,7 @@
 
 Platform game played on a real piano: play the note shown on the staff and the egg jumps to the next stone. Live: https://keymon-labs.github.io/piano-jump/
 
-Needs Chrome/Edge (Web MIDI / Web Bluetooth). Computer keys A–K play C4–C5 for testing (Shift = octave down).
+Needs Chrome/Edge (Web MIDI / Web Bluetooth). Computer keys A–K play C4–C5 for testing (Shift = octave down). Menu → **Screen keys: On** makes the keyboard at the bottom tappable. Drag the staff sideways to look ahead; it springs back when you let go or play the next note.
 
 ## Files
 | File | Contents |
@@ -21,7 +21,7 @@ Needs Chrome/Edge (Web MIDI / Web Bluetooth). Computer keys A–K play C4–C5 f
 
 Menu → **Song library** loads extra songs from a file onto the device. Tool: `scripts/pj-library.mjs` encrypts/decrypts library files.
 
-Shared modules used: `midi.js`, `music.js`, `audio.js`, `pwa.js` (see [../shared/README.md](../shared/README.md)).
+Shared modules used: `midi.js`, `music.js`, `audio.js`, `pwa.js`, `piano-keys.js` (see [../shared/README.md](../shared/README.md)).
 
 ## Song format (`songs.json`)
 ```json
@@ -32,4 +32,4 @@ Shared modules used: `midi.js`, `music.js`, `audio.js`, `pwa.js` (see [../shared
 Each note: `[pitch, beats, lyric?, finger?]`. Pitch is `C4`, `F#3`…; beats can be fractional (`0.5`); hands start in C position (right thumb on C4, left pinky on C3; right hand from middle C up) and keep their five-finger position until a note falls outside it; finger 1–5 sets a new position from that note on, so put hand moves at leaps or phrase breaks. The guide shows an arrow when the hand moves (`fingering.js`, tested in `test/fingering.test.js`). Adding a song is a data-only change.
 
 ## Test hook
-`window.__pj` exposes `onNote(midi)`, `state` and `idx` for headless tests.
+`window.__pj` exposes `onNote(midi)`, `state`, `idx`, `camX` and `kbd` (screen keyboard rect) for headless tests.

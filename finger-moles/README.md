@@ -28,7 +28,7 @@ Combo of 5 first-try hits: cheer and bonus points. End screen: 1–3 stars for f
 | `test/logic.test.js` | Rules, tune parsing, every tune fits under the hand |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | Installable app / offline |
 
-Shared modules used: `midi.js`, `audio.js`, `rng.js`, `music.js`, `pwa.js`.
+Shared modules used: `midi.js`, `audio.js`, `rng.js`, `music.js`, `pwa.js`, `piano-keys.js` (screen-key taps).
 
 ## Test hook
 `window.__fm` exposes `onNote(midi)`, `start(mode)`, `state`, `target` and `round` for headless play-throughs.

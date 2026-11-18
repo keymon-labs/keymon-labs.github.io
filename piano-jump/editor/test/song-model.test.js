@@ -1,7 +1,7 @@
 // Checks for the editor model: placing, duration cycling, bar sums, rests on export, naming errors, scan layout, undo.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { newSong, place, cycle, nextBeats, bars, barCount, barMessage, setMeta, setLyric, setStem, toLibrarySong, fromLibrarySong, layoutScanned, snapBeats, snapPitch, stepToPitch, pitchToStep, slugify, uniqueId, createHistory, noteIndexAt } from "../song-model.js";
+import { newSong, place, cycle, nextBeats, bars, barCount, barMessage, setMeta, setLyric, setStem, toLibrarySong, fromLibrarySong, layoutScanned, snapBeats, snapPitch, stepToPitch, pitchToStep, slugify, uniqueId, createHistory, noteIndexAt, moveNote, removeNote, appendNote, midiToPitch } from "../song-model.js";
 import { validateLibrary } from "../../library.js";
 import { mergeSong, libraryObject, libraryJson } from "../../library.js";
 
@@ -69,10 +69,11 @@ test("export: rests are added to the note before; library validator accepts the 
 
 test("export errors name the song and the note", () => {
   let s = setMeta(newSong(), { title: "Odd" });
-  s = add(s, 0, "C4", 2); s = add(s, 2, null, 0.5);                 // 2.5 beats is not allowed
+  s = add(s, 0, "C4", 2); s = add(s, 2, null, 0.5); s = add(s, 2.5, "D4");   // 2.5 beats is not allowed
   assert.match(toLibrarySong(s).errors[0], /^Song "Odd": note 1 \(C4, bar 1, beat 1\) lasts 2.5 beats/);
   let t = setMeta(newSong(), { title: "Start" }); t = add(t, 0, null); t = add(t, 1, "C4");
-  assert.match(toLibrarySong(t).errors[0], /starts with a rest/);
+  assert.match(toLibrarySong(setMeta(newSong(), { title: "Quiet" })).errors[0], /notes must be a list/);
+  assert.match(toLibrarySong(add(setMeta(newSong(), { title: "Quiet" }), 0, null)).errors[0], /notes must be a list/);
   let u = setMeta(newSong(), { title: "Low", bpm: 20 }); u = add(u, 0, "C4");
   assert.match(toLibrarySong(u).errors[0], /^Song "Low": bpm must be 30-300/);
   let v = setMeta(newSong(), { title: "Far" }); v = add(v, 0, "C4"); v = add(v, 1, "C8");   // pitch outside the game's range
@@ -136,4 +137,41 @@ test("library helpers: merge replaces by id, export parses back", () => {
   assert.deepEqual(obj.songs.map((s) => s.id), ["x", "y"]);
   assert.deepEqual(JSON.parse(libraryJson(obj)), obj);
   assert.equal(validateLibrary(JSON.parse(libraryJson(obj))).length, 2);
+});
+
+test("export trims rests and gaps before the first note and after the last; rests between notes still go to the note before", () => {
+  let s = add(newSong(), 0, null, 2); s = add(s, 3, "C4"); s = add(s, 4, null); s = add(s, 5, "D4"); s = add(s, 6, null, 2);   // rest, gap, C4, rest, D4, rest
+  assert.deepEqual(toLibrarySong(s).song.notes, [["C4", 2], ["D4", 1]]);
+  assert.deepEqual(toLibrarySong(add(add(newSong(), 2, "E4"), 3, null)).song.notes, [["E4", 1]]);
+});
+
+test("moveNote: pitch and time, no overlap, staff follows pitch, sorted result", () => {
+  let s = add(add(add(newSong(), 0, "C4"), 1, "D4", 2), 4, "E4");
+  s.notes[1].lyric = "la";
+  let r = moveNote(s, 1, { start: 1.5, pitch: "G4" });
+  assert.deepEqual([r.song.notes[1].start, r.song.notes[1].pitch, r.song.notes[1].lyric, r.song.notes[1].beats], [1.5, "G4", "la", 2]);
+  assert.equal(s.notes[1].pitch, "D4");                                // input untouched
+  assert.equal(moveNote(s, 1, { start: 2.5, pitch: "D4" }).error, "No room there");    // 2.5..4.5 hits E4
+  assert.equal(moveNote(s, 1, { start: 0.5, pitch: "D4" }).error, "No room there");
+  assert.ok(moveNote(s, 1, { start: -0.5, pitch: "D4" }).error);
+  r = moveNote(s, 0, { start: 3, pitch: "C4" });                       // 3..4 is free: order changes, index follows
+  assert.deepEqual([r.index, r.song.notes.map((n) => n.pitch)], [1, ["D4", "C4", "E4"]]);
+  r = moveNote(s, 0, { start: 0, pitch: "A3" });
+  assert.deepEqual([r.song.notes[0].pitch, r.song.notes[0].staff], ["A3", "bass"]);
+  r = moveNote(add(newSong(), 0, "A3", 1, "bass"), 0, { start: 1, pitch: "A3" });
+  assert.equal(r.song.notes[0].staff, "bass");                         // time-only move keeps the staff
+  const rest = moveNote(add(newSong(), 0, null), 0, { start: 2, pitch: "C4" });
+  assert.deepEqual([rest.song.notes[0].start, rest.song.notes[0].pitch], [2, null]);
+});
+
+test("removeNote, midiToPitch and appendNote", () => {
+  const s = removeNote(song4(), 1);
+  assert.deepEqual(s.notes.map((n) => n.pitch), ["C4", "E4", "F4"]);
+  assert.deepEqual([60, 61, 72, 59, 36, 84].map(midiToPitch), ["C4", "C#4", "C5", "B3", "C2", "C6"]);
+  assert.equal(midiToPitch(35), null); assert.equal(midiToPitch(85), null);
+  for (let m = 36; m <= 84; m++) assert.equal(snapPitch(midiToPitch(m)), midiToPitch(m));
+  let r = appendNote(newSong(), "C#4", 1.5);
+  assert.deepEqual([r.song.notes[0].start, r.song.notes[0].beats, r.song.notes[0].staff], [0, 1.5, "treble"]);
+  r = appendNote(r.song, "G3", 1);
+  assert.deepEqual([r.song.notes[1].start, r.song.notes[1].staff, r.index], [1.5, "bass", 1]);
 });

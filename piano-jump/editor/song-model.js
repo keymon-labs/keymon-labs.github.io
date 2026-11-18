@@ -34,6 +34,23 @@ export function place(s, { start, pitch, beats, staff = "treble" }) {
   return { song: { ...s, notes }, index: notes.indexOf(note) };
 }
 
+/** Move note i to a new start (half-beat grid) and/or pitch. Fails if it would leave the song or overlap another note. Returns { song, index } (index after re-sorting) or { error }. */
+export function moveNote(s, i, { start, pitch }) {
+  const n = s.notes[i];
+  if (!(start >= 0) || start % 0.5) return { error: "Tap inside the staff" };
+  if (s.notes.some((o, j) => j !== i && start < o.start + o.beats && o.start < start + n.beats)) return { error: "No room there" };
+  const moved = { ...n, start, low: false };
+  if (n.pitch && pitch && pitch !== n.pitch) { moved.pitch = pitch; moved.staff = staffFor(pitch); }
+  const notes = byStart(s.notes.map((o, j) => (j === i ? moved : { ...o })));
+  return { song: { ...s, notes }, index: notes.indexOf(moved) };
+}
+export const removeNote = (s, i) => ({ ...s, notes: s.notes.filter((_, j) => j !== i).map((n) => ({ ...n })) });
+
+/** MIDI number → pitch text the model uses ("C#4"), or null outside the game's range (C2 to C6). */
+export const midiToPitch = (m) => (m < 36 || m > 84 ? null : `${["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][m % 12]}${Math.floor(m / 12) - 1}`);
+/** Add a note after the last one (e.g. from a keyboard). */
+export const appendNote = (s, pitch, beats) => place(s, { start: endBeat(s), pitch, beats, staff: staffFor(pitch) });
+
 const NEXT = { 0.5: 1, 1: 2, 1.5: 2, 2: 4, 3: 4, 4: null };   // null = delete
 export const nextBeats = (b) => NEXT[b] ?? null;
 const push = (notes) => { let end = 0; for (const n of notes) { if (n.start < end) n.start = end; end = n.start + n.beats; } };   // growing a note pushes the next ones along
@@ -79,20 +96,19 @@ export function uniqueId(base, taken) {
 const where = (n, k, bar) => `note ${k + 1} (${n.pitch || "rest"}, bar ${Math.floor(n.start / bar) + 1}, beat ${(n.start % bar) + 1})`;
 /**
  * Editor song → library-format song `{id,title,info?,bpm,bar,notes:[[pitch,beats,lyric?]]}`.
- * The game has no rests: a rest (or empty gap) is added to the note before it, so timing and barlines stay right.
+ * The game has no rests: a rest (or empty gap) between notes is added to the note before it, so timing and barlines stay right;
+ * rests and gaps before the first note and after the last note are dropped.
  * Returns { song } or { errors: [text naming the song and the note] }.
  */
 export function toLibrarySong(s, id) {
   const name = s.title.trim() ? `Song "${s.title.trim()}"` : "Song (no title)";
-  const items = byStart(s.notes), lib = [];
-  let cursor = 0;
-  for (const [k, n] of items.entries()) {
+  const all = byStart(s.notes), first = all.findIndex((n) => n.pitch), last = all.findLastIndex((n) => n.pitch), lib = [];
+  let cursor = all[first]?.start ?? 0;                                         // rests before the first note and after the last one are trimmed
+  for (const [j, n] of all.slice(first, last + 1).entries()) {
+    const k = first + j;
     if (n.start < cursor) return { errors: [`${name}: ${where(n, k, s.bar)} overlaps the one before it`] };
     const held = n.start - cursor + (n.pitch ? 0 : n.beats);
-    if (held > 0 || !n.pitch) {
-      if (!lib.length) return { errors: [`${name}: starts with a rest, start with a note instead`] };
-      lib[lib.length - 1].beats += held;
-    }
+    if (held > 0) lib[lib.length - 1].beats += held;
     if (n.pitch) lib.push({ pitch: n.pitch, beats: n.beats, lyric: n.lyric.trim(), k, n });
     cursor = n.start + n.beats;
   }

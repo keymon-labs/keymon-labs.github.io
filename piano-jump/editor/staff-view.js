@@ -14,6 +14,10 @@ export function layout(song, { bass, stepH }) {
   return { bass, stepH, bw: BW, x0: X0, tTop, tBot, bTop, bBot, lyricTop,
     width: X0 + barCount(song) * song.bar * BW + 32, height: lyricTop + 52 };
 }
+/** Steps shown on a staff: { top, bottom }. */
+export const stepRange = (staff) => ({ top: cfg(staff).top, bottom: cfg(staff).bottom });
+const DEL = 20;                                                     // size of the delete box above a note's column
+const delBox = (g, n) => ({ x: xOf(g, n.start) + 4, y: n.staff === "bass" ? yOf(g, "bass", BASS.top) - g.stepH / 2 - DEL - 4 : 32 });
 const cfg = (staff) => (staff === "bass" ? BASS : TREBLE);
 export const yOf = (g, staff, step) => (staff === "bass" ? g.bTop + (BASS.top - step) * g.stepH : g.tTop + (TREBLE.top - step) * g.stepH);
 const xOf = (g, beat) => g.x0 + beat * g.bw;
@@ -21,11 +25,16 @@ const xOf = (g, beat) => g.x0 + beat * g.bw;
 /**
  * What a tap at (x, y) means, in svg pixels:
  *  { kind: "empty", beat, staff, step }       free beat → place a note
- *  { kind: "note", index, zone }              zone "head" (change length), "above"/"below" (stem up/down)
+ *  { kind: "note", index, zone }              zone "head" (change length), "above"/"below" (stem up/down), "delete" (the × box over the column)
  *  { kind: "none" }                           margin, gap between staves, or a used beat tapped away from the head
  */
 export function hit(g, song, x, y) {
   if (x < g.x0) return { kind: "none" };
+  for (const [i, n] of song.notes.entries()) {
+    const b = delBox(g, n);
+    const nearHead = n.pitch && Math.abs(y - yOf(g, n.staff, pitchToStep(n.pitch))) <= 4 * g.stepH;   // a high note's stem zones win over its × box
+    if (!nearHead && x >= b.x && x <= b.x + DEL && y >= b.y && y <= b.y + DEL) return { kind: "note", index: i, zone: "delete" };
+  }
   const beat = Math.floor(((x - g.x0) / g.bw) * 2) / 2, index = noteIndexAt(song, beat);
   if (index >= 0) {
     const n = song.notes[index];
@@ -101,5 +110,6 @@ export function render(g, song, view = {}) {
     for (let b = 0; b <= n; b++) out += `<line class="barline" x1="${xOf(g, b * size)}" x2="${xOf(g, b * size)}" y1="${y0}" y2="${y1}"/>`;
   }
   song.notes.forEach((note, i) => { out += noteSvg(g, { ...note, i }, view.playing); });
+  song.notes.forEach((note, i) => { const b = delBox(g, note); out += `<g class="del" data-i="${i}"><rect x="${r1(b.x)}" y="${r1(b.y)}" width="${DEL}" height="${DEL}" rx="4"/><text x="${r1(b.x + DEL / 2)}" y="${r1(b.y + 15)}" text-anchor="middle" font-size="16">×</text></g>`; });
   return out + "</svg>";
 }

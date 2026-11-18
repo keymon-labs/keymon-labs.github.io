@@ -119,7 +119,12 @@
               <button id="btnNew"><i>＋</i><span>New song</span></button>
             </div>
           </div>
-          <p class="hint">Tap the staff to add a note. Tap a note to make it longer (quarter, half, whole, gone). Tap just above or below a note to flip its stem. Type a syllable under a note for the words.</p>
+          <div class="row midi">
+            <button id="btnMidi">Connect MIDI / USB</button>
+            <button id="btnBle">Connect Bluetooth</button>
+            <span id="midiStatus" class="hint" role="status"></span>
+          </div>
+          <p class="hint">Tap the staff to add a note. Tap a note to make it longer (quarter, half, whole, gone). Drag a note up, down or sideways to move it if there is space; tap the × above it to remove it. Tap just above or below a note to flip its stem. Play notes on a piano, or computer keys A–K, to add them at the end (Backspace removes the last one). Type a syllable under a note for the words.</p>
           <p id="msg" role="status" aria-live="polite"></p>
         </div>
 

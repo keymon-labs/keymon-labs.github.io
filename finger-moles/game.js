@@ -3,6 +3,7 @@
 import TUNES from "./tunes.json";
 import { handKeys, judge, randomRound, tuneRound, tuneBeats, starsFor, upTime } from "./logic.js";
 import { connectMidi, connectBluetoothMidi, keyboardNotes } from "../shared/midi.js";
+import { keyAt } from "../shared/piano-keys.js";
 import { unlockAudio, tone } from "../shared/audio.js";
 import { createRng } from "../shared/rng.js";
 import { registerServiceWorker, setupInstallButton, keepAwake } from "../shared/pwa.js";
@@ -155,11 +156,10 @@ document.querySelectorAll(".mode").forEach((b) => (b.onclick = () => start(b.dat
 // Touch the screen keys or a mole hole: same as playing that key.
 cv.addEventListener("pointerdown", (e) => {
   unlockAudio();
-  const x = e.clientX, y = e.clientY, wi = Math.floor((x - kx) / kw);
+  const x = e.clientX, y = e.clientY, wi = Math.floor((x - kx) / kw), w = whites();
   if (y > ky && y < ky + kh) {
-    const b = blacks().find(([, after]) => y < ky + kh * .6 && Math.abs(x - (kx + (after + 1) * kw)) < kw * .3);
-    if (b) return onNote(b[0]);
-    if (wi >= 0 && wi < 7) onNote(whites()[wi]);
+    const m = keyAt({ x: kx, y: ky, w: kw, h: kh, lo: w[0], hi: w[6] }, x, y);
+    if (m != null) onNote(m);
   } else if (y < ky && y > holeY - kw * 1.8 && wi >= 1 && wi <= 5) onNote(handKeys(opts.hand)[wi - 1].midi);
 });
 

@@ -1,10 +1,11 @@
-// Piano Jump song editor: tap notes onto a staff, preview, save to the on-device library, export JSON, import a scanned page.
+// Piano Jump song editor: tap or drag notes on a staff, play them in from a keyboard, preview, save to the on-device library, export JSON, import a scanned page.
 // Model: song-model.js · drawing + tap meaning: staff-view.js · photo import: scan.js · library storage: ../library.js · styles: editor.css
-import { newSong, place, cycle, setStem, setLyric, setMeta, clearNotes, bars, endBeat, stepToPitch, toLibrarySong, fromLibrarySong, layoutScanned, snapPitch, slugify, uniqueId, createHistory, BEATS } from "./song-model.js";
-import { layout, hit, render } from "./staff-view.js";
+import { newSong, place, cycle, moveNote, removeNote, appendNote, midiToPitch, pitchToStep, setStem, setLyric, setMeta, clearNotes, bars, endBeat, stepToPitch, toLibrarySong, fromLibrarySong, layoutScanned, snapPitch, slugify, uniqueId, createHistory, BEATS } from "./song-model.js";
+import { layout, hit, render, stepRange } from "./staff-view.js";
 import { loadStored, upsertStored, removeStored, libraryObject, libraryJson } from "../library.js";
 import { toMidi } from "../../shared/music.js";
 import { unlockAudio, tone } from "../../shared/audio.js";
+import { connectMidi, connectBluetoothMidi, keyboardNotes } from "../../shared/midi.js";
 import { initScan } from "./scan.js";
 
 const $ = (id) => document.getElementById(id);
@@ -110,15 +111,45 @@ function tap(x, y) {
     say(""); commit(r.song); if (pitch) tone(freq(pitch), 0.35, "triangle", 0.2);
   } else if (h.kind === "note") {
     const n = s.notes[h.index];
-    if (h.zone === "head") { const next = cycle(s, h.index); say(next.notes.length < s.notes.length ? "Note removed" : ""); commit(next); if (n.pitch && next.notes.length === s.notes.length) tone(freq(n.pitch), 0.35, "triangle", 0.2); }
+    if (h.zone === "delete") { say("Note removed. Undo brings it back."); commit(removeNote(s, h.index)); }
+    else if (h.zone === "head") { const next = cycle(s, h.index); say(next.notes.length < s.notes.length ? "Note removed" : ""); commit(next); if (n.pitch && next.notes.length === s.notes.length) tone(freq(n.pitch), 0.35, "triangle", 0.2); }
     else commit(setStem(s, h.index, h.zone === "above" ? "up" : "down"));
   } else say("Tap an empty beat on the staff to add a note.");
 }
-$("stage").addEventListener("click", (e) => {
-  if (e.target.closest("input")) return;
-  const r = $("stage").getBoundingClientRect();
-  tap(e.clientX - r.left, e.clientY - r.top);
+// A press on a note head may become a drag (pitch up/down, time sideways); otherwise release acts as the old tap.
+const DRAG_PX = 6;
+let press = null;
+const pos = (e) => { const r = $("stage").getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+$("stage").addEventListener("pointerdown", (e) => {
+  if (e.target.closest("input") || !e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return;
+  const [x, y] = pos(e), h = hit(geo, song(), x, y), orig = song();
+  press = { id: e.pointerId, cx: e.clientX, cy: e.clientY, moved: false, orig, i: h.kind === "note" && h.zone === "head" ? h.index : -1, best: null, pitch: null };
+  if (press.i >= 0) $("stage").setPointerCapture(e.pointerId);
 });
+$("stage").addEventListener("pointermove", (e) => {
+  if (!press || e.pointerId !== press.id || press.i < 0) return;
+  const dx = e.clientX - press.cx, dy = e.clientY - press.cy;
+  if (!press.moved) { if (Math.hypot(dx, dy) <= DRAG_PX) return; press.moved = true; unlockAudio(); stop(); }
+  const n = press.orig.notes[press.i], rows = Math.round(dy / geo.stepH);
+  let pitch = n.pitch;
+  if (n.pitch && rows) { const r = stepRange(n.staff); pitch = stepToPitch(Math.min(r.top, Math.max(r.bottom, pitchToStep(n.pitch) - rows))); }
+  const r = moveNote(press.orig, press.i, { start: n.start + Math.round((dx / geo.bw) * 2) / 2, pitch });
+  const was = press.best?.notes[r.index] ?? n;
+  if (r.error || (press.best && was.start === r.song.notes[r.index].start && was.pitch === r.song.notes[r.index].pitch)) return;   // invalid spot or no change: keep the preview
+  press.best = r.song; hist.replace(r.song); draw();
+  if (pitch && pitch !== press.pitch) tone(freq(pitch), 0.2, "triangle", 0.2);
+  press.pitch = pitch;
+});
+function release(e, cancelled) {
+  if (!press || e.pointerId !== press.id) return;
+  const p = press; press = null;
+  if (p.moved) {
+    hist.replace(p.orig);
+    if (p.best && !cancelled) commit(p.best); else draw();
+  } else if (!cancelled && Math.hypot(e.clientX - p.cx, e.clientY - p.cy) <= DRAG_PX) tap(...pos(e));
+}
+$("stage").addEventListener("pointerup", (e) => release(e, false));
+$("stage").addEventListener("pointercancel", (e) => release(e, true));
 $("stage").addEventListener("change", (e) => {          // lyric typed: save without redrawing, so focus stays put
   const i = e.target.closest?.(".lyric")?.dataset.i;
   if (i == null) return;
@@ -149,8 +180,8 @@ $("btnPlay").onclick = () => (timers.length ? stop() : play());
 document.querySelectorAll("[data-dur]").forEach((b) => { b.onclick = () => { ui.dur = +b.dataset.dur; if (ui.dur === 0.5 || ui.dur === 4) ui.dotted = false; syncControls(); }; });
 $("btnDot").onclick = () => { if (ui.dur === 1 || ui.dur === 2) ui.dotted = !ui.dotted; else say("Dotted works with quarter and half notes."); syncControls(); };
 $("btnRest").onclick = () => { ui.rest = !ui.rest; say(ui.rest ? "Rest tool on: tap a beat to place a rest." : ""); syncControls(); };
-$("btnUndo").onclick = () => { stop(); hist.undo(); draw(); };
-$("btnRedo").onclick = () => { stop(); hist.redo(); draw(); };
+$("btnUndo").onclick = () => { if (press?.moved) return; stop(); hist.undo(); draw(); };
+$("btnRedo").onclick = () => { if (press?.moved) return; stop(); hist.redo(); draw(); };
 $("btnClear").onclick = () => { if (song().notes.length) { commit(clearNotes(song())); say("Cleared. Undo brings the notes back."); } };
 $("btnNew").onclick = () => { commit(newSong()); say("New song. Undo brings the old one back."); };
 $("btnBass").onclick = () => { if (ui.bass && song().notes.some((n) => n.staff === "bass")) return say("Remove the bass notes first to hide the bass staff.", true); ui.bass = !ui.bass; draw(); };
@@ -212,6 +243,27 @@ const scan = initScan({
   onPhotoGone: () => $("split").classList.remove("review"),
 });
 $("btnScan").onclick = () => scan.open();
+
+// ---------- notes from a keyboard: each note played is added at the end ----------
+const dragging = () => !!press?.moved;   // edits during a drag would be overwritten when it ends
+function played(midi) {
+  const pitch = midiToPitch(midi);
+  if (!pitch || $("work").hidden || dragging()) return;
+  unlockAudio(); stop();
+  const r = appendNote(song(), pitch, ui.dotted ? ui.dur * 1.5 : ui.dur);
+  if (r.error) return say(r.error, true);
+  say(""); commit(r.song); tone(freq(pitch), 0.35, "triangle", 0.2);
+  const sc = $("scroller"), n = r.song.notes[r.index], right = geo.x0 + (n.start + n.beats) * geo.bw + 40;
+  if (right > sc.scrollLeft + sc.clientWidth) sc.scrollLeft = right - sc.clientWidth;
+}
+const midiStatus = (s) => { $("midiStatus").textContent = s.ok ? `Connected: ${s.name}` : s.message; };
+keyboardNotes(played);
+$("btnMidi").onclick = () => connectMidi(played, midiStatus);
+$("btnBle").onclick = () => connectBluetoothMidi(played, midiStatus);
+addEventListener("keydown", (e) => {
+  if (e.key !== "Backspace" || $("work").hidden || dragging() || e.target.closest?.("input,select,textarea") || !song().notes.length) return;
+  e.preventDefault(); stop(); commit(removeNote(song(), song().notes.length - 1)); say("Last note removed. Undo brings it back.");
+});
 
 // ---------- start ----------
 addEventListener("pagehide", saveDraft);

@@ -5,6 +5,7 @@ import { toMidi, stepOf, isSharp as sharpOf, noteName } from "../shared/music.js
 import { unlockAudio as audio, tone as playTone } from "../shared/audio.js";
 import { registerServiceWorker, setupInstallButton, keepAwake, releaseWake } from "../shared/pwa.js";
 import { connectMidi, connectBluetoothMidi, keyboardNotes } from "../shared/midi.js";
+import { keyAt } from "../shared/piano-keys.js";
 import { assignFingers } from "./fingering.js";
 import { parseLibraryText, loadStored, saveStored, clearStored } from "./library.js";
 
@@ -12,11 +13,11 @@ import { parseLibraryText, loadStored, saveStored, clearStored } from "./library
 const label=m=>noteName(m,opts.names);
 
 // ================= Settings =================
-const opts={tempo:.75,names:"letters",keys:"on",clock:"on",oct:"exact",sfx:"on",song:"humpty"};
+const opts={tempo:.75,names:"letters",keys:"on",clock:"on",oct:"exact",sfx:"on",screen:"off",song:"humpty"};
 try{Object.assign(opts,JSON.parse(localStorage.getItem("pianojump")||"{}"));}catch(e){}
 const saveOpts=()=>{try{localStorage.setItem("pianojump",JSON.stringify(opts));}catch(e){}};
 const $=id=>document.getElementById(id);
-const sel={oTempo:"tempo",oNames:"names",oKeys:"keys",oClock:"clock",oOct:"oct",oSfx:"sfx"};
+const sel={oTempo:"tempo",oNames:"names",oKeys:"keys",oClock:"clock",oOct:"oct",oSfx:"sfx",oScreen:"screen"};
 for(const [id,k] of Object.entries(sel)){$(id).value=String(opts[k]);if($(id).selectedIndex<0)$(id).selectedIndex=1;
   $(id).onchange=e=>{opts[k]=k==="tempo"?+e.target.value:e.target.value;saveOpts();};}
 let ALL=[...SONGS,...loadStored()];   // built-in songs + library imported on this device
@@ -57,7 +58,7 @@ const yOf=step=>CY-step*S;
 
 // ================= Game state =================
 let song,plats=[],startPlat,idx=0,state="menu",stars=0,timeLeft=0,clockRunning=false,tPrev=null,retried=false;
-let ch={x:0,y:0,squash:0},jump=null,vy=0,camX=0,ghost=null,floats=[],confetti=[],failInfo=null,lastNoteT=0,failTimer=0;
+let ch={x:0,y:0,squash:0},jump=null,vy=0,camX=0,peek=0,peekHold=0,drag=null,kbd=null,ghost=null,floats=[],confetti=[],failInfo=null,lastNoteT=0,failTimer=0;
 const beatSec=()=>60/(song.bpm*opts.tempo);
 const headX=p=>p.x+S*1.8;
 const landX=p=>p.x+Math.max(p.w*.62,S*4.4);
@@ -79,7 +80,7 @@ function loadSong(){
   assignFingers(plats).forEach((h,i)=>Object.assign(plats[i],h));
   idx=0;stars=0;tPrev=null;retried=false;jump=null;ghost=null;floats=[];confetti=[];
   timeLeft=plats.reduce((a,p)=>a+p.dur,0)*beatSec()*2.4+15;clockRunning=false;
-  layout();camX=0;updateHud();
+  layout();camX=0;peek=0;updateHud();
 }
 function updateHud(){
   $("hStars").textContent=`${stars} / ${plats.length}`;
@@ -92,7 +93,7 @@ function float(text,x,y,color="#1c2a4a",size=2.4){floats.push({text,x,y,t:0,colo
 function matches(m,target){return opts.oct==="any"?m%12===target%12:m===target;}
 function pitchDiff(m,target){if(opts.oct!=="any")return m-target;let d=((m-target)%12+12)%12;return d>6?d-12:d;}
 function onNote(m){
-  const now=performance.now()/1000;
+  const now=performance.now()/1000;peek=0;
   if(now-lastNoteT<.08)return;lastNoteT=now;
   if(state==="fail"){const t=plats[idx];if(t&&matches(m,t.midi))retryNote();else return;}
   if(state!=="play")return;
@@ -158,7 +159,9 @@ function frame(nowMs){
     if(timeLeft<=0){timeLeft=0;if(jump)finishJump();if(state==="play"){state="fail";failInfo={time:true};sfx.fall();showFail();}}
     if(Math.ceil(timeLeft)!==before)updateHud();}
   ch.squash=Math.max(0,ch.squash-dt*5);
-  const target=Math.max(0,ch.x-W*.33);camX+=(target-camX)*Math.min(1,dt*5);
+  if(!drag&&(peekHold-=dt)<=0)peek*=Math.max(0,1-dt*4);   // a peek ahead springs back after a moment
+  const base=Math.max(0,ch.x-W*.33),target=Math.max(0,Math.min(base+peek,Math.max(base,(layout.end||0)-W*.5)));
+  camX=drag?target:camX+(target-camX)*Math.min(1,dt*5);
   floats=floats.filter(f=>(f.t+=dt)<1.3);
   for(const c of confetti){c.vy+=30*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.r+=dt*6;}
   draw(now);requestAnimationFrame(frame);
@@ -285,7 +288,7 @@ function handBand(now){
   const t=(state==="play"||state==="fail"||state==="falling")?plats[idx]:null;
   const KW=15,lo=48;                                     // white keys C3..C5
   const handW=Math.min(bh*1.15,W*.2),kw=Math.min((W-handW*2-S*6)/KW,bh*.42),kh=Math.min(bh*.82,kw*4.2);
-  const kx=(W-kw*KW)/2,ky=top+(bh-kh)/2;
+  const kx=(W-kw*KW)/2,ky=top+(bh-kh)/2;kbd={x:kx,y:ky,w:kw,h:kh,lo,hi:72};
   const whites=[];for(let m=lo;m<=72;m++)if(!sharpOf(m))whites.push(m);
   const pulse=.5+.5*Math.sin(now*6);
   whites.forEach((m,i)=>{const hit=t&&m===t.midi;
@@ -372,6 +375,23 @@ function onStatus(s){
 $("btnMidi").onclick=()=>{audio();connectMidi(onNote,onStatus);};
 $("btnBle").onclick=()=>{audio();connectBluetoothMidi(onNote,onStatus);};
 keyboardNotes(n=>{audio();onNote(n);});
+// Screen keys (an option, for testing without a piano) and dragging the staff to look ahead.
+cv.addEventListener("pointerdown",e=>{
+  const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+  if(y>=BAND){
+    if(opts.screen!=="on"||!kbd)return;
+    const m=keyAt(kbd,x,y);if(m==null)return;
+    audio();playTone(440*2**((m-69)/12),.35,"triangle",.18);onNote(m);return;}
+  if(state==="menu")return;
+  drag={x,peek,id:e.pointerId};cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener("pointermove",e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  const r=cv.getBoundingClientRect(),base=Math.max(0,ch.x-W*.33);   // keep the peek inside what the camera can show, so it springs back promptly
+  peek=Math.max(-base,Math.min(Math.max(0,(layout.end||0)-W*.5-base),drag.peek-(e.clientX-r.left-drag.x)));
+});
+const endDrag=e=>{if(drag&&e.pointerId===drag.id){drag=null;peekHold=1.5;}};
+cv.addEventListener("pointerup",endDrag);cv.addEventListener("pointercancel",endDrag);
 
 // ================= Song library (import a file; encrypted ones need the password) =================
 const libMsg=(t,bad)=>{$("libMsg").textContent=t;$("libMsg").style.color=bad?"var(--bad)":"var(--muted)";};
@@ -397,4 +417,4 @@ $("btnAgain").onclick=restart;$("btnSongs").onclick=()=>{$("ovWin").hidden=true;
 addEventListener("resize",resize);
 loadSong();resize();requestAnimationFrame(frame);
 document.fonts?.ready.then(()=>{});
-window.__pj={onNote,get state(){return state},get idx(){return idx}};
+window.__pj={onNote,get state(){return state},get idx(){return idx},get camX(){return camX},get kbd(){return kbd}};
