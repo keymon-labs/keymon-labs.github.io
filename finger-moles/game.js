@@ -1,10 +1,11 @@
 // Finger Moles: whack-a-mole on a real piano. Each finger owns a coloured mole; the hand stays in C position.
-// Rules: logic.js · Data: tunes.json · Look: style.css · Shared: ../shared/{midi,audio,rng}.js
+// Rules: logic.js · Data: tunes.json · Look: style.css · Shared: ../shared/{midi,audio,rng,pwa}.js
 import TUNES from "./tunes.json";
-import { handKeys, judge, randomRound, tuneRound, starsFor, upTime } from "./logic.js";
+import { handKeys, judge, randomRound, tuneRound, tuneBeats, starsFor, upTime } from "./logic.js";
 import { connectMidi, connectBluetoothMidi, keyboardNotes } from "../shared/midi.js";
 import { unlockAudio, tone } from "../shared/audio.js";
 import { createRng } from "../shared/rng.js";
+import { registerServiceWorker, setupInstallButton, keepAwake } from "../shared/pwa.js";
 
 const $ = (id) => document.getElementById(id);
 const COL = { 1: "#ff5a5f", 2: "#ff9f1c", 3: "#ffd23f", 4: "#3ecf8e", 5: "#4d96ff" };
@@ -22,11 +23,14 @@ for (const [id, k] of [["oTune", "tune"], ["oVoice", "voice"], ["oSound", "sound
 const showHand = () => document.querySelectorAll(".hand").forEach((b) => b.classList.toggle("sel", b.dataset.hand === opts.hand));
 document.querySelectorAll(".hand").forEach((b) => (b.onclick = () => { opts.hand = b.dataset.hand; save(); showHand(); }));
 showHand();
+registerServiceWorker();
+setupInstallButton($("btnInstall"));
+document.addEventListener("visibilitychange", () => { if (state !== "menu") keepAwake(); });
 
 // ---------- sound and voice ----------
 let piano = false;   // a real instrument is connected: it makes its own sound
 const freq = (m) => 440 * Math.pow(2, (m - 69) / 12);
-const noteSound = (m, force) => { if (force || opts.sound === "on" || (opts.sound === "auto" && !piano)) tone(freq(m), .6, "triangle", .22); };
+const noteSound = (m, force, dur = .6) => { if (force || opts.sound === "on" || (opts.sound === "auto" && !piano)) tone(freq(m), dur, "triangle", .22); };
 const sfx = {
   bonk() { tone(220, .12, "square", .05, 0, 110); },
   oops() { tone(300, .25, "sawtooth", .04, 0, 200); },
@@ -81,7 +85,7 @@ function start(mode) {
   moles.forEach((m) => Object.assign(m, { up: 0, want: 0, hit: 0, giggle: 0 }));
   parts = []; floats = []; replay = null;
   $("ovMenu").hidden = true; $("ovEnd").hidden = true;
-  state = "play"; nextAt = now + 1;
+  state = "play"; nextAt = now + 1; keepAwake();
   say(opts.hand === "R" ? "Thumb on C!" : "Pinky on C!");
   hud();
 }
@@ -126,7 +130,7 @@ function onNote(m) {
 
 function finish() {
   R.cur = null;
-  if (R.mode === "song") { state = "replay"; replay = { i: 0, at: now + .6 }; say(`You played ${R.tune.title}!`); return; }
+  if (R.mode === "song") { state = "replay"; replay = { i: 0, at: now + .6, beats: tuneBeats(R.tune) }; say(`You played ${R.tune.title}!`); return; }
   end();
 }
 function end() {
@@ -266,13 +270,14 @@ function frame(ts) {
     }
   }
   if (state === "replay") {   // victory lap: the moles sing the tune back
-    if (now >= replay.at) {   // shortcut: even rhythm, tunes have no note lengths; add durations to tunes.json if needed
+    if (now >= replay.at) {
       if (replay.i >= R.seq.length) { if (moles.every((m) => m.up < .05)) end(); }
       else {
-        const m = R.seq[replay.i++], k = keyOf(m); noteSound(m, true);
+        const b = replay.beats[replay.i], m = R.seq[replay.i++], k = keyOf(m), sec = .4 * b;
+        noteSound(m, true, sec + .2);
         Object.assign(moles[k.col], { want: 1, hit: 0 });
-        setTimeout(() => (moles[k.col].want = 0), 260);
-        replay.at = now + .42;
+        setTimeout(() => (moles[k.col].want = 0), Math.min(sec * 1000 - 60, 600));
+        replay.at = now + sec;
       }
     }
   }

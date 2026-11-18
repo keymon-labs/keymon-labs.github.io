@@ -33,13 +33,19 @@ export function randomRound(rng, hand, n) {
   return out;
 }
 
-/** A tune's notes for this hand (tunes are written for the right hand; the left plays an octave lower). */
-export const tuneRound = (tune, hand) =>
-  tune.notes.split(/\s+/).map((n) => toMidi(n) - (hand === "L" ? 12 : 0));
+// Tune tokens are "E4" (one beat) or "E4:1.5" (beats).
+const tokens = (tune) => tune.notes.trim().split(/\s+/).map((t) => t.split(":"));
 
-/** Every tune note must sit under the hand, or the game would ask for a key no finger is on. */
+/** A tune's notes for this hand (tunes are written for the right hand; the left plays an octave lower). */
+export const tuneRound = (tune, hand) => tokens(tune).map(([n]) => toMidi(n) - (hand === "L" ? 12 : 0));
+
+/** Beats of each note, for the sing-back at the end. */
+export const tuneBeats = (tune) => tokens(tune).map(([, b]) => (b === undefined ? 1 : +b));
+
+/** Bad tokens: notes outside the hand (no finger is on them) or lengths that aren't positive numbers. */
 export const checkTune = (tune) =>
-  tune.notes.split(/\s+/).filter((n) => !/^[A-G]4$/.test(n) || !handKeys("R").some((k) => k.midi === toMidi(n)));
+  tokens(tune).filter(([n, b]) => !/^[A-G]4$/.test(n) || !handKeys("R").some((k) => k.midi === toMidi(n)) || (b !== undefined && !(+b > 0)))
+    .map((t) => t.join(":"));
 
 /** Stars at the end: share of moles hit on the first try. */
 export const starsFor = (firstTry, total) => (total ? (firstTry / total >= .9 ? 3 : firstTry / total >= .6 ? 2 : 1) : 0);

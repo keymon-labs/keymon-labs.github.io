@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRng } from "../../shared/rng.js";
-import { handKeys, judge, randomRound, tuneRound, checkTune, starsFor, upTime } from "../logic.js";
+import { handKeys, judge, randomRound, tuneRound, tuneBeats, checkTune, starsFor, upTime } from "../logic.js";
 
 const tunes = JSON.parse(readFileSync(new URL("../tunes.json", import.meta.url)));
 
@@ -33,7 +33,9 @@ test("every tune fits the five-finger position, in both hands", () => {
     const lows = handKeys("L").map((k) => k.midi);
     assert.ok(tuneRound(t, "L").every((m) => lows.includes(m)), t.id);
   }
-  assert.deepEqual(checkTune({ notes: "C4 A4" }), ["A4"]);
+  assert.deepEqual(checkTune({ notes: "C4 A4 D4:0 E4:x F4:.5" }), ["A4", "D4:0", "E4:x"]);
+  assert.deepEqual(tuneRound({ notes: "E4:1.5 D4 C4:2" }, "R"), [64, 62, 60]);
+  assert.deepEqual(tuneBeats({ notes: "E4:1.5 D4 C4:2" }), [1.5, 1, 2]);
 });
 
 test("stars and speed", () => {
