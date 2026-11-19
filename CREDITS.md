@@ -25,7 +25,7 @@ Everything not listed here is keymon-labs' own work under [NOTICE.md](NOTICE.md)
 ## Loaded from third parties at runtime (not stored here)
 | What | Used in | Source | Licence |
 |---|---|---|---|
-| Fonts Baloo 2, Noto Music | piano-jump, finger-moles | [Google Fonts](https://fonts.google.com) | SIL Open Font License 1.1 |
+| Fonts Baloo 2, Noto Music | piano-jump, finger-moles, rain-garden | [Google Fonts](https://fonts.google.com) | SIL Open Font License 1.1 |
 
 ## Development only (not distributed)
 | What | Licence | Notes |

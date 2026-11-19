@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rain Garden</title>
+<meta name="theme-color" content="#9fd0f0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" aria-label="Rain Garden: five flowers over five piano keys"></canvas>
+
+  <div class="hud" id="hud" hidden>
+    <button class="big" id="btnMap" aria-label="Back to the garden map">🗺️</button>
+    <span class="spacer"></span>
+    <span class="chip"><span class="dot" id="hDot"></span><span id="hInput">No piano</span></span>
+    <button class="big" id="btnShow" aria-label="Show me again">👁️</button>
+  </div>
+
+  <div class="overlay" id="ovMap">
+    <div class="panel">
+      <div class="top">
+        <h1>🌧️ Rain Garden</h1>
+        <span class="spacer"></span>
+        <span class="chip"><span class="dot" id="mDot"></span><span id="mInput">No piano</span></span>
+        <button id="btnGrown" aria-label="Grown-ups">🧑 Grown-ups</button>
+      </div>
+      <div class="levels" id="levels"></div>
+      <div class="row">
+        <button id="btnBle">🎹 Bluetooth piano</button>
+        <button id="btnMidi">🎹 USB / MIDI piano</button>
+      </div>
+      <p class="conn" id="connText">No piano yet: tap the keys on screen, or computer keys A S D F G.</p>
+      <p class="ver">Rain Garden v1 (prototype) · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovSetup" hidden>
+    <div class="panel setup">
+      <p class="who">For the grown-up · getting ready <span id="setupStep"></span></p>
+      <div class="pic" id="setupPic"></div>
+      <h2 id="setupTitle"></h2>
+      <p id="setupText"></p>
+      <div class="row center"><button class="go" id="btnSetupOk">✓ Done</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovBreak" hidden>
+    <div class="panel center-text">
+      <div class="pic">🌧️🙌</div>
+      <h2>Rain dance!</h2>
+      <p>Hands off the piano. Wiggle your fingers like rain. Let them flop on your knees, all soft and floppy. Now float them back, thumb on middle C.</p>
+      <div class="row center"><button class="go" id="btnBreakOk">✓ Done</button><button id="btnBreakSkip">Skip</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovSum" hidden>
+    <div class="panel center-text">
+      <canvas id="sumCv" width="520" height="190" aria-hidden="true"></canvas>
+      <ul class="lines" id="sumLines"></ul>
+      <div class="row center">
+        <button class="go" id="btnAgain" aria-label="Play again">↺</button>
+        <button class="go" id="btnHome" aria-label="Garden map">🗺️</button>
+        <button class="go" id="btnNight" hidden aria-label="Goodnight">🌙 Goodnight</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovGrown" hidden>
+    <div class="panel grown">
+      <h2>For grown-ups</h2>
+      <p>Rain Garden keeps the right hand in five-finger C position: thumb on middle C, one finger per key (C D E F G). A piano can't see fingers, so the game never judges them. It listens to <b>which note</b>, <b>when</b> (against your child's own steadiness) and <b>how evenly</b> (against this keyboard's own touch). You check the posture.</p>
+      <div class="row">
+        <button id="btnRedoSetup">🪑 Posture check</button>
+        <button id="btnRedoCalib">💧 Rain check (touch and pace)</button>
+      </div>
+      <h3>Play together (optional)</h3>
+      <p>Turn on <b>Duet</b> and play low C and G together (below middle C, left side of the piano) on every tick while your child echoes the cloud. Your low notes never count against them.</p>
+      <div class="opts">
+        <label>Duet <select id="oDuet"><option value="off">Off</option><option value="on">On</option></select></label>
+        <label>Voice <select id="oVoice"><option value="on">On</option><option value="off">Off</option></select></label>
+        <label>Note sound <select id="oSound"><option value="auto">When no piano</option><option value="on">Always</option><option value="off">Off</option></select></label>
+        <label>Gentle end after <select id="oEnd"><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select></label>
+        <label>Garden beds <select id="oOpen"><option value="earn">Open as they grow</option><option value="all">All open</option></select></label>
+      </div>
+      <p class="small" id="grownInfo"></p>
+      <div class="row">
+        <button class="go" id="btnGrownClose">✓ Close</button>
+        <button id="btnReset">Start a new garden</button>
+      </div>
+      <p class="ver">Rain Garden v1 (prototype) · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </div>
+</div>
+<script type="module" src="./game.js"></script>
+</body>
+</html>
