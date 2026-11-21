@@ -16,6 +16,7 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 | Brick Beats | Photo of a brick mat → read on the device into lanes and bricks → played as music, with fruit rhythms. Works offline | [brick-beats/](brick-beats/README.md) |
 | Beat Tiles | Learn rhythm by playing: every card is one beat and its picture says how many sounds fit inside it (plum 1, apple 2, coconut 3, watermelon 4; themes: fruits, animals, vehicles). Plays as a groove, tap to change cards, optional own voice. Works offline | [beat-tiles/](beat-tiles/README.md) |
 | Zoom Tunnel | Infinite zoom through nested pictures: draw or photograph each frame, draw or tap-fill the doorway to the next one, then fly through (auto, or manual with pinch/twist). Photos stay on the device (prototype) | [zoom-tunnel/](zoom-tunnel/README.md) |
+| Drone Hide | Hide-and-seek for two in front of the laptop camera: a drone's light hunts the room, hide behind the rocks, grab the gems. Camera picture stays on the device (prototype) | [drone-hide/](drone-hide/README.md) |
 | Spanish Arcade | Mini games to practise written Spanish (listening, reading, spelling, puzzles) for kids, one unit so far; inspired by «Mis unidades de español» (A1) | [spanish-arcade/](spanish-arcade/README.md) |
 
 ## Inside Claude

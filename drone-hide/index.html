@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drone Hide</title>
+<link rel="stylesheet" href="./style.css">
+</head><body>
+<div id="stage">
+  <canvas id="c" width="640" height="480"></canvas>
+  <div id="hud" hidden><span id="p0"></span><span id="time"></span><span id="p1"></span></div>
+  <div id="ov"><h1>Drone Hide</h1><p id="msg"></p><div class="row"><button id="go">Start camera</button><button id="redo" hidden>Retake the empty room</button></div></div>
+</div>
+<video id="v" playsinline muted hidden></video>
+<footer class="foot">Drone Hide v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · The camera picture stays on this computer and is never recorded.</footer>
+<script type="module" src="./game.js"></script>
+</body></html>
