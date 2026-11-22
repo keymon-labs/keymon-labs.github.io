@@ -36,6 +36,9 @@ Games made by others, hosted unmodified so they can be played in a browser. Not 
 - `.claude/skills/`: how-tos for Claude: `labs-modes` (Brainstorm → Prototype → Final for new ideas), `labs-setup` (GitHub, Pages, Claude access), `labs-apps` (add apps, versions, ship), `labs-claude-loader` (bundle + loader artifact), `ponytail` (coding style), `grill-me` (clarify a vague goal), `task-board` (task files for parallel sessions and models).
 - [AGENTS.md](AGENTS.md): how sessions work (build fast, escalate by risk, subagents). `npm run tasks`: status of every task board.
 
+## Research
+- [research/](research/README.md): notebook of inspiring sites, projects and techniques (movement games, hand-tracking music, visualisers). Notes only, no copied third-party code.
+
 ## Reusable code
 - [shared/README.md](shared/README.md): index of shared modules (MIDI input, music helpers, sound effects, PWA). **Check it before writing new code.**
 
