@@ -5,7 +5,17 @@
 ## By theme
 
 ### ai-builders
+- [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
+- [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
+- [Google Playground](projects/google-playground.md) · project · proprietary · ideas-only · Google's prompt-to-game platform, launched 7 Oct 2026 for US users aged 18 and over; creation tiered by Google AI plan
+- [Ludo.ai](projects/ludo-ai.md) · project · proprietary · ideas-only · AI generator of engine-ready game assets (sprites, animations, 3D models, music, sound effects) and game concepts, not a game host
+- [Makko AI](projects/makko-ai.md) · project · proprietary · ideas-only · Browser 2D game studio: an Art Studio makes characters, props and sprite animations, a Code Studio builds the game from them; free plan
+- [OhMyGame](projects/ohmygame.md) · project · Apache-2.0 · ok · Open-source desktop studio for making games with AI; bring your own key or coding agent, plugins for engines, playtesting and media generation
+- [Phaser](projects/phaser.md) · project · MIT · ok · 2D HTML5 game framework (Canvas and WebGL), code-first JavaScript or TypeScript; Phaser 4 ships agent skills for AI coding tools
+- [PlayDrop](projects/playdrop.md) · project · proprietary · ideas-only · Free AI game maker for 2D and 3D browser games, solo or multiplayer, published to a PlayDrop link with earnings from players
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
+- [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
+- [AI game builders](techniques/ai-game-builders.md) · technique · n/a · n/a · Map of AI game and app builders around Rosebud: hosted prompt-to-playable, asset generators, engine-based and open-source studios, general app builders
 
 ### camera-games
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
@@ -30,11 +40,36 @@
 
 ### classroom
 - [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down
+- [GDevelop](projects/gdevelop.md) · project · MIT · ok · Open-source no-code 2D, 3D and multiplayer game engine with an event system; exports HTML5, mobile and desktop
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
 - [Camera and movement games](techniques/camera-movement-games.md) · technique · n/a · n/a · What camera and movement games for young kids have in common, and the design points worth copying
 
+### frameworks
+- [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
+- [GDevelop](projects/gdevelop.md) · project · MIT · ok · Open-source no-code 2D, 3D and multiplayer game engine with an event system; exports HTML5, mobile and desktop
+- [Godot](projects/godot.md) · project · MIT · ok · Free multi-platform 2D and 3D game engine with its own editor, GDScript or C#, native and web export; text project files suit AI agents
+- [Phaser](projects/phaser.md) · project · MIT · ok · 2D HTML5 game framework (Canvas and WebGL), code-first JavaScript or TypeScript; Phaser 4 ships agent skills for AI coding tools
+- [PlayCanvas](projects/playcanvas.md) · project · MIT · ok · Open-source web graphics engine on WebGPU and WebGL2, with a collaborative cloud editor; strong for instant-loading 3D
+- [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
+- [Web game frameworks](techniques/web-game-frameworks.md) · technique · n/a · n/a · Capability comparison of web game and 3D frameworks (Phaser, Three.js, Babylon.js, PlayCanvas, Godot, GDevelop) and what suits AI-built games
+
 ### games
+- [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
+- [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
+- [GDevelop](projects/gdevelop.md) · project · MIT · ok · Open-source no-code 2D, 3D and multiplayer game engine with an event system; exports HTML5, mobile and desktop
+- [Godot](projects/godot.md) · project · MIT · ok · Free multi-platform 2D and 3D game engine with its own editor, GDScript or C#, native and web export; text project files suit AI agents
+- [Google Playground](projects/google-playground.md) · project · proprietary · ideas-only · Google's prompt-to-game platform, launched 7 Oct 2026 for US users aged 18 and over; creation tiered by Google AI plan
+- [Ludo.ai](projects/ludo-ai.md) · project · proprietary · ideas-only · AI generator of engine-ready game assets (sprites, animations, 3D models, music, sound effects) and game concepts, not a game host
+- [Makko AI](projects/makko-ai.md) · project · proprietary · ideas-only · Browser 2D game studio: an Art Studio makes characters, props and sprite animations, a Code Studio builds the game from them; free plan
+- [OhMyGame](projects/ohmygame.md) · project · Apache-2.0 · ok · Open-source desktop studio for making games with AI; bring your own key or coding agent, plugins for engines, playtesting and media generation
+- [Phaser](projects/phaser.md) · project · MIT · ok · 2D HTML5 game framework (Canvas and WebGL), code-first JavaScript or TypeScript; Phaser 4 ships agent skills for AI coding tools
+- [PlayCanvas](projects/playcanvas.md) · project · MIT · ok · Open-source web graphics engine on WebGPU and WebGL2, with a collaborative cloud editor; strong for instant-loading 3D
+- [PlayDrop](projects/playdrop.md) · project · proprietary · ideas-only · Free AI game maker for 2D and 3D browser games, solo or multiplayer, published to a PlayDrop link with earnings from players
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
+- [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
+- [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
+- [AI game builders](techniques/ai-game-builders.md) · technique · n/a · n/a · Map of AI game and app builders around Rosebud: hosted prompt-to-playable, asset generators, engine-based and open-source studios, general app builders
+- [Web game frameworks](techniques/web-game-frameworks.md) · technique · n/a · n/a · Capability comparison of web game and 3D frameworks (Phaser, Three.js, Babylon.js, PlayCanvas, Godot, GDevelop) and what suits AI-built games
 
 ### generative-art
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
@@ -42,6 +77,7 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
+- [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ### hand-tracking
@@ -55,6 +91,7 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Pug's Hunt](projects/pugs-hunt.md) · project · none · unknown · Retro shooter controlled by a webcam hand: point to aim, pinch to shoot; mouse fallback
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md) · project · none · unknown · Python MediaPipe demos: air painting, motion-to-animation for Unity, and a nose-controlled fruit slicer
+- [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
 - [MediaPipe camera input](techniques/mediapipe-camera-input.md) · technique · n/a · n/a · MediaPipe Hands or Pose in the browser is the common base for webcam games; one shared camera module could serve many games
 
 ### music
@@ -77,8 +114,19 @@
 
 ## By tech
 
+### ai-asset-generation
+- [Ludo.ai](projects/ludo-ai.md)
+
 ### ai-code-generation
+- [General AI app builders](projects/ai-app-builders.md)
+- [Fifth Door](projects/fifth-door.md)
+- [Makko AI](projects/makko-ai.md)
+- [PlayDrop](projects/playdrop.md)
 - [Rosebud AI](projects/rosebud-ai.md)
+- [Summer Engine](projects/summer-engine.md)
+
+### babylonjs
+- [Babylon.js](projects/babylonjs.md)
 
 ### browser
 - [WebCam Mania](projects/webcam-mania.md)
@@ -89,8 +137,23 @@
 ### client-side-tracking
 - [Hoppo](projects/hoppo.md)
 
+### gdevelop
+- [GDevelop](projects/gdevelop.md)
+
+### gdscript
+- [Godot](projects/godot.md)
+
+### godot
+- [Godot](projects/godot.md)
+- [Summer Engine](projects/summer-engine.md)
+
 ### javascript
+- [GDevelop](projects/gdevelop.md)
+- [Phaser](projects/phaser.md)
 - [Rosebud AI](projects/rosebud-ai.md)
+
+### mcp
+- [OhMyGame](projects/ohmygame.md)
 
 ### mediapipe-hands
 - [collidingScopes (Alan)](authors/collidingscopes.md)
@@ -115,7 +178,12 @@
 - [Stereo Drift](projects/stereodrift.md)
 
 ### phaser
+- [OhMyGame](projects/ohmygame.md)
+- [Phaser](projects/phaser.md)
 - [Rosebud AI](projects/rosebud-ai.md)
+
+### playcanvas
+- [PlayCanvas](projects/playcanvas.md)
 
 ### pose-tracking
 - [Air Jake](projects/air-jake.md)
@@ -127,6 +195,12 @@
 - [hotspot-game](projects/hotspot-game.md)
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md)
 
+### react
+- [General AI app builders](projects/ai-app-builders.md)
+
+### supabase
+- [General AI app builders](projects/ai-app-builders.md)
+
 ### threejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
 - [cam-run-for-kids](projects/cam-run-for-kids.md)
@@ -134,16 +208,26 @@
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md)
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
+- [OhMyGame](projects/ohmygame.md)
 - [Rosebud AI](projects/rosebud-ai.md)
+- [Three.js](projects/threejs.md)
 
 ### tonejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 
+### typescript
+- [General AI app builders](projects/ai-app-builders.md)
+- [Babylon.js](projects/babylonjs.md)
+- [OhMyGame](projects/ohmygame.md)
+- [Phaser](projects/phaser.md)
+- [PlayCanvas](projects/playcanvas.md)
+
 ### unity
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md)
 
 ### unknown
+- [Google Playground](projects/google-playground.md)
 - [jfire.io animations](projects/jfire-animations.md)
 
 ### vanilla-js
@@ -155,6 +239,17 @@
 ### webassembly
 - [Pug's Hunt](projects/pugs-hunt.md)
 
+### webgl
+- [Babylon.js](projects/babylonjs.md)
+- [Phaser](projects/phaser.md)
+- [PlayCanvas](projects/playcanvas.md)
+- [Three.js](projects/threejs.md)
+
+### webgpu
+- [Babylon.js](projects/babylonjs.md)
+- [PlayCanvas](projects/playcanvas.md)
+- [Three.js](projects/threejs.md)
+
 ## Reuse (projects and authors)
 
 ### **ask-first**: ask the owner before any reuse
@@ -162,9 +257,16 @@
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 
 ### **ideas-only**: learn from it, copy nothing
+- [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
+- [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
+- [Google Playground](projects/google-playground.md) · project · proprietary · ideas-only · Google's prompt-to-game platform, launched 7 Oct 2026 for US users aged 18 and over; creation tiered by Google AI plan
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
+- [Ludo.ai](projects/ludo-ai.md) · project · proprietary · ideas-only · AI generator of engine-ready game assets (sprites, animations, 3D models, music, sound effects) and game concepts, not a game host
+- [Makko AI](projects/makko-ai.md) · project · proprietary · ideas-only · Browser 2D game studio: an Art Studio makes characters, props and sprite animations, a Code Studio builds the game from them; free plan
+- [PlayDrop](projects/playdrop.md) · project · proprietary · ideas-only · Free AI game maker for 2D and 3D browser games, solo or multiplayer, published to a PlayDrop link with earnings from players
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
+- [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
 
 ### **unknown**: licence not found, treat as all rights reserved
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
@@ -180,8 +282,15 @@
 - [WebCam Mania](projects/webcam-mania.md) · project · none · unknown · Long-running series of EyeToy-style webcam minigames (wipe frost, pop bubbles); v4 runs in modern browsers
 
 ### ok: permissive licence: keep its text and add a CREDITS.md row
+- [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md) · project · MIT · ok · Slice 3D fruit by waving a hand; 5 lives, rising difficulty; the minimal camera game, vanilla JS
+- [GDevelop](projects/gdevelop.md) · project · MIT · ok · Open-source no-code 2D, 3D and multiplayer game engine with an event system; exports HTML5, mobile and desktop
+- [Godot](projects/godot.md) · project · MIT · ok · Free multi-platform 2D and 3D game engine with its own editor, GDScript or C#, native and web export; text project files suit AI agents
+- [OhMyGame](projects/ohmygame.md) · project · Apache-2.0 · ok · Open-source desktop studio for making games with AI; bring your own key or coding agent, plugins for engines, playtesting and media generation
+- [Phaser](projects/phaser.md) · project · MIT · ok · 2D HTML5 game framework (Canvas and WebGL), code-first JavaScript or TypeScript; Phaser 4 ships agent skills for AI coding tools
+- [PlayCanvas](projects/playcanvas.md) · project · MIT · ok · Open-source web graphics engine on WebGPU and WebGL2, with a collaborative cloud editor; strong for instant-loading 3D
+- [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
 
 ## Ideas backlog
 
@@ -192,13 +301,13 @@
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 
 ## Recent
-- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try · 2026-11-23
-- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser · 2026-11-23
-- [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export · 2026-11-23
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser · 2026-11-22
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes · 2026-11-22
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games · 2026-11-22
 - [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down · 2026-11-22
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games · 2026-11-22
+- [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools · 2026-11-22
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser · 2026-11-22
+- [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector · 2026-11-22
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback · 2026-11-22
+- [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals · 2026-11-22

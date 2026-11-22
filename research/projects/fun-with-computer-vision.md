@@ -10,7 +10,7 @@ free: freemium
 tech: [mediapipe-hands, threejs, python]
 themes: [camera-games, hand-tracking, music, generative-art]
 related: [authors/collidingscopes, projects/gettothechopin-portfolio, techniques/mediapipe-camera-input]
-captured: 2026-11-23
+captured: 2026-11-22
 ---
 # Fun With Computer Vision
 

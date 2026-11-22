@@ -11,7 +11,7 @@ free: yes
 tech: [mediapipe-hands, threejs, vanilla-js]
 themes: [camera-games, hand-tracking, generative-art, visualiser, music]
 related: [authors/collidingscopes, projects/stereodrift, projects/fun-with-computer-vision, techniques/mediapipe-camera-input]
-captured: 2026-11-23
+captured: 2026-11-22
 ---
 # gettothechopin portfolio
 

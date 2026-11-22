@@ -10,7 +10,7 @@ free: freemium
 tech: [phaser, threejs, javascript, ai-code-generation]
 themes: [ai-builders, games]
 related: [projects/collidingscopes-arpeggiator, authors/collidingscopes]
-captured: 2026-11-23
+captured: 2026-11-22
 ---
 # Rosebud AI
 
