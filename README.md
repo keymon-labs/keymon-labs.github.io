@@ -25,6 +25,7 @@ Games made by others, hosted unmodified so they can be played in a browser. Not 
 | Game | Author | Licence | Folder |
 |---|---|---|---|
 | PianoFun (piano learning game, MIDI or keyboard) | Victor Antofica, [original](https://github.com/victorantos/PianoFun) | GPL-3.0 | [third-party/pianofun/](third-party/pianofun/SOURCE.md) |
+| Falling Notes (MIDI files as falling notes), our fork adds live MIDI input, wait mode and BLE-MIDI | Belf186, [original](https://github.com/Belf186/falling-notes), forked from there | MIT | [keymon-labs/falling-notes](https://github.com/keymon-labs/falling-notes), [play](https://keymon-labs.github.io/falling-notes/) |
 
 ## Inside Claude
 [claude/](claude/README.md): a Claude artifact that runs selected apps on the viewer's own Claude account; the app code ships inside the artifact. Security notes: [claude/DISCLAIMER.md](claude/DISCLAIMER.md).

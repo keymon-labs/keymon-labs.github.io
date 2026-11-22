@@ -22,3 +22,4 @@ third-party/<game>/game/          the upstream files, verbatim (own LICENSE kept
 | Game | Author | Licence | Original |
 |---|---|---|---|
 | [PianoFun](pianofun/SOURCE.md) | Victor Antofica | GPL-3.0 | https://github.com/victorantos/PianoFun |
+| Falling Notes (modified fork, hosted from its own repository) | Belf186 | MIT | https://github.com/Belf186/falling-notes |
