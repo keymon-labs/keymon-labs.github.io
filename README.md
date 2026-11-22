@@ -12,6 +12,7 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 | Word Quest | Story game for writing practice: write a sentence on paper, photo → Claude reads and corrects it → the episode plays out (English and Spanish). Episodes are JSON data ([guide](word-quest/EPISODES.md)) | [word-quest/](word-quest/README.md) |
 | Piano Jump | Platform game played on a real piano over MIDI/Bluetooth | [piano-jump/](piano-jump/README.md) |
 | Rain Garden | Echo game on a real piano for ages 4–7: right hand in five-finger C position, detached notes with rest beats, black-key islands, finding C, finger names, short tunes; timing against the child's own steadiness, touch evenness against the keyboard's own baseline, cues that fade (prototype) | [rain-garden/](rain-garden/README.md) |
+| Piano Drift | Play a real piano (MIDI, Bluetooth or computer keys) and about 40 generative visual styles react to the notes and how hard they are pressed. Visuals: a trimmed copy of Stereo Drift (CC BY-NC 3.0) (prototype) | [piano-drift/](piano-drift/README.md) |
 | Finger Moles | Whack-a-mole on a real piano: each finger has a coloured mole, keeps the hand in C position; hide & seek, songs, speedy moles | [finger-moles/](finger-moles/README.md) |
 | Brick Beats | Photo of a brick mat → read on the device into lanes and bricks → played as music, with fruit rhythms. Works offline | [brick-beats/](brick-beats/README.md) |
 | Beat Tiles | Learn rhythm by playing: every card is one beat and its picture says how many sounds fit inside it (plum 1, apple 2, coconut 3, watermelon 4; themes: fruits, animals, vehicles). Plays as a groove, tap to change cards, optional own voice. Works offline | [beat-tiles/](beat-tiles/README.md) |
@@ -50,6 +51,8 @@ Open-source npm packages bundled by Vite. Add a row when you add one.
 | [matter-js](https://brm.io/matter-js/) | MIT | maths-arcade (Pop, Match) | 2D physics for the funnel of numbered balls |
 | [@fontsource-variable/fredoka](https://fontsource.org/fonts/fredoka) | OFL-1.1 | spanish-arcade | Rounded display font for headings and buttons (latin subset) |
 | [@fontsource-variable/nunito](https://fontsource.org/fonts/nunito) | OFL-1.1 | spanish-arcade | Readable body font (latin subset) |
+| [d3](https://d3js.org) | ISC | piano-drift | Global `d3` for the vendored Stereo Drift visuals |
+| [@fontsource/league-spartan](https://fontsource.org/fonts/league-spartan) | OFL-1.1 | piano-drift | Menu font used by Stereo Drift (weight 500) |
 | [@phosphor-icons/core](https://github.com/phosphor-icons/core) | MIT | spanish-arcade | 16 duotone UI icons, copied into `ui/art/icons.js` |
 
 ## Licence

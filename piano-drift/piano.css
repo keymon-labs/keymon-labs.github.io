@@ -1,0 +1,8 @@
+/* Piano Drift additions on top of the vendored stereodrift/style.css. */
+#pianoBar { color: #fff; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 4px 8px; font-family: 'League Spartan', sans-serif; font-size: 14px; }
+#pianoBar button { cursor: pointer; }
+#pianoBar .status { display: inline-flex; align-items: center; gap: 6px; max-width: 320px; }
+#pianoBar .dot { width: 10px; height: 10px; border-radius: 50%; background: #999; flex: none; }
+#pianoBar .dot.on { background: #3c3; }
+#foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 2px 8px; font-size: 11px; font-family: sans-serif; color: rgba(255,255,255,.75); text-shadow: 0 0 3px #000; pointer-events: none; }
+#foot a { color: inherit; pointer-events: auto; }

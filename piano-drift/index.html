@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piano Drift</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./stereodrift/style.css">
+<link rel="stylesheet" href="./piano.css">
+</head>
+<body>
+<audio id="audioElement" src=""></audio>
+<div>
+
+            <div id="navMenuDiv">
+
+                <table id="menuTable" class="flexItem">
+                
+                    <tr>
+                        <td>
+                            <div id="audioMenuDiv" class="radio-toolbar">
+                                <input type="radio" id="demoTrackRadio" name="audioType" value="demoTrack" hidden>
+                                
+                                <input type="radio" id="uploadTrackRadio" name="audioType" value="uploadTrack" checked>
+                                <label for="uploadTrackRadio">Upload Track</label>
+                            </div>
+                        </td>
+    
+                        <td>
+                            <button class="audioButton" id="playAudioFileButton">▶</button>
+                            <button class="audioButton" id="pauseAudioFileButton">⏸</button>
+                            <button class="audioButton" id="rewindAudioFileButton">⏮</button>
+                        </td>
+    
+                        <td>
+                            <label for="visualizationMenu">Visualization:</label>
+                            <select name="visualizationMenu" id="visualizationMenu" class="userInput selectMenu" onkeydown="IgnoreAlpha(event);">
+                                <option value="hoodoos">Hoodoos</option>
+                                <option value="blinds">Blinds</option>
+                                <option value="dunes">Dunes</option>
+                                <option value="scroller">Scroller</option>
+                                <option value="hourglass">Hourglass</option>
+                                <option value="glowworm">Glowworm</option>
+                                <option value="queue">Queue</option>
+                                <option value="dancefloor">Dancefloor</option>
+                                <option value="joyPlot">Joy Plot</option>
+                                <option value="bubbleBath">Bubble Bath</option>
+                                <option value="tetris">Tetris</option>
+                                <option value="grid">Grid</option>
+                                <option value="grid2">Grid 2</option>
+                                <option value="grid3">Grid 3</option>
+                                <option value="rainbowRoad">Rainbow Road</option>
+                                <option value="changingLanes">Changing Lanes</option>
+                                <option value="loop">Loop</option>
+                                <option value="flubber">Flubber</option>
+                                <option value="rings">Rings</option>
+                                <option value="spiral">Spiral</option>
+                                <option value="circles">Circles</option>
+                                <option value="circles2">Circles 2</option>
+                                <option value="waves">Waves</option>
+                                <option value="hills">Hills</option>
+                                <option value="hexagons">Hexagons</option>
+                                <option value="warp">Warp</option>
+                                <option value="mondrian">Mondrian</option>
+                                <option value="voronoi">Voronoi</option>
+                                <option value="splatter">Splatter</option>
+                                <option value="fadeaway">Fadeaway</option>
+                                <option value="boomBox">Boom Box</option>
+                                <option value="flow">Flow</option>
+                                <option value="fan">Fan</option>
+                                <option value="connect36">Connect 36</option>
+                                <option value="eclipse">Eclipse</option>
+                                <option value="lilyPads">Lily Pads</option>
+                                <option value="seigaiha">Seigaiha</option>
+                                <option value="ripples">Ripples</option>
+                                <option value="triangles">Triangles</option>
+                                <option value="oeil">Oeil</option>
+                                <option value="bayWindow">Bay Window</option>
+                                <option value="blokus">Blokus</option>
+                                <option value="diving">Diving</option>
+                                <!--<option value="dancingCircles" selected>Dancing Circles</option>
+                                <option value="wire">Wire</option>
+                                <option value="lavaLamp">Lava Lamp</option>
+                                <option value="test">test</option>
+                                -->
+                            </select>
+                        </td>
+    
+                    </tr>
+    
+                    <tr>
+    
+                        <td>
+                            
+                            <div id="demoTrackDiv" class="hide">
+                                <span>Track: </span>
+                                <select name="demoTrackMenu" class="userInput selectMenu" id="demoTrackInput"><option value="userUpload" selected>-</option></select>
+                            </div>
+    
+                            <div id="uploadTrackDiv">
+                                <input  id="audioFileChooser" type="file" onchange="readFile(this.files);">
+                            </div>
+    
+                        </td>
+    
+                        <td>
+                            <button class="audioButton" id="microphoneButton">Mic 🎤</button>
+                        </td>
+    
+                        <td>
+                            <label for="colourMenu">Color Palette:</label>
+                            <select name="colourMenu" id="colourMenu" class="userInput selectMenu" onkeydown="IgnoreAlpha(event);">
+                                <option value="Analog">Analog</option>
+                                <option value="Vapor">Vapor</option>
+                                <option value="Noir">Noir</option>
+                                <option value="Budapest">Budapest</option>
+                                <option value="Sea">Sea</option>
+                                <option value="Cherry">Cherry</option>
+                                <option value="Violet">Violet</option>
+                                <option value="Lakers">Lakers</option>
+                                <option value="Tangerine">Tangerine</option>
+                                <option value="Zissou">Zissou</option>
+                                <option value="Berry">Berry</option>
+                                <option value="Retro">Retro</option>
+                                <option value="Mint">Mint</option>
+                                <option value="Primary">Primary</option>
+                                <option value="Euphoria">Euphoria</option>
+                                <option value="Emerald">Emerald</option>
+                                <option value="Slate">Slate</option>
+                                <option value="Crimson">Crimson</option>
+                            </select>
+                        </td>
+    
+                    </tr>
+    
+                </table>
+
+                
+                <div id="pianoBar">
+                    <button id="btnBle">Bluetooth piano</button>
+                    <button id="btnMidi">MIDI / USB piano</button>
+                    <label>Sound <select id="sound" class="userInput selectMenu"><option value="auto">Auto</option><option value="on">On</option><option value="off">Off</option></select></label>
+                    <span class="status"><span id="dot" class="dot"></span><span id="status">No piano yet: computer keys A W S E D F T G Y H U J K play too</span></span>
+                </div>
+                <button id="toggleMenuButton" class="flexItem">Hide Menu 🙈</button>
+
+            </div>
+
+
+            <div id="svgContainerDiv">
+
+                <svg id="mainSvg">
+
+                </svg>
+
+            </div>
+
+        </div>
+
+        
+<footer id="foot">Piano Drift v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a> · visuals: <a href="https://github.com/stereoDrift/stereoDrift.github.io" target="_blank" rel="noopener">Stereo Drift</a> (CC BY-NC 3.0)</footer>
+<script type="module" src="./boot.js"></script>
+</body>
+</html>

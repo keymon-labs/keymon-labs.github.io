@@ -24,4 +24,6 @@ Tool for parties, live sets and music videos. Files: index.html, style.css, musi
 - Named palettes that every style can use.
 
 ## Reuse
-CC BY-NC 3.0: attribution required, no commercial use, so ask first before copying code. The bundled demo tracks are recorded music: never copy or ship them. Writing our own visualiser from platform features (Web Audio AnalyserNode) is free.
+CC BY-NC 3.0: attribution required, no commercial use, so ask first before copying code. The bundled demo tracks are recorded music: never copy or ship them. Decision 2026-11-22: the owner agreed to a trimmed vendored copy in `piano-drift/stereodrift/` (see CREDITS.md); analytics, CDN links and demo tracks removed.
+
+Writing our own visualiser from platform features (Web Audio AnalyserNode) is free.

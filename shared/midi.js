@@ -1,11 +1,11 @@
 // Note input from a real instrument: Web MIDI (USB or OS-paired), Bluetooth LE MIDI, or the computer keyboard.
 // Only note-on events are reported. Chrome/Edge only: Safari/iOS has neither Web MIDI nor Web Bluetooth.
 //
-// Callbacks:  onNote(midiNumber)
+// Callbacks:  onNote(midiNumber, velocity)   velocity 1-127 from real instruments (absent for computer keys); callers may ignore it
 //             onStatus({ ok: true, name })            connected (name of device(s))
 //             onStatus({ ok: false, message })        unsupported / refused / no device / disconnected
 
-const noteOn = (onNote) => (s, a, b) => { if ((s & 0xF0) === 0x90 && b > 0) onNote(a); };
+const noteOn = (onNote) => (s, a, b) => { if ((s & 0xF0) === 0x90 && b > 0) onNote(a, b); };
 
 /** Web MIDI: binds every input, re-binds when devices come and go. Call from a user gesture. */
 export async function connectMidi(onNote, onStatus) {

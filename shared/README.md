@@ -9,7 +9,7 @@ import { connectMidi } from "../shared/midi.js";
 
 | Module | What it does | Exports | Used by |
 |---|---|---|---|
-| [`midi.js`](midi.js) | Note input from a real instrument: Web MIDI (USB/OS-paired), Bluetooth LE MIDI, computer keys as fallback. Note-on only. Chrome/Edge only. | `connectMidi(onNote, onStatus)`, `connectBluetoothMidi(onNote, onStatus)`, `keyboardNotes(onNote)` | piano-jump, finger-moles, rain-garden (local copy with velocity and time, prototype) |
+| [`midi.js`](midi.js) | Note input from a real instrument: Web MIDI (USB/OS-paired), Bluetooth LE MIDI, computer keys as fallback. Note-on only (velocity 1–127 as a second `onNote` argument, absent for computer keys). Chrome/Edge only. | `connectMidi(onNote, onStatus)`, `connectBluetoothMidi(onNote, onStatus)`, `keyboardNotes(onNote)` | piano-jump, finger-moles, piano-drift, rain-garden (local copy with velocity and time, prototype) |
 | [`music.js`](music.js) | Note names, note-string ↔ MIDI number, staff position. MIDI 60 = middle C. | `NOTE_NAMES`, `SOLFEGE`, `toMidi("C4")`, `stepOf(midi)`, `isSharp(midi)`, `noteName(midi, "letters"\|"solfege")` | piano-jump, brick-beats, finger-moles, rain-garden |
 | [`audio.js`](audio.js) | Simple synthesized sound effects (Web Audio oscillator with envelope). | `unlockAudio()`, `tone(freq, dur, type, gain, delay, slideTo)` | piano-jump, word-quest, finger-moles, rain-garden, drone-hide |
 | [`claude-link.js`](claude-link.js) | "Open in Claude" buttons that open the keymon-labs loader artifact; link kept out of plain text for crawlers. | `wireOpenInClaude(root?)` for `[data-open-in-claude="<app id>"]` | landing page, homework-reader, word-quest |
@@ -18,7 +18,7 @@ import { connectMidi } from "../shared/midi.js";
 | [`pwa.js`](pwa.js) | Installable-app helpers: service worker, install button, keep screen awake. | `registerServiceWorker(url)`, `setupInstallButton(button)`, `keepAwake()`, `releaseWake()` | piano-jump, maths-arcade, homework-reader, word-quest, spanish-arcade, brick-beats, beat-tiles, finger-moles, rain-garden, drone-hide (`keepAwake` only) |
 
 ## Callback contracts
-- `onNote(midi)`: a MIDI note number on note-on.
+- `onNote(midi, velocity?)`: a MIDI note number on note-on; `velocity` (1–127) comes from real instruments only. Ignore it if you don't need it.
 - `onStatus(s)`: `{ ok: true, name }` when connected; `{ ok: false, message, disconnected? }` otherwise. `message` is user-facing text.
 
 ## Rules for this folder
