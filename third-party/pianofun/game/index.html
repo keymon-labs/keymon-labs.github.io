@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PianoFun!</title>
+  <meta name="description" content="Learn piano the fun way — a browser-based piano learning game with MIDI support">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PianoFun">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/egg-style.css">
+</head>
+<body>
+
+  <!-- ==================== HOME SCREEN ==================== -->
+  <div id="home-screen" class="screen active">
+    <div class="home-header">
+      <h1 class="home-title">PianoFun!</h1>
+      <p class="home-subtitle">Learn piano the fun way</p>
+      <div class="midi-status">
+        <div id="midi-dot" class="midi-dot disconnected"></div>
+        <span id="midi-label">Looking for piano...</span>
+      </div>
+    </div>
+    <div id="egg-home-entry"></div>
+    <div class="section-divider"><h2>Piano Songs</h2></div>
+    <div id="song-list"></div>
+  </div>
+
+  <!-- ==================== EGG MODE SELECT ==================== -->
+  <div id="egg-mode-screen" class="screen">
+    <button class="egg-mode-back" id="egg-mode-back-btn">&larr; Back</button>
+    <div class="egg-mode-header">
+      <h1 class="egg-mode-title">Egg Catcher</h1>
+      <p class="egg-mode-subtitle">Catch the eggs before they crack!</p>
+    </div>
+    <div class="egg-mode-grid">
+      <div class="egg-mode-card" data-mode="endless">
+        <div class="egg-mode-icon">&#x267E;</div>
+        <div class="egg-mode-name">Endless</div>
+        <div class="egg-mode-desc">How long can you last?</div>
+      </div>
+      <div class="egg-mode-card" data-mode="song">
+        <div class="egg-mode-icon">&#x1F3B5;</div>
+        <div class="egg-mode-name">Song Mode</div>
+        <div class="egg-mode-desc">Catch the melody!</div>
+      </div>
+      <div class="egg-mode-card" data-mode="versus">
+        <div class="egg-mode-icon">&#x2694;</div>
+        <div class="egg-mode-name">Versus</div>
+        <div class="egg-mode-desc">Head to head!</div>
+      </div>
+      <div class="egg-mode-card" data-mode="coop">
+        <div class="egg-mode-icon">&#x1F91D;</div>
+        <div class="egg-mode-name">Co-op</div>
+        <div class="egg-mode-desc">Work together!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== EGG SONG SELECT ==================== -->
+  <div id="egg-song-screen" class="screen">
+    <button class="egg-mode-back" id="egg-song-back-btn">&larr; Back</button>
+    <div class="egg-song-header">
+      <h1 class="egg-song-title">Choose a Song</h1>
+    </div>
+    <div id="egg-song-list"></div>
+  </div>
+
+  <!-- ==================== EGG PLAY SCREEN ==================== -->
+  <div id="egg-play-screen" class="screen">
+    <canvas id="egg-game-canvas"></canvas>
+    <div class="egg-play-controls">
+      <button id="egg-btn-back" class="play-btn">&larr; Back</button>
+      <button id="egg-btn-pause" class="play-btn">&#x23F8; Pause</button>
+    </div>
+  </div>
+
+  <!-- ==================== EGG RESULTS SCREEN ==================== -->
+  <div id="egg-results-screen" class="screen">
+    <div class="egg-results-card">
+      <div class="egg-result-title" id="egg-result-title"></div>
+      <div class="egg-result-eggs-row" id="egg-result-eggs"></div>
+      <div class="egg-result-message" id="egg-result-message"></div>
+      <div id="egg-result-body"></div>
+      <div class="egg-result-buttons">
+        <button id="egg-btn-retry" class="result-btn btn-primary">Play Again</button>
+        <button id="egg-btn-home" class="result-btn btn-secondary">Home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PLAY SCREEN ==================== -->
+  <div id="play-screen" class="screen">
+    <canvas id="game-canvas"></canvas>
+    <div class="play-controls">
+      <button id="btn-back" class="play-btn">← Back</button>
+      <button id="btn-pause" class="play-btn">⏸ Pause</button>
+      <button id="btn-beat" class="play-btn">🥁 Beat: Off</button>
+    </div>
+  </div>
+
+  <!-- ==================== RESULTS SCREEN ==================== -->
+  <div id="results-screen" class="screen">
+    <div class="results-card">
+      <div id="result-song-title"></div>
+      <div id="result-stars" class="result-stars-row"></div>
+      <div id="result-message"></div>
+      <div class="result-stats">
+        <div class="stat-box">
+          <div class="stat-label">Score</div>
+          <div id="result-score" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Accuracy</div>
+          <div id="result-accuracy" class="stat-value">0%</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Best Streak</div>
+          <div id="result-streak" class="stat-value">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Notes Hit</div>
+          <div id="result-hit" class="stat-value">0/0</div>
+        </div>
+      </div>
+      <div class="result-buttons">
+        <button id="btn-retry" class="result-btn btn-primary">Play Again</button>
+        <button id="btn-home" class="result-btn btn-secondary">Home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (order matters: helpers first, then modules, then app) -->
+  <script src="js/noteHelpers.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/midi.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script src="js/songs.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/eggBirds.js"></script>
+  <script src="js/eggSprites.js"></script>
+  <script src="js/eggAudio.js"></script>
+  <script src="js/eggRenderer.js"></script>
+  <script src="js/eggGame.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+  </script>
+
+</body>
+</html>

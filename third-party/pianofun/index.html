@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PianoFun (hosted copy) · keymon-labs</title>
+<meta name="theme-color" content="#1a1a2e">
+<style>
+:root{--bg:#141413;--text:#ecebe6;--muted:#a8a49a;--line:#2e2c29;--accent:#e07a50}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:max(6px,env(safe-area-inset-top)) 12px 6px;border-bottom:1px solid var(--line)}
+header a{color:var(--accent)}
+details summary{cursor:pointer;color:var(--muted)}
+details p{margin:6px 0 0;color:var(--muted)}
+iframe{flex:1;width:100%;border:0;background:#1a1a2e}
+footer{padding:4px 12px max(4px,env(safe-area-inset-bottom));border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<header>
+  <strong>PianoFun</strong> by Victor Antofica: a copy hosted here only so it can be played in a browser.
+  <a href="https://victorantos.github.io/PianoFun/">Original</a> ·
+  <a href="https://github.com/victorantos/PianoFun">Source</a> ·
+  <a href="../">Other third-party games</a>
+  <details>
+    <summary>About this copy</summary>
+    <p>This is not our work. We did not make it, change it or test it, and we have no relation to its author. It is a public GPL-3.0 project, copied unmodified (<a href="SOURCE.md">details</a>) just to keep it available and playable in a web browser. It is provided as is, with no warranty and no liability from keymon-labs. For the real thing, support or issues, go to the original links above. Needs Chrome for a MIDI keyboard; without one, use the computer keyboard.</p>
+  </details>
+</header>
+<iframe src="./game/" title="PianoFun (hosted copy)" allow="midi *; autoplay *; fullscreen *"></iframe>
+<footer>Build __BUILD__ · This wrapper page © 2026 keymon-labs · the game inside is not ours, GPL-3.0 · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/CREDITS.md">Credits</a></footer>
+</body>
+</html>

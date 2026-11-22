@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Third-party games · keymon-labs</title>
+<meta name="description" content="Games made by other people, hosted here unmodified so they can be played in a browser.">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--text:#1c1b19;--muted:#6b675f;--line:#e4e0d6;--accent:#c4562b}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--card:#1f1e1c;--text:#ecebe6;--muted:#9a968c;--line:#2e2c29;--accent:#e07a50}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:max(24px,env(safe-area-inset-top)) 16px 48px}
+main{max-width:640px;margin:0 auto}
+h1{font-size:26px;margin:8px 0 4px;letter-spacing:-.02em}
+a{color:var(--accent)}
+.notice{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--card);border-radius:10px;padding:12px 16px;margin:12px 0 24px;color:var(--muted);font-size:15px}
+.notice p{margin:0 0 8px}.notice p:last-child{margin:0}
+ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+li.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+li.card h2{font-size:18px;margin:0 0 4px}
+li.card p{margin:0 0 8px;color:var(--muted);font-size:15px}
+.tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-right:4px}
+.links{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:14px}
+.links a.play{font-weight:600}
+footer{margin-top:40px;color:var(--muted);font-size:14px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+<p><a href="../">← keymon-labs</a></p>
+<h1>Third-party games</h1>
+<div class="notice">
+  <p><strong>Not our work.</strong> These games were made by other people. We only keep an unmodified copy here so they stay available and can be played in a web browser.</p>
+  <p>Each one is public elsewhere; the original link is on its card, and that is where to go for the real thing, updates, support and issues. keymon-labs has no relation to the authors and no liability for these games: they are provided as is, under their own licences.</p>
+</div>
+<ul id="games">
+<!-- One <li> per game: original link, source, licence. How to add: third-party/README.md -->
+<li class="card" id="pianofun">
+  <h2>PianoFun</h2>
+  <p>Piano learning game with falling notes. Plays with a MIDI keyboard or the computer keyboard. By Victor Antofica.</p>
+  <span class="tag">Chrome · MIDI piano or keyboard</span> <span class="tag">GPL-3.0</span>
+  <div class="links">
+    <a class="play" href="./pianofun/">Play the hosted copy</a>
+    <a href="https://victorantos.github.io/PianoFun/">Original game</a>
+    <a href="https://github.com/victorantos/PianoFun">Source and licence</a>
+    <a href="./pianofun/SOURCE.md">About this copy</a>
+  </div>
+</li>
+</ul>
+<footer>Build __BUILD__ · This listing © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">Notice</a> · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/CREDITS.md">Credits</a></footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#2d1b69"/>
+  <!-- Piano keys -->
+  <g transform="translate(96, 160)">
+    <!-- White keys -->
+    <rect x="0" y="0" width="45" height="192" rx="6" fill="#fff"/>
+    <rect x="53" y="0" width="45" height="192" rx="6" fill="#fff"/>
+    <rect x="106" y="0" width="45" height="192" rx="6" fill="#fff"/>
+    <rect x="159" y="0" width="45" height="192" rx="6" fill="#fff"/>
+    <rect x="212" y="0" width="45" height="192" rx="6" fill="#fff"/>
+    <rect x="265" y="0" width="45" height="192" rx="6" fill="#fff"/>
+    <!-- Black keys -->
+    <rect x="30" y="0" width="30" height="120" rx="4" fill="#1a1a2e"/>
+    <rect x="83" y="0" width="30" height="120" rx="4" fill="#1a1a2e"/>
+    <rect x="189" y="0" width="30" height="120" rx="4" fill="#1a1a2e"/>
+    <rect x="242" y="0" width="30" height="120" rx="4" fill="#1a1a2e"/>
+  </g>
+  <!-- Music notes -->
+  <g fill="#e0b0ff" opacity="0.9">
+    <circle cx="380" cy="120" r="16"/>
+    <rect x="394" y="60" width="4" height="60"/>
+    <circle cx="420" cy="108" r="16"/>
+    <rect x="434" y="48" width="4" height="60"/>
+    <rect x="394" y="48" width="44" height="4"/>
+    <circle cx="120" cy="130" r="12"/>
+    <rect x="130" y="80" width="3" height="50"/>
+  </g>
+</svg>

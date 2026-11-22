@@ -1,0 +1,328 @@
+/* style.css — Kid-friendly piano game styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Fredoka', sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Screens */
+.screen {
+  display: none;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===================== HOME SCREEN ===================== */
+#home-screen {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  align-items: center;
+  overflow-y: auto;
+}
+
+.home-header {
+  text-align: center;
+  padding: 30px 20px 10px;
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #FF4444, #FF8C00, #FFD700, #44BB44, #00CED1, #4488FF, #9944FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-subtitle {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+/* MIDI status */
+.midi-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  margin: 15px 0;
+  font-size: 0.9rem;
+}
+
+.midi-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff4444;
+  transition: background 0.3s;
+}
+
+.midi-dot.connected {
+  background: #44ff88;
+  box-shadow: 0 0 8px #44ff88;
+}
+
+.midi-dot.disconnected {
+  background: #ff4444;
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Song list */
+#song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.song-card {
+  display: flex;
+  background: rgba(255,255,255,0.07);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 2px solid transparent;
+}
+
+.song-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.song-card:active {
+  transform: scale(0.98);
+}
+
+.song-color-bar {
+  width: 8px;
+  flex-shrink: 0;
+}
+
+.song-info {
+  padding: 16px 20px;
+}
+
+.song-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.song-difficulty {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.song-desc {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+/* ===================== PLAY SCREEN ===================== */
+#play-screen {
+  background: #1a1a2e;
+  position: relative;
+}
+
+#game-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.play-controls {
+  position: absolute;
+  top: 55px;
+  left: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.play-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.play-btn:hover {
+  transform: scale(1.05);
+  background: rgba(255,255,255,0.25);
+}
+
+.play-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===================== RESULTS SCREEN ===================== */
+#results-screen {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.results-card {
+  background: rgba(255,255,255,0.07);
+  border-radius: 24px;
+  padding: 30px 40px;
+  max-width: 420px;
+  width: 90%;
+}
+
+#result-song-title {
+  font-size: 1.2rem;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.result-stars-row {
+  font-size: 2.5rem;
+  margin: 10px 0;
+}
+
+.result-star {
+  opacity: 0.2;
+  transition: opacity 0.3s;
+  filter: grayscale(100%);
+}
+
+.result-star.earned {
+  opacity: 1;
+  filter: none;
+}
+
+#result-message {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 15px 0;
+}
+
+.result-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.stat-box {
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.result-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.result-btn:hover {
+  transform: scale(1.05);
+}
+
+.result-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #44ff88, #00CED1);
+  color: #1a1a2e;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* Confetti animation */
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  top: -10px;
+  animation: confetti-fall 3s ease-in forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ===================== Scrollbar ===================== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+}

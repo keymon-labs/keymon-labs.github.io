@@ -19,6 +19,13 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 | Drone Hide | Hide-and-seek for two in front of the laptop camera: a drone's light hunts the room, hide behind the rocks, grab the gems. Camera picture stays on the device (prototype) | [drone-hide/](drone-hide/README.md) |
 | Spanish Arcade | Mini games to practise written Spanish (listening, reading, spelling, puzzles) for kids, one unit so far; inspired by «Mis unidades de español» (A1) | [spanish-arcade/](spanish-arcade/README.md) |
 
+## Third-party games
+Games made by others, hosted unmodified so they can be played in a browser. Not our work, no relation to the authors: see [third-party/README.md](third-party/README.md).
+
+| Game | Author | Licence | Folder |
+|---|---|---|---|
+| PianoFun (piano learning game, MIDI or keyboard) | Victor Antofica, [original](https://github.com/victorantos/PianoFun) | GPL-3.0 | [third-party/pianofun/](third-party/pianofun/SOURCE.md) |
+
 ## Inside Claude
 [claude/](claude/README.md): a Claude artifact that runs selected apps on the viewer's own Claude account; the app code ships inside the artifact. Security notes: [claude/DISCLAIMER.md](claude/DISCLAIMER.md).
 

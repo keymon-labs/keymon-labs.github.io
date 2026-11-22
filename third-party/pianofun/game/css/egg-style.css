@@ -1,0 +1,293 @@
+/* egg-style.css — Egg Catcher game mode styles */
+
+/* ===================== EGG MODE SELECT ===================== */
+#egg-mode-screen {
+  background: linear-gradient(135deg, #2d5a3d 0%, #3a7a52 30%, #5b8fb9 70%, #3a5f8a 100%);
+  align-items: center;
+  overflow-y: auto;
+}
+
+.egg-mode-header {
+  text-align: center;
+  padding: 30px 20px 10px;
+}
+
+.egg-mode-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #FFE4B5;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.egg-mode-subtitle {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+  margin-top: 5px;
+}
+
+.egg-mode-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  transition: transform 0.1s;
+  z-index: 10;
+}
+
+.egg-mode-back:hover { transform: scale(1.05); background: rgba(255,255,255,0.25); }
+
+.egg-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.egg-mode-card {
+  background: rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+
+.egg-mode-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+  background: rgba(255,255,255,0.18);
+}
+
+.egg-mode-card:active { transform: scale(0.97); }
+
+.egg-mode-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.egg-mode-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.egg-mode-desc {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.3;
+}
+
+/* ===================== EGG SONG SELECT ===================== */
+#egg-song-screen {
+  background: linear-gradient(135deg, #2d5a3d 0%, #3a7a52 30%, #5b8fb9 70%, #3a5f8a 100%);
+  align-items: center;
+  overflow-y: auto;
+}
+
+.egg-song-header {
+  text-align: center;
+  padding: 30px 20px 10px;
+}
+
+.egg-song-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFE4B5;
+}
+
+#egg-song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Reuse song-card styles but with nature theme */
+#egg-song-list .song-card {
+  border-color: rgba(255,228,181,0.3);
+}
+
+/* ===================== EGG PLAY SCREEN ===================== */
+#egg-play-screen {
+  background: #3a5f8a;
+  position: relative;
+}
+
+#egg-game-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.egg-play-controls {
+  position: absolute;
+  top: 55px;
+  left: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+/* ===================== EGG RESULTS SCREEN ===================== */
+#egg-results-screen {
+  background: linear-gradient(135deg, #2d5a3d 0%, #3a7a52 30%, #5b8fb9 70%, #3a5f8a 100%);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.egg-results-card {
+  background: rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 30px 40px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.egg-result-title {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.egg-result-eggs-row {
+  font-size: 2.2rem;
+  margin: 10px 0;
+}
+
+.egg-result-egg {
+  display: inline-block;
+  opacity: 0.2;
+  transition: opacity 0.3s;
+}
+
+.egg-result-egg.earned {
+  opacity: 1;
+}
+
+.egg-result-message {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.egg-result-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+/* Versus results */
+.egg-versus-results {
+  display: flex;
+  gap: 20px;
+  margin: 16px 0;
+}
+
+.egg-versus-player {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.egg-versus-player.winner {
+  border: 2px solid #FFD700;
+}
+
+.egg-versus-label {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.egg-versus-score {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.egg-versus-detail {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+.egg-result-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.egg-result-buttons .result-btn:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ===================== HOME SCREEN EGG CARD ===================== */
+.egg-home-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(90,138,60,0.3), rgba(58,95,138,0.3));
+  border-radius: 18px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 2px solid rgba(255,228,181,0.2);
+  margin-bottom: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.egg-home-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  border-color: rgba(255,228,181,0.4);
+}
+
+.egg-home-card:active { transform: scale(0.98); }
+
+.egg-home-icon { font-size: 2.5rem; }
+
+.egg-home-info h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #FFE4B5;
+}
+
+.egg-home-info p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+}
+
+/* ===================== SECTION DIVIDER ===================== */
+.section-divider {
+  width: 100%;
+  max-width: 500px;
+  padding: 0 20px;
+  margin: 10px 0 5px;
+}
+
+.section-divider h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

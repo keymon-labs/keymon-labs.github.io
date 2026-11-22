@@ -26,5 +26,8 @@ Third-party code, fonts, music and other material keep their own licences, liste
 
 We try not to include anything we aren't allowed to share, but we don't check everything. If you hold rights in something here and believe it's used without permission, open an issue at https://github.com/keymon-labs/keymon-labs.github.io/issues with what it is and how you hold the rights. We'll remove material that is shown to infringe. We don't accept responsibility for third-party material included in good faith, to the extent the law allows.
 
+## Hosted copies of other people's games
+The folder `third-party/` (site section /third-party/) holds unmodified copies of games made by others, kept only so they can be played in a web browser. They are not our work and we have no relation to their authors. Each keeps its own licence and has a link to its original (see the listing page and [CREDITS.md](CREDITS.md)). They are public elsewhere; we only host a copy and accept no liability for them. Our licence above does not apply to them. If an author wants a copy removed, open an issue and we'll remove it.
+
 ## No warranty
 Provided **"as is"**, without warranty of any kind. To the maximum extent the law allows, keymon-labs and its contributors are not liable for any loss or damage arising from its use (see also section 5 of the licence). This doesn't limit rights that can't be excluded by law. For apps run inside Claude, see also [claude/DISCLAIMER.md](claude/DISCLAIMER.md).

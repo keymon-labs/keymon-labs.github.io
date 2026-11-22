@@ -10,7 +10,7 @@ const IGNORE = /^(node_modules|dist|scripts|claude|\.git|\.github|\.claude)(\/|$
 // Every index.html in the repo is a page: the landing page, each app,
 // and each frozen version (app/v1/, app/v2/...). No manual registration.
 const pages = Object.fromEntries(
-  globSync('**/index.html', { exclude: (p) => /^(node_modules|dist|\.git)/.test(p) || /(^|\/)(content-private|book|private-assets)\//.test(p) })
+  globSync('**/index.html', { exclude: (p) => /^(node_modules|dist|\.git)/.test(p) || /(^|\/)(content-private|book|private-assets)\//.test(p) || /^third-party\/[^/]+\/game\//.test(p) })
     .map((p) => [p.replace(/\/?index\.html$/, '') || 'main', resolve(p)])
 );
 
@@ -36,6 +36,8 @@ const copyUnbundled = () => {
     generateBundle() { bundled = new Set([...this.getModuleIds()].map((id) => relative(root, id))); },
     closeBundle() {
       let n = 0;
+      // third-party/<game>/game/ is someone else's code: copied verbatim, never bundled or hashed.
+      for (const d of globSync('third-party/*/game', { cwd: root })) { cpSync(join(root, d), join(root, 'dist', d), { recursive: true }); n++; }
       for (const f of globSync('**/*', { cwd: root })) {
         const src = join(root, f), out = join(root, 'dist', f);
         if (IGNORE.test(f) || bundled.has(f) || existsSync(out)) continue;
