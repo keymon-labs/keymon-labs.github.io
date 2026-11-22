@@ -5,7 +5,7 @@ import { BUILD } from './build-id.js';
 
 const root = import.meta.dirname;
 // content-private/ holds a contributor's course book material (git-ignored); it must never reach dist/.
-const IGNORE = /^(node_modules|dist|scripts|claude|\.git|\.github|\.claude)(\/|$)|^spanish-arcade\/(docs|tasks|scripts)(\/|$)|^[^/]+\.(json|js|md)$|(^|\/)README\.md$|(^|\/)test\/|(^|\/)claude\.js$|\.html$|(^|\/)content-private(\/|$)|(^|\/)\./;
+const IGNORE = /^(node_modules|dist|scripts|research|claude|\.git|\.github|\.claude)(\/|$)|^spanish-arcade\/(docs|tasks|scripts)(\/|$)|^[^/]+\.(json|js|md)$|(^|\/)README\.md$|(^|\/)test\/|(^|\/)claude\.js$|\.html$|(^|\/)content-private(\/|$)|(^|\/)\./;
 
 // Every index.html in the repo is a page: the landing page, each app,
 // and each frozen version (app/v1/, app/v2/...). No manual registration.

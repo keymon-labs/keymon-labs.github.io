@@ -7,7 +7,7 @@ A notebook of things worth learning from: sites, projects and techniques that in
 **Search here first: read [INDEX.md](INDEX.md)**, then open only the entries that match.
 
 ## What the notebook knows
-Camera and movement games for young kids (browser, webcam, no controller); hand-tracking music toys built on MediaPipe; music visualisers and generative animation; the licences and design ideas behind them. Update this paragraph only when a new theme appears.
+Camera and movement games for young kids (browser, webcam, no controller); AI game builders; hand-tracking music toys built on MediaPipe; music visualisers and generative animation; the licences and design ideas behind them. Update this paragraph only when a new theme appears.
 
 ## Layout
 | Folder | One file per | Holds |

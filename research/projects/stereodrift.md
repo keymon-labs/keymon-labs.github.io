@@ -10,10 +10,12 @@ reuse: ask-first
 free: yes
 tech: [vanilla-js, canvas, perlin-noise]
 themes: [visualiser, music, generative-art]
-related: [projects/jfire-animations, techniques/audio-reactive-visuals, ideas/hand-controlled-visualiser]
+related: [authors/collidingscopes, projects/gettothechopin-portfolio, projects/jfire-animations, techniques/audio-reactive-visuals, ideas/hand-controlled-visualiser]
 captured: 2026-11-22
 ---
 # Stereo Drift
+
+By the same creator as [collidingScopes](../authors/collidingscopes.md): his portfolio lists it and the READMEs share a contact handle. His collidingScopes repos are MIT, but this one is CC BY-NC.
 
 Tool for parties, live sets and music videos. Files: index.html, style.css, musicVisualizerScript.js, grained.js (grain), perlin.js (noise), audio/, examples/. The README has a "Method, References, and Inspiration" section that did not load: read it on GitHub. Owner note: its styles are inspired by [jfire-animations](jfire-animations.md).
 

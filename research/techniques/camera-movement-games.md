@@ -2,7 +2,7 @@
 type: technique
 summary: What camera and movement games for young kids have in common, and the design points worth copying
 status: studied
-related: [projects/hoppo, projects/moveplay, projects/cam-run-for-kids, projects/hotspot-game, projects/webcam-mania, projects/hopla-games, projects/air-jake, projects/itch-webcam-tag]
+related: [projects/hoppo, projects/moveplay, projects/cam-run-for-kids, projects/hotspot-game, projects/webcam-mania, projects/hopla-games, projects/air-jake, projects/itch-webcam-tag, projects/gettothechopin-portfolio]
 themes: [camera-games, classroom]
 captured: 2026-11-22
 ---

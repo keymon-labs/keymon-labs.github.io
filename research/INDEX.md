@@ -4,14 +4,19 @@
 
 ## By theme
 
+### ai-builders
+- [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
+
 ### camera-games
-- [collidingScopes](authors/collidingscopes.md) · author · varies · unknown · One author publishing many small browser computer-vision projects (hand tracking, music, particles) with code and paid tutorials
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games
 - [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md) · project · MIT · ok · Slice 3D fruit by waving a hand; 5 lives, rising difficulty; the minimal camera game, vanilla JS
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Hopla Games](projects/hopla-games.md) · project · unknown · unknown · 15 browser games for young kids where a webcam tracks the pose and you play by waving
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
 - [hotspot-game](projects/hotspot-game.md) · project · none · unknown · Hit shrinking moving boxes with body motion, one or two players; Python and OpenCV on a PC or Raspberry Pi
@@ -28,38 +33,52 @@
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
 - [Camera and movement games](techniques/camera-movement-games.md) · technique · n/a · n/a · What camera and movement games for young kids have in common, and the design points worth copying
 
+### games
+- [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
+
 ### generative-art
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ### hand-tracking
-- [collidingScopes](authors/collidingscopes.md) · author · varies · unknown · One author publishing many small browser computer-vision projects (hand tracking, music, particles) with code and paid tutorials
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md) · project · MIT · ok · Slice 3D fruit by waving a hand; 5 lives, rising difficulty; the minimal camera game, vanilla JS
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Pug's Hunt](projects/pugs-hunt.md) · project · none · unknown · Retro shooter controlled by a webcam hand: point to aim, pinch to shoot; mouse fallback
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md) · project · none · unknown · Python MediaPipe demos: air painting, motion-to-animation for Unity, and a nose-controlled fruit slicer
 - [MediaPipe camera input](techniques/mediapipe-camera-input.md) · technique · n/a · n/a · MediaPipe Hands or Pose in the browser is the common base for webcam games; one shared camera module could serve many games
 
 ### music
-- [collidingScopes](authors/collidingscopes.md) · author · varies · unknown · One author publishing many small browser computer-vision projects (hand tracking, music, particles) with code and paid tutorials
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ### visualiser
-- [collidingScopes](authors/collidingscopes.md) · author · varies · unknown · One author publishing many small browser computer-vision projects (hand tracking, music, particles) with code and paid tutorials
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ## By tech
+
+### ai-code-generation
+- [Rosebud AI](projects/rosebud-ai.md)
 
 ### browser
 - [WebCam Mania](projects/webcam-mania.md)
@@ -70,10 +89,15 @@
 ### client-side-tracking
 - [Hoppo](projects/hoppo.md)
 
+### javascript
+- [Rosebud AI](projects/rosebud-ai.md)
+
 ### mediapipe-hands
-- [collidingScopes](authors/collidingscopes.md)
+- [collidingScopes (Alan)](authors/collidingscopes.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md)
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
 - [Pug's Hunt](projects/pugs-hunt.md)
 
 ### mediapipe-pose
@@ -90,23 +114,30 @@
 ### perlin-noise
 - [Stereo Drift](projects/stereodrift.md)
 
+### phaser
+- [Rosebud AI](projects/rosebud-ai.md)
+
 ### pose-tracking
 - [Air Jake](projects/air-jake.md)
 - [Hopla Games](projects/hopla-games.md)
 - [MovePlay](projects/moveplay.md)
 
 ### python
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md)
 - [hotspot-game](projects/hotspot-game.md)
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md)
 
 ### threejs
-- [collidingScopes](authors/collidingscopes.md)
+- [collidingScopes (Alan)](authors/collidingscopes.md)
 - [cam-run-for-kids](projects/cam-run-for-kids.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md)
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
+- [Rosebud AI](projects/rosebud-ai.md)
 
 ### tonejs
-- [collidingScopes](authors/collidingscopes.md)
+- [collidingScopes (Alan)](authors/collidingscopes.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 
 ### unity
@@ -116,7 +147,9 @@
 - [jfire.io animations](projects/jfire-animations.md)
 
 ### vanilla-js
+- [collidingScopes (Alan)](authors/collidingscopes.md)
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
 - [Stereo Drift](projects/stereodrift.md)
 
 ### webassembly
@@ -129,11 +162,14 @@
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 
 ### **ideas-only**: learn from it, copy nothing
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
+- [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
 
 ### **unknown**: licence not found, treat as all rights reserved
-- [collidingScopes](authors/collidingscopes.md) · author · varies · unknown · One author publishing many small browser computer-vision projects (hand tracking, music, particles) with code and paid tutorials
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Hopla Games](projects/hopla-games.md) · project · unknown · unknown · 15 browser games for young kids where a webcam tracks the pose and you play by waving
 - [hotspot-game](projects/hotspot-game.md) · project · none · unknown · Hit shrinking moving boxes with body motion, one or two players; Python and OpenCV on a PC or Raspberry Pi
 - [itch.io webcam games](projects/itch-webcam-tag.md) · project · varies · unknown · itch.io tag listing about 78 free webcam-controlled games (Ninja Smoothie, Pose Ninja, Fruit Ninja AR, face tennis)
@@ -156,13 +192,13 @@
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 
 ## Recent
-- [collidingScopes](authors/collidingscopes.md) · author · varies · unknown · One author publishing many small browser computer-vision projects (hand tracking, music, particles) with code and paid tutorials · 2026-11-22
+- [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try · 2026-11-23
+- [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser · 2026-11-23
+- [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export · 2026-11-23
+- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser · 2026-11-22
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes · 2026-11-22
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games · 2026-11-22
 - [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down · 2026-11-22
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games · 2026-11-22
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser · 2026-11-22
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback · 2026-11-22
-- [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals · 2026-11-22
-- [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md) · project · MIT · ok · Slice 3D fruit by waving a hand; 5 lives, rising difficulty; the minimal camera game, vanilla JS · 2026-11-22
-- [Hopla Games](projects/hopla-games.md) · project · unknown · unknown · 15 browser games for young kids where a webcam tracks the pose and you play by waving · 2026-11-22
