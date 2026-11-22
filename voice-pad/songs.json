@@ -1,0 +1,38 @@
+[
+  {
+    "id": "twinkle", "title": "Twinkle Twinkle Little Star", "bpm": 100,
+    "lyrics": "Twin-kle twin-kle lit-tle star, how I won-der what you are. Up a-bove the world so high, like a dia-mond in the sky. Twin-kle twin-kle lit-tle star, how I won-der what you are.",
+    "sing": "Twin-kle twin-kle lit-tle star, hao ai wan-der wat yu ar. Ap a-bav tha werld so hai, laik a dai-mand in tha skai. Twin-kle twin-kle lit-tle star, hao ai wan-der wat yu ar.",
+    "notes": "C4 C4 G4 G4 A4 A4 G4:2 F4 F4 E4 E4 D4 D4 C4:2 G4 G4 F4 F4 E4 E4 D4:2 G4 G4 F4 F4 E4 E4 D4:2 C4 C4 G4 G4 A4 A4 G4:2 F4 F4 E4 E4 D4 D4 C4:2"
+  },
+  {
+    "id": "row", "title": "Row, Row, Row Your Boat", "bpm": 100,
+    "lyrics": "Row, row, row your boat, gent-ly down the stream. Mer-ri-ly, mer-ri-ly, mer-ri-ly, mer-ri-ly, life is but a dream.",
+    "sing": "Roh, roh, roh yor bot, jent-lee daon tha streem. Mer-ri-lee, mer-ri-lee, mer-ri-lee, mer-ri-lee, laif iz bat a dreem.",
+    "notes": "C4 C4 C4:0.75 D4:0.25 E4 E4:0.75 D4:0.25 E4:0.75 F4:0.25 G4:2 C5:0.333 C5:0.333 C5:0.333 G4:0.333 G4:0.333 G4:0.333 E4:0.333 E4:0.333 E4:0.333 C4:0.333 C4:0.333 C4:0.333 G4:0.75 F4:0.25 E4:0.75 D4:0.25 C4:2"
+  },
+  {
+    "id": "hcb", "title": "Hot Cross Buns", "bpm": 100,
+    "lyrics": "Hot cross buns, hot cross buns, one a pen-ny, two a pen-ny, hot cross buns.",
+    "sing": "Hot cros bans, hot cros bans, wan a pen-ee, tu a pen-ee, hot cros bans.",
+    "notes": "E4 D4 C4:2 E4 D4 C4:2 C4:0.5 C4:0.5 C4:0.5 C4:0.5 D4:0.5 D4:0.5 D4:0.5 D4:0.5 E4 D4 C4:2"
+  },
+  {
+    "id": "mary", "title": "Mary Had a Little Lamb", "bpm": 100,
+    "lyrics": "Ma-ry had a lit-tle lamb, lit-tle lamb, lit-tle lamb. Ma-ry had a lit-tle lamb, its fleece was white as snow.",
+    "sing": "Ma-ree had a lit-tle lam, lit-tle lam, lit-tle lam. Ma-ree had a lit-tle lam, its fleez waz wait az sno.",
+    "notes": "E4 D4 C4 D4 E4 E4 E4:2 D4 D4 D4:2 E4 G4 G4:2 E4 D4 C4 D4 E4 E4 E4 E4 D4 D4 E4 D4 C4:3"
+  },
+  {
+    "id": "macdonald", "title": "Old MacDonald (first lines)", "bpm": 100,
+    "lyrics": "Old Mac-Don-ald had a farm, E-I-E-I-O.",
+    "sing": "Ohld Mak Dohn ald had a farm, ee ai ee ai oh.",
+    "notes": "C4 C4 C4 G4 A4 A4 G4:2 E4 E4 D4 D4 C4:2"
+  },
+  {
+    "id": "frere", "title": "Frère Jacques (French)", "bpm": 100,
+    "lyrics": "Frè-re Jac-ques, Frè-re Jac-ques, dor-mez-vous? Dor-mez-vous? Son-nez les ma-ti-nes, son-nez les ma-ti-nes, Din din don. Din din don.",
+    "sing": "Fre-re Jak-ke, Fre-re Jak-ke, dor-me vu? Dor-me vu? Son-ne le ma-ti-ne, son-ne le ma-ti-ne, Din din don. Din din don.",
+    "notes": "C4 D4 E4 C4 C4 D4 E4 C4 E4 F4 G4:2 E4 F4 G4:2 G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4 C4 G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4 C4 C4 G3 C4:2 C4 G3 C4:2"
+  }
+]

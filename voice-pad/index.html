@@ -14,13 +14,31 @@
     <span class="chip" id="hNote">Touch the pad</span>
     <span class="chip small" id="hReg"></span>
     <span class="spacer"></span>
+    <button class="seg sel" id="mPad">Pad</button><button class="seg" id="mSong">Song</button>
     <button class="icon" id="btnMenu" aria-label="Menu">☰</button>
   </div>
+
+  <div class="lyr" id="lyr" hidden aria-live="polite"></div>
+  <section class="song" id="song" hidden>
+    <div class="row">
+      <select id="oSong" aria-label="Song"></select>
+      <label class="tempo">Tempo <input type="range" id="oBpm" min="40" max="180" value="100"><b id="vBpm">100</b></label>
+    </div>
+    <textarea id="tText" rows="2" maxlength="2000" aria-label="Lyrics: type words in any language, use a hyphen to mark syllables" placeholder="Type words in any language. A hyphen marks a syllable: sing-ing"></textarea>
+    <div class="row">
+      <button class="go" id="bSing">● Sing</button>
+      <button id="bHear">▶ Hear it</button>
+      <label><input type="checkbox" id="oClick"> Click</label>
+      <span class="msg" id="tMsg" aria-live="polite"></span>
+    </div>
+    <div class="takes" id="tTakes" aria-label="Saved takes"></div>
+  </section>
 
   <div class="overlay" id="ovMenu">
     <div class="panel">
       <h1>Voice Pad</h1>
       <p class="lead">Slide a finger on the pad and Gloop sings. Left to right changes the note. Top to bottom changes the vowel.</p>
+      <p class="lead"><b>Song mode:</b> pick a song or type your own words. After a count-in the words come one syllable per beat, and your finger picks the notes. A ring on the pad shows the next note. Every try is saved as a take on this device.</p>
       <button class="go" id="btnPlay">▶ Start singing</button>
       <div class="opts">
         <label>Voice<select id="oVoice"></select></label>

@@ -1,4 +1,6 @@
-// Voice Pad rules: pitch from x, vowel from y, voice types, register. Pure functions, no DOM.
+// Voice Pad rules: pitch from x, vowel from y, voice types, register, song planning. Pure functions, no DOM.
+import { createRng } from "../shared/rng.js";
+import { toMidi } from "../shared/music.js";
 
 /** Vowels top to bottom on the pad. f = first three formants in Hz, mouth = [width, height] 0..1 for the face. */
 export const VOWELS = [
@@ -74,3 +76,47 @@ export const REGISTERS = {
   mixed: "Mixed voice: the middle, where chest and head blend smoothly.",
   head: "Head voice: high notes, lighter and thinner. It feels like it sits in the head.",
 };
+
+export const vowelById = (id) => VOWELS.find((v) => v.id === id);
+
+/** Noise colour of a consonant's first letter: sibilant (s z x c j), breath (f v h), plosive (t k p d g b q), or null (m n l r w y, vowels). */
+export function consonantClass(onset) {
+  const c = (onset || "")[0];
+  if (!c) return null;
+  if ("szxcj".includes(c)) return "sibilant";
+  if ("fvh".includes(c)) return "breath";
+  if ("tkpdgbq".includes(c)) return "plosive";
+  return null;
+}
+
+/** "C4 C4 G4:2" to [{ midi, beats }]. Token = note, optional :beats (default 1). */
+export function parseTune(str) {
+  return str.trim().split(/\s+/).map((tok) => { const [n, b] = tok.split(":"); return { midi: toMidi(n), beats: b ? +b : 1 }; });
+}
+
+/**
+ * Time every syllable of a song, one note each. tune = parseTune() result, or null for plain text
+ * (one beat per syllable, no guide note, half a beat of rest at a phrase end). A tune is moved by octaves
+ * into the voice and repeats when the text is longer. Returns [{ i, midi|null, hz|null, start, dur, syl }] in seconds.
+ */
+export function planSong(syls, tune, { voice, bpm }) {
+  const { lo, hi } = VOICES[voice], spb = 60 / bpm;
+  const shift = tune ? Math.round(((lo + hi) / 2 - tune.reduce((a, n) => a + n.midi, 0) / tune.length) / 12) * 12 : 0;
+  let beat = 0;
+  return syls.map((syl, i) => {
+    const n = tune ? tune[i % tune.length] : null, beats = n ? n.beats : 1, midi = n ? n.midi + shift : null;
+    const ev = { i, midi, hz: n ? midiToHz(midi) : null, start: beat * spb, dur: beats * spb, syl };
+    beat += beats + (!tune && syl.phraseEnd ? 0.5 : 0);
+    return ev;
+  });
+}
+
+/** Index of the event sounding at time t (seconds), or -1 in a rest, before the start or after the end. */
+export const eventAt = (events, t) => events.findIndex((e) => t >= e.start && t < e.start + e.dur);
+
+/** Last recorded finger sample at or before t. Samples are sorted by t. Null before the first. */
+export function sampleAt(samples, t) {
+  let lo = 0, hi = samples.length - 1, r = null;
+  while (lo <= hi) { const m = (lo + hi) >> 1; if (samples[m].t <= t) { r = samples[m]; lo = m + 1; } else hi = m - 1; }
+  return r;
+}

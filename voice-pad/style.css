@@ -29,3 +29,22 @@ ul { margin: 0; padding-left: 18px; }
 li { margin: 2px 0; }
 .ver { font-size: 12px; opacity: .7; margin: 12px 0 0; }
 .ver a { color: inherit; }
+.seg { padding: 2px 12px; font-weight: 800; background: rgba(255,255,255,.55); }
+.seg.sel { background: var(--accent); color: #fff; }
+.lyr, .song { position: absolute; }
+.lyr[hidden], .song[hidden] { display: none; }
+.lyr { background: rgba(255,255,255,.9); border-radius: 14px; padding: 6px 12px; font-size: 20px; font-weight: 700; line-height: 1.35; overflow: hidden; }
+.lyr .now { background: var(--accent); color: #fff; border-radius: 6px; padding: 0 3px; }
+.song { background: var(--panel); border-radius: 18px; padding: 10px 12px; display: grid; grid-template-rows: auto auto auto 1fr; gap: 8px; overflow: hidden; touch-action: manipulation; }
+.song .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.song select { flex: 1; min-width: 0; }
+.song textarea { font: inherit; font-size: 15px; border: 1px solid #c9c4e8; border-radius: 12px; padding: 6px 10px; resize: none; background: #fff; color: var(--ink); }
+.tempo { display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 600; }
+.tempo input { width: 90px; }
+.song .go { width: auto; margin: 0; font-size: 18px; padding: 8px 16px; }
+.song button:disabled { opacity: .4; }
+.msg { font-size: 12px; opacity: .8; flex: 1; }
+.takes { display: flex; gap: 6px; flex-wrap: wrap; align-content: flex-start; overflow-y: auto; }
+.take { display: flex; gap: 2px; }
+.take button { padding: 4px 10px; font-size: 13px; }
+.take button:last-child { padding: 4px 8px; }
