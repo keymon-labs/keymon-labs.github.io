@@ -17,6 +17,7 @@
     "build:claude": "node claude/build.js",
     "build:loader": "node claude/build-loader.js",
     "tasks": "node scripts/tasks.mjs",
+    "research": "node research/index.mjs",
     "fuzz:beats": "node scripts/brick-beats-fuzz.mjs"
   },
   "devDependencies": {

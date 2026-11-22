@@ -37,7 +37,7 @@ Games made by others, hosted unmodified so they can be played in a browser. Not 
 - [AGENTS.md](AGENTS.md): how sessions work (build fast, escalate by risk, subagents). `npm run tasks`: status of every task board.
 
 ## Research
-- [research/](research/README.md): notebook of inspiring sites, projects and techniques (movement games, hand-tracking music, visualisers). Notes only, no copied third-party code.
+- [research/](research/README.md): notebook of inspiring sites, projects and techniques (camera games, hand-tracking music, visualisers), one file per entry with a generated [index](research/INDEX.md). Notes only, no copied third-party code. `npm run research` rebuilds the index.
 
 ## Reusable code
 - [shared/README.md](shared/README.md): index of shared modules (MIDI input, music helpers, sound effects, PWA). **Check it before writing new code.**
