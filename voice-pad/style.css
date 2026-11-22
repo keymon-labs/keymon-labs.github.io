@@ -1,0 +1,31 @@
+/* Voice Pad look. The pad and Gloop are drawn on the canvas in pad.js. */
+:root { --ink: #231f3d; --panel: #fffdf6; --accent: #7c5cff; --bg: #2a2550; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+  font-family: ui-rounded, system-ui, sans-serif; overflow: hidden; touch-action: none; overscroll-behavior: none; }
+#stage { position: fixed; inset: 0; }
+#cv { display: block; width: 100%; height: 100%; touch-action: none; }
+button, select { font: inherit; color: inherit; border: 0; border-radius: 14px; padding: 8px 14px; background: #fff; box-shadow: 0 3px 0 rgba(0,0,0,.15); }
+button { cursor: pointer; }
+button:active { transform: translateY(2px); }
+.hud { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 8px; align-items: center; pointer-events: none; }
+.hud > * { pointer-events: auto; }
+.chip { background: rgba(255,255,255,.88); border-radius: 999px; padding: 2px 14px; font-weight: 800; font-size: 20px; }
+.chip.small { font-size: 13px; font-weight: 600; }
+.chip.small:empty { display: none; }
+.spacer { flex: 1; }
+.icon { font-size: 22px; padding: 2px 12px; }
+.overlay { position: absolute; inset: 0; display: grid; place-items: start center; padding: 12px; background: rgba(35,31,61,.55); overflow: auto; touch-action: pan-y; }
+.overlay[hidden] { display: none; }
+.panel { background: var(--panel); border-radius: 22px; padding: 16px 20px; width: min(560px, 100%); box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+h1 { margin: 0; font-size: 34px; color: var(--accent); line-height: 1.1; }
+h2 { font-size: 16px; margin: 12px 0 4px; }
+.lead { margin: 4px 0 10px; }
+.go { width: 100%; font-size: 22px; font-weight: 800; background: var(--accent); color: #fff; margin-bottom: 10px; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.opts label { display: grid; gap: 2px; font-size: 13px; font-weight: 600; }
+summary { font-weight: 800; cursor: pointer; padding: 6px 0; }
+ul { margin: 0; padding-left: 18px; }
+li { margin: 2px 0; }
+.ver { font-size: 12px; opacity: .7; margin: 12px 0 0; }
+.ver a { color: inherit; }

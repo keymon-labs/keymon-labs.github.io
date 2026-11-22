@@ -18,6 +18,7 @@ Small web apps and experiments, published at https://keymon-labs.github.io
 | Zoom Tunnel | Infinite zoom through nested pictures: draw or photograph each frame, draw or tap-fill the doorway to the next one, then fly through (auto, or manual with pinch/twist). Photos stay on the device (prototype) | [zoom-tunnel/](zoom-tunnel/README.md) |
 | Drone Hide | Hide-and-seek for two in front of the laptop camera: a drone's light hunts the room, hide behind the rocks, grab the gems. Camera picture stays on the device (prototype) | [drone-hide/](drone-hide/README.md) |
 | Spanish Arcade | Mini games to practise written Spanish (listening, reading, spelling, puzzles) for kids, one unit so far; inspired by «Mis unidades de español» (A1) | [spanish-arcade/](spanish-arcade/README.md) |
+| Voice Pad | Touch pad singing instrument: left to right sets the note, top to bottom sets the vowel (oo to ee). A formant voice sings while Gloop the blob opens its mouth; a theory panel covers voice types, registers and formants (prototype) | [voice-pad/](voice-pad/README.md) |
 
 ## Third-party games
 Games made by others, hosted unmodified so they can be played in a browser. Not our work, no relation to the authors: see [third-party/README.md](third-party/README.md).

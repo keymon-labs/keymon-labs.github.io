@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Voice Pad</title>
+<meta name="theme-color" content="#7c5cff">
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<main id="stage">
+  <canvas id="cv" aria-label="Singing pad with Gloop the singer"></canvas>
+  <div class="hud">
+    <span class="chip" id="hNote">Touch the pad</span>
+    <span class="chip small" id="hReg"></span>
+    <span class="spacer"></span>
+    <button class="icon" id="btnMenu" aria-label="Menu">☰</button>
+  </div>
+
+  <div class="overlay" id="ovMenu">
+    <div class="panel">
+      <h1>Voice Pad</h1>
+      <p class="lead">Slide a finger on the pad and Gloop sings. Left to right changes the note. Top to bottom changes the vowel.</p>
+      <button class="go" id="btnPlay">▶ Start singing</button>
+      <div class="opts">
+        <label>Voice<select id="oVoice"></select></label>
+        <label>Notes<select id="oScale"></select></label>
+      </div>
+      <details open>
+        <summary>Theory: what you are hearing</summary>
+        <h2>Voice types</h2>
+        <ul id="tVoices"></ul>
+        <h2>Registers</h2>
+        <ul id="tRegisters"></ul>
+        <h2>Vowels and formants</h2>
+        <p>Every vowel is the same buzz shaped by the mouth. The mouth boosts three bands of sound called formants. Moving down the pad changes where those bands sit, so oo turns into ah and then ee.</p>
+        <ul id="tVowels"></ul>
+        <h2>Vibrato</h2>
+        <p>Hold still and Gloop wobbles the note a little, like a trained singer. Swipe fast and the wobble goes away.</p>
+      </details>
+      <p class="ver">Voice Pad v1 · build __BUILD__ · © 2026 keymon-labs · <a href="https://github.com/keymon-labs/keymon-labs.github.io/blob/main/NOTICE.md">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </div>
+</main>
+<script type="module" src="./pad.js"></script>
+</body>
+</html>
