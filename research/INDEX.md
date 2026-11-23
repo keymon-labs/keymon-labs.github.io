@@ -6,6 +6,7 @@
 
 ### ai-builders
 - [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md) · project · MIT · ok · Free no-account platform (formerly KidHubb) where kids publish single-file HTML games made with AI and share them by link; sandboxed, MIT-licensed platform code
 - [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
 - [Google Playground](projects/google-playground.md) · project · proprietary · ideas-only · Google's prompt-to-game platform, launched 7 Oct 2026 for US users aged 18 and over; creation tiered by Google AI plan
 - [Ludo.ai](projects/ludo-ai.md) · project · proprietary · ideas-only · AI generator of engine-ready game assets (sprites, animations, 3D models, music, sound effects) and game concepts, not a game host
@@ -130,6 +131,7 @@
 ### inspiration
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md) · project · MIT · ok · Free no-account platform (formerly KidHubb) where kids publish single-file HTML games made with AI and share them by link; sandboxed, MIT-licensed platform code
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
@@ -140,6 +142,9 @@
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 - [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
 - [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
+
+### kids-games
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md) · project · MIT · ok · Free no-account platform (formerly KidHubb) where kids publish single-file HTML games made with AI and share them by link; sandboxed, MIT-licensed platform code
 
 ### kids-music
 - [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided
@@ -206,6 +211,9 @@
 - [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
 - [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
 - [Pentatonic sequencers](techniques/pentatonic-sequencers.md) · technique · n/a · n/a · Why pentatonic grids work for beginners and the common design: rows are five scale notes, columns are beats, a playhead loops
+
+### sharing
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md) · project · MIT · ok · Free no-account platform (formerly KidHubb) where kids publish single-file HTML games made with AI and share them by link; sandboxed, MIT-licensed platform code
 
 ### two-player
 - [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
@@ -335,12 +343,16 @@
 ### mixed
 - [itch.io webcam games](projects/itch-webcam-tag.md)
 
+### nextjs
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
+
 ### opencv
 - [hotspot-game](projects/hotspot-game.md)
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md)
 
 ### p5js
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md)
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md)
 - [p5.js skills (community)](projects/p5js-claude-skills.md)
@@ -350,6 +362,7 @@
 - [Stereo Drift](projects/stereodrift.md)
 
 ### phaser
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
 - [OhMyGame](projects/ohmygame.md)
 - [Phaser](projects/phaser.md)
 - [Rosebud AI](projects/rosebud-ai.md)
@@ -376,12 +389,14 @@
 
 ### supabase
 - [General AI app builders](projects/ai-app-builders.md)
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
 
 ### teoria
 - [Shape Your Music](projects/shape-your-music.md)
 
 ### threejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md)
 - [cam-run-for-kids](projects/cam-run-for-kids.md)
@@ -402,6 +417,7 @@
 
 ### tonejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
 - [Chrome Music Lab](projects/chrome-music-lab.md)
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
@@ -435,6 +451,9 @@
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
 - [Stereo Drift](projects/stereodrift.md)
+
+### vercel
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md)
 
 ### vite
 - [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md)
@@ -540,6 +559,7 @@
 - [WebCam Mania](projects/webcam-mania.md) · project · none · unknown · Long-running series of EyeToy-style webcam minigames (wipe frost, pop bubbles); v4 runs in modern browsers
 
 ### ok: permissive licence: keep its text and add a CREDITS.md row
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md) · project · MIT · ok · Free no-account platform (formerly KidHubb) where kids publish single-file HTML games made with AI and share them by link; sandboxed, MIT-licensed platform code
 - [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
@@ -566,9 +586,9 @@
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground · 2026-11-23
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file · 2026-11-23
 - [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes · 2026-11-23
+- [ArcadeLab (was KidHubb)](projects/arcadelab.md) · project · MIT · ok · Free no-account platform (formerly KidHubb) where kids publish single-file HTML games made with AI and share them by link; sandboxed, MIT-licensed platform code · 2026-11-23
 - [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3 · 2026-11-23
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples) · 2026-11-23
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list · 2026-11-23
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code · 2026-11-23
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories · 2026-11-23
-- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers · 2026-11-23
