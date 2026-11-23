@@ -4,7 +4,7 @@ summary: Where the Claude plus creative coding and d3 community lives: skill dir
 status: studied
 licence: n/a
 themes: [claude-community, generative-art, d3]
-related: [projects/anthropic-algorithmic-art, projects/claude-d3-skills, projects/p5js-claude-skills, projects/awesome-creative-coding, techniques/audio-reactive-visuals]
+related: [projects/claude-tonejs-guide, projects/claude-threejs-guide, projects/anthropic-algorithmic-art, projects/claude-d3-skills, projects/p5js-claude-skills, projects/awesome-creative-coding, techniques/audio-reactive-visuals]
 captured: 2026-11-23
 ---
 # Claude and creative coding community

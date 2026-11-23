@@ -14,3 +14,4 @@ captured: 2026-11-22
 - Perlin noise and grain give the soft organic look; a small noise function is easy to write.
 - Named palettes as lists of colours that any style can use.
 - Use synthesised or public-domain music for demos. Recorded music is copyrighted.
+- Tone.js adds musical timing (Transport) and synths; draw from audio callbacks with `Tone.getDraw()`. See [tonejs](../projects/tonejs.md).

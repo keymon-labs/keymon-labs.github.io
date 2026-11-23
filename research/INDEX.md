@@ -17,6 +17,9 @@
 - [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
 - [AI game builders](techniques/ai-game-builders.md) · technique · n/a · n/a · Map of AI game and app builders around Rosebud: hosted prompt-to-playable, asset generators, engine-based and open-source studios, general app builders
 
+### audio
+- [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys
+
 ### camera-games
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games
@@ -48,6 +51,8 @@
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
+- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers
+- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules
 - [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches)
 - [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides
 
@@ -62,11 +67,13 @@
 
 ### frameworks
 - [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
+- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers
 - [GDevelop](projects/gdevelop.md) · project · MIT · ok · Open-source no-code 2D, 3D and multiplayer game engine with an event system; exports HTML5, mobile and desktop
 - [Godot](projects/godot.md) · project · MIT · ok · Free multi-platform 2D and 3D game engine with its own editor, GDScript or C#, native and web export; text project files suit AI agents
 - [Phaser](projects/phaser.md) · project · MIT · ok · 2D HTML5 game framework (Canvas and WebGL), code-first JavaScript or TypeScript; Phaser 4 ships agent skills for AI coding tools
 - [PlayCanvas](projects/playcanvas.md) · project · MIT · ok · Open-source web graphics engine on WebGPU and WebGL2, with a collaborative cloud editor; strong for instant-loading 3D
 - [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
+- [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys
 - [Web game frameworks](techniques/web-game-frameworks.md) · technique · n/a · n/a · Capability comparison of web game and 3D frameworks (Phaser, Three.js, Babylon.js, PlayCanvas, Godot, GDevelop) and what suits AI-built games
 
 ### games
@@ -114,14 +121,20 @@
 - [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
 - [MediaPipe camera input](techniques/mediapipe-camera-input.md) · technique · n/a · n/a · MediaPipe Hands or Pose in the browser is the common base for webcam games; one shared camera module could serve many games
 
+### inspiration
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+
 ### music
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
+- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+- [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ### two-player
@@ -136,6 +149,7 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ## By tech
@@ -214,6 +228,7 @@
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md)
 - [p5.js skills (community)](projects/p5js-claude-skills.md)
+- [Tone.js demos](projects/tonejs-demos.md)
 
 ### perlin-noise
 - [Stereo Drift](projects/stereodrift.md)
@@ -246,6 +261,7 @@
 - [collidingScopes (Alan)](authors/collidingscopes.md)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md)
 - [cam-run-for-kids](projects/cam-run-for-kids.md)
+- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md)
@@ -256,7 +272,10 @@
 
 ### tonejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
+- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
+- [Tone.js demos](projects/tonejs-demos.md)
+- [Tone.js](projects/tonejs.md)
 
 ### typescript
 - [General AI app builders](projects/ai-app-builders.md)
@@ -278,8 +297,14 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
 - [Stereo Drift](projects/stereodrift.md)
 
+### vite
+- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md)
+- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
+
 ### web-audio
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md)
+- [Tone.js demos](projects/tonejs-demos.md)
+- [Tone.js](projects/tonejs.md)
 
 ### webassembly
 - [Pug's Hunt](projects/pugs-hunt.md)
@@ -304,6 +329,8 @@
 ### **ideas-only**: learn from it, copy nothing
 - [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
+- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers
+- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
 - [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
@@ -315,6 +342,7 @@
 - [PlayDrop](projects/playdrop.md) · project · proprietary · ideas-only · Free AI game maker for 2D and 3D browser games, solo or multiplayer, published to a PlayDrop link with earnings from players
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
 - [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
 
 ### **unknown**: licence not found, treat as all rights reserved
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
@@ -341,6 +369,7 @@
 - [Phaser](projects/phaser.md) · project · MIT · ok · 2D HTML5 game framework (Canvas and WebGL), code-first JavaScript or TypeScript; Phaser 4 ships agent skills for AI coding tools
 - [PlayCanvas](projects/playcanvas.md) · project · MIT · ok · Open-source web graphics engine on WebGPU and WebGL2, with a collaborative cloud editor; strong for instant-loading 3D
 - [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
+- [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys
 
 ## Ideas backlog
 
@@ -354,10 +383,10 @@
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file · 2026-11-23
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list · 2026-11-23
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories · 2026-11-23
+- [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers · 2026-11-23
+- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules · 2026-11-23
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode · 2026-11-23
 - [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches) · 2026-11-23
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site · 2026-11-23
+- [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys · 2026-11-23
 - [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides · 2026-11-23
-- [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser · 2026-11-22
-- [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes · 2026-11-22
-- [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games · 2026-11-22
-- [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down · 2026-11-22
