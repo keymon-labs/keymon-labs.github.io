@@ -27,7 +27,7 @@
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md) · project · MIT · ok · Slice 3D fruit by waving a hand; 5 lives, rising difficulty; the minimal camera game, vanilla JS
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
-- [Hopla Games](projects/hopla-games.md) · project · unknown · unknown · 15 browser games for young kids where a webcam tracks the pose and you play by waving
+- [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
 - [hotspot-game](projects/hotspot-game.md) · project · none · unknown · Hit shrinking moving boxes with body motion, one or two players; Python and OpenCV on a PC or Raspberry Pi
 - [itch.io webcam games](projects/itch-webcam-tag.md) · project · varies · unknown · itch.io tag listing about 78 free webcam-controlled games (Ninja Smoothie, Pose Ninja, Fruit Ninja AR, face tennis)
@@ -102,6 +102,9 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
+
+### two-player
+- [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
 
 ### visualiser
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
@@ -187,7 +190,7 @@
 
 ### pose-tracking
 - [Air Jake](projects/air-jake.md)
-- [Hopla Games](projects/hopla-games.md)
+- [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md)
 - [MovePlay](projects/moveplay.md)
 
 ### python
@@ -261,6 +264,7 @@
 - [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [Google Playground](projects/google-playground.md) · project · proprietary · ideas-only · Google's prompt-to-game platform, launched 7 Oct 2026 for US users aged 18 and over; creation tiered by Google AI plan
+- [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
 - [Ludo.ai](projects/ludo-ai.md) · project · proprietary · ideas-only · AI generator of engine-ready game assets (sprites, animations, 3D models, music, sound effects) and game concepts, not a game host
 - [Makko AI](projects/makko-ai.md) · project · proprietary · ideas-only · Browser 2D game studio: an Art Studio makes characters, props and sprite animations, a Code Studio builds the game from them; free plan
@@ -272,7 +276,6 @@
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
-- [Hopla Games](projects/hopla-games.md) · project · unknown · unknown · 15 browser games for young kids where a webcam tracks the pose and you play by waving
 - [hotspot-game](projects/hotspot-game.md) · project · none · unknown · Hit shrinking moving boxes with body motion, one or two players; Python and OpenCV on a PC or Raspberry Pi
 - [itch.io webcam games](projects/itch-webcam-tag.md) · project · varies · unknown · itch.io tag listing about 78 free webcam-controlled games (Ninja Smoothie, Pose Ninja, Fruit Ninja AR, face tennis)
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
