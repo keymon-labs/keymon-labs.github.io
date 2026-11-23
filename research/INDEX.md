@@ -123,12 +123,14 @@
 - [MediaPipe camera input](techniques/mediapipe-camera-input.md) · technique · n/a · n/a · MediaPipe Hands or Pose in the browser is the common base for webcam games; one shared camera module could serve many games
 
 ### inspiration
+- [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
 
 ### kids-music
+- [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
@@ -136,6 +138,7 @@
 ### music
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
+- [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules
 - [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md) · project · unknown · ideas-only · 2025 Codrops tutorial: a 3D audio visualiser in Three.js, GSAP and Web Audio with a distorting orb, shader uniforms and slider controls
@@ -158,6 +161,7 @@
 - [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
 
 ### visualisation-learning
+- [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [An Interactive Introduction to Fourier Transforms](projects/jezzamon-fourier.md) · project · unknown · ideas-only · Interactive introduction to Fourier transforms: drag a slider to add sine waves, draw your own wave, hear the sound change
 - [Listening to Waves](projects/listening-to-waves.md) · project · unknown · ideas-only · UC San Diego educational project with interactive web tools (oscilloscope, signal generator, spectrogram) for the physics of sound and music
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
@@ -343,6 +347,7 @@
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 
 ### web-audio
+- [Ableton Learning Music](projects/ableton-learning-music.md)
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md)
 - [Chrome Music Lab](projects/chrome-music-lab.md)
 - [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md)
@@ -383,6 +388,7 @@
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 
 ### **ideas-only**: learn from it, copy nothing
+- [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
@@ -444,6 +450,7 @@
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 
 ## Recent
+- [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground · 2026-11-23
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file · 2026-11-23
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples) · 2026-11-23
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list · 2026-11-23
@@ -453,4 +460,3 @@
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules · 2026-11-23
 - [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md) · project · unknown · ideas-only · 2025 Codrops tutorial: a 3D audio visualiser in Three.js, GSAP and Web Audio with a distorting orb, shader uniforms and slider controls · 2026-11-23
 - [Audio-reactive particles in Three.js (Codrops / ARKx)](projects/codrops-audio-particles.md) · project · unknown · unknown · Codrops tutorial: audio-reactive Three.js particles using frequency bands and BPM beat detection, with demo and code · 2026-11-23
-- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode · 2026-11-23
