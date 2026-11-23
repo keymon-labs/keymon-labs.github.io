@@ -8,9 +8,9 @@ licence: Apache-2.0
 licence_checked: repo
 reuse: ok
 free: yes
-tech: [web-audio, tonejs, webmidi, webrtc]
+tech: [web-audio, tonejs, webmidi, webrtc, pixijs, webgl]
 themes: [music, kids-music, inspiration]
-related: [projects/tonejs, projects/tonejs-demos, techniques/audio-reactive-visuals]
+related: [projects/tonejs, projects/tonejs-demos, techniques/learning-visualisation-music, techniques/audio-reactive-visuals]
 captured: 2026-11-23
 ---
 # Chrome Music Lab
