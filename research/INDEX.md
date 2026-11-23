@@ -122,11 +122,16 @@
 - [MediaPipe camera input](techniques/mediapipe-camera-input.md) · technique · n/a · n/a · MediaPipe Hands or Pose in the browser is the common base for webcam games; one shared camera module could serve many games
 
 ### inspiration
+- [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ask-first · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+
+### kids-music
+- [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ask-first · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 
 ### music
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
+- [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ask-first · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
@@ -272,6 +277,7 @@
 
 ### tonejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
+- [Chrome Music Lab](projects/chrome-music-lab.md)
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 - [Tone.js demos](projects/tonejs-demos.md)
@@ -302,6 +308,7 @@
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 
 ### web-audio
+- [Chrome Music Lab](projects/chrome-music-lab.md)
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md)
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
@@ -320,10 +327,17 @@
 - [PlayCanvas](projects/playcanvas.md)
 - [Three.js](projects/threejs.md)
 
+### webmidi
+- [Chrome Music Lab](projects/chrome-music-lab.md)
+
+### webrtc
+- [Chrome Music Lab](projects/chrome-music-lab.md)
+
 ## Reuse (projects and authors)
 
 ### **ask-first**: ask the owner before any reuse
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback
+- [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ask-first · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 
 ### **ideas-only**: learn from it, copy nothing
@@ -382,6 +396,7 @@
 ## Recent
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file · 2026-11-23
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list · 2026-11-23
+- [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ask-first · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code · 2026-11-23
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories · 2026-11-23
 - [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers · 2026-11-23
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules · 2026-11-23
@@ -389,4 +404,3 @@
 - [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches) · 2026-11-23
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site · 2026-11-23
 - [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys · 2026-11-23
-- [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides · 2026-11-23
