@@ -5,8 +5,8 @@ status: studied
 url: https://musiclab.chromeexperiments.com/
 repo: https://github.com/googlecreativelab/chrome-music-lab
 licence: Apache-2.0
-licence_checked: snippet
-reuse: ask-first
+licence_checked: repo
+reuse: ok
 free: yes
 tech: [web-audio, tonejs, webmidi, webrtc]
 themes: [music, kids-music, inspiration]
@@ -19,7 +19,7 @@ Launched March 2016 by Google Creative Lab for Music in Our Schools Month; hands
 
 ## Learn
 - Gold standard for simple, instant, no-sign-up music toys; many ideas map to our kids' music apps.
-- The site blocked my fetch, so individual experiments were not reviewed; Apache-2.0 comes from a catalogue entry for the repo, not the licence file.
+- The site blocked my fetch, so individual experiments were not reviewed; The repo was archived (read-only) on 19 Apr 2026.
 
 ## Reuse
-Code is reported Apache-2.0: allowed with notices kept and a CREDITS.md row, but check the licence file and any asset licences first. Do not copy Google's branding or names.
+Code is Apache-2.0 (LICENSE file in the repo): allowed with the licence and notices kept and a CREDITS.md row. The README says nothing on sounds, images or trademarks, so check those per experiment before copying them. Do not copy Google's branding or names.
