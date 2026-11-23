@@ -132,6 +132,7 @@
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+- [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 - [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 
@@ -140,6 +141,7 @@
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
+- [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
 
 ### music
@@ -159,6 +161,7 @@
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+- [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 - [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
@@ -172,6 +175,7 @@
 
 ### visual-programming
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
+- [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 
 ### visualisation-learning
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
@@ -256,6 +260,9 @@
 ### jquery
 - [Pedalboard](projects/pedalboard.md)
 
+### konva
+- [Shape Your Music](projects/shape-your-music.md)
+
 ### mcp
 - [OhMyGame](projects/ohmygame.md)
 
@@ -311,9 +318,13 @@
 
 ### react
 - [General AI app builders](projects/ai-app-builders.md)
+- [Shape Your Music](projects/shape-your-music.md)
 
 ### supabase
 - [General AI app builders](projects/ai-app-builders.md)
+
+### teoria
+- [Shape Your Music](projects/shape-your-music.md)
 
 ### threejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
@@ -338,6 +349,7 @@
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 - [Pedalboard](projects/pedalboard.md)
+- [Shape Your Music](projects/shape-your-music.md)
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
 
@@ -453,6 +465,7 @@
 - [MovePlay](projects/moveplay.md) · project · none · unknown · 30+ whole-body motion games in the browser for ages 4+, with fitness stats; freemium
 - [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches)
 - [Pug's Hunt](projects/pugs-hunt.md) · project · none · unknown · Retro shooter controlled by a webcam hand: point to aim, pinch to shoot; mouse fallback
+- [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md) · project · none · unknown · Python MediaPipe demos: air painting, motion-to-animation for Unity, and a nose-controlled fruit slicer
 - [WebCam Mania](projects/webcam-mania.md) · project · none · unknown · Long-running series of EyeToy-style webcam minigames (wipe frost, pop bubbles); v4 runs in modern browsers
 
