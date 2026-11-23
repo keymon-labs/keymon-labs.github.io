@@ -57,6 +57,7 @@
 - [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides
 
 ### d3
+- [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
@@ -106,6 +107,7 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches)
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md) · project · GPL-3.0 · ask-first · 2021 fork of ToneMatrix Redux by Camilo Mejia that generates songs with several random algorithms
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
@@ -127,6 +129,7 @@
 
 ### inspiration
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
@@ -135,19 +138,29 @@
 - [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 - [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
+- [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
 
 ### kids-music
+- [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
+- [Pocket Sequencer (ArcadeLab)](projects/pocket-sequencer.md) · project · unknown · ideas-only · Tiny pentatonic grid sequencer for kids ("Pocket Sequencer"): rows are scale notes, columns are beats, playhead sweeps the grid
 - [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
+- [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
+- [Pentatonic sequencers](techniques/pentatonic-sequencers.md) · technique · n/a · n/a · Why pentatonic grids work for beginners and the common design: rows are five scale notes, columns are beats, a playhead loops
 
 ### music
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
+- [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
+- [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules
 - [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md) · project · unknown · ideas-only · 2025 Codrops tutorial: a 3D audio visualiser in Three.js, GSAP and Web Audio with a distorting orb, shader uniforms and slider controls
@@ -161,14 +174,38 @@
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+- [Pocket Sequencer (ArcadeLab)](projects/pocket-sequencer.md) · project · unknown · ideas-only · Tiny pentatonic grid sequencer for kids ("Pocket Sequencer"): rows are scale notes, columns are beats, playhead sweeps the grid
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md) · project · GPL-3.0 · ask-first · 2021 fork of ToneMatrix Redux by Camilo Mejia that generates songs with several random algorithms
 - [Shape Your Music](projects/shape-your-music.md) · project · unknown · unknown · Geometric sequencer: draw polygons and a node walking each perimeter plays a looping phrase; angles set pitch leaps; records wav and exports MIDI
 - [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 - [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
+- [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
+- [Pentatonic sequencers](techniques/pentatonic-sequencers.md) · technique · n/a · n/a · Why pentatonic grids work for beginners and the common design: rows are five scale notes, columns are beats, a playhead loops
+
+### pentatonic
+- [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
+- [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3
+- [Pocket Sequencer (ArcadeLab)](projects/pocket-sequencer.md) · project · unknown · ideas-only · Tiny pentatonic grid sequencer for kids ("Pocket Sequencer"): rows are scale notes, columns are beats, playhead sweeps the grid
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md) · project · GPL-3.0 · ask-first · 2021 fork of ToneMatrix Redux by Camilo Mejia that generates songs with several random algorithms
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
+- [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
+- [Pentatonic sequencers](techniques/pentatonic-sequencers.md) · technique · n/a · n/a · Why pentatonic grids work for beginners and the common design: rows are five scale notes, columns are beats, a playhead loops
+
+### sequencer
+- [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided
+- [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3
+- [Pocket Sequencer (ArcadeLab)](projects/pocket-sequencer.md) · project · unknown · ideas-only · Tiny pentatonic grid sequencer for kids ("Pocket Sequencer"): rows are scale notes, columns are beats, playhead sweeps the grid
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md) · project · GPL-3.0 · ask-first · 2021 fork of ToneMatrix Redux by Camilo Mejia that generates songs with several random algorithms
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
+- [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
+- [Pentatonic sequencers](techniques/pentatonic-sequencers.md) · technique · n/a · n/a · Why pentatonic grids work for beginners and the common design: rows are five scale notes, columns are beats, a playhead loops
 
 ### two-player
 - [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
@@ -179,6 +216,7 @@
 
 ### visualisation-learning
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
 - [An Interactive Introduction to Fourier Transforms](projects/jezzamon-fourier.md) · project · unknown · ideas-only · Interactive introduction to Fourier transforms: drag a slider to add sine waves, draw your own wave, hear the sound change
 - [Listening to Waves](projects/listening-to-waves.md) · project · unknown · ideas-only · UC San Diego educational project with interactive web tools (oscilloscope, signal generator, spectrogram) for the physics of sound and music
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
@@ -213,8 +251,14 @@
 - [Rosebud AI](projects/rosebud-ai.md)
 - [Summer Engine](projects/summer-engine.md)
 
+### audiotool
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md)
+
 ### babylonjs
 - [Babylon.js](projects/babylonjs.md)
+
+### bootstrap
+- [audio-grid](projects/audio-grid.md)
 
 ### browser
 - [WebCam Mania](projects/webcam-mania.md)
@@ -233,10 +277,14 @@
 - [Hoppo](projects/hoppo.md)
 
 ### d3js
+- [audio-grid](projects/audio-grid.md)
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md)
 - [Claude d3.js skills](projects/claude-d3-skills.md)
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md)
+
+### flash
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md)
 
 ### gdevelop
 - [GDevelop](projects/gdevelop.md)
@@ -251,13 +299,19 @@
 ### gsap
 - [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md)
 
+### gulp
+- [ToneMatrix Redux](projects/tonematrix-redux.md)
+
 ### javascript
 - [GDevelop](projects/gdevelop.md)
 - [Music Blocks](projects/music-blocks.md)
 - [Phaser](projects/phaser.md)
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md)
 - [Rosebud AI](projects/rosebud-ai.md)
+- [ToneMatrix Redux](projects/tonematrix-redux.md)
 
 ### jquery
+- [audio-grid](projects/audio-grid.md)
 - [Pedalboard](projects/pedalboard.md)
 
 ### konva
@@ -343,6 +397,9 @@
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md)
 - [Three.js](projects/threejs.md)
 
+### timbrejs
+- [audio-grid](projects/audio-grid.md)
+
 ### tonejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
 - [Chrome Music Lab](projects/chrome-music-lab.md)
@@ -352,6 +409,7 @@
 - [Shape Your Music](projects/shape-your-music.md)
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
+- [ToneMatrix Redux](projects/tonematrix-redux.md)
 
 ### turtle-blocks
 - [Music Blocks](projects/music-blocks.md)
@@ -362,6 +420,7 @@
 - [OhMyGame](projects/ohmygame.md)
 - [Phaser](projects/phaser.md)
 - [PlayCanvas](projects/playcanvas.md)
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md)
 
 ### unity
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md)
@@ -383,6 +442,7 @@
 
 ### web-audio
 - [Ableton Learning Music](projects/ableton-learning-music.md)
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md)
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md)
 - [Chrome Music Lab](projects/chrome-music-lab.md)
 - [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md)
@@ -393,6 +453,7 @@
 - [Music Blocks](projects/music-blocks.md)
 - [Music theory learning sites](projects/music-theory-sites.md)
 - [Pedalboard](projects/pedalboard.md)
+- [Pocket Sequencer (ArcadeLab)](projects/pocket-sequencer.md)
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md)
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
@@ -415,6 +476,9 @@
 ### webmidi
 - [Chrome Music Lab](projects/chrome-music-lab.md)
 
+### webpack
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md)
+
 ### webrtc
 - [Chrome Music Lab](projects/chrome-music-lab.md)
 
@@ -424,11 +488,14 @@
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+- [Procedural ToneMatrix](projects/procedural-tone-matrix.md) · project · GPL-3.0 · ask-first · 2021 fork of ToneMatrix Redux by Camilo Mejia that generates songs with several random algorithms
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
+- [ToneMatrix Redux](projects/tonematrix-redux.md) · project · GPL-3.0 · ask-first · Pentatonic step sequencer: click tiles on a grid and it loops; HTML5 revival of Audiotool's ToneMatrix on Tone.js with particles and song sharing
 
 ### **ideas-only**: learn from it, copy nothing
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
 - [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers
@@ -446,16 +513,19 @@
 - [Makko AI](projects/makko-ai.md) · project · proprietary · ideas-only · Browser 2D game studio: an Art Studio makes characters, props and sprite animations, a Code Studio builds the game from them; free plan
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [PlayDrop](projects/playdrop.md) · project · proprietary · ideas-only · Free AI game maker for 2D and 3D browser games, solo or multiplayer, published to a PlayDrop link with earnings from players
+- [Pocket Sequencer (ArcadeLab)](projects/pocket-sequencer.md) · project · unknown · ideas-only · Tiny pentatonic grid sequencer for kids ("Pocket Sequencer"): rows are scale notes, columns are beats, playhead sweeps the grid
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
 - [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
+- [ToneMatrix (Audiotool)](projects/tonematrix-original.md) · project · proprietary · ideas-only · Original ToneMatrix by Andre Michelle: a 16x16 visual step sequencer and sine synth, now a device inside Audiotool's online studio
 
 ### **unknown**: licence not found, treat as all rights reserved
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file
+- [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
 - [Audio-reactive particles in Three.js (Codrops / ARKx)](projects/codrops-audio-particles.md) · project · unknown · unknown · Codrops tutorial: audio-reactive Three.js particles using frequency bands and BPM beat detection, with demo and code
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
@@ -488,16 +558,17 @@
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games
 - [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down
+- [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 
 ## Recent
+- [Pentatonic sequencer (exploring)](ideas/pentatonic-sequencer.md) · idea · n/a · n/a · A pentatonic step sequencer of our own: tap or move to place notes on a grid so everything sounds good, for kids; to explore, not decided · 2026-11-23
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground · 2026-11-23
 - [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file · 2026-11-23
+- [NYU Music Experience Design Lab tools](projects/aqwertyon.md) · project · unknown · ideas-only · NYU MusEDLab browser tools (aQWERTYon, Theory aQWERTYon, Groove Pizza) that map scales to the keyboard so there are no wrong notes · 2026-11-23
+- [audio-grid](projects/audio-grid.md) · project · MIT · unknown · JavaScript port of Andre Michelle's Tone Matrix by skratchdot, with MIDI export, built on timbre.js and d3 · 2026-11-23
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples) · 2026-11-23
 - [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list · 2026-11-23
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code · 2026-11-23
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories · 2026-11-23
 - [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers · 2026-11-23
-- [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md) · project · none · ideas-only · April 2026 guide on building Tone.js synths and step sequencers with Claude Code, with CLAUDE.md rules · 2026-11-23
-- [3D audio visualiser (Codrops)](projects/codrops-3d-audio-visualizer.md) · project · unknown · ideas-only · 2025 Codrops tutorial: a 3D audio visualiser in Three.js, GSAP and Web Audio with a distorting orb, shader uniforms and slider controls · 2026-11-23
-- [Audio-reactive particles in Three.js (Codrops / ARKx)](projects/codrops-audio-particles.md) · project · unknown · unknown · Codrops tutorial: audio-reactive Three.js particles using frequency bands and BPM beat detection, with demo and code · 2026-11-23
