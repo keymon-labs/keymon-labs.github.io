@@ -127,7 +127,7 @@
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
-- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 
 ### kids-music
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
@@ -152,7 +152,7 @@
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
-- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 - [Tone.js](projects/tonejs.md) · project · MIT · ok · Web Audio framework for interactive music: Transport timing, synths, samplers and effects; the standard base for browser music toys
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
@@ -179,7 +179,7 @@
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
-- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
 
 ## By tech
@@ -410,7 +410,7 @@
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
 - [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
-- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site
+- [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 
 ### **unknown**: licence not found, treat as all rights reserved
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
