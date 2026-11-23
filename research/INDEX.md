@@ -132,6 +132,7 @@
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+- [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 
 ### kids-music
@@ -158,6 +159,7 @@
 - [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+- [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
@@ -188,6 +190,7 @@
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
+- [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
@@ -354,6 +357,7 @@
 ### unknown
 - [Google Playground](projects/google-playground.md)
 - [jfire.io animations](projects/jfire-animations.md)
+- [skyl.fr (Sikai Li)](projects/skyl-fr.md)
 
 ### vanilla-js
 - [collidingScopes (Alan)](authors/collidingscopes.md)
@@ -431,6 +435,7 @@
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [PlayDrop](projects/playdrop.md) · project · proprietary · ideas-only · Free AI game maker for 2D and 3D browser games, solo or multiplayer, published to a PlayDrop link with earnings from players
 - [Rosebud AI](projects/rosebud-ai.md) · project · proprietary · ideas-only · Browser platform where you describe a game in chat and an assistant (Rosie) writes the code, art and sound; credits-based freemium with remixing, hosting and Steam export
+- [skyl.fr (Sikai Li)](projects/skyl-fr.md) · project · unknown · ideas-only · Portfolio of Sikai Li (skyl.fr), a Paris composer, sound artist and creative coder: experimental music, audiovisual and interactive works
 - [Summer Engine](projects/summer-engine.md) · project · proprietary · ideas-only · AI-native engine compatible with Godot 4: an agent builds scenes and scripts, you export to desktop, web and mobile; proprietary editor
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
