@@ -129,6 +129,7 @@
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
+- [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
@@ -136,6 +137,7 @@
 ### kids-music
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
+- [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Learning music through visualisation](techniques/learning-visualisation-music.md) · technique · n/a · n/a · What teaching-by-visualising music and sound sites have in common, from Chrome Music Lab, Fourier explorables and theory sites
 
@@ -153,6 +155,7 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [An Interactive Introduction to Fourier Transforms](projects/jezzamon-fourier.md) · project · unknown · ideas-only · Interactive introduction to Fourier transforms: drag a slider to add sine waves, draw your own wave, hear the sound change
 - [Listening to Waves](projects/listening-to-waves.md) · project · unknown · ideas-only · UC San Diego educational project with interactive web tools (oscilloscope, signal generator, spectrogram) for the physics of sound and music
+- [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
@@ -164,6 +167,9 @@
 
 ### two-player
 - [Hopla Games (Hopla, Ninja Academy)](projects/hopla-games.md) · project · proprietary · ideas-only · Free browser webcam movement games for kids (Hopla Ninja Academy): jump, wave and dance, no sign-up; noted as a good fit for two players
+
+### visual-programming
+- [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 
 ### visualisation-learning
 - [Ableton Learning Music](projects/ableton-learning-music.md) · project · proprietary · ideas-only · Ableton's free interactive music course in the browser: beats, notes and scales, chords, basslines, melodies, song structure, plus a playground
@@ -240,6 +246,7 @@
 
 ### javascript
 - [GDevelop](projects/gdevelop.md)
+- [Music Blocks](projects/music-blocks.md)
 - [Phaser](projects/phaser.md)
 - [Rosebud AI](projects/rosebud-ai.md)
 
@@ -331,6 +338,9 @@
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
 
+### turtle-blocks
+- [Music Blocks](projects/music-blocks.md)
+
 ### typescript
 - [General AI app builders](projects/ai-app-builders.md)
 - [Babylon.js](projects/babylonjs.md)
@@ -364,6 +374,7 @@
 - [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md)
 - [An Interactive Introduction to Fourier Transforms](projects/jezzamon-fourier.md)
 - [Listening to Waves](projects/listening-to-waves.md)
+- [Music Blocks](projects/music-blocks.md)
 - [Music theory learning sites](projects/music-theory-sites.md)
 - [Pedalboard](projects/pedalboard.md)
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md)
@@ -395,6 +406,7 @@
 
 ### **ask-first**: ask the owner before any reuse
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback
+- [Music Blocks](projects/music-blocks.md) · project · AGPL-3.0 · ask-first · Scratch-like visual programming for music and maths from Sugar Labs: snap blocks to build rhythms, melodies and turtle graphics
 - [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 
