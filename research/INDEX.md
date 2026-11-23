@@ -66,6 +66,9 @@
 ### data-viz
 - [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
 
+### effects
+- [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
+
 ### frameworks
 - [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
 - [Claude Code for Three.js (guide)](projects/claude-threejs-guide.md) · project · none · ideas-only · April 2026 guide on building Three.js scenes with Claude Code: scene manager, bloom, glTF, shaders, disposal and mobile tiers
@@ -127,6 +130,7 @@
 - [Awesome Audio Visualization](projects/awesome-audio-visualization.md) · project · unknown · ideas-only · Curated list of audio-visualisation libraries and showcases (Web Audio wrappers, Three.js, d3, p5, Pixi examples)
 - [Chrome Music Lab](projects/chrome-music-lab.md) · project · Apache-2.0 · ok · Google Creative Lab's free music-learning experiments (Song Maker, rhythm, melody, sound waves) in the browser, with open-source code
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
+- [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
 
 ### kids-music
@@ -150,6 +154,7 @@
 - [An Interactive Introduction to Fourier Transforms](projects/jezzamon-fourier.md) · project · unknown · ideas-only · Interactive introduction to Fourier transforms: drag a slider to add sine waves, draw your own wave, hear the sound change
 - [Listening to Waves](projects/listening-to-waves.md) · project · unknown · ideas-only · UC San Diego educational project with interactive web tools (oscilloscope, signal generator, spectrogram) for the physics of sound and music
 - [Music theory learning sites](projects/music-theory-sites.md) · project · proprietary · ideas-only · Free browser music-theory learning sites to study for interaction ideas: musictheory.net, Musicca, muted.io, MyMusicTheory
+- [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md) · project · unknown · ideas-only · three.js forum showcase of a browser visualiser with ten audio-reactive styles (Canvas 2D plus one GLSL shader), plus many similar showcases
 - [Tone.js demos](projects/tonejs-demos.md) · project · varies · ideas-only · Tone.js showcase of 55 community music toys, instruments, sequencers and visual experiments, each a separate site; all listed here with links
@@ -238,6 +243,9 @@
 - [Phaser](projects/phaser.md)
 - [Rosebud AI](projects/rosebud-ai.md)
 
+### jquery
+- [Pedalboard](projects/pedalboard.md)
+
 ### mcp
 - [OhMyGame](projects/ohmygame.md)
 
@@ -319,6 +327,7 @@
 - [Chrome Music Lab](projects/chrome-music-lab.md)
 - [Claude Code for Tone.js (guide)](projects/claude-tonejs-guide.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
+- [Pedalboard](projects/pedalboard.md)
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
 
@@ -356,6 +365,7 @@
 - [An Interactive Introduction to Fourier Transforms](projects/jezzamon-fourier.md)
 - [Listening to Waves](projects/listening-to-waves.md)
 - [Music theory learning sites](projects/music-theory-sites.md)
+- [Pedalboard](projects/pedalboard.md)
 - [Ten-style music visualiser (three.js forum)](projects/threejs-forum-visualiser-showcase.md)
 - [Tone.js demos](projects/tonejs-demos.md)
 - [Tone.js](projects/tonejs.md)
@@ -385,6 +395,7 @@
 
 ### **ask-first**: ask the owner before any reuse
 - [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback
+- [Pedalboard](projects/pedalboard.md) · project · GPL-3.0 · ask-first · Online guitar pedalboard built on Tone.js: live guitar or microphone through a chain of effect pedals with knobs, share links and recording
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 
 ### **ideas-only**: learn from it, copy nothing
