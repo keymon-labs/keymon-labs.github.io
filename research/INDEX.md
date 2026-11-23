@@ -44,6 +44,22 @@
 - [Hoppo](projects/hoppo.md) · project · proprietary · ideas-only · About 27 camera and touch minigames for ages 5-8 in the browser; three input modes, a no-camera whole-class Brain Break, parent view
 - [Camera and movement games](techniques/camera-movement-games.md) · technique · n/a · n/a · What camera and movement games for young kids have in common, and the design points worth copying
 
+### claude-community
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file
+- [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
+- [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
+- [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches)
+- [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides
+
+### d3
+- [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
+- [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
+- [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides
+
+### data-viz
+- [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
+
 ### frameworks
 - [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector
 - [GDevelop](projects/gdevelop.md) · project · MIT · ok · Open-source no-code 2D, 3D and multiplayer game engine with an event system; exports HTML5, mobile and desktop
@@ -73,12 +89,16 @@
 
 ### generative-art
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file
+- [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
+- [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches)
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
 - [Three.js](projects/threejs.md) · project · MIT · ok · JavaScript 3D library on WebGL, WebGL2 and WebGPU with WebXR; the base for Rosebud 3D games and most hand-tracking toys
 - [Audio-reactive visuals](techniques/audio-reactive-visuals.md) · technique · n/a · n/a · Music-driven visuals: analyse audio bands, smooth them, feed many small styles through one draw interface with named palettes
+- [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides
 
 ### hand-tracking
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
@@ -98,6 +118,7 @@
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
@@ -109,7 +130,9 @@
 ### visualiser
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [Stereo Drift](projects/stereodrift.md) · project · CC-BY-NC-3.0 · ask-first · Browser music visualiser: about 45 visual styles, 18 palettes, demo tracks, upload or microphone input; plain JS, no build step
@@ -137,8 +160,18 @@
 ### canvas
 - [Stereo Drift](projects/stereodrift.md)
 
+### claude-skills
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md)
+- [Claude d3.js skills](projects/claude-d3-skills.md)
+- [p5.js skills (community)](projects/p5js-claude-skills.md)
+
 ### client-side-tracking
 - [Hoppo](projects/hoppo.md)
+
+### d3js
+- [Awesome Creative Coding](projects/awesome-creative-coding.md)
+- [Claude d3.js skills](projects/claude-d3-skills.md)
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md)
 
 ### gdevelop
 - [GDevelop](projects/gdevelop.md)
@@ -177,6 +210,11 @@
 - [hotspot-game](projects/hotspot-game.md)
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md)
 
+### p5js
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md)
+- [Awesome Creative Coding](projects/awesome-creative-coding.md)
+- [p5.js skills (community)](projects/p5js-claude-skills.md)
+
 ### perlin-noise
 - [Stereo Drift](projects/stereodrift.md)
 
@@ -206,6 +244,7 @@
 
 ### threejs
 - [collidingScopes (Alan)](authors/collidingscopes.md)
+- [Awesome Creative Coding](projects/awesome-creative-coding.md)
 - [cam-run-for-kids](projects/cam-run-for-kids.md)
 - [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md)
 - [Fruit Ninja (collidingScopes)](projects/collidingscopes-fruit-ninja.md)
@@ -239,6 +278,9 @@
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md)
 - [Stereo Drift](projects/stereodrift.md)
 
+### web-audio
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md)
+
 ### webassembly
 - [Pug's Hunt](projects/pugs-hunt.md)
 
@@ -261,6 +303,8 @@
 
 ### **ideas-only**: learn from it, copy nothing
 - [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools
+- [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode
 - [Fifth Door](projects/fifth-door.md) · project · proprietary · ideas-only · Prompt-to-playable browser game maker where an agent writes, tests and saves the game, then you share a link
 - [Fun With Computer Vision](projects/fun-with-computer-vision.md) · project · proprietary · ideas-only · Paid tutorial set with full project files for 40 hand-tracking and computer-vision demos (games, 3D, music, art); live demos are free to try
 - [Google Playground](projects/google-playground.md) · project · proprietary · ideas-only · Google's prompt-to-game platform, launched 7 Oct 2026 for US users aged 18 and over; creation tiered by Google AI plan
@@ -275,11 +319,14 @@
 ### **unknown**: licence not found, treat as all rights reserved
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser
 - [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file
+- [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories
 - [gettothechopin portfolio](projects/gettothechopin-portfolio.md) · project · none · unknown · Portfolio of one creator's games and experiments: webcam hand-tracking games, 3D gesture toys, animation generators, music visualiser
 - [hotspot-game](projects/hotspot-game.md) · project · none · unknown · Hit shrinking moving boxes with body motion, one or two players; Python and OpenCV on a PC or Raspberry Pi
 - [itch.io webcam games](projects/itch-webcam-tag.md) · project · varies · unknown · itch.io tag listing about 78 free webcam-controlled games (Ninja Smoothie, Pose Ninja, Fruit Ninja AR, face tennis)
 - [jfire.io animations](projects/jfire-animations.md) · project · none · unknown · Gallery of about 70 daily generative animations dated 2014-12 to 2016-03, shown as thumbnails
 - [MovePlay](projects/moveplay.md) · project · none · unknown · 30+ whole-body motion games in the browser for ages 4+, with fitness stats; freemium
+- [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches)
 - [Pug's Hunt](projects/pugs-hunt.md) · project · none · unknown · Retro shooter controlled by a webcam hand: point to aim, pinch to shoot; mouse fallback
 - [mediapipe-game (SUcy6)](projects/sucy6-mediapipe-game.md) · project · none · unknown · Python MediaPipe demos: air painting, motion-to-animation for Unity, and a nose-controlled fruit slicer
 - [WebCam Mania](projects/webcam-mania.md) · project · none · unknown · Long-running series of EyeToy-style webcam minigames (wipe frost, pop bubbles); v4 runs in modern browsers
@@ -304,13 +351,13 @@
 - [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games
 
 ## Recent
+- [Algorithmic Art skill (Anthropic)](projects/anthropic-algorithmic-art.md) · project · Apache-2.0 · unknown · Anthropic's official Claude skill that makes generative p5.js art with seeded randomness and live parameter sliders in one HTML file · 2026-11-23
+- [Awesome Creative Coding](projects/awesome-creative-coding.md) · project · unknown · ideas-only · Curated list of creative-coding resources (generative art, data viz, shaders, tools, books); one of several forks of the same list · 2026-11-23
+- [Claude d3.js skills](projects/claude-d3-skills.md) · project · unknown · unknown · Community Claude Code skills for d3.js charts, networks, maps and animation, published in several skill directories · 2026-11-23
+- [Music visualisation with d3.js (Big Nerd Ranch)](projects/d3-music-visualiser-bnr.md) · project · none · ideas-only · 2015 tutorial: WinAmp-style music visualiser, 200 d3 bars driven by a Web Audio AnalyserNode · 2026-11-23
+- [p5.js skills (community)](projects/p5js-claude-skills.md) · project · unknown · unknown · Community p5.js creative-coding skills for Claude Code and other agents (gen art, shaders, audio and webcam sketches) · 2026-11-23
+- [Claude and creative coding community](techniques/claude-creative-coding-community.md) · technique · n/a · n/a · Where the Claude plus creative coding and d3 community lives: skill directories, official and community p5.js and d3 skills, guides · 2026-11-23
 - [collidingScopes (Alan)](authors/collidingscopes.md) · author · varies · unknown · One creator (Alan; GitHub collidingScopes, getToTheChopin and stereoDrift) with dozens of browser computer-vision games, 3D gesture toys, animation tools and a music visualiser · 2026-11-22
 - [Hand-controlled visualiser](ideas/hand-controlled-visualiser.md) · idea · n/a · n/a · A music visualiser steered by hands: height, pinch and finger count change styles and palettes · 2026-11-22
 - [Kid gesture vocabulary](ideas/kid-gesture-vocabulary.md) · idea · n/a · n/a · A small forgiving gesture set for young kids (wave, pop, reach, jump) shared across camera games · 2026-11-22
 - [Call the moves](ideas/no-camera-call-the-moves.md) · idea · n/a · n/a · A no-camera group mode where the game calls the moves and everyone copies, then a cool-down · 2026-11-22
-- [Shared camera module](ideas/shared-camera-module.md) · idea · n/a · n/a · A shared MediaPipe camera module (permission, mirrored preview, landmarks, performance mode) for several camera games · 2026-11-22
-- [General AI app builders](projects/ai-app-builders.md) · project · varies · ideas-only · General AI app builders (Lovable, Bolt, Replit, v0, Base44) plus agent tools (Cursor, Cline, Aider) that also produce web games and tools · 2026-11-22
-- [Air Jake](projects/air-jake.md) · project · unknown · unknown · Free browser games played with the whole body through the camera; tracking runs in the browser · 2026-11-22
-- [Babylon.js](projects/babylonjs.md) · project · Apache-2.0 · ok · Full 3D game and rendering engine in JavaScript or TypeScript with built-in physics, WebXR, GUI and a browser Inspector · 2026-11-22
-- [cam-run-for-kids](projects/cam-run-for-kids.md) · project · GPL-3.0 · ask-first · Endless runner steered by body movement, with an AI companion giving movement feedback · 2026-11-22
-- [Arpeggiator (collidingScopes)](projects/collidingscopes-arpeggiator.md) · project · MIT · ok · Hand 1 plays an arpeggio (height is pitch, pinch is volume), hand 2 picks drum patterns by finger count; audio-reactive visuals · 2026-11-22
